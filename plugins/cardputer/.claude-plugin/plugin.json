@@ -1,0 +1,24 @@
+{
+  "name": "cardputer",
+  "displayName": "M5Stack Cardputer",
+  "version": "0.1.0",
+  "description": "Hardware reference and firmware-development helper for the M5Stack Cardputer family. Covers pinout, I2C peripherals (TCA8418 keyboard, BMI270 IMU, ES8311 codec), display, Grove/EXT ports, battery behavior, and setup for Arduino IDE, PlatformIO, ESP-IDF, and UIFlow2. Pairs with the esp32-chips plugin for ESP32-S3 chip-level depth.",
+  "author": {
+    "name": "IoT Forge",
+    "url": "https://github.com/iot-forge"
+  },
+  "keywords": [
+    "m5stack",
+    "cardputer",
+    "cardputer-adv",
+    "esp32-s3",
+    "arduino",
+    "esp-idf",
+    "platformio",
+    "firmware",
+    "embedded"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/iot-forge/m5stack-skills",
+  "repository": "https://github.com/iot-forge/m5stack-skills"
+}

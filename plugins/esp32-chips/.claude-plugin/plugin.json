@@ -1,0 +1,27 @@
+{
+  "name": "esp32-chips",
+  "displayName": "Espressif SoC capability references",
+  "version": "0.1.0",
+  "description": "Chip-level ESP-IDF capability references for the Espressif SoCs behind M5Stack boards: classic ESP32 (Xtensa LX6), ESP32-S3 (Xtensa LX7), ESP32-C6 (RISC-V, WiFi 6 + Thread/Zigbee), and ESP32-P4 (RISC-V, MIPI-DSI/CSI, no radio). Covers peripherals, sleep modes and ULP/LP coprocessors, memory and PSRAM config, USB controllers, radio coexistence, and AI/DSP instruction extensions. Board skills point into these instead of re-deriving the same content per board.",
+  "author": {
+    "name": "IoT Forge",
+    "url": "https://github.com/iot-forge"
+  },
+  "keywords": [
+    "esp32",
+    "esp32-s3",
+    "esp32-c6",
+    "esp32-p4",
+    "esp-idf",
+    "espressif",
+    "risc-v",
+    "xtensa",
+    "ulp",
+    "psram",
+    "deep-sleep",
+    "embedded"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/iot-forge/m5stack-skills",
+  "repository": "https://github.com/iot-forge/m5stack-skills"
+}

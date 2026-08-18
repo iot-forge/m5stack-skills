@@ -1,0 +1,26 @@
+{
+  "name": "core",
+  "displayName": "M5Stack Core family",
+  "version": "0.1.0",
+  "description": "Hardware references and firmware-development helpers for M5Stack's Core-family Controllers: Core2 (plain and For AWS, all four revisions) and Tab5. Covers pinouts, I2C addresses, power management, display/touch, audio, IMU, and setup for Arduino IDE, PlatformIO, ESP-IDF, and UIFlow. Pairs with the esp32-chips plugin for chip-level depth.",
+  "author": {
+    "name": "IoT Forge",
+    "url": "https://github.com/iot-forge"
+  },
+  "keywords": [
+    "m5stack",
+    "core2",
+    "tab5",
+    "aws-iot",
+    "esp32",
+    "esp32-p4",
+    "arduino",
+    "esp-idf",
+    "platformio",
+    "firmware",
+    "embedded"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/iot-forge/m5stack-skills",
+  "repository": "https://github.com/iot-forge/m5stack-skills"
+}

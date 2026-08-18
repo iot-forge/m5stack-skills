@@ -1,0 +1,57 @@
+{
+  "name": "m5stack",
+  "owner": {
+    "name": "IoT Forge",
+    "url": "https://github.com/iot-forge"
+  },
+  "metadata": {
+    "description": "Hardware reference and firmware-development skills for M5Stack Controllers and the Espressif SoCs they're built on.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "cardputer",
+      "source": "./plugins/cardputer",
+      "description": "M5Stack Cardputer family hardware reference \u2014 pinout, peripherals, and Arduino/PlatformIO/ESP-IDF/UIFlow2 setup. Currently covers Cardputer Adv.",
+      "category": "hardware",
+      "keywords": [
+        "m5stack",
+        "cardputer",
+        "esp32-s3",
+        "firmware",
+        "embedded"
+      ]
+    },
+    {
+      "name": "core",
+      "source": "./plugins/core",
+      "description": "M5Stack Core-family Controller hardware references \u2014 Core2 (incl. Core2 For AWS) and Tab5.",
+      "category": "hardware",
+      "keywords": [
+        "m5stack",
+        "core2",
+        "tab5",
+        "esp32",
+        "esp32-p4",
+        "firmware",
+        "embedded"
+      ]
+    },
+    {
+      "name": "esp32-chips",
+      "source": "./plugins/esp32-chips",
+      "description": "Chip-level ESP-IDF capability references for the Espressif SoCs M5Stack boards are built on: classic ESP32, ESP32-S3, ESP32-C6, ESP32-P4. Board skills point into these for peripheral, sleep, memory, and radio depth.",
+      "category": "hardware",
+      "keywords": [
+        "esp32",
+        "esp32-s3",
+        "esp32-c6",
+        "esp32-p4",
+        "esp-idf",
+        "risc-v",
+        "xtensa",
+        "embedded"
+      ]
+    }
+  ]
+}
