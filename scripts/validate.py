@@ -154,15 +154,45 @@ def check_skills() -> None:
 
 
 def check_no_internal_files() -> None:
-    """Build notes live in the authoring project, never in a shipped plugin."""
+    """Build notes live in docs/, never in a shipped plugin."""
     for bad in glob.glob(os.path.join(ROOT, "plugins/**/notes.md"), recursive=True):
-        errors.append(f"{rel(bad)}: build notes must not ship inside a plugin")
+        errors.append(f"{rel(bad)}: build notes belong in docs/notes/, not inside a plugin")
+
+
+def check_catalog_sync() -> None:
+    """The catalog must agree with what's actually built.
+
+    This repo has already been bitten by the other direction: a chip skill
+    was fully built and shipped while its catalog row still said
+    `not started`, so nobody knew it existed.
+    """
+    catalogs = sorted(glob.glob(os.path.join(ROOT, "docs/catalog/*.md")))
+    if not catalogs:
+        return  # catalogs are optional; skip rather than fail
+
+    catalog_text = "\n".join(open(c).read() for c in catalogs)
+
+    # Every skill path a catalog claims is done must actually exist.
+    for path in sorted(set(re.findall(r"`(plugins/[a-z0-9-]+/skills/[a-z0-9-]+)/?`", catalog_text))):
+        if not os.path.isdir(os.path.join(ROOT, path)):
+            errors.append(f"docs/catalog: points at `{path}`, which does not exist")
+
+    # Every built skill must appear in a catalog, or it's invisible to whoever
+    # picks the next thing to work on.
+    for s in sorted(glob.glob(os.path.join(ROOT, "plugins/*/skills/*/SKILL.md"))):
+        d = os.path.dirname(rel(s))
+        if d not in catalog_text:
+            errors.append(
+                f"{d} is built but no catalog row references it — "
+                "update docs/catalog/ so the next session knows it's done"
+            )
 
 
 def main() -> int:
     check_manifests()
     check_skills()
     check_no_internal_files()
+    check_catalog_sync()
 
     for line in info:
         print(line)

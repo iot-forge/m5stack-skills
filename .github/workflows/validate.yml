@@ -19,3 +19,22 @@ jobs:
 
       - name: Validate manifests and skills
         run: python3 scripts/validate.py
+
+  versions:
+    name: Plugin version bumps
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Claude Code pins each plugin to its `version`. Changing a plugin's
+      # files without bumping it means existing users silently never receive
+      # the change.
+      - name: Require a version bump for every changed plugin
+        run: python3 scripts/check_version_bump.py "origin/${{ github.base_ref }}"
