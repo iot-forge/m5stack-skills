@@ -150,6 +150,29 @@ ESP32-P4 + ESP32-C6), each SoC gets its own Chip skill. Don't conflate them.
    **flag those inline as community-sourced**, in the skill body, not just
    in notes. A reader needs to know which claims rest on one forum post.
 
+   Canonical M5Stack sources worth knowing (always fetch fresh — don't
+   snapshot; M5Stack updates them as new products ship):
+
+   - `https://docs.m5stack.com/en/product_i2c_addr` — the full I2C address
+     table across every M5Stack product (Controllers, Units, Hats, Modules,
+     Bases, Faces). Verify a Unit's address here before writing it into a
+     skill; this repo treats I2C addresses as load-bearing.
+   - `https://docs.m5stack.com/compatible/product_<family>_define.json` —
+     machine-readable Grove port + GPIO map per SKU. Known families:
+     `core`, `atom`, `stick`, `cardputer`, `stamps3`. Source of truth for
+     `PORT.A`/`PORT.B` pin assignments per revision.
+   - `https://docs.m5stack.com/compatible/product_<accessory>_compatible.json` —
+     which accessories work with which controllers. Known kinds: `unit`,
+     `hat`, `module`, `base`, `atomic`, `cap`.
+   - `https://docs.m5stack.com/comparison/compare_directory.json` — index
+     of the human-readable compare pages (Core/Stick/Atom/Cardputer/
+     Station/Paper/Stamp + UnitCAM/TimerCAM/UnitV).
+   - The `products_selector/*_compare` pages themselves (e.g.
+     `https://docs.m5stack.com/en/products_selector/m5core_compare`) are
+     the nicest human overview per family, but they're client-rendered
+     Nuxt SPAs — `curl` and `WebFetch` return an empty shell. Open in a
+     browser, or use the `_define.json` above for pin data.
+
 3. **Write it** following the layout above.
 
 4. **Record build metadata** in `docs/notes/<slug>.md`:
