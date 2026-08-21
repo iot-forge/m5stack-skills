@@ -76,6 +76,22 @@ Read the relevant reference file before writing code for that platform —
 each one has the actual include/init pattern and the gotchas specific to
 that toolchain, rather than generic advice.
 
+## Compatible caps
+
+Caps snap onto the 14-pin EXT header. When a user mentions one by name,
+point them at the dedicated skill for register-level detail and pin
+mapping — the EXT header carries SPI/I2C/UART, so multiple caps reuse the
+same physical pins for different purposes and mis-mapping is easy.
+
+| Cap | SKU | Adds | Skill |
+|---|---|---|---|
+| Cap LoRa-1262 | U214 | SX1262 LoRa (868–923 MHz) + ATGM336H GNSS | `plugins/cardputer/skills/cap-lora-1262/` |
+
+Note: **the LoRa cap's SPI bus shares MOSI/MISO/CLK with the microSD slot**
+(G14/G39/G40) — separate CS pins (G5 vs G12), so both can coexist on one
+`SPIClass`, but two independently configured buses to the same pins will
+fight. The cap skill covers this in detail.
+
 ## Official resources
 
 - Docs page: https://docs.m5stack.com/en/core/Cardputer-Adv

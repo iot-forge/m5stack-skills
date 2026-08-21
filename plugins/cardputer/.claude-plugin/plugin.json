@@ -1,8 +1,8 @@
 {
   "name": "cardputer",
   "displayName": "M5Stack Cardputer",
-  "version": "0.1.0",
-  "description": "Hardware reference and firmware-development helper for the M5Stack Cardputer family. Covers pinout, I2C peripherals (TCA8418 keyboard, BMI270 IMU, ES8311 codec), display, Grove/EXT ports, battery behavior, and setup for Arduino IDE, PlatformIO, ESP-IDF, and UIFlow2. Pairs with the esp32-chips plugin for ESP32-S3 chip-level depth.",
+  "version": "0.2.0",
+  "description": "Hardware reference and firmware-development helper for the M5Stack Cardputer family. Covers pinout, I2C peripherals (TCA8418 keyboard, BMI270 IMU, ES8311 codec), display, Grove/EXT ports, battery behavior, and setup for Arduino IDE, PlatformIO, ESP-IDF, and UIFlow2. Includes cap accessories that snap onto the Cardputer EXT header (Cap LoRa-1262: SX1262 LoRa + ATGM336H GNSS). Pairs with the esp32-chips plugin for ESP32-S3 chip-level depth.",
   "author": {
     "name": "IoT Forge",
     "url": "https://github.com/iot-forge"
@@ -11,6 +11,10 @@
     "m5stack",
     "cardputer",
     "cardputer-adv",
+    "cap-lora-1262",
+    "sx1262",
+    "lora",
+    "gnss",
     "esp32-s3",
     "arduino",
     "esp-idf",

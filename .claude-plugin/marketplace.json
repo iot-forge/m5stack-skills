@@ -12,11 +12,14 @@
     {
       "name": "cardputer",
       "source": "./plugins/cardputer",
-      "description": "M5Stack Cardputer family hardware reference \u2014 pinout, peripherals, and Arduino/PlatformIO/ESP-IDF/UIFlow2 setup. Currently covers Cardputer Adv.",
+      "description": "M5Stack Cardputer family hardware reference \u2014 pinout, peripherals, and Arduino/PlatformIO/ESP-IDF/UIFlow2 setup. Covers Cardputer Adv and the Cap LoRa-1262 (SX1262 + ATGM336H GNSS) accessory.",
       "category": "hardware",
       "keywords": [
         "m5stack",
         "cardputer",
+        "cap-lora-1262",
+        "sx1262",
+        "lora",
         "esp32-s3",
         "firmware",
         "embedded"

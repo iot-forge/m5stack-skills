@@ -161,6 +161,20 @@ built will need a new plugin entry in `.claude-plugin/marketplace.json`.
 | C6L | — | not started | |
 | LoRaWAN | CN470, AS923, EU868 | not started | |
 
+## Caps
+
+Caps are form-factor-specific accessories that snap onto a Cardputer-family
+controller's 14-pin EXT header (not the generic Grove connector). Not
+strictly "Units" but they behave like peripherals — driven from a host
+Controller, one `SKILL.md` file each, plugin lives with the controller
+family they attach to (e.g. `cardputer`, not `units`), since a user with
+only a Cardputer plugin should still see caps that fit their board.
+
+| Family | Includes | SKU | Status | Skill |
+|---|---|---|---|---|
+| **Cap LoRa-1262** | SX1262 LoRa + ATGM336H GNSS, 868–923 MHz | U214 | **done** | `plugins/cardputer/skills/cap-lora-1262/` |
+
 ---
 
-**Totals**: ~120 families captured, 0 done. Known incomplete: Wireless.
+**Totals**: ~120 families captured, 1 done (Cap LoRa-1262). Known
+incomplete: Wireless.
