@@ -1,6 +1,11 @@
 # esp32 (classic) — build notes
 
-Last verified: 2026-08-17
+Last verified: 2026-08-24 (initial build 2026-08-17; 2026-08-24 pass
+expanded `references/peripherals.md`'s I2S section with three items —
+PDM RX being I2S_NUM_0-only, APLL required for the 44.1kHz sample-rate
+family, and `auto_clear = true` clearing DMA buffers but not the
+peripheral's internal FIFO — sourced from a user's Core2 ESP-IDF audio
+bring-up session, see soft spots)
 Sources:
 - Espressif ESP32 Series datasheet (v5.3, PDF): https://documentation.espressif.com/esp32_datasheet_en.pdf
 - Espressif ESP32 Chip Revision v3.0 User Guide (PDF): https://documentation.espressif.com/esp32_chip_revision_v3_0_user_guide_en.pdf
@@ -40,6 +45,17 @@ Sources:
   for this chip) but M5Stack's actual use of it (if any) is unconfirmed —
   included as chip-capability context, not a claim about any specific
   M5Stack product using it.
+- **The three 2026-08-24 I2S subsections are single-session-sourced** from
+  the same user's Core2 ESP-IDF audio bring-up that produced the Core2
+  skill's audio section (see `docs/notes/core2.md`). Each is
+  chip-family-plausible — PDM RX being I2S_NUM_0-only is longstanding
+  classic-ESP32 folklore; APLL for 44.1kHz is a known consequence of
+  PLL_F160M's divisor structure; the `auto_clear`-vs-FIFO distinction
+  matches how the ESP-IDF I2S driver is structured (driver-owned DMA
+  memory vs. peripheral-internal FIFO). None re-verified this pass against
+  Espressif's I2S driver source or TRM. Confirming each against
+  Espressif's own docs would let the "Observed across current ESP-IDF
+  v5.x" hedge be dropped.
 
 ## Open questions
 
@@ -56,3 +72,10 @@ Sources:
   in its power tables but wasn't transcribed verbatim into the skill since
   exact µA figures drift by exactly which peripherals are left enabled;
   pointed users at the datasheet directly instead.
+- Whether ESP-IDF v5.x actually restricts PDM RX to I2S_NUM_0 on classic
+  ESP32 by driver check, by hardware limitation, or by both. Stated as a
+  restriction in the 2026-08-24 I2S subsection from field observation;
+  Espressif's I2S driver source / TRM should say which layer enforces it.
+- Whether `auto_clear`'s DMA-only behavior is documented in ESP-IDF's I2S
+  driver docs or is purely a driver-implementation detail — worth a docs
+  pass so the section can cite the doc rather than "observed in v5.x."

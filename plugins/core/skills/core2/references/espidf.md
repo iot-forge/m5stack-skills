@@ -120,6 +120,105 @@ quirk) — a BMI270 that reports zeros right after power-on is usually an
 init-sequence problem, not a wiring problem. Any of the drivers above
 handle this for you; hand-rolled register code frequently misses it.
 
+## Audio (NS4168 amp + SPM1423 mic) direct-I2S bring-up
+
+The high-level `bsp_audio_init()` from M5Stack's `Core2-for-AWS-IoT-Kit`
+BSP handles the traps below — reach for it first, and reach for
+M5Unified's `M5.Speaker` if the project can tolerate Arduino. If a user
+needs to drop below the BSP (custom sample rate, dynamic full-duplex,
+mixing multiple sources), the following are the specific things that go
+wrong. **All of them are observed during bring-up rather than documented
+in official M5Stack material** — verify against your specific board
+revision and ESP-IDF version before treating any single item as universal.
+
+### BSP entry points, for reference
+
+- `bsp_feature_enable(BSP_FEATURE_SPEAKER, true)` — turns the NS4168 amp
+  on via the AXP192 GPIO (see below).
+- `bsp_audio_init(&i2s_config)` — configures I2S_NUM_0 in STD full-duplex,
+  suitable for simultaneous playback (to the NS4168) and PDM capture (from
+  the SPM1423). If a design needs PDM RX plus STD TX in a non-full-duplex
+  configuration, or a different sample rate on each, bypass this and
+  configure the channels manually.
+
+### NS4168 needs `.invert_flags.ws_inv = true` on direct STD init
+
+When configuring `i2s_std_slot_config_t` manually (i.e. not through
+`bsp_audio_init`), set `.invert_flags.ws_inv = true`. Without it, the
+NS4168 receives audio in the wrong I2S slot for the way its MODE pin is
+strapped on this board, and the speaker plays silence — no error, just
+quiet. This is one of the most common "everything looks right and I hear
+nothing" failure modes when bypassing the BSP.
+
+### Pop-free enable/disable sequence
+
+The NS4168 clicks loudly if it's enabled while the I2S data line is idle
+or carrying garbage. Enable in this order:
+
+1. Configure and start the I2S channel with silence primed in the DMA
+   buffers (`i2s_channel_preload_data` with zeros, or a couple of ms of
+   silence written before the first real frame).
+2. Enable the amp via `bsp_feature_enable(BSP_FEATURE_SPEAKER, true)`.
+
+Disable in the reverse order — amp off first, then the I2S channel. If
+the channel is torn down while the amp is still hot, the DMA underrun on
+teardown produces a pop.
+
+### `auto_clear = true` doesn't clear the peripheral's internal FIFO
+
+Setting `chan_cfg.auto_clear = true` zero-fills the DMA buffers when the
+channel is disabled, but the I2S peripheral has its own internal FIFO
+that `auto_clear` does not touch. Disabling and re-enabling the channel
+plays whatever bytes were left in that FIFO before the freshly-zero'd DMA
+data reaches the pins — heard as a brief burst of stale audio on the next
+play/press. Options: stream silence between real audio without disabling
+the channel, or fully delete + recreate the channel rather than just
+disable + enable. See `references/peripherals.md`'s I2S section in the
+`esp32` chip skill for the chip-level version of this note.
+
+### AXP192 GPIO2 drives the speaker-amp enable (not an ESP32 GPIO)
+
+The NS4168 enable pin isn't wired to an ESP32 GPIO — it hangs off the
+AXP192's GPIO2 (register-level, not something `pinMode()`/`digitalWrite`
+can reach). Access pattern via raw AXP192 registers, from BSP source
+review:
+
+- Register **0x93** configures the GPIO's mode. GPIO2 defaults to
+  **open-drain output**. Set bits `[2:0]` to `0b000` (NMOS open-drain)
+  for driving the amp; the BSP writes this value at init.
+- Register **0x94**, bit **2**, is the GPIO2 output state. Write 1 to
+  enable the amp, 0 to disable.
+- The Core2 board has an **external pull-up on this line**, which is what
+  turns AXP192's open-drain output into an effective push-pull for the
+  NS4168 — don't try to reason about it as an isolated open-drain pin.
+
+Naming footgun in the BSP source: the C variable that actually controls
+this GPIO is named `led_gpio_value` in some revisions of
+`components/core2forAWS`, because the same register byte controls both
+the LED-bar rail and (via a different bit) the speaker on early Core2
+wiring. If you're reading BSP code and can't find the "speaker enable"
+variable, look for the LED-named one.
+
+Prefer `bsp_feature_enable(BSP_FEATURE_SPEAKER, ...)` in normal use; drop
+to raw AXP192 register writes only when specifically debugging why the
+BSP's toggle isn't taking effect, or on plain Core2 where the BSP isn't
+available at all.
+
+### GPIO0/GPIO34 are shared between STD full-duplex and PDM RX
+
+From `references/pinout.md`: G0 = I2S LRCK / PDM mic clock; G34 = PDM mic
+data. STD-mode playback uses G0 as WS, while PDM mic capture wants G0 as
+its clock — same pin, different peripheral role. That's why the BSP runs
+everything through one full-duplex I2S_NUM_0 STD configuration and uses
+the built-in slot separation, rather than trying to run STD TX on one
+controller and PDM RX on the other. If a design needs to switch between
+"loud playback with the mic off" and "listen-only PDM capture" modes,
+dynamically delete + re-create the I2S channel with different slot config
+between modes rather than trying to run both simultaneously on separate
+controllers. (Chip-level: PDM RX is only available on I2S_NUM_0 on
+classic ESP32 anyway — see the `esp32` chip skill's peripherals
+reference.)
+
 ## AWS-line-only: ATECC608B secure element
 
 I2C address 0x35. M5Stack's `Core2-for-AWS-IoT-Kit` repo bundles an

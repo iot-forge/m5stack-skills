@@ -166,6 +166,30 @@ Only present on Core2 For AWS and Core2 For AWS v1.3:
 - Larger "2.4G 3D antenna" than the plain line (both are still 2.4GHz-only,
   single-band).
 
+## Known gotchas — quick index
+
+Bring-up bugs that have been seen more than once, with pointers into where
+each is written up. If the user's symptom matches one of these, jump
+straight to the linked section instead of scanning the reference file
+top-to-bottom.
+
+| Symptom | Likely cause | Where it's covered |
+|---|---|---|
+| Speaker plays silence on direct I2S (bypassing the BSP) | Missing `.invert_flags.ws_inv = true` for NS4168 slot alignment | `references/espidf.md` audio section |
+| Loud pop when the amp turns on or off | Wrong enable/disable order between I2S channel and amp | `references/espidf.md` audio section |
+| Brief burst of stale audio on the next play after stop | I2S peripheral's internal FIFO not cleared by `auto_clear = true` | `references/espidf.md` audio section, plus the `esp32` chip skill's I2S notes |
+| `digitalWrite` on a "speaker enable pin" does nothing | NS4168 enable is on AXP192 GPIO2, not an ESP32 GPIO — needs register-level access | `references/espidf.md` audio section |
+| STD playback + PDM mic capture won't run on separate I2S controllers | G0 shared between the two roles; PDM RX is I2S_NUM_0-only on classic ESP32 | `references/espidf.md` audio section |
+| IMU code reads garbage / zeros / a constant | Wrong driver for this board's actual IMU chip (MPU6886 vs BMI270) | Hardware revisions table above, `references/espidf.md` IMU section |
+| AWS IoT rejects the ATECC608's factory device certificate | Factory cert is in Microchip's compressed format with an invalid date | AWS-line-specific hardware section above, `references/arduino.md` and `references/espidf.md` ATECC608 sections |
+| Analog reads return garbage after `WiFi.begin()` | The pin is on ADC2, which shares hardware with the WiFi radio | `esp32` chip skill's peripherals reference |
+| Board resets under load with backlight + WiFi + speaker | AXP192 rail brownout on the stock 500mAh battery | `references/arduino.md` common-bring-up-issues section |
+
+Not every audio/BSP quirk is in the field-observed set above yet — the
+audio section in `references/espidf.md` calls out that its contents come
+from bring-up rather than official docs. Treat this table as the fast-lookup
+path, not the full picture.
+
 ## Picking a development platform
 
 The Core2 family officially supports five workflows — more than most other

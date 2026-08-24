@@ -1,8 +1,12 @@
 # core2 — build notes
 
-Last verified: 2026-08-18 (initial build 2026-08-17; 2026-08-18 pass added
+Last verified: 2026-08-24 (initial build 2026-08-17; 2026-08-18 pass added
 the ESP-IDF IMU section, generalized the revision-disambiguation guidance,
-and added the original-AWS "EduKit" naming/EOL material)
+and added the original-AWS "EduKit" naming/EOL material; 2026-08-24 pass
+added a "Known gotchas — quick index" section to SKILL.md and an "Audio
+(NS4168 amp + SPM1423 mic) direct-I2S bring-up" section to
+`references/espidf.md`, both sourced from a single user's ESP-IDF audio
+bring-up session on a Core2 — see soft spots)
 
 Sources:
 - https://docs.m5stack.com/en/core/core2 (plain Core2 official spec page)
@@ -102,6 +106,29 @@ Sources:
   work for them, don't assume the skill's description of the problem is
   wrong before checking whether AWS IoT's registration API behavior has
   changed since.
+- **The 2026-08-24 audio bring-up section (`references/espidf.md`) is
+  entirely single-session-sourced.** All five items — the `ws_inv=true`
+  requirement, pop-free enable/disable ordering, `auto_clear` vs the
+  peripheral FIFO, the AXP192 GPIO2 speaker-enable protocol including the
+  `led_gpio_value` naming footgun, and the G0/G34 STD-vs-PDM conflict —
+  came from one user's ESP-IDF direct-I2S bring-up on a Core2. The section
+  itself flags this inline ("observed during bring-up rather than
+  documented in official M5Stack material"). Each item is individually
+  plausible and consistent with the general behavior of the parts (NS4168
+  MODE-strap slot selection, ESP-IDF I2S driver internals, AXP192
+  register layout), but none was re-verified this pass against the Core2
+  schematic, the current `Core2-for-AWS-IoT-Kit` BSP source, or a scope.
+  If a future maintainer can confirm each one against those sources,
+  upgrade the wording from "observed" to "confirmed against
+  [schematic/BSP]" — this is the highest-leverage improvement available
+  to the audio content.
+- The **Known gotchas — quick index** table in SKILL.md is a
+  fast-lookup surface, not new content — every row points at existing
+  writeups elsewhere in the skill or the `esp32` chip skill. Keep it in
+  sync when a linked section is renamed, moved, or removed. If the
+  next audio-bring-up pass replaces the observed-only material with
+  schematic-confirmed material, the table's copy stays valid; only the
+  section headings would need updating.
 
 ## Open questions
 
@@ -127,6 +154,24 @@ Sources:
   revision-identification trick without the actual VID/PID pairs being
   written down. Adding them would make the check copy-pasteable; they were
   not captured this pass.
+- **Audio bring-up items (2026-08-24 pass) need schematic/BSP
+  cross-check.** Specifically: confirm `.invert_flags.ws_inv = true`
+  against the NS4168 MODE-pin strap on both plain Core2 (v1.0/v1.1 vs
+  v1.3) and Core2 For AWS (original vs v1.3), since the amp's MODE
+  wiring is a per-board decision and could differ across revisions;
+  confirm that AXP192 GPIO2 (not some other AXP GPIO, and not an ESP32
+  GPIO) is the amp-enable line on all four revisions against each
+  board's main-board schematic; and confirm the `led_gpio_value` naming
+  quirk still exists in the current `Core2-for-AWS-IoT-Kit` BSP source
+  rather than only in an older revision the reporting user was reading.
+  Any of these turning out to be revision-dependent would mean a
+  per-revision table in the audio section rather than the current
+  single set of values.
+- Whether classic-ESP32 PDM RX really is I2S_NUM_0-only in current
+  ESP-IDF v5.x (referenced from both the `esp32` chip skill and the
+  Core2 audio section) — this is stated as a hardware/driver
+  restriction from the same bring-up session. Espressif's own I2S
+  driver docs should confirm or deny; not re-read this pass.
 
 ## Resolved
 

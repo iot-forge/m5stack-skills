@@ -33,15 +33,53 @@ DC motor speed control where you don't need MCPWM's extra features.
 
 ## I2S
 
-2 I2S controllers. Beyond standard stereo digital audio in/out (I2S
-mic/codec, speaker), the classic ESP32's I2S peripheral can also run in a
-parallel-bus mode — this is the mechanism ESP32-CAM-style modules (and any
-board pairing this chip with an OV2640/OV3660-class camera over an 8-bit or
-16-bit parallel interface) use to capture camera data, since this chip has
-no dedicated MIPI-CSI or DVP-specific camera controller the way P4 does.
-If a user is bringing up a parallel camera on a classic-ESP32 board, this
-is the peripheral to point them at (typically via the `esp32-camera`
-component rather than hand-rolling the I2S config).
+2 I2S controllers (`I2S_NUM_0`, `I2S_NUM_1`). Beyond standard stereo
+digital audio in/out (I2S mic/codec, speaker), the classic ESP32's I2S
+peripheral can also run in a parallel-bus mode — this is the mechanism
+ESP32-CAM-style modules (and any board pairing this chip with an
+OV2640/OV3660-class camera over an 8-bit or 16-bit parallel interface) use
+to capture camera data, since this chip has no dedicated MIPI-CSI or
+DVP-specific camera controller the way P4 does. If a user is bringing up
+a parallel camera on a classic-ESP32 board, this is the peripheral to
+point them at (typically via the `esp32-camera` component rather than
+hand-rolling the I2S config).
+
+### PDM RX is only on I2S_NUM_0
+
+PDM receive mode — used to talk to PDM digital microphones like the
+SPM1423 on Core2 — is wired only to controller 0 on classic ESP32.
+I2S_NUM_1 has no PDM RX path. If a design already uses I2S_NUM_0 for
+playback in STD mode and needs to add PDM mic capture, moving the mic to
+I2S_NUM_1 is not an option: the two roles have to share I2S_NUM_0, and
+the driver's channel handles have to be created/deleted dynamically when
+switching between playback and capture, or run through a full-duplex
+config. (This restriction was lifted on S3, where PDM RX works on either
+controller.)
+
+### 44.1kHz (and 22.05kHz, etc.) needs APLL
+
+The default I2S clock source (`I2S_CLK_SRC_DEFAULT`, derived from PLL_F160M)
+can hit integer-multiple sample rates cleanly (the 8/16/32/48kHz family)
+but produces audible drift on 44.1kHz and its multiples, because 44.1kHz
+isn't a clean divisor of 160MHz. Set `chan_cfg.clk_cfg.clk_src =
+I2S_CLK_SRC_APLL` for those rates. APLL is a shared resource — the second
+I2S controller can't independently choose its own APLL frequency at the
+same time, so plan around this if the same firmware needs to run two I2S
+ports at unrelated non-integer rates.
+
+### `auto_clear = true` clears DMA buffers, not the internal FIFO
+
+Setting `chan_cfg.auto_clear = true` on `i2s_chan_config_t` tells the
+driver to zero-fill DMA buffers when the channel is disabled — a common
+"pop-free stop" workaround. But it does **not** clear the I2S
+peripheral's own internal FIFO. If the channel is disabled mid-stream and
+then re-enabled, whatever bytes were sitting in that FIFO get shifted out
+first before the freshly-zero'd DMA buffers reach the pins, and the user
+hears a brief burst of stale audio on the next play. Workarounds: leave
+the channel enabled and stream silence between real audio, or explicitly
+delete → recreate the channel rather than just disable → enable. Observed
+across current ESP-IDF v5.x; confirm against your specific version before
+treating it as fixed.
 
 ## ADC, DAC, and touch — the ADC2/WiFi conflict
 
