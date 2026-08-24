@@ -1,11 +1,14 @@
 # esp32 (classic) — build notes
 
-Last verified: 2026-08-24 (initial build 2026-08-17; 2026-08-24 pass
-expanded `references/peripherals.md`'s I2S section with three items —
-PDM RX being I2S_NUM_0-only, APLL required for the 44.1kHz sample-rate
-family, and `auto_clear = true` clearing DMA buffers but not the
-peripheral's internal FIFO — sourced from a user's Core2 ESP-IDF audio
-bring-up session, see soft spots)
+Last verified: 2026-08-24 (initial build 2026-08-17; 2026-08-24 first
+pass added three chip-level I2S subsections — PDM RX being I2S_NUM_0-only,
+APLL required for 44.1 kHz sample-rate family, and `auto_clear = true`
+clearing DMA buffers but not the peripheral's internal FIFO — from a
+Core2 audio bring-up; 2026-08-24 second pass added a fourth subsection
+covering the classic-ESP32-only 8/16-bit MONO STD pair-swap quirk,
+with a direct quote from ESP-IDF v6.0.2's I2S API reference and a
+worked pre-swap fix example, alongside the note that PDM RX does not
+have the swap)
 Sources:
 - Espressif ESP32 Series datasheet (v5.3, PDF): https://documentation.espressif.com/esp32_datasheet_en.pdf
 - Espressif ESP32 Chip Revision v3.0 User Guide (PDF): https://documentation.espressif.com/esp32_chip_revision_v3_0_user_guide_en.pdf
@@ -45,17 +48,27 @@ Sources:
   for this chip) but M5Stack's actual use of it (if any) is unconfirmed —
   included as chip-capability context, not a claim about any specific
   M5Stack product using it.
-- **The three 2026-08-24 I2S subsections are single-session-sourced** from
-  the same user's Core2 ESP-IDF audio bring-up that produced the Core2
-  skill's audio section (see `docs/notes/core2.md`). Each is
-  chip-family-plausible — PDM RX being I2S_NUM_0-only is longstanding
-  classic-ESP32 folklore; APLL for 44.1kHz is a known consequence of
-  PLL_F160M's divisor structure; the `auto_clear`-vs-FIFO distinction
-  matches how the ESP-IDF I2S driver is structured (driver-owned DMA
-  memory vs. peripheral-internal FIFO). None re-verified this pass against
-  Espressif's I2S driver source or TRM. Confirming each against
-  Espressif's own docs would let the "Observed across current ESP-IDF
-  v5.x" hedge be dropped.
+- **The 2026-08-24 I2S subsections have mixed sourcing:**
+  - **8/16-bit MONO STD pair-swap** (added in the second pass) is
+    directly quoted from ESP-IDF v6.0.2's I2S API reference
+    (`docs/en/api-reference/peripherals/i2s.rst`, `.only:: esp32` STD
+    TX and RX subsections) with the ESP32-specific sample-transposition
+    table cited. Highest confidence of the four. The main risk is that
+    Espressif has been rewording driver docs across v5→v6; re-check the
+    paragraph if the docs URL 404s or the wording changes materially.
+  - **PDM RX only on I2S_NUM_0** is longstanding classic-ESP32 folklore
+    and consistent with the M5Stack reference driver's use of
+    `I2S_NUM_0` for the SPM1423, but not re-verified against the TRM
+    this pass. If Espressif documents this restriction anywhere in the
+    I2S driver reference, a citation would be worth adding.
+  - **APLL for 44.1 kHz** is a known consequence of PLL_F160M's
+    divisor structure; matches Espressif's clock-source guidance in
+    the I2S driver docs but not quoted directly.
+  - **`auto_clear` vs peripheral FIFO** matches the ESP-IDF I2S
+    driver's structural split between driver-owned DMA memory and
+    peripheral-internal FIFO, and was reproducible in field bring-up.
+    Not documented as such in ESP-IDF; still hedged as "observed
+    across current ESP-IDF v5.x."
 
 ## Open questions
 

@@ -2,11 +2,16 @@
 
 Last verified: 2026-08-24 (initial build 2026-08-17; 2026-08-18 pass added
 the ESP-IDF IMU section, generalized the revision-disambiguation guidance,
-and added the original-AWS "EduKit" naming/EOL material; 2026-08-24 pass
-added a "Known gotchas — quick index" section to SKILL.md and an "Audio
-(NS4168 amp + SPM1423 mic) direct-I2S bring-up" section to
-`references/espidf.md`, both sourced from a single user's ESP-IDF audio
-bring-up session on a Core2 — see soft spots)
+and added the original-AWS "EduKit" naming/EOL material; 2026-08-24 first
+pass added a "Known gotchas — quick index" table to SKILL.md and an
+"Audio (NS4168 amp + SPM1423 mic)" section to `references/espidf.md`
+sourced from a Core2 ESP-IDF audio bring-up; 2026-08-24 second pass
+replaced that audio section with a substantially better-sourced version
+— ESP-IDF I2S docs quoted for the pair-swap quirk, specific BSP source
+file cited for the `ws_inv=true` finding, M5Stack's own `microphone.c`
+cited for the SPM1423 RIGHT-slot fact, and working TX+PDM-RX skeletons
+included; SKILL.md quick-index table updated with the new symptoms and
+the AXP192 raw-register row dropped in favor of `bsp_feature_enable`)
 
 Sources:
 - https://docs.m5stack.com/en/core/core2 (plain Core2 official spec page)
@@ -106,29 +111,59 @@ Sources:
   work for them, don't assume the skill's description of the problem is
   wrong before checking whether AWS IoT's registration API behavior has
   changed since.
-- **The 2026-08-24 audio bring-up section (`references/espidf.md`) is
-  entirely single-session-sourced.** All five items — the `ws_inv=true`
-  requirement, pop-free enable/disable ordering, `auto_clear` vs the
-  peripheral FIFO, the AXP192 GPIO2 speaker-enable protocol including the
-  `led_gpio_value` naming footgun, and the G0/G34 STD-vs-PDM conflict —
-  came from one user's ESP-IDF direct-I2S bring-up on a Core2. The section
-  itself flags this inline ("observed during bring-up rather than
-  documented in official M5Stack material"). Each item is individually
-  plausible and consistent with the general behavior of the parts (NS4168
-  MODE-strap slot selection, ESP-IDF I2S driver internals, AXP192
-  register layout), but none was re-verified this pass against the Core2
-  schematic, the current `Core2-for-AWS-IoT-Kit` BSP source, or a scope.
-  If a future maintainer can confirm each one against those sources,
-  upgrade the wording from "observed" to "confirmed against
-  [schematic/BSP]" — this is the highest-leverage improvement available
-  to the audio content.
-- The **Known gotchas — quick index** table in SKILL.md is a
-  fast-lookup surface, not new content — every row points at existing
-  writeups elsewhere in the skill or the `esp32` chip skill. Keep it in
-  sync when a linked section is renamed, moved, or removed. If the
-  next audio-bring-up pass replaces the observed-only material with
-  schematic-confirmed material, the table's copy stays valid; only the
-  section headings would need updating.
+- **The 2026-08-24 audio section (`references/espidf.md`) is now
+  substantially better sourced than the first pass earlier the same day.**
+  Confidence per item:
+  - **Pair-swap on 8/16-bit MONO STD**: direct quote from ESP-IDF's own
+    I2S API reference (`docs/en/api-reference/peripherals/i2s.rst`,
+    `.only:: esp32` STD TX/RX subsections) — highest confidence, though
+    the ESP-IDF docs paragraph moves between versions and could be
+    reworded or clarified upstream. Chip-skill peripherals reference
+    carries the quote and a worked buffer example.
+  - **SPM1423 sits on the RIGHT PDM slot**: cross-referenced with
+    M5Stack's own `Core2-for-AWS-IoT-Kit/.../microphone.c`
+    (`I2S_CHANNEL_FMT_ALL_RIGHT` in the legacy driver API) — high
+    confidence, load-bearing on one file in one repo but that repo is
+    M5Stack's own reference driver.
+  - **`ws_inv = true` for NS4168 direct-STD-TX**: still observed
+    (bring-up + BSP source read of
+    `managed_components/espressif__m5stack_core_2/m5stack_core_2_idf5.c`).
+    Not in ESP-IDF or M5 docs. If a future pass has scope-level
+    confirmation of the NS4168 MODE-pin strap on each Core2 revision,
+    upgrade this from "discovered by reading the BSP" to "matches
+    schematic".
+  - **BSP not doing anything useful for audio** (`BSP_CAPS_AUDIO_MIC = 0`,
+    amp init assumes `esp_codec_dev` but NS4168 has no I2C surface):
+    checked against current BSP source. Could change in a BSP update, so
+    re-verify if the section starts looking wrong to a user.
+  - **APLL required for 44.1 kHz**: standard classic-ESP32 I2S clock-source
+    knowledge; cross-referenced in the `esp32` chip skill's I2S section.
+  - **Amp enable timing (20 ms after / 5 ms before)**: field-observed on
+    the reporter's Core2 unit. Reasonable starting point; the exact
+    numbers may vary by board revision and battery state. Flagged as
+    "safe starting point" rather than a hard spec.
+  - **G0 shared between I2S1 WS and PDM CLK; PDM RX on I2S_NUM_0 only**:
+    combined board-wiring fact (from `references/pinout.md`) and
+    chip-level fact (esp32 skill peripherals reference). High confidence.
+  - **No hardware high-pass filter on PDM RX / DC bias**: stated as
+    "v2-hardware-only feature". Consistent with what current ESP-IDF
+    docs say about PDM RX filtering on classic vs. later chips, but not
+    quoted verbatim this pass — flag if a user's actual DC-bias values
+    contradict this framing.
+
+  The pre-2026-08-24-second-pass items that were dropped (raw AXP192
+  registers 0x93/0x94 for speaker enable, the `led_gpio_value` naming
+  footgun in older BSP revisions) were removed because the new section
+  routes all amp-enable use through `bsp_feature_enable(BSP_FEATURE_SPEAKER,
+  ...)`, which is cleaner and less BSP-version-dependent. If someone
+  needs the raw-register path (debugging why `bsp_feature_enable` isn't
+  taking effect, or working on a plain Core2 with no BSP), the AXP192
+  datasheet is the canonical source — those details don't belong here.
+
+- The **Known gotchas — quick index** table in SKILL.md is a fast-lookup
+  surface, not new content — every row points at existing writeups
+  elsewhere in the skill or the `esp32` chip skill. Keep it in sync when
+  a linked section is renamed, moved, or removed.
 
 ## Open questions
 
@@ -154,24 +189,35 @@ Sources:
   revision-identification trick without the actual VID/PID pairs being
   written down. Adding them would make the check copy-pasteable; they were
   not captured this pass.
-- **Audio bring-up items (2026-08-24 pass) need schematic/BSP
-  cross-check.** Specifically: confirm `.invert_flags.ws_inv = true`
-  against the NS4168 MODE-pin strap on both plain Core2 (v1.0/v1.1 vs
-  v1.3) and Core2 For AWS (original vs v1.3), since the amp's MODE
-  wiring is a per-board decision and could differ across revisions;
-  confirm that AXP192 GPIO2 (not some other AXP GPIO, and not an ESP32
-  GPIO) is the amp-enable line on all four revisions against each
-  board's main-board schematic; and confirm the `led_gpio_value` naming
-  quirk still exists in the current `Core2-for-AWS-IoT-Kit` BSP source
-  rather than only in an older revision the reporting user was reading.
-  Any of these turning out to be revision-dependent would mean a
-  per-revision table in the audio section rather than the current
-  single set of values.
-- Whether classic-ESP32 PDM RX really is I2S_NUM_0-only in current
-  ESP-IDF v5.x (referenced from both the `esp32` chip skill and the
-  Core2 audio section) — this is stated as a hardware/driver
-  restriction from the same bring-up session. Espressif's own I2S
-  driver docs should confirm or deny; not re-read this pass.
+- **`ws_inv = true` for NS4168 direct STD TX** across revisions —
+  confirm against the NS4168 MODE-pin strap on all four Core2 revisions
+  (plain v1.0/v1.1 vs plain v1.3, AWS original vs AWS v1.3). The amp's
+  MODE wiring is a per-board decision, and the current section states
+  the requirement as universal based on one board plus BSP source. If
+  it turns out to be revision-dependent, the section needs a
+  per-revision table instead of a single value.
+- **AXP192 GPIO2 as the NS4168 SDMODE line across revisions** — the
+  section now routes through `bsp_feature_enable(BSP_FEATURE_SPEAKER,
+  ...)` so the raw GPIO identity is abstracted away, but if the BSP
+  ever adds direct-GPIO API surface or a user needs to bypass the BSP,
+  confirming AXP192 GPIO2 (not some other AXP GPIO, and not an ESP32
+  GPIO) is the correct line on each revision would let a raw-register
+  appendix be added.
+- **BSP `BSP_CAPS_AUDIO_MIC = 0` status** — currently stated as a fact.
+  If a future BSP release starts supporting the SPM1423 mic (adds PDM
+  RX plumbing and flips the cap), the section's opening framing ("if
+  you want I2S audio on Core2, you drive both channels directly")
+  needs updating.
+- **Amp enable/disable timing** (20 ms after start / 5 ms before stop)
+  — currently a "safe starting point" from one board. A quick per-revision
+  scope check would let those numbers be replaced with actual measurements
+  or removed if the enable/disable is fast enough that timing doesn't
+  matter.
+- **The pair-swap ESP-IDF docs paragraph** — quoted from IDF v6.0.2 in
+  the chip skill. Espressif has been rewording driver docs across the
+  v5→v6 transition; worth re-checking when the next long-term-support
+  IDF release lands whether the paragraph moved, got clarified, or
+  (unlikely but possible) the underlying behavior changed.
 
 ## Resolved
 

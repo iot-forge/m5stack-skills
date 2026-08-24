@@ -81,6 +81,85 @@ delete → recreate the channel rather than just disable → enable. Observed
 across current ESP-IDF v5.x; confirm against your specific version before
 treating it as fixed.
 
+### The 8/16-bit MONO STD pair-swap quirk (classic ESP32 only)
+
+On classic ESP32 specifically — **not** on S2/S3/C3/etc. — 8-bit and
+16-bit MONO I2S STD mode transposes every pair of samples between the
+software buffer and the wire. This is documented in ESP-IDF's own I2S
+API reference but easy to miss because it lives in a paragraph note
+under a table, not called out as an errata.
+
+Direct quote from IDF v6.0.2 `docs/en/api-reference/peripherals/i2s.rst`
+(the `.only:: esp32` STD TX subsection):
+
+> "for 8-bit and 16-bit mono modes, the real data on the line is
+> swapped. To get the correct data sequence, the writing buffer needs
+> to swap the data every two bytes."
+
+And on the RX side:
+
+> "for the 8-bit or 16-bit mono case, the data in buffer is swapped
+> every two data, so it may be necessary to manually swap the data
+> back to the correct order."
+
+The ESP32 table in that same section makes it concrete — a source buffer
+`[0x0001, 0x0002, 0x0003, 0x0004]` in MONO LEFT hits the wire as
+`[0x0002, 0x0001, 0x0004, 0x0003]`. Every S2/S3/C-series table on the
+same page shows the samples in order — this is a classic-ESP32-only
+wart.
+
+Two consequences worth knowing:
+
+1. **Straight-through pair transposition is mild for speech** —
+   consecutive samples are usually close in value and Nyquist artefacts
+   sit above hearing — so uncorrected code often "works" and passes the
+   ear test until you look at the waveform or feed it a pure tone.
+2. **If the source buffer's sample count is odd** and you loop it
+   (loop-pedal / sampler / drum machine / any hold-to-loop UX), the
+   pair-swap alignment shifts by one sample per loop pass. Odd-length
+   plays 1, 3, 5 land on one pair alignment; plays 2, 4, 6 land on the
+   other. Two alternating distortion profiles at ~sample-duration
+   period sound exactly like "every other loop iteration is
+   muffled/noisy" — extremely confusing to debug.
+
+**Fix**: pre-swap every pair of `int16` samples in the source buffer at
+load time, and truncate to an even frame count. The driver's on-wire
+swap then un-does your swap and the audio is faithful.
+
+```c
+#include "driver/i2s_std.h"
+
+/* Source: mono int16 PCM at 44.1 kHz, may have any length. */
+static void classic_esp32_mono_tx_prepare(int16_t *buf, size_t *nframes)
+{
+    /* Kill odd length first — an odd count is what turns the pair-swap
+     * quirk into the alternating-loop-iteration artefact. */
+    if (*nframes & 1) (*nframes)--;
+
+    /* Pre-swap consecutive int16 pairs. Driver swaps them back on the
+     * wire, so the transmitted stream matches the caller's intent. */
+    for (size_t i = 0; i + 1 < *nframes; i += 2) {
+        int16_t t = buf[i];
+        buf[i]     = buf[i + 1];
+        buf[i + 1] = t;
+    }
+}
+```
+
+**Alternative fix**: use `I2S_SLOT_MODE_STEREO` with a mono-duplicated
+buffer (`[S, S, S, S, ...]` interleaved). Stereo mode doesn't have the
+swap. Costs 2× buffer memory in exchange for not touching every sample.
+
+**PDM RX doesn't have the swap.** The same docs page's `.only:: esp32`
+PDM RX subsection shows samples land in the buffer in order for MONO —
+only STD mode does the transpose. So a board that records via PDM RX
+and plays back via STD TX (e.g. Core2, SPM1423 mic + NS4168 amp) is
+asymmetric: no swap on record, swap on playback. Very easy to
+misdiagnose as a recording-quality issue.
+
+Live docs (the paragraph moves between IDF versions but the behavior
+does not): https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/peripherals/i2s.html
+
 ## ADC, DAC, and touch — the ADC2/WiFi conflict
 
 Two SAR ADC units, 18 channels combined, 12-bit resolution:

@@ -175,20 +175,22 @@ top-to-bottom.
 
 | Symptom | Likely cause | Where it's covered |
 |---|---|---|
-| Speaker plays silence on direct I2S (bypassing the BSP) | Missing `.invert_flags.ws_inv = true` for NS4168 slot alignment | `references/espidf.md` audio section |
-| Loud pop when the amp turns on or off | Wrong enable/disable order between I2S channel and amp | `references/espidf.md` audio section |
-| Brief burst of stale audio on the next play after stop | I2S peripheral's internal FIFO not cleared by `auto_clear = true` | `references/espidf.md` audio section, plus the `esp32` chip skill's I2S notes |
-| `digitalWrite` on a "speaker enable pin" does nothing | NS4168 enable is on AXP192 GPIO2, not an ESP32 GPIO — needs register-level access | `references/espidf.md` audio section |
-| STD playback + PDM mic capture won't run on separate I2S controllers | G0 shared between the two roles; PDM RX is I2S_NUM_0-only on classic ESP32 | `references/espidf.md` audio section |
+| Speaker plays silence on direct I2S (bypassing the BSP) | Missing `.invert_flags.ws_inv = true` for NS4168 slot mapping | `references/espidf.md` audio section |
+| SPM1423 mic records silence or DC-only via `driver/i2s_pdm.h` | `I2S_PDM_RX_SLOT_DEFAULT_CONFIG` defaults to LEFT; SPM1423 drives RIGHT on Core2 | `references/espidf.md` audio section |
+| 16-bit MONO STD playback sounds muffled, or "every other loop pass is noisy" | Classic ESP32's STD TX transposes pairs of `int16` samples between buffer and wire; alternating loop artefact means odd-length source buffer | `references/espidf.md` audio section (pre-swap fix inline), plus the `esp32` chip skill's I2S notes |
+| Recorded audio sounds fine, but playing that same buffer back sounds wrong | PDM RX doesn't have the pair-swap; STD TX does — the two paths are asymmetric on classic ESP32 | `references/espidf.md` audio section, plus the `esp32` chip skill's I2S notes |
+| Loud pop when the amp turns on or off | Wrong sequencing between I2S TX and NS4168 SDMODE enable | `references/espidf.md` audio section (20 ms / 5 ms timing) |
+| Can't run playback and mic capture at the same time | G0 is shared between I2S1 WS (playback) and PDM CLK (record); enforce a REC/PLAY interlock | `references/espidf.md` audio section |
+| Recorded audio has a persistent DC bias | Classic ESP32's PDM RX has no hardware high-pass filter | `references/espidf.md` audio section |
+| Brief burst of stale audio on the next play after stop | `auto_clear = true` clears DMA buffers but not the peripheral's internal FIFO | `esp32` chip skill's peripherals reference |
 | IMU code reads garbage / zeros / a constant | Wrong driver for this board's actual IMU chip (MPU6886 vs BMI270) | Hardware revisions table above, `references/espidf.md` IMU section |
 | AWS IoT rejects the ATECC608's factory device certificate | Factory cert is in Microchip's compressed format with an invalid date | AWS-line-specific hardware section above, `references/arduino.md` and `references/espidf.md` ATECC608 sections |
 | Analog reads return garbage after `WiFi.begin()` | The pin is on ADC2, which shares hardware with the WiFi radio | `esp32` chip skill's peripherals reference |
 | Board resets under load with backlight + WiFi + speaker | AXP192 rail brownout on the stock 500mAh battery | `references/arduino.md` common-bring-up-issues section |
 
-Not every audio/BSP quirk is in the field-observed set above yet — the
-audio section in `references/espidf.md` calls out that its contents come
-from bring-up rather than official docs. Treat this table as the fast-lookup
-path, not the full picture.
+Treat this table as the fast-lookup path, not the full picture. The
+underlying sections carry the actual reasoning, sourcing (ESP-IDF docs,
+BSP source paths, M5Stack driver code), and working skeletons.
 
 ## Picking a development platform
 
