@@ -31,6 +31,35 @@ claude plugin install esp32-chips@m5stack
 
 You can also do this interactively from inside Claude Code with `/plugin`.
 
+### After installing into a running session, run `/reload-plugins`
+
+Installing a plugin into a session that was already open lands the files
+on disk but doesn't activate them — Claude won't see the new skills until
+the session reloads its plugin catalog. Check the install summary: if it
+says `Run /reload-plugins to activate.`, run that command inside Claude
+Code. It reloads plugins, skills, agents, hooks, and plugin MCP/LSP
+servers without restarting.
+
+```
+> claude plugin install core@m5stack
+Installed core@m5stack. Run /reload-plugins to activate.
+> /reload-plugins
+```
+
+Sessions launched *after* the install (whether `claude` or `claude -c`)
+pick the new plugin up at startup — no reload needed. It's specifically
+the mid-session install that requires it.
+
+If `/reload-plugins` warns about re-reading the current conversation,
+rerun as `/reload-plugins --force`. Note that the reload summary's skills
+count only counts `commands/` directories, so it can report `0 skills`
+even when your skill did load — verify by asking a real hardware
+question and watching whether the matching skill triggers, or checking
+`/plugin` for the enabled state.
+
+Sources: https://code.claude.com/docs/en/plugins ·
+https://code.claude.com/docs/en/discover-plugins
+
 **Install `esp32-chips` alongside any board plugin.** The board skills
 deliberately don't repeat chip-level content (peripherals, sleep modes,
 PSRAM config, USB controllers, radio coexistence) — they point into the
@@ -54,6 +83,11 @@ Or `/plugin marketplace update` then `/plugin update` inside a session.
 Claude Code also refreshes marketplaces in the background, so step 1 often
 happens on its own — step 2 is what actually pulls new skill content onto
 your machine.
+
+**Run `/reload-plugins` after `plugin update`**, same as after install into
+a running session. The new skill content is on disk immediately, but the
+running session keeps the previously-loaded catalog until the reload runs.
+No restart needed.
 
 **New plugins are never installed automatically.** When a new board family
 lands here, `marketplace update` makes it *visible*, and you install it

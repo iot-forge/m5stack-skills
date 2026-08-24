@@ -166,6 +166,23 @@ claude plugin marketplace add ./m5stack-skills
 claude plugin install cardputer@m5stack
 ```
 
+**Run `/reload-plugins` after installing into an already-running session.**
+Files land on disk, but the session's plugin catalog was loaded at
+process start — the new skill won't trigger until the reload picks it up.
+The install summary tells you when this is needed (`Run /reload-plugins to
+activate.`); running it refreshes plugins, skills, agents, hooks, and
+plugin MCP/LSP servers without restarting. Sessions launched *after* the
+install pick it up on their own — `claude` and `claude -c` behave the
+same here. This is a per-session reload, not a `-c`-specific gap.
+
+Same after any edit while iterating: re-install (or `claude plugin update
+<name>@m5stack`) and then `/reload-plugins` in your test session. If the
+reload warns about re-reading the conversation, rerun as
+`/reload-plugins --force`. Heads up: the reload summary's skills count
+only counts `commands/` directories, so it can report `0 skills` even
+when the skill actually reloaded — don't diagnose failure from that
+number.
+
 Then check that `/plugin` lists the skills, `/skills` shows them enabled,
 and — the part that actually matters — that asking a real question about
 the board pulls the right skill in and gets the pinout right.
