@@ -56,16 +56,36 @@ switching between playback and capture, or run through a full-duplex
 config. (This restriction was lifted on S3, where PDM RX works on either
 controller.)
 
-### 44.1kHz (and 22.05kHz, etc.) needs APLL
+### 44.1kHz (and 22.05kHz, etc.) needs APLL for STD-mode audio out
 
-The default I2S clock source (`I2S_CLK_SRC_DEFAULT`, derived from PLL_F160M)
-can hit integer-multiple sample rates cleanly (the 8/16/32/48kHz family)
-but produces audible drift on 44.1kHz and its multiples, because 44.1kHz
-isn't a clean divisor of 160MHz. Set `chan_cfg.clk_cfg.clk_src =
-I2S_CLK_SRC_APLL` for those rates. APLL is a shared resource — the second
-I2S controller can't independently choose its own APLL frequency at the
-same time, so plan around this if the same firmware needs to run two I2S
-ports at unrelated non-integer rates.
+The default I2S clock source (`I2S_CLK_SRC_DEFAULT`, derived from
+PLL_F160M) can hit integer-multiple sample rates cleanly (the
+8/16/32/48kHz family) but produces audible drift on 44.1kHz and its
+multiples in STD mode, because 44.1kHz isn't a clean divisor of 160MHz.
+Set `chan_cfg.clk_cfg.clk_src = I2S_CLK_SRC_APLL` for those rates on
+STD TX to a codec or amp. APLL is a shared resource — the second I2S
+controller can't independently choose its own APLL frequency at the
+same time, so plan around this if the same firmware needs to run two
+I2S ports at unrelated non-integer rates.
+
+PDM RX is a different case — see the next subsection.
+
+### APLL vs PLL_160M choice for I2S — empirical, not always the "obvious" pick
+
+APLL is theoretically the better audio clock (finer resolution, less
+jitter — Espressif's own docs say "clock jitter is eliminated with
+APLL"). But in practice, some board-specific PDM RX paths work
+noticeably better with `I2S_CLK_SRC_PLL_160M`. M5Stack's M5Unified
+library, which has to work well across their whole classic-ESP32
+lineup, explicitly ships `PLL_160M` for PDM RX (see
+`src/utility/Mic_Class.cpp`) with `mclk_multiple = 128`. Their
+published choice trumps the general "APLL is cleaner" rule for
+board-level bring-up.
+
+Rule of thumb: **APLL for STD TX to a codec/amp**, **PLL_160M for PDM
+RX**, unless you have a specific reason to override. And if a board
+skill has already been written for a specific product, follow that
+skill's recommendation over this general rule.
 
 ### `auto_clear = true` clears DMA buffers, not the internal FIFO
 

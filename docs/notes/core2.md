@@ -1,6 +1,6 @@
 # core2 — build notes
 
-Last verified: 2026-08-24 (initial build 2026-08-17; 2026-08-18 pass added
+Last verified: 2026-08-25 (initial build 2026-08-17; 2026-08-18 pass added
 the ESP-IDF IMU section, generalized the revision-disambiguation guidance,
 and added the original-AWS "EduKit" naming/EOL material; 2026-08-24 first
 pass added a "Known gotchas — quick index" table to SKILL.md and an
@@ -10,8 +10,27 @@ replaced that audio section with a substantially better-sourced version
 — ESP-IDF I2S docs quoted for the pair-swap quirk, specific BSP source
 file cited for the `ws_inv=true` finding, M5Stack's own `microphone.c`
 cited for the SPM1423 RIGHT-slot fact, and working TX+PDM-RX skeletons
-included; SKILL.md quick-index table updated with the new symptoms and
-the AXP192 raw-register row dropped in favor of `bsp_feature_enable`)
+included; SKILL.md quick-index table updated and the AXP192 raw-register
+row dropped in favor of `bsp_feature_enable`; 2026-08-24 third pass added
+four bullets to the audio section — the SPM1423 SNR limit and M5Unified's
+16× magnification workaround, the PDM-RX-should-use-PLL_160M-not-APLL
+rule (with `mclk_multiple = 128`) cross-referenced into an equivalent
+new subsection in the `esp32` chip skill, and the LCD-backlight-coupling
+mitigation via direct AXP192 DCDC3 disable with a working code snippet;
+existing APLL bullet narrowed to STD TX only; PDM RX skeleton corrected;
+Known-gotchas table extended with mic-SNR, backlight-noise, and
+APLL-vs-PLL_160M rows; 2026-08-25 fourth pass added an "SPM1423 mic:
+set expectations before firmware work" section to SKILL.md — the mic
+is demonstration-grade, recommend an external I²S mic for anything
+serious, with language patterns for the design-stage conversation; and
+added an "SPM1423 noise floor: coupling paths and mitigation ladder"
+subsection to the espidf.md audio section — six-source coupling table
+(die, DCDC3, LDO2, USB VBUS, LCD SPI, GPIO0-layout) plus a numbered
+eight-layer mitigation ladder; also documented the
+`bsp_display_brightness_init()` misnaming — it configures the whole
+AXP192 including GPIO2 (NS4168 amp EN), so skipping
+`bsp_display_start()` to reduce noise silently kills the speaker
+unless the init call is made explicitly)
 
 Sources:
 - https://docs.m5stack.com/en/core/core2 (plain Core2 official spec page)
@@ -150,6 +169,89 @@ Sources:
     docs say about PDM RX filtering on classic vs. later chips, but not
     quoted verbatim this pass — flag if a user's actual DC-bias values
     contradict this framing.
+  - **SPM1423 poor SNR + M5Unified's 16× software magnification default**
+    (added in the third pass): cross-referenced against M5Unified's
+    `src/utility/Mic_Class.cpp` (16× default) plus community consensus
+    on M5Stack forums that the built-in mic is quiet and hissy. High
+    confidence on the workaround — M5Stack's own library ships it. The
+    "hardware limitation vs. driver bug" framing rests on that same
+    library choosing to work around it in software rather than fix it
+    at driver-init time, which is inference; fine to state as-is.
+  - **PDM RX should use `PLL_160M` + `mclk_multiple = 128`, not APLL**
+    (added in the third pass): cross-referenced against M5Unified's
+    `Mic_Class.cpp`, which explicitly picks this combo for Core2. High
+    confidence — M5Stack's own library making the choice for their own
+    hardware. The chip-level `esp32` skill carries the same rule of
+    thumb in a new "APLL vs PLL_160M choice for I2S" subsection; both
+    note that specific product skills override the general "APLL is
+    always cleaner" rule.
+  - **LCD backlight coupling via AXP192 DCDC3** (added in the third
+    pass): rail identity (DCDC3 = LCD backlight) is per the Core2
+    schematic; register `0x12` bit 1 as the DCDC3 enable is per the
+    AXP192 datasheet; the observation that `bsp_display_brightness_set(0)`
+    only lowers the voltage register `0x27` without stopping switching
+    came from BSP source reading during bring-up. The "whether this is
+    your dominant noise source is board-specific and often marginal"
+    hedge is load-bearing — one bring-up report said it wasn't the
+    smoking gun on their unit, so don't oversell the fix's impact when
+    citing it to a user.
+  - **SPM1423 expectations section + mitigation ladder** (added in the
+    fourth pass, 2026-08-25). Confidence per item in the ladder:
+    - **Software gain 8–16×**: cross-referenced against M5Unified
+      `Mic_Class.cpp`. High confidence.
+    - **DC removal**: consistent with the "no hardware HPF on classic
+      ESP32 PDM RX" chip-level fact already in the section; standard
+      audio-processing move. High confidence.
+    - **5 ms fade in/out**: standard segment-boundary practice; fine.
+    - **DCDC3 disable** (backlight): as noted above — cheap, correct,
+      may not dominate.
+    - **LDO2 disable** (touch/panel/SD): rail identity is per Core2
+      schematic; register `0x12` bit 2 is per AXP192 datasheet. That
+      LDO2 feeds touch **and** LCD panel **and** SD together is the
+      claim most worth verifying — schematic supports it, and it
+      matches the "full UI blackout" trade-off. Session evidence
+      (below) confirms clearing LDO2 does audibly change the noise
+      pattern.
+    - **Skip `bsp_display_start()`**: BSP-behavior claim from source
+      review. Load-bearing on the paired `bsp_display_brightness_init()`
+      misnaming — see next bullet.
+    - **Run on battery, not USB**: field-observed on the reporter's
+      unit — unplugging USB-C audibly changed the noise pattern with
+      the same firmware running. Not universally true across every
+      board, but the mechanism (VBUS ripple coupling into internal
+      rails via DCDC1) is plausible.
+    - **PDM PLL_160M + `mclk_multiple = 128`**: same M5Unified
+      citation as elsewhere.
+  - **`bsp_display_brightness_init()` misnaming** (added in the
+    fourth pass): from BSP source review — the function configures
+    GPIO1/GPIO2 direction, DCDC3/LDO2/LDO3 enables, ESP core voltage,
+    ADC, PEK, and VBUS limit. That AXP192 GPIO2 is the NS4168 amp EN
+    pin and needs its direction set to output before
+    `bsp_feature_enable(BSP_FEATURE_SPEAKER, ...)` will actually
+    drive it is the load-bearing chain. Consistent with the earlier
+    `ws_inv=true` finding — both come from reading
+    `managed_components/espressif__m5stack_core_2/m5stack_core_2_idf5.c`.
+    If the BSP is refactored (say, to split GPIO configuration out of
+    `bsp_display_brightness_init` into its own function), the
+    section's exact wording needs updating.
+
+## Session evidence backing the noise-floor material
+
+- User's Core2-For-AWS with LCD backlight OFF (DCDC3 cleared), LCD
+  panel OFF, FT6336U touch OFF (LDO2 cleared), no LVGL running, no
+  SD, no I²C polling → noise still audible; the pattern only
+  changed. This is the primary evidence for the "hard ceiling"
+  framing in the SKILL.md expectations section.
+- Unplugging the USB-C cable audibly changed the noise pattern in
+  the same firmware run, with the ESP32 continuing to run on
+  battery. Basis for calling out USB VBUS/DCDC1 as an independent
+  coupling path in the ladder.
+- Session came from a Core2 sampler / loop-pedal bring-up; the
+  reporter has been reading the BSP source (`m5stack_core_2_idf5.c`)
+  and cross-referencing M5Unified's `Mic_Class.cpp` and the AXP192
+  datasheet. That combined provenance is what upgraded the audio
+  content out of single-observation status into the mixed-confidence
+  state documented per item above.
 
   The pre-2026-08-24-second-pass items that were dropped (raw AXP192
   registers 0x93/0x94 for speaker enable, the `led_gpio_value` naming

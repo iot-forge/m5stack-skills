@@ -8,7 +8,11 @@ Core2 audio bring-up; 2026-08-24 second pass added a fourth subsection
 covering the classic-ESP32-only 8/16-bit MONO STD pair-swap quirk,
 with a direct quote from ESP-IDF v6.0.2's I2S API reference and a
 worked pre-swap fix example, alongside the note that PDM RX does not
-have the swap)
+have the swap; 2026-08-24 third pass narrowed the APLL-for-44.1-kHz
+subsection to STD-mode audio out specifically and added an "APLL vs
+PLL_160M choice for I2S" subsection stating the empirical rule that
+PDM RX often works better with `PLL_160M`, citing M5Unified's
+`Mic_Class.cpp` as the reference implementation)
 Sources:
 - Espressif ESP32 Series datasheet (v5.3, PDF): https://documentation.espressif.com/esp32_datasheet_en.pdf
 - Espressif ESP32 Chip Revision v3.0 User Guide (PDF): https://documentation.espressif.com/esp32_chip_revision_v3_0_user_guide_en.pdf
@@ -69,6 +73,17 @@ Sources:
     peripheral-internal FIFO, and was reproducible in field bring-up.
     Not documented as such in ESP-IDF; still hedged as "observed
     across current ESP-IDF v5.x."
+  - **APLL-for-STD-TX / PLL_160M-for-PDM-RX rule of thumb** (added
+    third pass) is sourced from M5Unified's `src/utility/Mic_Class.cpp`
+    — M5Stack's own library, which has to work across their whole
+    classic-ESP32 lineup, ships `PLL_160M` + `mclk_multiple = 128` for
+    PDM RX. That's a strong empirical signal but not a chip-level
+    mechanism explanation; the subsection deliberately frames it as
+    empirical rather than trying to derive from clock-tree math (which
+    would suggest APLL is always cleaner — and it isn't, for this
+    path). Espressif's own I2S driver docs don't spell this out;
+    stating anything more concrete would need TRM-level analysis of
+    how the PDM downsampler interacts with the two clock sources.
 
 ## Open questions
 

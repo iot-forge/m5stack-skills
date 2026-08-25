@@ -170,15 +170,164 @@ rather than compile-time errors:
   default macro or you're sampling the untethered half of the stream
   and getting silence/DC only.
 
-- **APLL is required for 44.1 kHz.** Set `clk_cfg.clk_src =
-  I2S_CLK_SRC_APLL` on both TX and RX. Only one APLL exists on classic
-  ESP32; both channels share it if they run at the same rate. Fine
-  when REC and PLAY are mutually exclusive.
+- **SPM1423 has poor SNR — this is a hardware limitation, not a
+  driver bug.** Community consensus (M5Stack forums) and M5Stack's own
+  reference library both agree the built-in mic is quiet and hissy.
+  M5Unified's `Mic_Class` defaults on Core2 apply **16× software
+  magnification** (`magnification = 16`), and there's an optional
+  first-order IIR noise filter. Without the gain, the signal is buried
+  in the noise floor; with 8–16× multiplication + saturating clip to
+  `int16`, voice becomes clearly audible. It doesn't reduce absolute
+  noise — it lifts the actual signal over it. Apply gain in the
+  record path or post-process the WAV; either works.
+
+- **For PDM RX use `I2S_CLK_SRC_PLL_160M`, not `I2S_CLK_SRC_APLL`.**
+  General ESP32 audio wisdom says APLL is cleaner (lower jitter), but
+  M5Unified's proven config specifically ships `PLL_160M` for the
+  Core2 PDM path (see `src/utility/Mic_Class.cpp`) — an empirical
+  result across M5Stack's product line. Don't override to APLL for RX
+  even though it seems like the "obvious" better choice. Set
+  `mclk_multiple = I2S_MCLK_MULTIPLE_128` (not 256) to match. **TX
+  still uses APLL** — the NS4168 amp benefits from APLL's tunability
+  at 44.1 kHz. See the `esp32` chip skill's peripherals reference for
+  the chip-level version of this rule of thumb.
+
+- **LCD backlight coupling during record — kill AXP192 DCDC3
+  directly, not `bsp_display_brightness_set(0)`.** On Core2 the
+  backlight rail is AXP192 DCDC3 (per schematic). The BSP's
+  `bsp_display_brightness_set(0)` only lowers the DCDC3 voltage
+  register (0x27) to ~2.95 V — DCDC3 keeps switching and keeps
+  radiating. To actually stop the buck's switching activity (and its
+  coupling into the mic bias) you have to clear the DCDC3 enable bit
+  in AXP192 register `0x12`. Whether this is your dominant noise
+  source is board-specific and often marginal (in one sampler
+  bring-up it wasn't the smoking gun), but it's a cheap, correct
+  thing to do during record. The BSP doesn't expose a rail-enable API
+  for DCDC3, so use `bsp_i2c_get_handle()` to talk to the AXP
+  directly:
+
+  ```c
+  #include "driver/i2c_master.h"
+  #include "bsp/esp-bsp.h"
+
+  #define AXP192_I2C_ADDR        0x34
+  #define AXP192_REG_DCDC_LDO_EN 0x12
+  #define AXP192_DCDC3_EN_BIT    (1u << 1)
+
+  static i2c_master_dev_handle_t s_axp;
+
+  static esp_err_t axp192_dcdc3_set(bool enable)
+  {
+      if (!s_axp) {
+          i2c_device_config_t cfg = {
+              .dev_addr_length = I2C_ADDR_BIT_LEN_7,
+              .device_address  = AXP192_I2C_ADDR,
+              .scl_speed_hz    = 400000,
+          };
+          ESP_RETURN_ON_ERROR(
+              i2c_master_bus_add_device(bsp_i2c_get_handle(), &cfg, &s_axp),
+              "axp", "add device");
+      }
+      uint8_t reg = AXP192_REG_DCDC_LDO_EN, val = 0;
+      ESP_RETURN_ON_ERROR(
+          i2c_master_transmit_receive(s_axp, &reg, 1, &val, 1, 1000),
+          "axp", "read");
+      val = enable ? (val | AXP192_DCDC3_EN_BIT)
+                   : (val & ~AXP192_DCDC3_EN_BIT);
+      uint8_t wr[2] = {AXP192_REG_DCDC_LDO_EN, val};
+      return i2c_master_transmit(s_axp, wr, 2, 1000);
+  }
+  ```
+
+  Voltage register `0x27` is untouched, so when you re-enable DCDC3
+  the backlight resumes at whatever `bsp_display_backlight_on()` set
+  at boot.
 
 - **NS4168 amp enable sequence** (AXP192 GPIO2 = high → amp on):
   assert **after** I2S TX is producing samples, deassert **before**
   stopping I2S. Otherwise pop on power-up/down. A 20 ms delay after
   amp-on and 5 ms before amp-off is a safe starting point.
+
+- **`bsp_display_brightness_init()` is misnamed — call it even if you
+  skip the display.** From BSP source review
+  (`managed_components/espressif__m5stack_core_2/m5stack_core_2_idf5.c`),
+  the function is the AXP192 configuration entry point for the whole
+  board — it sets GPIO1/GPIO2 direction, DCDC3/LDO2/LDO3 enables, the
+  ESP core voltage rail, ADC config, PEK behavior, and the VBUS input
+  limit. AXP192 GPIO2 is the NS4168 amp EN pin, so if you skip
+  `bsp_display_start()` to reduce mic-side noise (see the mitigation
+  ladder below) but still want playback, you **must** call
+  `bsp_display_brightness_init()` explicitly — otherwise GPIO2 stays
+  as input, `bsp_feature_enable(BSP_FEATURE_SPEAKER, true)` toggles a
+  pin that isn't driving anything, and the speaker is dead-silent
+  with no error surface.
+
+## SPM1423 noise floor: coupling paths and mitigation ladder
+
+The section above covers direct playback/capture correctness. Whether
+the recording *sounds acceptable* is a separate problem — the SPM1423
+is a demonstration-grade mic and has a hard noise-floor ceiling that
+firmware cannot cross. Set expectations at design time (see the
+"SPM1423 mic: set expectations" section in `SKILL.md`) and then apply
+as many layers of the ladder below as the application can tolerate.
+
+### Coupling paths, ordered by empirical impact
+
+Each source is additive and independent — killing one changes the
+pattern but leaves the rest.
+
+| Source | How to test it's contributing | Rail / signal |
+|---|---|---|
+| SPM1423 die noise floor | Cannot be tested away — always present | inherent to the part |
+| AXP192 DCDC3 (LCD backlight) | Noise drops when brightness = 0 and DCDC3 enable bit is cleared; voltage-only dim leaves the buck switching | reg `0x12` bit 1 |
+| FT6336U capacitive touch scanner | Noise pattern changes when LDO2 (touch + LCD panel VCC) is cleared | reg `0x12` bit 2 |
+| USB-C power (VBUS ripple) | Noise pattern audibly changes when the USB-C cable is unplugged — proves power delivery is a coupling path even when the ESP32 continues running on battery | VBUS / DCDC1 |
+| LCD panel refresh / SPI traffic | Noise gains a periodic component when LVGL is running vs. panel depowered | LDO2 + SPI |
+| PDM CLK on GPIO0 | GPIO0 is a strapping pin sitting next to power rails; coupling is on the PCB itself | intrinsic to the board |
+
+### Mitigation ladder
+
+Present these as layers. Each shaves a few dB; make clear to the user
+that the ceiling stays hard.
+
+1. **Software gain 8–16× in the PDM read path** (`v = sample *
+   RX_GAIN` with `int16` saturating clamp). Lifts voice above the
+   floor without reducing absolute noise. Cheapest win. Matches
+   M5Unified's `Mic_Class` 16× default (see the earlier bullet).
+2. **DC removal** — subtract the buffer mean. PDM2PCM on classic
+   ESP32 has no hardware HPF; leftover DC drifts the amp bias during
+   playback of the same buffer.
+3. **5 ms fade in/out at every recorded segment boundary.** Kills
+   click artefacts perceived as noise (they're actually step
+   discontinuities at buffer edges).
+4. **Clear AXP192 DCDC3 enable bit before recording** (reg `0x12` bit
+   1) — see the "LCD backlight coupling" bullet above for the code.
+   `bsp_display_brightness_set(0)` alone only lowers the voltage
+   register; the buck keeps switching.
+5. **Clear AXP192 LDO2 enable bit** (reg `0x12` bit 2) if the app can
+   survive with **no LCD, no touch, and no SD** — LDO2 feeds all
+   three. Same `axp192_dcdc3_set`-shaped I²C helper, different bit.
+   Trade cost: full UI blackout.
+6. **Skip `bsp_display_start()` entirely** — no LVGL task, no
+   periodic LCD SPI DMA, no FT6336U I²C polling. Trade cost: no
+   display at all, headless-only operation. **But still call
+   `bsp_display_brightness_init()`** or the NS4168 amp EN pin floats
+   (see the earlier bullet).
+7. **Run on battery, not USB** — reduces VBUS ripple contribution.
+   Trade cost: user has to unplug during use.
+8. **PDM RX clock config**: 44.1 kHz + `I2S_CLK_SRC_PLL_160M` +
+   `mclk_multiple = I2S_MCLK_MULTIPLE_128` (matches M5Unified). Do
+   not switch to APLL for RX — empirically worse on this board
+   despite the general "APLL is cleaner" rule. See the earlier
+   PDM RX skeleton and the `esp32` chip skill's "APLL vs PLL_160M"
+   subsection.
+
+Layers 1–3 are cheap and always worth applying. Layer 4 is cheap and
+correct but may or may not be the dominant noise source on a given
+unit (one bring-up report on a Core2 For AWS said clearing DCDC3
+wasn't the smoking gun — the noise pattern changed but total energy
+did not drop to silence). Layers 5–7 have real UX cost — trade them
+in only if the application can survive without touch/display/USB.
 
 ### Minimal TX skeleton (classic-ESP32-aware, mono pair-swap fix inline)
 
@@ -249,8 +398,11 @@ static esp_err_t rx_open(void)
         .gpio_cfg = { .clk = GPIO_NUM_0, .din = GPIO_NUM_34,
                       .invert_flags = { .clk_inv = 0 } },
     };
-    p.clk_cfg.clk_src    = I2S_CLK_SRC_APLL;
-    p.slot_cfg.slot_mask = I2S_PDM_SLOT_RIGHT;   /* SPM1423 drives right */
+    /* PLL_160M + mclk_multiple = 128: M5Unified's Mic_Class ships this
+     * combo for Core2 PDM RX; APLL is empirically worse here. */
+    p.clk_cfg.clk_src       = I2S_CLK_SRC_PLL_160M;
+    p.clk_cfg.mclk_multiple = I2S_MCLK_MULTIPLE_128;
+    p.slot_cfg.slot_mask    = I2S_PDM_SLOT_RIGHT;   /* SPM1423 drives right */
 
     ESP_ERROR_CHECK(i2s_channel_init_pdm_rx_mode(s_rx, &p));
     ESP_ERROR_CHECK(i2s_channel_enable(s_rx));

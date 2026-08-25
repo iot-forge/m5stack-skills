@@ -166,6 +166,43 @@ Only present on Core2 For AWS and Core2 For AWS v1.3:
 - Larger "2.4G 3D antenna" than the plain line (both are still 2.4GHz-only,
   single-band).
 
+## SPM1423 mic: set expectations before firmware work
+
+The Core2's built-in SPM1423 PDM mic is a **demonstration-grade part,
+not a recording-grade one.** Multiple independent noise sources couple
+into it (backlight rail, touch scanner, USB VBUS ripple, LCD SPI
+traffic, PCB layout around the PDM clock pin) and no combination of
+firmware fixes fully silences them — mitigation shaves a few dB per
+layer and the ceiling stays hard. Have this conversation at design time,
+not after two weeks of firmware bring-up.
+
+**If the user's requirement is any of** — clean voice recording for
+transcription / ASR, music or sample capture with dynamic range,
+low-noise ambient monitoring, or anything they'd describe as "studio" or
+"clean" — recommend an **external I²S mic (SPH0645, INMP441) or an
+ES7210 codec dev module** wired to a Grove or M-BUS port before firmware
+work starts. Don't promise "we'll clean it up in software."
+
+**What the internal mic is fine for:** wake-word gate, sound-presence
+detector, tap/knock recognition, VU-meter demos, gesture triggers where
+"sound level > threshold" is the only criterion.
+
+Language to use with users:
+
+- "We can reduce the noise floor by X–Y dB" ✅ — honest, quantifiable.
+- "The mic is best used as a level/trigger sensor rather than a
+  recorder" ✅.
+- "Even fully depowering the screen and touch leaves audible noise —
+  the pattern changes but the total energy does not drop to silence" ✅.
+- "We can make it clean" ❌ — will fail.
+- "Firmware fixes will match an external mic" ❌ — will fail.
+- "Recording quality is fine for voice/music/anything performative" ❌
+  — sets up disappointment.
+
+`references/espidf.md`'s audio section carries the mitigation ladder
+(8 layers, each shaving a few dB, ordered by empirical impact) and the
+implementation-time gotchas.
+
 ## Known gotchas — quick index
 
 Bring-up bugs that have been seen more than once, with pointers into where
@@ -177,6 +214,11 @@ top-to-bottom.
 |---|---|---|
 | Speaker plays silence on direct I2S (bypassing the BSP) | Missing `.invert_flags.ws_inv = true` for NS4168 slot mapping | `references/espidf.md` audio section |
 | SPM1423 mic records silence or DC-only via `driver/i2s_pdm.h` | `I2S_PDM_RX_SLOT_DEFAULT_CONFIG` defaults to LEFT; SPM1423 drives RIGHT on Core2 | `references/espidf.md` audio section |
+| SPM1423 records real audio but everything sounds quiet, buried in hiss | Hardware SNR limit; M5Unified applies 16× software magnification by default | `references/espidf.md` audio section |
+| User wants "clean" voice/music recording from the built-in mic | SPM1423 is demonstration-grade; multiple independent coupling paths, no firmware fix reaches "clean" — recommend an external I²S mic instead | "SPM1423 mic: set expectations" section above |
+| Skipping `bsp_display_start()` to reduce mic noise kills the speaker | `bsp_display_brightness_init()` is misnamed — it configures the whole AXP192 including GPIO2 (NS4168 amp EN); call it explicitly even if you skip the display | `references/espidf.md` audio section |
+| PDM RX at 44.1 kHz sounds worse with APLL than with `PLL_160M` | Board-specific empirical result — M5Unified ships `PLL_160M` + `mclk_multiple = 128` for Core2 PDM RX, not APLL | `references/espidf.md` audio section, plus the `esp32` chip skill's I2S notes |
+| Mic capture picks up whine/buzz that tracks display backlight | `bsp_display_brightness_set(0)` lowers DCDC3 voltage but doesn't stop switching; clear the DCDC3 enable bit (AXP192 reg 0x12 bit 1) to actually kill the rail | `references/espidf.md` audio section |
 | 16-bit MONO STD playback sounds muffled, or "every other loop pass is noisy" | Classic ESP32's STD TX transposes pairs of `int16` samples between buffer and wire; alternating loop artefact means odd-length source buffer | `references/espidf.md` audio section (pre-swap fix inline), plus the `esp32` chip skill's I2S notes |
 | Recorded audio sounds fine, but playing that same buffer back sounds wrong | PDM RX doesn't have the pair-swap; STD TX does — the two paths are asymmetric on classic ESP32 | `references/espidf.md` audio section, plus the `esp32` chip skill's I2S notes |
 | Loud pop when the amp turns on or off | Wrong sequencing between I2S TX and NS4168 SDMODE enable | `references/espidf.md` audio section (20 ms / 5 ms timing) |
