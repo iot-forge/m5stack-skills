@@ -229,6 +229,7 @@ top-to-bottom.
 | AWS IoT rejects the ATECC608's factory device certificate | Factory cert is in Microchip's compressed format with an invalid date | AWS-line-specific hardware section above, `references/arduino.md` and `references/espidf.md` ATECC608 sections |
 | Analog reads return garbage after `WiFi.begin()` | The pin is on ADC2, which shares hardware with the WiFi radio | `esp32` chip skill's peripherals reference |
 | Board resets under load with backlight + WiFi + speaker | AXP192 rail brownout on the stock 500mAh battery | `references/arduino.md` common-bring-up-issues section |
+| SK6812 level meter looks inconsistent (one side fills up-down, the other down-up) | The 10-LED "ring" is really two 5-pixel strips daisy-chained; sequential indexing doesn't map to a symmetric bar | `references/pinout.md` AWS-line-only section (chain order) and `references/espidf.md` SK6812 section (per-side LUT + diagnostic-pattern recipe) |
 
 Treat this table as the fast-lookup path, not the full picture. The
 underlying sections carry the actual reasoning, sourcing (ESP-IDF docs,

@@ -443,6 +443,48 @@ the factory cert directly.
 G25, 10 LEDs. Use RMT-based `led_strip` (ESP-IDF's standard addressable-LED
 driver component) or the `core2forAWS` BSP's own LED bar API.
 
+**RGB, not RGBW.** The M5 AWS ring uses the 3-byte SK6812 variant
+(`LED_STRIP_COLOR_COMPONENT_FMT_GRB`), not SK6812W — the chip family
+covers both, so it's a common mistake. Configuring the driver for
+RGBW will shift every colour by one byte per pixel and every 4th
+pixel by an extra byte, producing a distinctive walking corruption.
+
+**Layout is two vertical strips, not a ring.** See `references/pinout.md`
+for the physical chain order. The upshot for firmware: sequential
+indexing does *not* map to a symmetric bar. A naïve level meter
+(`for (i = 0; i < floor(peak * 10); i++) set(i, on)`) fills the right
+side top-down and jumps to the left side bottom-up — which reads as
+"one side works, the other is upside down." Uniform effects (all pixels
+same colour, pulsing, chase-around-the-ring) are immune; level meters
+and directional animations are not.
+
+**Fix pattern**: render per side with a chain→(side, position) LUT. For
+the layout in `pinout.md` (index 0 = right-top, walking down the right
+side, across the bottom, up the left side):
+
+```c
+// index 0 = bottom of each side, index 4 = top of each side
+static const uint8_t chain_right[5] = { 4, 3, 2, 1, 0 };  // bottom→top
+static const uint8_t chain_left [5] = { 5, 6, 7, 8, 9 };  // bottom→top
+
+static void set_meter(uint8_t level /* 0..5 */, uint32_t rgb) {
+    for (uint8_t i = 0; i < 5; i++) {
+        uint32_t c = (i < level) ? rgb : 0;
+        led_strip_set_pixel(strip, chain_right[i], R(c), G(c), B(c));
+        led_strip_set_pixel(strip, chain_left [i], R(c), G(c), B(c));
+    }
+    led_strip_refresh(strip);
+}
+```
+
+**Diagnostic pattern before trusting a LUT**: hold all 10 pixels in
+distinct, easy-to-distinguish colours — e.g. red / green / blue / yellow /
+cyan / white / magenta / orange / purple / pink for indices 0..9 — and
+photograph or eyeball the base. One glance identifies each physical
+position; much faster than a walking pattern, and it flushes out both
+chain-order surprises and any RGB-vs-GRB byte-order mistake at the same
+time.
+
 ---
 
 # UIFlow2 (Blockly / MicroPython)

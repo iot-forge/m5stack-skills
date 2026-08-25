@@ -80,6 +80,21 @@ Core2 v1.3**.
 | G21/G22 | ATECC608B I2C (shared bus, address 0x35) |
 | G25 | SK6812 RGB LED data line (10x LEDs, NeoPixel-compatible timing) |
 
+The 10-LED "ring" is not a ring and not a horizontal bar — it's **two
+vertical strips of 5, one per side of the base**, daisy-chained onto a
+single G25 data line. Chain order verified on an original Core2 For AWS
+unit: index 0 enters at **right-top**, walks down the right side to
+right-bottom (index 4), crosses to **left-bottom** (index 5), walks up
+the left side to **left-top** (index 9). One continuous path:
+top-right → bottom-right → bottom-left → top-left. Because sequential
+indexing therefore fills one side bottom-up and the other top-down, a
+naïve `floor(peak * 10)` level meter looks broken — see the SK6812
+section in `references/espidf.md` for the per-side LUT and diagnostic
+pattern. Layout verified on **one** original AWS unit; M5Stack has
+respun base assemblies between revisions before, so if a meter looks
+inconsistent, re-verify with the diagnostic pattern before trusting the
+LUT.
+
 ## Power / AXP192 (I2C 0x34, shared bus)
 
 The AXP192 owns power sequencing for the whole board — battery
