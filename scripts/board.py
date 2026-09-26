@@ -410,12 +410,13 @@ def cmd_pins(db, a, res):
         msg = (f"Pin map {pm['id']} is not populated yet: the data has no sourced GPIO map for {', '.join(rids)}. "
                f"Say so and do not answer from general knowledge. Sourced so far: {buses or 'nothing'}.")
         raise Stop(EXIT_CANNOT, msg, {"error": msg, "pin_map": pm["id"], "buses": pm["buses"]})
-    known = sorted({u["feature"] for p in pm["pins"].values() for u in p["uses"] if u.get("feature")})
+    on_map = sorted({u["feature"] for p in pm["pins"].values() for u in p["uses"] if u.get("feature")})
     use = [u.strip() for u in (a.use.split(",") if a.use else []) if u.strip()]
-    bad = [u for u in use if u not in known]
+    bad = [u for u in use if u not in db["features"]]
     if bad:
-        raise Stop(EXIT_UNKNOWN, f"Unknown feature(s) {bad} for pin map {pm['id']}. Its features: {', '.join(known)}. "
-                                 f"'display' needs no flag: its pins are always taken.")
+        raise Stop(EXIT_UNKNOWN, f"Unknown feature(s) {bad}. Features: {', '.join(db['features'])}. "
+                                 f"This board's pin map claims: {', '.join(on_map)}; the display's pins are always taken.")
+    absent = [u for u in use if u not in on_map and u != "display"]
     rules = pin_rules(soc)
     if a.gpio:
         g = a.gpio.upper() if a.gpio.upper().startswith("G") else f"G{a.gpio}"
@@ -467,7 +468,7 @@ def cmd_pins(db, a, res):
             res_["not_brought_out"].append(g)
     buses = {b: {"kind": v["kind"], "pins": v["pins"], "members": bus_members(db, rids, b)} for b, v in pm["buses"].items()}
     if a.json:
-        return {"revisions_in_play": rids, "pin_map": pm["id"], "using": use, **res_, "buses": buses}
+        return {"revisions_in_play": rids, "pin_map": pm["id"], "using": use, "no_pins_for": absent, **res_, "buses": buses}
 
     def cell(r):
         s = r["gpio"]
@@ -477,6 +478,8 @@ def cmd_pins(db, a, res):
             s += " !" + ",".join(r["cautions"])
         return s
     lines = [f"Revisions in play: {', '.join(rids)}  |  pin map {pm['id']}  |  using: {', '.join(use) or 'nothing declared'} (display pins are always taken)"]
+    if absent:
+        lines.append(f"Note: {', '.join(absent)} claims no pins on this board (the part is absent, or wired off the GPIOs).")
     if res_["conflicts"]:
         lines.append("CONFLICTS (two features you use need the same pin; they cannot run at once):")
         lines += [f"  {cell(r)}: {' vs '.join(r['by'])}" for r in res_["conflicts"]]
@@ -599,9 +602,12 @@ def main(argv=None):
             stream.reconfigure(encoding="utf-8")
         except AttributeError:
             pass
+    top = argparse.ArgumentParser(add_help=False)
+    top.add_argument("--json", action="store_true", help="machine-readable output")
+    # the subcommand copy must not reset a --json given before the subcommand
     common = argparse.ArgumentParser(add_help=False)
-    common.add_argument("--json", action="store_true", help="machine-readable output")
-    ap = argparse.ArgumentParser(prog="board.py", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter, parents=[common])
+    common.add_argument("--json", action="store_true", default=argparse.SUPPRESS, help="machine-readable output")
+    ap = argparse.ArgumentParser(prog="board.py", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter, parents=[top])
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("list", help="every known product and revision", parents=[common])
 
