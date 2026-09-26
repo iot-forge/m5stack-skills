@@ -32,6 +32,8 @@ Works out which M5Stack Core product and revision the user has, from what they s
 
 - Board query: `uv run "${CLAUDE_PLUGIN_ROOT}/scripts/board.py" <subcommand> "<the user's words for the board>"`
 
+Run each with the Bash tool, one command per call: the skill pre-approves exactly these commands. If `uv` is not found, tell the user this plugin needs it (see its README) and stop.
+
 ## Start here
 
 Copy this checklist and tick it off:
@@ -42,9 +44,9 @@ Copy this checklist and tick it off:
 - [ ] Answer only from board.py output; name the revisions in play
 ```
 
-`find` accepts whatever the user said: a product, a SKU from the sticker (`K010-V13`), an FQBN, a PlatformIO id, a BID (`bid:2`), a UIFlow2 image or a loose name. When it exits 2 with suggestions, show the user the suggestions and ask which they mean. When the user has named no board at all, run `board.py list` and ask.
+`find` accepts whatever the user said: a product, a SKU from the sticker (`K010-V13`), an FQBN, a PlatformIO id, a BID (`bid:2`), a UIFlow2 image or a loose name. When it prints `Unknown board` with suggestions, show the user the suggestions and ask which they mean. When the user has named no board at all, run `board.py list` and ask.
 
-A command that exits 3 is a **stub**: a `roadmap` or `out-of-scope` board. Give the user its support status and the reason `board.py` prints, and stop there.
+Output that says a board `is ROADMAP` or `is OUT-OF-SCOPE for this plugin` is a **stub**. Give the user that support status and the reason `board.py` prints, and stop there.
 
 ## Identify the revision
 

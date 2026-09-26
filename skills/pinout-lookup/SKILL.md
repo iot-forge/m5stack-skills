@@ -32,6 +32,8 @@ Answers GPIO-level questions for M5Stack Core boards, per revision. It covers wh
 
 - Board query: `uv run "${CLAUDE_PLUGIN_ROOT}/scripts/board.py" <subcommand> "<the user's words for the board>"`
 
+Run each with the Bash tool, one command per call: the skill pre-approves exactly these commands. If `uv` is not found, tell the user this plugin needs it (see its README) and stop.
+
 ## Start here
 
 Copy this checklist and tick it off:

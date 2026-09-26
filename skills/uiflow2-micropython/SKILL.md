@@ -34,6 +34,8 @@ Runs the whole UIFlow2 MicroPython loop on M5Stack Core boards. It picks the rel
 - Board query: `uv run "${CLAUDE_PLUGIN_ROOT}/scripts/board.py" <subcommand> "<the user's words for the board>"`
 - Environment check: `uv run "${CLAUDE_PLUGIN_ROOT}/scripts/doctor.py"`
 
+Run each with the Bash tool, one command per call: the skill pre-approves exactly these commands. If `uv` is not found, tell the user this plugin needs it (see its README) and stop.
+
 ## Start here
 
 Copy this checklist and tick it off:

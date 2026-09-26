@@ -45,6 +45,8 @@ metadata:
 - Board query: `uv run "${CLAUDE_PLUGIN_ROOT}/scripts/board.py" <subcommand> "<the user's words for the board>"`
 - Environment check: `uv run "${CLAUDE_PLUGIN_ROOT}/scripts/doctor.py"`
 
+Run each with the Bash tool, one command per call: the skill pre-approves exactly these commands. If `uv` is not found, tell the user this plugin needs it (see its README) and stop.
+
 ## Start here
 
 Copy this checklist and tick it off. Keep only the steps this skill uses, in this order:
@@ -107,7 +109,7 @@ description: M5Stack Core boards under ESP-IDF — creates, configures and build
 |---|---|---|
 | Title + job | What the skill does and its boundary | 2–4 sentences |
 | Standing rules | The shared block | Verbatim copy between the markers **(CI)** |
-| Paths | Exact commands with `${CLAUDE_PLUGIN_ROOT}` | Heading text exact, so the agent keeps expanded paths as they are. Only the scripts this skill runs; `allowed-tools` matches |
+| Paths | Exact commands with `${CLAUDE_PLUGIN_ROOT}`, then the fixed "Run each with the Bash tool" line | Heading text exact, so the agent keeps expanded paths as they are. Only the scripts this skill runs; `allowed-tools` matches. The pre-approval is a `Bash(...)` rule matched against the whole command, so a chained command (`...; echo $?`) or the PowerShell tool falls outside it |
 | Start here | Copyable checklist | doctor → board → project detection, in that order, each step only where the skill uses it. Capability skills that never touch a toolchain or a port (`board-identification`, `pinout-lookup`) start at the board step |
 | Task sections | The skill's own work | Each step ends on a checkable completion criterion |
 | Hand-offs | Every declined case → the sibling that owns it | Siblings named by plain name **(CI: name exists)** |
