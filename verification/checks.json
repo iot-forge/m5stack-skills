@@ -1,0 +1,348 @@
+{
+ "schema_version": 1,
+ "note": "STUB: build, trigger and handoff.<skill> checks, and the per-check data entries for ingest, are filled in by the implementation backlog. Ids follow VERIFICATION.md.",
+ "checks": [
+  {
+   "id": "data.validate",
+   "kind": "data",
+   "skills": []
+  },
+  {
+   "id": "query.branch-core2",
+   "kind": "query",
+   "skills": [
+    "board-identification"
+   ]
+  },
+  {
+   "id": "query.narrow-seen",
+   "kind": "query",
+   "skills": [
+    "board-identification"
+   ]
+  },
+  {
+   "id": "query.bid-coarse",
+   "kind": "query",
+   "skills": [
+    "board-identification"
+   ]
+  },
+  {
+   "id": "query.target-many",
+   "kind": "query",
+   "skills": [
+    "board-identification"
+   ]
+  },
+  {
+   "id": "query.stub-refuses",
+   "kind": "query",
+   "skills": [
+    "board-identification"
+   ]
+  },
+  {
+   "id": "query.pin-conflict",
+   "kind": "query",
+   "skills": [
+    "pinout-lookup"
+   ]
+  },
+  {
+   "id": "query.strict-name",
+   "kind": "query",
+   "skills": [
+    "board-identification"
+   ]
+  },
+  {
+   "id": "query.no-self-report",
+   "kind": "query",
+   "skills": [
+    "board-identification"
+   ]
+  },
+  {
+   "id": "host.port.core2@v1.3",
+   "kind": "host",
+   "skills": [
+    "flashing-and-debugging"
+   ],
+   "revision": "core2@v1.3"
+  },
+  {
+   "id": "host.bridge.core2@v1.3",
+   "kind": "host",
+   "skills": [
+    "flashing-and-debugging"
+   ],
+   "revision": "core2@v1.3",
+   "covers": [
+    "products/core2.json#core2@v1.3.usb_bridge"
+   ]
+  },
+  {
+   "id": "host.driver.core2@v1.3",
+   "kind": "host",
+   "skills": [
+    "flashing-and-debugging"
+   ],
+   "revision": "core2@v1.3"
+  },
+  {
+   "id": "flash.arduino.core2@v1.3",
+   "kind": "flash",
+   "skills": [
+    "arduino-m5unified"
+   ],
+   "revision": "core2@v1.3"
+  },
+  {
+   "id": "device.arduino.core2@v1.3",
+   "kind": "device",
+   "skills": [
+    "arduino-m5unified"
+   ],
+   "revision": "core2@v1.3"
+  },
+  {
+   "id": "flash.platformio.core2@v1.3",
+   "kind": "flash",
+   "skills": [
+    "platformio"
+   ],
+   "revision": "core2@v1.3"
+  },
+  {
+   "id": "device.platformio.core2@v1.3",
+   "kind": "device",
+   "skills": [
+    "platformio"
+   ],
+   "revision": "core2@v1.3"
+  },
+  {
+   "id": "flash.esp-idf.core2@v1.3",
+   "kind": "flash",
+   "skills": [
+    "esp-idf"
+   ],
+   "revision": "core2@v1.3"
+  },
+  {
+   "id": "device.esp-idf.core2@v1.3",
+   "kind": "device",
+   "skills": [
+    "esp-idf"
+   ],
+   "revision": "core2@v1.3"
+  },
+  {
+   "id": "flash.uiflow2.core2@v1.3",
+   "kind": "flash",
+   "skills": [
+    "uiflow2-micropython"
+   ],
+   "revision": "core2@v1.3"
+  },
+  {
+   "id": "device.uiflow2.core2@v1.3",
+   "kind": "device",
+   "skills": [
+    "uiflow2-micropython"
+   ],
+   "revision": "core2@v1.3"
+  },
+  {
+   "id": "fact.pmic.core2@v1.3",
+   "kind": "fact",
+   "skills": [
+    "board-identification"
+   ],
+   "revision": "core2@v1.3",
+   "covers": [
+    "products/core2.json#core2@v1.3.pmic",
+    "signals.json#pmic-probe"
+   ]
+  },
+  {
+   "id": "fact.imu.core2@v1.3",
+   "kind": "fact",
+   "skills": [
+    "board-identification"
+   ],
+   "revision": "core2@v1.3",
+   "covers": [
+    "products/core2.json#core2@v1.3.imu",
+    "signals.json#imu-probe"
+   ]
+  },
+  {
+   "id": "fact.no-atecc.core2@v1.3",
+   "kind": "fact",
+   "skills": [
+    "board-identification"
+   ],
+   "revision": "core2@v1.3",
+   "covers": [
+    "signals.json#atecc-probe"
+   ]
+  },
+  {
+   "id": "fact.no-ina3221.core2@v1.3",
+   "kind": "fact",
+   "skills": [
+    "board-identification"
+   ],
+   "revision": "core2@v1.3",
+   "covers": [
+    "products/core2.json#core2@v1.3.extra_components",
+    "signals.json#ina3221-probe"
+   ]
+  },
+  {
+   "id": "fact.bridge.core2@v1.3",
+   "kind": "fact",
+   "skills": [
+    "board-identification"
+   ],
+   "revision": "core2@v1.3",
+   "covers": [
+    "products/core2.json#core2@v1.3.usb_bridge",
+    "signals.json#usb-vid"
+   ]
+  },
+  {
+   "id": "fact.port-a-bus.core2@v1.3",
+   "kind": "fact",
+   "skills": [
+    "pinout-lookup"
+   ],
+   "revision": "core2@v1.3",
+   "covers": [
+    "pinmaps/core2-a.json#buses.i2c_port_a"
+   ]
+  },
+  {
+   "id": "handoff.live.core2@v1.3",
+   "kind": "handoff",
+   "skills": [
+    "arduino-m5unified",
+    "platformio",
+    "esp-idf",
+    "uiflow2-micropython",
+    "flashing-and-debugging"
+   ],
+   "revision": "core2@v1.3"
+  },
+  {
+   "id": "open-question.mpremote-launcher.core2@v1.3",
+   "kind": "open-question",
+   "skills": [
+    "uiflow2-micropython"
+   ],
+   "revision": "core2@v1.3",
+   "note": "VERIFICATION.md section 7"
+  },
+  {
+   "id": "open-question.uiflow2-image-v1.3.core2@v1.3",
+   "kind": "open-question",
+   "skills": [
+    "uiflow2-micropython"
+   ],
+   "revision": "core2@v1.3",
+   "note": "VERIFICATION.md section 7"
+  },
+  {
+   "id": "open-question.auto-download.core2@v1.3",
+   "kind": "open-question",
+   "skills": [
+    "flashing-and-debugging"
+   ],
+   "revision": "core2@v1.3",
+   "note": "VERIFICATION.md section 7"
+  },
+  {
+   "id": "open-question.power-led.core2@v1.3",
+   "kind": "open-question",
+   "skills": [
+    "board-identification"
+   ],
+   "revision": "core2@v1.3",
+   "note": "VERIFICATION.md section 7"
+  },
+  {
+   "id": "open-question.speaker-mic.core2@v1.3",
+   "kind": "open-question",
+   "skills": [
+    "pinout-lookup"
+   ],
+   "revision": "core2@v1.3",
+   "note": "VERIFICATION.md section 7"
+  },
+  {
+   "id": "open-question.stdout-raw-repl.core2@v1.3",
+   "kind": "open-question",
+   "skills": [
+    "uiflow2-micropython"
+   ],
+   "revision": "core2@v1.3",
+   "note": "VERIFICATION.md section 7"
+  },
+  {
+   "id": "open-question.touch-below-240.core2@v1.3",
+   "kind": "open-question",
+   "skills": [
+    "arduino-m5unified"
+   ],
+   "revision": "core2@v1.3",
+   "note": "VERIFICATION.md section 7"
+  },
+  {
+   "id": "open-question.playraw-1mb.core2@v1.3",
+   "kind": "open-question",
+   "skills": [
+    "arduino-m5unified"
+   ],
+   "revision": "core2@v1.3",
+   "note": "VERIFICATION.md section 7"
+  },
+  {
+   "id": "open-question.g0-download.cores3@v1.0",
+   "kind": "open-question",
+   "skills": [
+    "flashing-and-debugging"
+   ],
+   "revision": "cores3@v1.0",
+   "note": "VERIFICATION.md section 7; needs a CoreS3-family unit"
+  },
+  {
+   "id": "open-question.mpremote.cores3-se@v1.0",
+   "kind": "open-question",
+   "skills": [
+    "uiflow2-micropython"
+   ],
+   "revision": "cores3-se@v1.0",
+   "note": "VERIFICATION.md section 7; needs a CoreS3-family unit"
+  },
+  {
+   "id": "open-question.lite-image.cores3-lite@v1.0",
+   "kind": "open-question",
+   "skills": [
+    "uiflow2-micropython"
+   ],
+   "revision": "cores3-lite@v1.0",
+   "note": "VERIFICATION.md section 7; needs a CoreS3-family unit"
+  },
+  {
+   "id": "open-question.ghost-touch.cores3-se@v1.0",
+   "kind": "open-question",
+   "skills": [
+    "arduino-m5unified"
+   ],
+   "revision": "cores3-se@v1.0",
+   "note": "VERIFICATION.md section 7; needs a CoreS3-family unit"
+  }
+ ]
+}
