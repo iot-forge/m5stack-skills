@@ -1,0 +1,96 @@
+{
+ "schema_version": 1,
+ "toolchain": "uiflow2",
+ "targets": [
+  {
+   "id": "M5STACK_Basic_4MB",
+   "covers": [
+    "basic@v1.4"
+   ],
+   "per_revision": {},
+   "src": [
+    "uiflow2-boards",
+    "uiflow2-release"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-08-07",
+   "note": "BOARD_ID 1, 4 MB flash build"
+  },
+  {
+   "id": "M5STACK_Basic",
+   "covers": [
+    "basic@v2.5",
+    "basic@v2.6",
+    "basic@v2.7"
+   ],
+   "per_revision": {},
+   "src": [
+    "uiflow2-boards",
+    "uiflow2-release"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-08-07",
+   "note": "BOARD_ID 1, 16 MB flash build"
+  },
+  {
+   "id": "M5STACK_Fire",
+   "covers": [
+    "fire@2018.06",
+    "fire@2019.07",
+    "fire@2019.08",
+    "fire@2020.04",
+    "fire@v2.7"
+   ],
+   "per_revision": {},
+   "src": [
+    "uiflow2-boards",
+    "uiflow2-release"
+   ],
+   "confidence": "medium",
+   "last_verified": "2026-08-07",
+   "note": "BOARD_ID 1, PSRAM build"
+  },
+  {
+   "id": "M5STACK_Core2",
+   "covers": [
+    "core2@v1.0",
+    "core2@2023.02",
+    "core2@v1.1"
+   ],
+   "per_revision": {},
+   "src": [
+    "uiflow2-boards",
+    "uiflow2-release"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-08-07",
+   "note": "one image; M5Unified detects the PMIC at runtime"
+  },
+  {
+   "id": "M5STACK_Tough",
+   "covers": [
+    "tough@v1.0"
+   ],
+   "per_revision": {},
+   "src": [
+    "uiflow2-boards",
+    "uiflow2-release"
+   ],
+   "confidence": "medium",
+   "last_verified": "2026-08-07"
+  },
+  {
+   "id": "M5STACK_CoreS3",
+   "covers": [
+    "cores3@v1.0"
+   ],
+   "per_revision": {},
+   "src": [
+    "uiflow2-boards",
+    "uiflow2-release"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-08-07"
+  }
+ ]
+}

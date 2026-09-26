@@ -1,0 +1,54 @@
+{
+ "schema_version": 1,
+ "toolchain": "esp-bsp",
+ "targets": [
+  {
+   "id": "espressif/m5stack_core",
+   "covers": [
+    "basic@v1.4",
+    "basic@v2.5",
+    "basic@v2.6",
+    "basic@v2.7"
+   ],
+   "per_revision": {},
+   "src": [
+    "esp-bsp"
+   ],
+   "confidence": "medium",
+   "last_verified": "2026-08-07"
+  },
+  {
+   "id": "espressif/m5stack_core_2",
+   "covers": [
+    "core2@v1.0",
+    "core2@2023.02",
+    "core2@v1.1",
+    "core2@v1.3"
+   ],
+   "per_revision": {
+    "core2@v1.0": "menuconfig PMU Version = BSP_PMU_AXP192",
+    "core2@2023.02": "menuconfig PMU Version = BSP_PMU_AXP192",
+    "core2@v1.1": "menuconfig PMU Version = BSP_PMU_AXP2101",
+    "core2@v1.3": "menuconfig PMU Version = BSP_PMU_AXP192 (from the PMIC; the BSP's help text predates v1.3)"
+   },
+   "src": [
+    "esp-bsp"
+   ],
+   "confidence": "medium",
+   "last_verified": "2026-08-07",
+   "note": "the PMU choice is compile-time; the wrong one leaves the backlight dead"
+  },
+  {
+   "id": "espressif/m5stack_core_s3",
+   "covers": [
+    "cores3@v1.0"
+   ],
+   "per_revision": {},
+   "src": [
+    "esp-bsp"
+   ],
+   "confidence": "medium",
+   "last_verified": "2026-08-07"
+  }
+ ]
+}

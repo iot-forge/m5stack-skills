@@ -1,0 +1,474 @@
+{
+ "schema_version": 1,
+ "signals": [
+  {
+   "id": "sku-sticker",
+   "kind": "physical",
+   "observe": "Read the SKU (order code) on the sticker on the back of the unit or on the box.",
+   "outcomes": {
+    "K001": [
+     "basic@v1.4",
+     "basic@v2.5",
+     "basic@v2.6"
+    ],
+    "K001-V27": [
+     "basic@v2.7"
+    ],
+    "K002": [
+     "gray@2017.09",
+     "gray@2017.12",
+     "gray@2019.06"
+    ],
+    "K007": [
+     "fire@2018.06",
+     "fire@2019.07",
+     "fire@2019.08",
+     "fire@2020.04"
+    ],
+    "K007-V27": [
+     "fire@v2.7"
+    ],
+    "K006-V27": [
+     "m5go@v2.7"
+    ],
+    "K010": [
+     "core2@v1.0",
+     "core2@2023.02"
+    ],
+    "K010-V11": [
+     "core2@v1.1"
+    ],
+    "K010-V13": [
+     "core2@v1.3"
+    ],
+    "K010-AWS": [
+     "core2-for-aws@v1.0"
+    ],
+    "K010-AWS-V13": [
+     "core2-for-aws@v1.3"
+    ],
+    "K034": [
+     "tough@v1.0"
+    ],
+    "K128": [
+     "cores3@v1.0"
+    ],
+    "K128-SE": [
+     "cores3-se@v1.0"
+    ],
+    "K128-Lite": [
+     "cores3-lite@v1.0"
+    ]
+   },
+   "reliability": "high",
+   "caveats": "Stickers come off and boxes get thrown away. A suffix-less SKU (K001, K007, K010) covers several revisions.",
+   "src": [
+    "m5-basic-v2.7",
+    "m5-gray",
+    "m5-fire",
+    "m5-fire-v2.7",
+    "m5-m5go-v2.7",
+    "m5-core2",
+    "m5-core2-v1.1",
+    "m5-core2-v1.3",
+    "m5-core2-for-aws",
+    "m5-core2-for-aws-v1.3",
+    "m5-tough",
+    "m5-cores3",
+    "m5-cores3-se",
+    "m5-cores3-lite"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "power-led",
+   "kind": "physical",
+   "observe": "The colour of the power LED while the unit is on.",
+   "outcomes": {
+    "green": [
+     "core2@v1.0",
+     "core2@2023.02",
+     "core2@v1.3",
+     "core2-for-aws@v1.0",
+     "core2-for-aws@v1.3"
+    ],
+    "blue": [
+     "core2@v1.1"
+    ]
+   },
+   "reliability": "high",
+   "caveats": "Splits Core2 v1.1 (blue, AXP2101) from the AXP192 Core2 revisions only. Green does not tell v1.0 from v1.3.",
+   "src": [
+    "m5-core2",
+    "m5-core2-v1.1",
+    "m5-core2-v1.3",
+    "m5-core2-for-aws",
+    "m5-core2-for-aws-v1.3"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "usb-vid",
+   "kind": "host",
+   "observe": "The USB vendor ID of the serial port (Device Manager > Details > Hardware Ids on Windows, lsusb on Linux, System Information on macOS; doctor.py prints it).",
+   "outcomes": {
+    "10C4 (Silicon Labs CP210x)": [
+     "basic@v1.4",
+     "basic@v2.5",
+     "fire@2018.06",
+     "fire@2019.07",
+     "fire@2019.08",
+     "fire@2020.04",
+     "m5go@2018.04",
+     "m5go@2019.06",
+     "core2@v1.0",
+     "core2@2023.02",
+     "core2-for-aws@v1.0"
+    ],
+    "1A86 (WCH CH9102)": [
+     "basic@v2.6",
+     "basic@v2.7",
+     "fire@v2.7",
+     "m5go@v2.6",
+     "m5go@v2.7",
+     "core2@v1.0",
+     "core2@2023.02",
+     "core2@v1.1",
+     "core2@v1.3",
+     "core2-for-aws@v1.3",
+     "tough@v1.0"
+    ],
+    "303A (Espressif native USB)": [
+     "cores3@v1.0",
+     "cores3-se@v1.0",
+     "cores3-lite@v1.0"
+    ]
+   },
+   "reliability": "medium",
+   "caveats": "Core2 v1.0 shipped with either bridge, so CH9102 never proves a later Core2. Only CP2104 rules revisions in. Gray's bridge is undocumented.",
+   "src": [
+    "usb-ids",
+    "arduino-m5stack-boards",
+    "m5-core2",
+    "m5-basic-v2.7",
+    "m5-m5go-v2.7",
+    "m5-fire-v2.7"
+   ],
+   "confidence": "medium",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "flash-size",
+   "kind": "host",
+   "observe": "Run `esptool flash-id` (or `esptool.py flash_id`) on the port; read 'Detected flash size'. Read-only.",
+   "outcomes": {
+    "4MB": [
+     "basic@v1.4"
+    ],
+    "16MB": [
+     "basic@v2.5",
+     "basic@v2.6",
+     "basic@v2.7"
+    ]
+   },
+   "reliability": "high",
+   "caveats": "Basic only: flash went from 4 MB to 16 MB in 2020.6.",
+   "src": [
+    "m5-basic-v2.7"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "pmic-probe",
+   "kind": "probe",
+   "observe": "Flash a sketch that reads register 0x03 of the chip at I2C 0x34 on the internal bus.",
+   "probe": {
+    "bus": "i2c_internal",
+    "address": "0x34",
+    "register": "0x03",
+    "width": 8,
+    "expected": {
+     "AXP192": "0x03",
+     "AXP2101": "0x4A"
+    }
+   },
+   "outcomes": {
+    "AXP192": [
+     "core2@v1.0",
+     "core2@2023.02",
+     "core2@v1.3",
+     "core2-for-aws@v1.0",
+     "core2-for-aws@v1.3",
+     "tough@v1.0"
+    ],
+    "AXP2101": [
+     "core2@v1.1",
+     "cores3@v1.0",
+     "cores3-se@v1.0",
+     "cores3-lite@v1.0"
+    ]
+   },
+   "reliability": "high",
+   "caveats": "Needs flashing, and is inferred from a chip ID. The two PMICs share address 0x34, so an address scan alone cannot tell them apart.",
+   "src": [
+    "m5unified",
+    "m5-core2",
+    "m5-core2-v1.1",
+    "m5-core2-v1.3"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "imu-probe",
+   "kind": "probe",
+   "observe": "Flash a sketch that reads the IMU identity register: 0x75 at I2C 0x68 (MPU family), or 0x00 at 0x68/0x69 (BMI270).",
+   "probe": {
+    "bus": "i2c_internal",
+    "reads": [
+     {
+      "address": "0x68",
+      "register": "0x75",
+      "width": 8,
+      "expected": {
+       "MPU6886": "0x19",
+       "MPU9250": "0x71",
+       "MPU6050": "0x68"
+      }
+     },
+     {
+      "address": [
+       "0x68",
+       "0x69"
+      ],
+      "register": "0x00",
+      "width": 8,
+      "expected": {
+       "BMI270": "0x24"
+      }
+     }
+    ]
+   },
+   "outcomes": {
+    "MPU6886": [
+     "core2@v1.0",
+     "core2@2023.02",
+     "core2@v1.1",
+     "core2-for-aws@v1.0",
+     "fire@2019.08",
+     "fire@2020.04",
+     "fire@v2.7",
+     "m5go@2019.06",
+     "m5go@v2.6",
+     "m5go@v2.7",
+     "gray@2019.06"
+    ],
+    "BMI270": [
+     "core2@v1.3",
+     "core2-for-aws@v1.3",
+     "cores3@v1.0",
+     "cores3-lite@v1.0"
+    ],
+    "MPU9250": [
+     "gray@2017.12",
+     "fire@2018.06",
+     "m5go@2018.04"
+    ],
+    "MPU6050": [
+     "gray@2017.09"
+    ],
+    "none": [
+     "basic@v1.4",
+     "basic@v2.5",
+     "basic@v2.6",
+     "basic@v2.7",
+     "tough@v1.0",
+     "cores3-se@v1.0"
+    ]
+   },
+   "reliability": "high",
+   "caveats": "Needs flashing, and is inferred from a chip ID. Fire 2019.7 (SH200Q) is not covered.",
+   "src": [
+    "m5unified",
+    "m5-core2",
+    "m5-core2-v1.3",
+    "m5-cores3",
+    "m5-gray",
+    "m5-fire",
+    "m5-m5go-v2.7"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "ina3221-probe",
+   "kind": "probe",
+   "observe": "Flash a sketch that reads 16-bit register 0xFF of the chip at I2C 0x40 on the internal bus.",
+   "probe": {
+    "bus": "i2c_internal",
+    "address": "0x40",
+    "register": "0xFF",
+    "width": 16,
+    "expected": {
+     "present": "0x3220"
+    }
+   },
+   "outcomes": {
+    "present": [
+     "core2@v1.1"
+    ],
+    "absent": [
+     "core2@v1.0",
+     "core2@2023.02",
+     "core2@v1.3",
+     "core2-for-aws@v1.0",
+     "core2-for-aws@v1.3"
+    ]
+   },
+   "reliability": "high",
+   "caveats": "Core2 family only. On CoreS3 an ES7210 audio codec sits at 0x40, so presence at that address means nothing there.",
+   "src": [
+    "m5unified",
+    "m5-core2-v1.1"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "atecc-probe",
+   "kind": "probe",
+   "observe": "Flash a sketch that wakes the ATECC608B and checks whether it answers at I2C 0x35.",
+   "probe": {
+    "bus": "i2c_internal",
+    "address": "0x35",
+    "register": null,
+    "width": null,
+    "expected": {
+     "present": "answers after the wake sequence"
+    },
+    "note": "The wake sequence and the reply to check come from the ATECC608B datasheet, which has not been cited yet; the smoke program must not be generated from this entry until it is."
+   },
+   "outcomes": {
+    "present": [
+     "core2-for-aws@v1.0",
+     "core2-for-aws@v1.3"
+    ],
+    "absent": [
+     "core2@v1.0",
+     "core2@2023.02",
+     "core2@v1.1",
+     "core2@v1.3"
+    ]
+   },
+   "reliability": "medium",
+   "caveats": "Needs flashing. The ATECC608B sleeps; a plain address scan may miss it.",
+   "src": [
+    "m5-core2-for-aws",
+    "m5-core2-for-aws-v1.3"
+   ],
+   "confidence": "medium",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "touch-probe",
+   "kind": "probe",
+   "observe": "Flash a sketch that scans the internal I2C bus for 0x38 and 0x2E.",
+   "probe": {
+    "bus": "i2c_internal",
+    "address": [
+     "0x38",
+     "0x2E"
+    ],
+    "register": null,
+    "width": null,
+    "expected": {
+     "0x38 (FT6336U)": "ACK at 0x38",
+     "0x2E (CHSC6540)": "ACK at 0x2E"
+    }
+   },
+   "outcomes": {
+    "0x38 (FT6336U)": [
+     "core2@v1.0",
+     "core2@2023.02",
+     "core2@v1.1",
+     "core2@v1.3",
+     "core2-for-aws@v1.0",
+     "core2-for-aws@v1.3",
+     "cores3@v1.0",
+     "cores3-se@v1.0",
+     "cores3-lite@v1.0"
+    ],
+    "0x2E (CHSC6540)": [
+     "tough@v1.0"
+    ]
+   },
+   "reliability": "high",
+   "caveats": "Needs flashing.",
+   "src": [
+    "m5-core2",
+    "m5-tough",
+    "m5-cores3"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "ip5306-probe",
+   "kind": "probe",
+   "observe": "Flash a sketch that scans the internal I2C bus for the IP5306 at 0x75.",
+   "probe": {
+    "bus": "i2c_internal",
+    "address": "0x75",
+    "register": null,
+    "width": null,
+    "expected": {
+     "answers": "ACK at 0x75",
+     "silent": "no ACK"
+    }
+   },
+   "outcomes": {
+    "answers": [
+     "gray@2017.12",
+     "gray@2019.06"
+    ],
+    "silent": [
+     "gray@2017.09"
+    ]
+   },
+   "reliability": "medium",
+   "caveats": "Gray only. M5 documents the late I2C wiring for Gray alone.",
+   "src": [
+    "m5-gray"
+   ],
+   "confidence": "medium",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "psram-size",
+   "kind": "probe",
+   "observe": "Flash a sketch that prints the PSRAM size (ESP.getPsramSize() in Arduino).",
+   "outcomes": {
+    "4MB": [
+     "fire@2018.06",
+     "fire@2019.07",
+     "fire@2019.08"
+    ],
+    "8MB": [
+     "fire@2020.04",
+     "fire@v2.7"
+    ]
+   },
+   "reliability": "high",
+   "caveats": "Fire only: PSRAM went from 4 MB to 8 MB in 2020.4.",
+   "src": [
+    "m5-fire",
+    "m5-fire-v2.7"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  }
+ ]
+}

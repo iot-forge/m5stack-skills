@@ -1,0 +1,818 @@
+{
+ "schema_version": 1,
+ "product": {
+  "id": "m5go",
+  "name": "M5GO IoT Kit",
+  "family": "core",
+  "aliases": [
+   "m5go iot kit",
+   "m5go kit",
+   "m5stack m5go"
+  ]
+ },
+ "revisions": {
+  "m5go@2018.04": {
+   "label": "2018.4 (first release)",
+   "sku": [],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 1,
+    "src": [
+     "m5gfx"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "delisted",
+   "derived_from": null,
+   "pin_map": "m5go-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6-V3",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "unknown": true,
+    "note": "PSRAM is not stated anywhere on the M5GO page",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "low",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": "ILI9342C",
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": null,
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "three physical buttons, no touch panel"
+   },
+   "imu": {
+    "part": "MPU9250",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "part": "MPU9250",
+    "note": "the MPU9250 is a 9-axis part",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "pmic": {
+    "part": "IP5306",
+    "bus": "i2c_internal",
+    "address": "0x75",
+    "note": "custom I2C version",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": null,
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "spec table lists no RTC"
+   },
+   "audio": {
+    "speaker": "1W-0928",
+    "mic": "BSE3729 (analog MEMS)",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "CP2104",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": 600,
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 28.6,
+    "unit": "mm",
+    "weight_g": 87.7,
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [
+    {
+     "role": "rgb-led-bar",
+     "part": "SK6812 x10",
+     "src": [
+      "m5-m5go-v2.7"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "errata": [
+    {
+     "id": "tn-panel",
+     "text": "Units made before 2019.7 have a TN panel; later ones an IPS panel on the same ILI9342C controller. The old M5Stack library before 0.2.8 shows inverted colours on IPS units.",
+     "src": [
+      "m5-m5go-v2.7"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "recommended_targets": {
+    "arduino-esp32": {
+     "target": "esp32:esp32:m5stack_core",
+     "gaps": "No M5GO target exists. Choose Flash Size 16MB. PSRAM is undocumented for M5GO, so it is not enabled.",
+     "src": [
+      "arduino-esp32-boards"
+     ],
+     "confidence": "medium",
+     "last_verified": "2026-08-07"
+    },
+    "arduino-m5stack": {
+     "target": "m5stack:esp32:m5stack_core",
+     "gaps": "No M5GO target exists. Choose Flash Size 16MB.",
+     "src": [
+      "arduino-m5stack-boards"
+     ],
+     "confidence": "medium",
+     "last_verified": "2026-08-07"
+    },
+    "platformio": {
+     "target": "m5stack-core-esp32-16M",
+     "gaps": "No M5GO board id exists; PSRAM is undocumented for M5GO, so it is not enabled.",
+     "src": [
+      "pio-esp32"
+     ],
+     "confidence": "medium",
+     "last_verified": "2026-08-07"
+    }
+   }
+  },
+  "m5go@2019.06": {
+   "label": "2019.6",
+   "sku": [],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 1,
+    "src": [
+     "m5gfx"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "delisted",
+   "derived_from": "m5go@2018.04",
+   "pin_map": "m5go-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6-V3",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "unknown": true,
+    "note": "PSRAM is not stated anywhere on the M5GO page",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "low",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": "ILI9342C",
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": null,
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "three physical buttons, no touch panel"
+   },
+   "imu": {
+    "part": "MPU6886",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "part": "BMM150",
+    "bus": "i2c_internal",
+    "address": "0x10",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "pmic": {
+    "part": "IP5306",
+    "bus": "i2c_internal",
+    "address": "0x75",
+    "note": "custom I2C version",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": null,
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "spec table lists no RTC"
+   },
+   "audio": {
+    "speaker": "1W-0928",
+    "mic": "BSE3729 (analog MEMS)",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "CP2104",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": [
+     600,
+     500
+    ],
+    "note": "600 mAh until 2019.11, then 500 mAh",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 28.6,
+    "unit": "mm",
+    "weight_g": 87.7,
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [
+    {
+     "role": "rgb-led-bar",
+     "part": "SK6812 x10",
+     "src": [
+      "m5-m5go-v2.7"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "errata": [
+    {
+     "id": "tn-panel",
+     "text": "Units made before 2019.7 have a TN panel; later ones an IPS panel on the same ILI9342C controller. The old M5Stack library before 0.2.8 shows inverted colours on IPS units.",
+     "src": [
+      "m5-m5go-v2.7"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "recommended_targets": {
+    "arduino-esp32": {
+     "target": "esp32:esp32:m5stack_core",
+     "gaps": "No M5GO target exists. Choose Flash Size 16MB. PSRAM is undocumented for M5GO, so it is not enabled.",
+     "src": [
+      "arduino-esp32-boards"
+     ],
+     "confidence": "medium",
+     "last_verified": "2026-08-07"
+    },
+    "arduino-m5stack": {
+     "target": "m5stack:esp32:m5stack_core",
+     "gaps": "No M5GO target exists. Choose Flash Size 16MB.",
+     "src": [
+      "arduino-m5stack-boards"
+     ],
+     "confidence": "medium",
+     "last_verified": "2026-08-07"
+    },
+    "platformio": {
+     "target": "m5stack-core-esp32-16M",
+     "gaps": "No M5GO board id exists; PSRAM is undocumented for M5GO, so it is not enabled.",
+     "src": [
+      "pio-esp32"
+     ],
+     "confidence": "medium",
+     "last_verified": "2026-08-07"
+    }
+   }
+  },
+  "m5go@v2.6": {
+   "label": "v2.6 (2021.8)",
+   "sku": [],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 1,
+    "src": [
+     "m5gfx"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "delisted",
+   "derived_from": "m5go@2019.06",
+   "pin_map": "m5go-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6-V3",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "unknown": true,
+    "note": "PSRAM is not stated anywhere on the M5GO page",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "low",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": "ILI9342C",
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": null,
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "three physical buttons, no touch panel"
+   },
+   "imu": {
+    "part": "MPU6886",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "part": null,
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "removed in v2.6 (2021.8)"
+   },
+   "pmic": {
+    "part": "IP5306",
+    "bus": "i2c_internal",
+    "address": "0x75",
+    "note": "custom I2C version",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": null,
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "spec table lists no RTC"
+   },
+   "audio": {
+    "speaker": "1W-0928",
+    "mic": "BSE3729 (analog MEMS)",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "CH9102",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": 500,
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 28.6,
+    "unit": "mm",
+    "weight_g": 87.7,
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [
+    {
+     "role": "rgb-led-bar",
+     "part": "SK6812 x10",
+     "src": [
+      "m5-m5go-v2.7"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "errata": [],
+   "recommended_targets": {
+    "arduino-esp32": {
+     "target": "esp32:esp32:m5stack_core",
+     "gaps": "No M5GO target exists. Choose Flash Size 16MB. PSRAM is undocumented for M5GO, so it is not enabled.",
+     "src": [
+      "arduino-esp32-boards"
+     ],
+     "confidence": "medium",
+     "last_verified": "2026-08-07"
+    },
+    "arduino-m5stack": {
+     "target": "m5stack:esp32:m5stack_core",
+     "gaps": "No M5GO target exists. Choose Flash Size 16MB.",
+     "src": [
+      "arduino-m5stack-boards"
+     ],
+     "confidence": "medium",
+     "last_verified": "2026-08-07"
+    },
+    "platformio": {
+     "target": "m5stack-core-esp32-16M",
+     "gaps": "No M5GO board id exists; PSRAM is undocumented for M5GO, so it is not enabled.",
+     "src": [
+      "pio-esp32"
+     ],
+     "confidence": "medium",
+     "last_verified": "2026-08-07"
+    }
+   }
+  },
+  "m5go@v2.7": {
+   "label": "v2.7 (2023.6)",
+   "sku": [
+    "K006-V27"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 1,
+    "src": [
+     "m5gfx"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "listed",
+   "derived_from": "m5go@v2.6",
+   "pin_map": "m5go-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6-V3",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "unknown": true,
+    "note": "PSRAM is not stated anywhere on the M5GO page",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "low",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": "ILI9342C",
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": null,
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "three physical buttons, no touch panel"
+   },
+   "imu": {
+    "part": "MPU6886",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "part": null,
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "removed in v2.6 (2021.8)"
+   },
+   "pmic": {
+    "part": "IP5306",
+    "bus": "i2c_internal",
+    "address": "0x75",
+    "note": "custom I2C version",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": null,
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "spec table lists no RTC"
+   },
+   "audio": {
+    "speaker": "1W-0928",
+    "mic": "BSE3729 (analog MEMS)",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "CH9102F",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": 500,
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 28.6,
+    "unit": "mm",
+    "weight_g": 87.7,
+    "src": [
+     "m5-m5go-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [
+    {
+     "role": "rgb-led-bar",
+     "part": "SK6812 x10",
+     "src": [
+      "m5-m5go-v2.7"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "errata": [],
+   "recommended_targets": {
+    "arduino-esp32": {
+     "target": "esp32:esp32:m5stack_core",
+     "gaps": "No M5GO target exists. Choose Flash Size 16MB. PSRAM is undocumented for M5GO, so it is not enabled.",
+     "src": [
+      "arduino-esp32-boards"
+     ],
+     "confidence": "medium",
+     "last_verified": "2026-08-07"
+    },
+    "arduino-m5stack": {
+     "target": "m5stack:esp32:m5stack_core",
+     "gaps": "No M5GO target exists. Choose Flash Size 16MB.",
+     "src": [
+      "arduino-m5stack-boards"
+     ],
+     "confidence": "medium",
+     "last_verified": "2026-08-07"
+    },
+    "platformio": {
+     "target": "m5stack-core-esp32-16M",
+     "gaps": "No M5GO board id exists; PSRAM is undocumented for M5GO, so it is not enabled.",
+     "src": [
+      "pio-esp32"
+     ],
+     "confidence": "medium",
+     "last_verified": "2026-08-07"
+    }
+   }
+  }
+ }
+}

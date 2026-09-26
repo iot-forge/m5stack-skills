@@ -1,0 +1,291 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "product.schema.json",
+ "title": "Product file: data/products/<product>.json",
+ "type": "object",
+ "required": [
+  "schema_version",
+  "product",
+  "revisions"
+ ],
+ "properties": {
+  "schema_version": {
+   "const": 1
+  },
+  "product": {
+   "type": "object",
+   "required": [
+    "id",
+    "name",
+    "family",
+    "aliases"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "id": {
+     "type": "string",
+     "pattern": "^[a-z0-9-]+$"
+    },
+    "name": {
+     "type": "string"
+    },
+    "family": {
+     "enum": [
+      "core",
+      "stick",
+      "atom",
+      "cardputer",
+      "stamp",
+      "e-paper",
+      "others"
+     ]
+    },
+    "aliases": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "revisions": {
+   "type": "object",
+   "minProperties": 1,
+   "additionalProperties": {
+    "$ref": "#/$defs/revision"
+   }
+  }
+ },
+ "additionalProperties": false,
+ "$defs": {
+  "provenance": {
+   "type": "object",
+   "required": [
+    "src",
+    "confidence",
+    "last_verified"
+   ],
+   "properties": {
+    "src": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "minItems": 1
+    },
+    "confidence": {
+     "enum": [
+      "high",
+      "medium",
+      "low"
+     ]
+    },
+    "last_verified": {
+     "type": "string",
+     "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    }
+   }
+  },
+  "fact": {
+   "$ref": "#/$defs/provenance"
+  },
+  "gpio": {
+   "type": "string",
+   "pattern": "^G\\d{1,2}$"
+  },
+  "revision_id": {
+   "type": "string",
+   "pattern": "^[a-z0-9-]+@[a-z0-9.-]+$"
+  },
+  "support": {
+   "type": "object",
+   "required": [
+    "status",
+    "reason",
+    "src",
+    "last_verified"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "status": {
+     "enum": [
+      "supported",
+      "roadmap",
+      "out-of-scope"
+     ]
+    },
+    "reason": {
+     "type": "string",
+     "minLength": 10
+    },
+    "src": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "minItems": 1
+    },
+    "last_verified": {
+     "type": "string",
+     "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    }
+   }
+  },
+  "revision": {
+   "type": "object",
+   "required": [
+    "label",
+    "sku",
+    "soc",
+    "platform",
+    "support",
+    "market_status"
+   ],
+   "properties": {
+    "label": {
+     "type": "string"
+    },
+    "sku": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "soc": {
+     "type": "string"
+    },
+    "platform": {
+     "type": "string"
+    },
+    "support": {
+     "$ref": "#/$defs/support"
+    },
+    "market_status": {
+     "enum": [
+      "listed",
+      "delisted"
+     ]
+    },
+    "derived_from": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/revision_id"
+      }
+     ]
+    },
+    "replaced_by": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/revision_id"
+     }
+    },
+    "pin_map": {
+     "type": "string"
+    },
+    "flash": {
+     "$ref": "#/$defs/fact"
+    },
+    "psram": {
+     "$ref": "#/$defs/fact"
+    },
+    "display": {
+     "$ref": "#/$defs/fact"
+    },
+    "touch": {
+     "$ref": "#/$defs/fact"
+    },
+    "imu": {
+     "$ref": "#/$defs/fact"
+    },
+    "magnetometer": {
+     "$ref": "#/$defs/fact"
+    },
+    "pmic": {
+     "$ref": "#/$defs/fact"
+    },
+    "rtc": {
+     "$ref": "#/$defs/fact"
+    },
+    "audio": {
+     "$ref": "#/$defs/fact"
+    },
+    "usb_bridge": {
+     "$ref": "#/$defs/fact"
+    },
+    "sd": {
+     "$ref": "#/$defs/fact"
+    },
+    "battery": {
+     "$ref": "#/$defs/fact"
+    },
+    "dimensions": {
+     "$ref": "#/$defs/fact"
+    },
+    "power_led": {
+     "$ref": "#/$defs/fact"
+    },
+    "bid": {
+     "$ref": "#/$defs/fact"
+    },
+    "soc_part": {
+     "$ref": "#/$defs/fact"
+    },
+    "extra_components": {
+     "type": "array",
+     "items": {
+      "allOf": [
+       {
+        "$ref": "#/$defs/fact"
+       },
+       {
+        "type": "object",
+        "required": [
+         "role",
+         "part"
+        ]
+       }
+      ]
+     }
+    },
+    "errata": {
+     "type": "array",
+     "items": {
+      "allOf": [
+       {
+        "$ref": "#/$defs/fact"
+       },
+       {
+        "type": "object",
+        "required": [
+         "id",
+         "text"
+        ]
+       }
+      ]
+     }
+    },
+    "recommended_targets": {
+     "type": "object",
+     "additionalProperties": {
+      "allOf": [
+       {
+        "$ref": "#/$defs/fact"
+       },
+       {
+        "type": "object",
+        "required": [
+         "target",
+         "gaps"
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "additionalProperties": false
+  }
+ }
+}

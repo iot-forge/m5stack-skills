@@ -1,0 +1,32 @@
+{
+ "schema_version": 1,
+ "product": {
+  "id": "powerhub",
+  "name": "PowerHub",
+  "family": "core",
+  "aliases": [
+   "power hub",
+   "m5stack powerhub"
+  ]
+ },
+ "revisions": {
+  "powerhub@v1.0": {
+   "label": "v1.0",
+   "sku": [
+    "C148",
+    "K148"
+   ],
+   "soc": "ESP32-S3-WROOM-1U-N16R8 + STM32G031G8U6",
+   "platform": "esp32-s3",
+   "market_status": "listed",
+   "support": {
+    "status": "out-of-scope",
+    "reason": "ESP32-S3-based, but it has no display and no touch panel, so most of this plugin's framework and capability guidance does not apply to it.",
+    "src": [
+     "m5-powerhub"
+    ],
+    "last_verified": "2026-09-26"
+   }
+  }
+ }
+}

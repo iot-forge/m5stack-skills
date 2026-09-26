@@ -1,0 +1,57 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "sources.schema.json",
+ "title": "Source registry: data/sources.json",
+ "type": "object",
+ "required": [
+  "schema_version",
+  "sources"
+ ],
+ "properties": {
+  "schema_version": {
+   "const": 1
+  },
+  "sources": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id",
+     "kind",
+     "title",
+     "url",
+     "ref"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "kind": {
+      "enum": [
+       "m5-docs",
+       "schematic",
+       "boards.txt",
+       "library-source",
+       "registry",
+       "datasheet",
+       "hardware-test"
+      ]
+     },
+     "title": {
+      "type": "string"
+     },
+     "url": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "ref": {
+      "type": "string"
+     }
+    }
+   }
+  }
+ }
+}

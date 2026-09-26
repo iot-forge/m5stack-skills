@@ -1,0 +1,38 @@
+{
+ "schema_version": 1,
+ "id": "cores3-a",
+ "soc": "esp32-s3",
+ "populated": false,
+ "buses": {
+  "i2c_internal": {
+   "kind": "i2c",
+   "pins": {
+    "sda": "G12",
+    "scl": "G11"
+   },
+   "src": [
+    "m5-cores3"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  "bmi270_aux": {
+   "kind": "i2c",
+   "pins": null,
+   "note": "the BMI270's auxiliary interface; no ESP32 GPIO",
+   "src": [
+    "m5-cores3"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  }
+ },
+ "connectors": [],
+ "pins": {},
+ "notes": "Not yet populated: GPIO uses, claims and connectors are TODO for the implementation backlog. Only the bus pins below are sourced.",
+ "src": [
+  "m5-cores3"
+ ],
+ "confidence": "high",
+ "last_verified": "2026-09-26"
+}

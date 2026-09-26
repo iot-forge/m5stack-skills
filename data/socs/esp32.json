@@ -1,0 +1,132 @@
+{
+ "schema_version": 1,
+ "id": "esp32",
+ "name": "ESP32 (Xtensa LX6)",
+ "gpios": [
+  "G0",
+  "G1",
+  "G2",
+  "G3",
+  "G4",
+  "G5",
+  "G6",
+  "G7",
+  "G8",
+  "G9",
+  "G10",
+  "G11",
+  "G12",
+  "G13",
+  "G14",
+  "G15",
+  "G16",
+  "G17",
+  "G18",
+  "G19",
+  "G21",
+  "G22",
+  "G23",
+  "G25",
+  "G26",
+  "G27",
+  "G32",
+  "G33",
+  "G34",
+  "G35",
+  "G36",
+  "G37",
+  "G38",
+  "G39"
+ ],
+ "rules": [
+  {
+   "id": "flash",
+   "effect": "unusable",
+   "pins": [
+    "G6",
+    "G7",
+    "G8",
+    "G9",
+    "G10",
+    "G11"
+   ],
+   "text": "connected to the module's SPI flash; do not use",
+   "src": [
+    "idf-gpio-esp32"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "input_only",
+   "effect": "input_only",
+   "pins": [
+    "G34",
+    "G35",
+    "G36",
+    "G37",
+    "G38",
+    "G39"
+   ],
+   "text": "input only, with no internal pull-up or pull-down",
+   "src": [
+    "idf-gpio-esp32"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "strapping",
+   "effect": "caution",
+   "pins": [
+    "G0",
+    "G2",
+    "G5",
+    "G12",
+    "G15"
+   ],
+   "text": "strapping pin: its level at reset selects the boot mode",
+   "src": [
+    "idf-gpio-esp32"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "adc2_wifi",
+   "effect": "caution",
+   "pins": [
+    "G0",
+    "G2",
+    "G4",
+    "G12",
+    "G13",
+    "G14",
+    "G15",
+    "G25",
+    "G26",
+    "G27"
+   ],
+   "text": "ADC2 pin: analog reads fail while Wi-Fi is on; use an ADC1 pin",
+   "src": [
+    "idf-gpio-esp32"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "psram_pins",
+   "effect": "caution",
+   "pins": [
+    "G16",
+    "G17"
+   ],
+   "text": "used by PSRAM on modules that have it",
+   "src": [
+    "idf-gpio-esp32"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  }
+ ]
+}

@@ -1,0 +1,549 @@
+{
+ "schema_version": 1,
+ "product": {
+  "id": "core2-for-aws",
+  "name": "Core2 for AWS",
+  "family": "core",
+  "aliases": [
+   "core2 aws",
+   "m5stack core2 for aws",
+   "core2 for aws iot",
+   "aws edukit",
+   "core2 for aws iot edukit"
+  ]
+ },
+ "revisions": {
+  "core2-for-aws@v1.0": {
+   "label": "v1.0",
+   "sku": [
+    "K010-AWS"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 2,
+    "src": [
+     "m5gfx"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-core2-for-aws"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "listed",
+   "derived_from": null,
+   "pin_map": "core2-aws-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6-V3",
+    "src": [
+     "m5-core2-for-aws"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-core2-for-aws"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "value": "8MB quad",
+    "src": [
+     "m5-core2-for-aws"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": [
+     "ILI9342C",
+     "ILI9342E"
+    ],
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "note": "ILI9342E on units made from 2026.8.7",
+    "src": [
+     "m5-core2-for-aws"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": "FT6336U",
+    "bus": "i2c_internal",
+    "address": "0x38",
+    "src": [
+     "m5-core2-for-aws"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "imu": {
+    "part": "MPU6886",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "src": [
+     "m5-core2-for-aws"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "part": null,
+    "src": [
+     "m5-core2-for-aws"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "6-axis IMU only"
+   },
+   "pmic": {
+    "part": "AXP192",
+    "bus": "i2c_internal",
+    "address": "0x34",
+    "src": [
+     "m5-core2-for-aws"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": "BM8563",
+    "bus": "i2c_internal",
+    "address": "0x51",
+    "backup_battery": [
+     true,
+     false
+    ],
+    "note": "the coin cell was removed on a date the page gives as 2023.27, which is not a valid month",
+    "src": [
+     "m5-core2-for-aws"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "audio": {
+    "amp": "NS4168 (I2S)",
+    "speaker": "1W-0928",
+    "mic": "SPM1423 (PDM)",
+    "src": [
+     "m5-core2-for-aws"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "CP2104",
+    "src": [
+     "m5-core2-for-aws"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-core2-for-aws"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": 500,
+    "src": [
+     "m5-core2-for-aws"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 23.5,
+    "unit": "mm",
+    "weight_g": 69.5,
+    "src": [
+     "m5-core2-for-aws"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "power_led": {
+    "value": "green",
+    "src": [
+     "m5-core2-for-aws"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [
+    {
+     "role": "vibration-motor",
+     "part": "1027 DC motor (AXP rail)",
+     "src": [
+      "m5-core2-for-aws"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    },
+    {
+     "role": "crypto",
+     "part": "ATECC608B-TNGTLSU-G",
+     "bus": "i2c_internal",
+     "address": "0x35",
+     "src": [
+      "m5-core2-for-aws"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    },
+    {
+     "role": "rgb-led-bar",
+     "part": "SK6812 x10 (on the base)",
+     "src": [
+      "m5-core2-for-aws"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "errata": [
+    {
+     "id": "lcd-ili9342e",
+     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units; older builds may show a blank or wrong display.",
+     "src": [
+      "m5-core2-for-aws"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    },
+    {
+     "id": "rtc-cell-date",
+     "text": "M5 dates the removal of the RTC coin cell as 2023.27, which is not a valid date. Units may or may not keep time with the power fully off.",
+     "src": [
+      "m5-core2-for-aws"
+     ],
+     "confidence": "low",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "recommended_targets": {
+    "arduino-esp32": {
+     "target": "esp32:esp32:m5stack_core2",
+     "gaps": "No Core2 for AWS target exists. The Core2 target does not initialise the ATECC608B or the SK6812 bar; use their own libraries.",
+     "src": [
+      "arduino-esp32-boards"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-08-07"
+    },
+    "arduino-m5stack": {
+     "target": "m5stack:esp32:m5stack_core2",
+     "gaps": "Same as the upstream Core2 target: the ATECC608B and the SK6812 bar need their own libraries.",
+     "src": [
+      "arduino-m5stack-boards"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-08-07"
+    },
+    "platformio": {
+     "target": "m5stack-core2",
+     "gaps": "M5's own AWS page uses the Core2 board id; the ATECC608B and the SK6812 bar need their own libraries.",
+     "src": [
+      "m5-core2-for-aws",
+      "pio-esp32"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    },
+    "uiflow2": {
+     "target": "M5STACK_Core2",
+     "gaps": "There is no Core2 for AWS image. Whether the Core2 image drives the SK6812 bar and ATECC608B is not documented.",
+     "src": [
+      "uiflow2-boards"
+     ],
+     "confidence": "low",
+     "last_verified": "2026-08-07"
+    },
+    "esp-bsp": {
+     "target": "espressif/m5stack_core_2",
+     "gaps": "The Core2 BSP knows nothing of the ATECC608B or the SK6812 bar. Set PMU Version to AXP192.",
+     "src": [
+      "esp-bsp"
+     ],
+     "confidence": "low",
+     "last_verified": "2026-08-07"
+    }
+   }
+  },
+  "core2-for-aws@v1.3": {
+   "label": "v1.3",
+   "sku": [
+    "K010-AWS-V13"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 2,
+    "src": [
+     "m5gfx"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-core2-for-aws-v1.3"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "listed",
+   "derived_from": "core2-for-aws@v1.0",
+   "pin_map": "core2-aws-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6-V3",
+    "src": [
+     "m5-core2-for-aws-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-core2-for-aws-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "value": "8MB quad",
+    "src": [
+     "m5-core2-for-aws-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": [
+     "ILI9342C",
+     "ILI9342E"
+    ],
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "note": "ILI9342E on units made from 2026.8.7",
+    "src": [
+     "m5-core2-for-aws-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": "FT6336U",
+    "bus": "i2c_internal",
+    "address": "0x38",
+    "src": [
+     "m5-core2-for-aws-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "imu": {
+    "part": "BMI270",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "src": [
+     "m5-core2-for-aws-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "part": null,
+    "src": [
+     "m5-core2-for-aws-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "6-axis IMU only"
+   },
+   "pmic": {
+    "part": "AXP192",
+    "bus": "i2c_internal",
+    "address": "0x34",
+    "src": [
+     "m5-core2-for-aws-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": "BM8563",
+    "bus": "i2c_internal",
+    "address": "0x51",
+    "backup_battery": null,
+    "note": "the page does not say whether an RTC backup cell is fitted",
+    "src": [
+     "m5-core2-for-aws-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "audio": {
+    "amp": "NS4168 (I2S)",
+    "speaker": "1W-0928",
+    "mic": "SPM1423 (PDM)",
+    "src": [
+     "m5-core2-for-aws-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "CH9102F",
+    "src": [
+     "m5-core2-for-aws-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-core2-for-aws-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": 500,
+    "src": [
+     "m5-core2-for-aws-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 23.7,
+    "unit": "mm",
+    "weight_g": 72.1,
+    "src": [
+     "m5-core2-for-aws-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "power_led": {
+    "value": "green",
+    "src": [
+     "m5-core2-for-aws-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [
+    {
+     "role": "vibration-motor",
+     "part": "1027 DC motor (AXP rail)",
+     "src": [
+      "m5-core2-for-aws-v1.3"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    },
+    {
+     "role": "crypto",
+     "part": "ATECC608B-TNGTLSU-G",
+     "bus": "i2c_internal",
+     "address": "0x35",
+     "src": [
+      "m5-core2-for-aws-v1.3"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    },
+    {
+     "role": "rgb-led-bar",
+     "part": "SK6812 x10 (on the base)",
+     "src": [
+      "m5-core2-for-aws-v1.3"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "errata": [
+    {
+     "id": "lcd-ili9342e",
+     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units; older builds may show a blank or wrong display.",
+     "src": [
+      "m5-core2-for-aws-v1.3"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "recommended_targets": {
+    "arduino-esp32": {
+     "target": "esp32:esp32:m5stack_core2",
+     "gaps": "No Core2 for AWS target exists. The Core2 target does not initialise the ATECC608B or the SK6812 bar; use their own libraries.",
+     "src": [
+      "arduino-esp32-boards"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-08-07"
+    },
+    "arduino-m5stack": {
+     "target": "m5stack:esp32:m5stack_core2",
+     "gaps": "Same as the upstream Core2 target: the ATECC608B and the SK6812 bar need their own libraries.",
+     "src": [
+      "arduino-m5stack-boards"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-08-07"
+    },
+    "platformio": {
+     "target": "m5stack-core2",
+     "gaps": "M5's own AWS page uses the Core2 board id; the ATECC608B and the SK6812 bar need their own libraries.",
+     "src": [
+      "m5-core2-for-aws-v1.3",
+      "pio-esp32"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    },
+    "uiflow2": {
+     "target": "M5STACK_Core2",
+     "gaps": "There is no Core2 for AWS image. Whether the Core2 image drives the SK6812 bar and ATECC608B is not documented.",
+     "src": [
+      "uiflow2-boards"
+     ],
+     "confidence": "low",
+     "last_verified": "2026-08-07"
+    },
+    "esp-bsp": {
+     "target": "espressif/m5stack_core_2",
+     "gaps": "The Core2 BSP knows nothing of the ATECC608B or the SK6812 bar. Set PMU Version to AXP192.",
+     "src": [
+      "esp-bsp"
+     ],
+     "confidence": "low",
+     "last_verified": "2026-08-07"
+    }
+   }
+  }
+ }
+}

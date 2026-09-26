@@ -1,0 +1,828 @@
+{
+ "schema_version": 1,
+ "product": {
+  "id": "core2",
+  "name": "Core2",
+  "family": "core",
+  "aliases": [
+   "m5core2",
+   "m5stack core2",
+   "core 2",
+   "m5 core2"
+  ]
+ },
+ "revisions": {
+  "core2@v1.0": {
+   "label": "v1.0 (2020.6, with RTC coin cell)",
+   "sku": [
+    "K010"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 2,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-core2"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "delisted",
+   "derived_from": null,
+   "pin_map": "core2-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6-V3",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "value": "8MB quad",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": [
+     "ILI9342C",
+     "ILI9342E"
+    ],
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "note": "ILI9342E on units made from 2026.8.7",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": "FT6336U",
+    "bus": "i2c_internal",
+    "address": "0x38",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "imu": {
+    "part": "MPU6886",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "part": null,
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "6-axis IMU only"
+   },
+   "pmic": {
+    "part": "AXP192",
+    "bus": "i2c_internal",
+    "address": "0x34",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": "BM8563",
+    "bus": "i2c_internal",
+    "address": "0x51",
+    "backup_battery": true,
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "audio": {
+    "amp": "NS4168 (I2S)",
+    "speaker": "1W-0928",
+    "mic": "SPM1423 (PDM)",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": [
+     "CP2104",
+     "CH9102F"
+    ],
+    "note": "both chips shipped from 2021.7, with no boundary",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": 390,
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 16.5,
+    "unit": "mm",
+    "weight_g": 54.9,
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "power_led": {
+    "value": "green",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [
+    {
+     "role": "vibration-motor",
+     "part": "1027 DC motor (AXP rail)",
+     "src": [
+      "m5-core2"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "errata": [
+    {
+     "id": "lcd-ili9342e",
+     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units; older builds may show a blank or wrong display.",
+     "src": [
+      "m5-core2"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ]
+  },
+  "core2@2023.02": {
+   "label": "v1.0 without RTC coin cell (from 2023.2)",
+   "sku": [
+    "K010"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 2,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-core2"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "listed",
+   "derived_from": "core2@v1.0",
+   "pin_map": "core2-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6-V3",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "value": "8MB quad",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": [
+     "ILI9342C",
+     "ILI9342E"
+    ],
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "note": "ILI9342E on units made from 2026.8.7",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": "FT6336U",
+    "bus": "i2c_internal",
+    "address": "0x38",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "imu": {
+    "part": "MPU6886",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "part": null,
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "6-axis IMU only"
+   },
+   "pmic": {
+    "part": "AXP192",
+    "bus": "i2c_internal",
+    "address": "0x34",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": "BM8563",
+    "bus": "i2c_internal",
+    "address": "0x51",
+    "backup_battery": false,
+    "note": "RTC coin cell removed in 2023.2; M5 says timing is unaffected while powered",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "audio": {
+    "amp": "NS4168 (I2S)",
+    "speaker": "1W-0928",
+    "mic": "SPM1423 (PDM)",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": [
+     "CP2104",
+     "CH9102F"
+    ],
+    "note": "the page still lists both chips",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": [
+     390,
+     500
+    ],
+    "note": "390 mAh until 2023.10, then 500 mAh",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 16.5,
+    "unit": "mm",
+    "weight_g": 54.9,
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "power_led": {
+    "value": "green",
+    "src": [
+     "m5-core2"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [
+    {
+     "role": "vibration-motor",
+     "part": "1027 DC motor (AXP rail)",
+     "src": [
+      "m5-core2"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "errata": [
+    {
+     "id": "lcd-ili9342e",
+     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units; older builds may show a blank or wrong display.",
+     "src": [
+      "m5-core2"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ]
+  },
+  "core2@v1.1": {
+   "label": "v1.1 (2023.11)",
+   "sku": [
+    "K010-V11"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 2,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-core2-v1.1"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "listed",
+   "derived_from": "core2@v1.0",
+   "pin_map": "core2-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6-V3",
+    "src": [
+     "m5-core2-v1.1"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-core2-v1.1"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "value": "8MB quad",
+    "src": [
+     "m5-core2-v1.1"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": [
+     "ILI9342C",
+     "ILI9342E"
+    ],
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "note": "ILI9342E on units made from 2026.8.7",
+    "src": [
+     "m5-core2-v1.1"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": "FT6336U",
+    "bus": "i2c_internal",
+    "address": "0x38",
+    "src": [
+     "m5-core2-v1.1"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "imu": {
+    "part": "MPU6886",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "src": [
+     "m5-core2-v1.1"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "part": null,
+    "src": [
+     "m5-core2-v1.1"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "6-axis IMU only"
+   },
+   "pmic": {
+    "part": "AXP2101",
+    "bus": "i2c_internal",
+    "address": "0x34",
+    "src": [
+     "m5-core2-v1.1"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": "BM8563",
+    "bus": "i2c_internal",
+    "address": "0x51",
+    "backup_battery": true,
+    "src": [
+     "m5-core2-v1.1"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "audio": {
+    "amp": "NS4168 (I2S)",
+    "speaker": "1W-0928",
+    "mic": "SPM1423 (PDM)",
+    "src": [
+     "m5-core2-v1.1"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "CH9102F",
+    "src": [
+     "m5-core2-v1.1"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-core2-v1.1"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": 500,
+    "src": [
+     "m5-core2-v1.1"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 16.5,
+    "unit": "mm",
+    "weight_g": 45.1,
+    "src": [
+     "m5-core2-v1.1"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "power_led": {
+    "value": "blue",
+    "src": [
+     "m5-core2-v1.1"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [
+    {
+     "role": "vibration-motor",
+     "part": "1027 DC motor (AXP rail)",
+     "src": [
+      "m5-core2-v1.1"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    },
+    {
+     "role": "current-monitor",
+     "part": "INA3221",
+     "bus": "i2c_internal",
+     "address": "0x40",
+     "src": [
+      "m5-core2-v1.1"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "errata": [
+    {
+     "id": "lcd-ili9342e",
+     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units; older builds may show a blank or wrong display.",
+     "src": [
+      "m5-core2-v1.1"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    },
+    {
+     "id": "axp192-only-code",
+     "text": "Code that drives the AXP192 directly, such as the legacy M5Core2 library, finds no AXP192 at 0x34 on this revision and fails without an error. M5Unified tries the AXP192, then falls back to the AXP2101.",
+     "src": [
+      "m5core2-lib",
+      "m5unified"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-08-09"
+    }
+   ]
+  },
+  "core2@v1.3": {
+   "label": "v1.3",
+   "sku": [
+    "K010-V13"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 2,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-core2-v1.3"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "listed",
+   "derived_from": "core2@v1.0",
+   "pin_map": "core2-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6-V3",
+    "src": [
+     "m5-core2-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-core2-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "value": "8MB quad",
+    "src": [
+     "m5-core2-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": [
+     "ILI9342C",
+     "ILI9342E"
+    ],
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "note": "ILI9342E on units made from 2026.8.7",
+    "src": [
+     "m5-core2-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": "FT6336U",
+    "bus": "i2c_internal",
+    "address": "0x38",
+    "src": [
+     "m5-core2-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "imu": {
+    "part": "BMI270",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "note": "M5Unified probes 0x68 and then 0x69",
+    "src": [
+     "m5-core2-v1.3",
+     "m5unified"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "part": null,
+    "src": [
+     "m5-core2-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "6-axis IMU only"
+   },
+   "pmic": {
+    "part": "AXP192",
+    "bus": "i2c_internal",
+    "address": "0x34",
+    "src": [
+     "m5-core2-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": "BM8563",
+    "bus": "i2c_internal",
+    "address": "0x51",
+    "backup_battery": true,
+    "note": "MS412FE rechargeable backup cell",
+    "src": [
+     "m5-core2-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "audio": {
+    "amp": "NS4168 (I2S)",
+    "speaker": "1W-0928",
+    "mic": "SPM1423 (PDM)",
+    "src": [
+     "m5-core2-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "CH9102F",
+    "src": [
+     "m5-core2-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-core2-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": 500,
+    "src": [
+     "m5-core2-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 16.5,
+    "unit": "mm",
+    "weight_g": 58.8,
+    "src": [
+     "m5-core2-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "power_led": {
+    "value": "green",
+    "src": [
+     "m5-core2-v1.3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [
+    {
+     "role": "vibration-motor",
+     "part": "1027 DC motor (AXP rail)",
+     "src": [
+      "m5-core2-v1.3"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "errata": [
+    {
+     "id": "lcd-ili9342e",
+     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units; older builds may show a blank or wrong display.",
+     "src": [
+      "m5-core2-v1.3"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "recommended_targets": {
+    "uiflow2": {
+     "target": "M5STACK_Core2",
+     "gaps": "The Core2 image predates v1.3; whether it drives the BMI270 IMU is not documented (open question uiflow2-image-v1.3).",
+     "src": [
+      "uiflow2-boards"
+     ],
+     "confidence": "low",
+     "last_verified": "2026-08-07"
+    }
+   }
+  }
+ }
+}

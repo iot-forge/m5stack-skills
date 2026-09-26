@@ -1,0 +1,85 @@
+{
+ "schema_version": 1,
+ "toolchain": "arduino-m5stack",
+ "targets": [
+  {
+   "id": "m5stack:esp32:m5stack_core",
+   "covers": [
+    "basic@v1.4",
+    "basic@v2.5",
+    "basic@v2.6",
+    "basic@v2.7"
+   ],
+   "per_revision": {
+    "basic@v1.4": "Flash Size 4MB (the default)",
+    "basic@v2.5": "Tools > Flash Size: 16MB (FlashSize=16M); the default is 4MB",
+    "basic@v2.6": "Tools > Flash Size: 16MB (FlashSize=16M); the default is 4MB",
+    "basic@v2.7": "Tools > Flash Size: 16MB (FlashSize=16M); the default is 4MB"
+   },
+   "src": [
+    "arduino-m5stack-boards"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-08-07",
+   "note": "M5Stack core 1.0.x used hyphenated ids (m5stack-core-esp32, m5stack-core2, ...); from 3.x they match espressif's underscore ids."
+  },
+  {
+   "id": "m5stack:esp32:m5stack_fire",
+   "covers": [
+    "fire@2018.06",
+    "fire@2019.07",
+    "fire@2019.08",
+    "fire@2020.04",
+    "fire@v2.7"
+   ],
+   "per_revision": {},
+   "src": [
+    "arduino-m5stack-boards"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-08-07",
+   "note": "M5Stack core 1.0.x used hyphenated ids (m5stack-core-esp32, m5stack-core2, ...); from 3.x they match espressif's underscore ids."
+  },
+  {
+   "id": "m5stack:esp32:m5stack_core2",
+   "covers": [
+    "core2@v1.0",
+    "core2@2023.02",
+    "core2@v1.1",
+    "core2@v1.3"
+   ],
+   "per_revision": {},
+   "src": [
+    "arduino-m5stack-boards"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-08-07",
+   "note": "M5Stack core 1.0.x used hyphenated ids (m5stack-core-esp32, m5stack-core2, ...); from 3.x they match espressif's underscore ids."
+  },
+  {
+   "id": "m5stack:esp32:m5stack_tough",
+   "covers": [
+    "tough@v1.0"
+   ],
+   "per_revision": {},
+   "src": [
+    "arduino-m5stack-boards"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-08-07",
+   "note": "M5Stack core 1.0.x used hyphenated ids (m5stack-core-esp32, m5stack-core2, ...); from 3.x they match espressif's underscore ids."
+  },
+  {
+   "id": "m5stack:esp32:m5stack_cores3",
+   "covers": [
+    "cores3@v1.0"
+   ],
+   "per_revision": {},
+   "src": [
+    "arduino-m5stack-boards"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-08-07"
+  }
+ ]
+}

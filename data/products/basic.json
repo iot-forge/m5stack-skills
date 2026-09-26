@@ -1,0 +1,684 @@
+{
+ "schema_version": 1,
+ "product": {
+  "id": "basic",
+  "name": "Basic",
+  "family": "core",
+  "aliases": [
+   "m5stack basic",
+   "basic core",
+   "m5stack core",
+   "m5stack core esp32",
+   "core esp32"
+  ]
+ },
+ "revisions": {
+  "basic@v1.4": {
+   "label": "v1.4 (first release, 2017.7)",
+   "sku": [
+    "K001"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 1,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "delisted",
+   "derived_from": null,
+   "pin_map": "basic-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6-V3",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "4MB",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7",
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "no PSRAM row; board.csv gives None for Basic"
+   },
+   "display": {
+    "part": "ILI9342C",
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "three physical buttons, no touch panel"
+   },
+   "imu": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "no IMU on Basic"
+   },
+   "magnetometer": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "pmic": {
+    "part": "IP5306",
+    "bus": "i2c_internal",
+    "address": "0x75",
+    "note": "custom I2C version",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "spec table lists no RTC"
+   },
+   "audio": {
+    "speaker": "1W-0928 on G25 (DAC)",
+    "mic": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "CP2104",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": [
+     150,
+     110
+    ],
+    "note": "150 mAh until 2020.3, then 110 mAh",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 17.0,
+    "unit": "mm",
+    "weight_g": 49.5,
+    "src": [
+     "m5-basic"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [],
+   "errata": [
+    {
+     "id": "tn-panel",
+     "text": "Units made before 2019.7 have a TN panel; later ones an IPS panel on the same ILI9342C controller. The old M5Stack library before 0.2.8 shows inverted colours on IPS units.",
+     "src": [
+      "m5-basic-v2.7"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    },
+    {
+     "id": "pcb-2018.2a",
+     "text": "Units with PCB version 2018.2A do not support USB-C-to-C cables or USB PD power supplies.",
+     "src": [
+      "m5-basic"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    },
+    {
+     "id": "ip5306-early-i2c",
+     "text": "Gray units before 2017.12 had an IP5306 not wired to I2C. M5 documents this for Gray only; whether the earliest Basic units share it is not documented, so battery readings on a 2017 Basic may return nothing.",
+     "src": [
+      "m5-gray"
+     ],
+     "confidence": "low",
+     "last_verified": "2026-09-26"
+    }
+   ]
+  },
+  "basic@v2.5": {
+   "label": "v2.5 (2020.6)",
+   "sku": [
+    "K001"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 1,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "delisted",
+   "derived_from": "basic@v1.4",
+   "pin_map": "basic-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6-V3",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7",
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "no PSRAM row; board.csv gives None for Basic"
+   },
+   "display": {
+    "part": "ILI9342C",
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "three physical buttons, no touch panel"
+   },
+   "imu": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "no IMU on Basic"
+   },
+   "magnetometer": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "pmic": {
+    "part": "IP5306",
+    "bus": "i2c_internal",
+    "address": "0x75",
+    "note": "custom I2C version",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "spec table lists no RTC"
+   },
+   "audio": {
+    "speaker": "1W-0928 on G25 (DAC)",
+    "mic": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "CP2104",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": 110,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 17.0,
+    "unit": "mm",
+    "weight_g": 49.5,
+    "src": [
+     "m5-basic"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [],
+   "errata": []
+  },
+  "basic@v2.6": {
+   "label": "v2.6 (2021.10)",
+   "sku": [
+    "K001"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 1,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "delisted",
+   "derived_from": "basic@v2.5",
+   "pin_map": "basic-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6-V3",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7",
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "no PSRAM row; board.csv gives None for Basic"
+   },
+   "display": {
+    "part": "ILI9342C",
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "three physical buttons, no touch panel"
+   },
+   "imu": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "no IMU on Basic"
+   },
+   "magnetometer": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "pmic": {
+    "part": "IP5306",
+    "bus": "i2c_internal",
+    "address": "0x75",
+    "note": "custom I2C version",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "spec table lists no RTC"
+   },
+   "audio": {
+    "speaker": "1W-0928 on G25 (DAC)",
+    "mic": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "CH9102",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": 110,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 17.0,
+    "unit": "mm",
+    "weight_g": 49.5,
+    "src": [
+     "m5-basic"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [],
+   "errata": []
+  },
+  "basic@v2.7": {
+   "label": "v2.7 (2023.4)",
+   "sku": [
+    "K001-V27"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 1,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "listed",
+   "derived_from": "basic@v2.6",
+   "pin_map": "basic-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6-V3",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7",
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "no PSRAM row; board.csv gives None for Basic"
+   },
+   "display": {
+    "part": "ILI9342C",
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "three physical buttons, no touch panel"
+   },
+   "imu": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "no IMU on Basic"
+   },
+   "magnetometer": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "pmic": {
+    "part": "IP5306",
+    "bus": "i2c_internal",
+    "address": "0x75",
+    "note": "custom I2C version",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "spec table lists no RTC"
+   },
+   "audio": {
+    "speaker": "1W-0928 on G25 (DAC)",
+    "mic": null,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "CH9102",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": 110,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 17.0,
+    "unit": "mm",
+    "weight_g": 49.4,
+    "src": [
+     "m5-basic-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [],
+   "errata": [
+    {
+     "id": "m5-pio-snippet-4mb",
+     "text": "M5's own PlatformIO example for Basic v2.7 uses board = m5stack-core-esp32, which assumes 4 MB flash. The 16 MB board id is m5stack-core-esp32-16M.",
+     "src": [
+      "m5-basic-v2.7",
+      "pio-esp32"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ]
+  }
+ }
+}

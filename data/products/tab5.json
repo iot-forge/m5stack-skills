@@ -1,0 +1,32 @@
+{
+ "schema_version": 1,
+ "product": {
+  "id": "tab5",
+  "name": "Tab5",
+  "family": "core",
+  "aliases": [
+   "m5stack tab5",
+   "tab 5"
+  ]
+ },
+ "revisions": {
+  "tab5@v1.0": {
+   "label": "v1.0",
+   "sku": [
+    "C145",
+    "K145"
+   ],
+   "soc": "ESP32-P4NRW32 (RISC-V) + ESP32-C6-MINI-1U (Wi-Fi 6)",
+   "platform": "esp32-p4",
+   "market_status": "listed",
+   "support": {
+    "status": "roadmap",
+    "reason": "ESP32-P4: RISC-V, no radio of its own (Wi-Fi through an ESP32-C6), a 5-inch 1280x720 display and a different ESP-IDF baseline. The same four frameworks apply but with a different support matrix, which is not yet worked out.",
+    "src": [
+     "m5-tab5"
+    ],
+    "last_verified": "2026-09-26"
+   }
+  }
+ }
+}

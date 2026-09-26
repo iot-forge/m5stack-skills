@@ -1,0 +1,41 @@
+{
+ "schema_version": 1,
+ "features": [
+  {
+   "id": "display",
+   "text": "the LCD panel"
+  },
+  {
+   "id": "touch",
+   "text": "the touch panel"
+  },
+  {
+   "id": "sd",
+   "text": "the microSD slot"
+  },
+  {
+   "id": "speaker",
+   "text": "the speaker amplifier"
+  },
+  {
+   "id": "mic",
+   "text": "the microphone"
+  },
+  {
+   "id": "serial_console",
+   "text": "UART0 to the USB bridge (upload and serial monitor)"
+  },
+  {
+   "id": "rgb_led",
+   "text": "the SK6812 RGB LED bar"
+  },
+  {
+   "id": "rs485",
+   "text": "the RS485 port"
+  },
+  {
+   "id": "camera",
+   "text": "the camera"
+  }
+ ]
+}

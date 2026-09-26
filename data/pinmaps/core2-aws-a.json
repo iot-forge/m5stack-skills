@@ -1,0 +1,527 @@
+{
+ "schema_version": 1,
+ "id": "core2-aws-a",
+ "soc": "esp32",
+ "populated": true,
+ "buses": {
+  "spi_main": {
+   "kind": "spi",
+   "pins": {
+    "sck": "G18",
+    "mosi": "G23",
+    "miso": "G38"
+   },
+   "src": [
+    "m5-core2-for-aws"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  "i2c_internal": {
+   "kind": "i2c",
+   "pins": {
+    "sda": "G21",
+    "scl": "G22"
+   },
+   "src": [
+    "m5-core2-for-aws"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  "i2c_port_a": {
+   "kind": "i2c",
+   "pins": {
+    "sda": "G32",
+    "scl": "G33"
+   },
+   "src": [
+    "m5-core2-for-aws"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  }
+ },
+ "connectors": [
+  {
+   "id": "port_a",
+   "kind": "grove-i2c",
+   "bus": "i2c_port_a",
+   "src": [
+    "m5-core2-for-aws"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "port_b",
+   "kind": "grove-gpio",
+   "positions": [
+    {
+     "n": "out",
+     "gpio": "G26"
+    },
+    {
+     "n": "in",
+     "gpio": "G36"
+    }
+   ],
+   "src": [
+    "m5-core2-for-aws"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "port_c",
+   "kind": "grove-uart",
+   "positions": [
+    {
+     "n": "tx",
+     "gpio": "G14"
+    },
+    {
+     "n": "rx",
+     "gpio": "G13"
+    }
+   ],
+   "src": [
+    "m5-core2-for-aws"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "mbus",
+   "kind": "m-bus",
+   "positions": [
+    {
+     "n": 1,
+     "pin": "GND"
+    },
+    {
+     "n": 2,
+     "gpio": "G35"
+    },
+    {
+     "n": 3,
+     "pin": "GND"
+    },
+    {
+     "n": 4,
+     "gpio": "G36"
+    },
+    {
+     "n": 5,
+     "pin": "GND"
+    },
+    {
+     "n": 6,
+     "pin": "RST"
+    },
+    {
+     "n": 7,
+     "gpio": "G23"
+    },
+    {
+     "n": 8,
+     "gpio": "G25"
+    },
+    {
+     "n": 9,
+     "gpio": "G38"
+    },
+    {
+     "n": 10,
+     "gpio": "G26"
+    },
+    {
+     "n": 11,
+     "gpio": "G18"
+    },
+    {
+     "n": 12,
+     "pin": "3V3"
+    },
+    {
+     "n": 13,
+     "gpio": "G3"
+    },
+    {
+     "n": 14,
+     "gpio": "G1"
+    },
+    {
+     "n": 15,
+     "gpio": "G13"
+    },
+    {
+     "n": 16,
+     "gpio": "G14"
+    },
+    {
+     "n": 17,
+     "gpio": "G21"
+    },
+    {
+     "n": 18,
+     "gpio": "G22"
+    },
+    {
+     "n": 19,
+     "gpio": "G32"
+    },
+    {
+     "n": 20,
+     "gpio": "G33"
+    },
+    {
+     "n": 21,
+     "gpio": "G27"
+    },
+    {
+     "n": 22,
+     "gpio": "G19"
+    },
+    {
+     "n": 23,
+     "gpio": "G2"
+    },
+    {
+     "n": 24,
+     "gpio": "G0"
+    },
+    {
+     "n": 25,
+     "pin": "NC"
+    },
+    {
+     "n": 26,
+     "gpio": "G34"
+    },
+    {
+     "n": 27,
+     "pin": "NC"
+    },
+    {
+     "n": 28,
+     "pin": "5V"
+    },
+    {
+     "n": 29,
+     "pin": "NC"
+    },
+    {
+     "n": 30,
+     "pin": "BAT"
+    }
+   ],
+   "src": [
+    "m5-core2-for-aws"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  }
+ ],
+ "pins": {
+  "G0": {
+   "uses": [
+    {
+     "function": "speaker I2S LRCK",
+     "claim": "feature",
+     "feature": "speaker"
+    },
+    {
+     "function": "mic PDM CLK",
+     "claim": "feature",
+     "feature": "mic"
+    }
+   ],
+   "exposed_on": [
+    "mbus:24"
+   ],
+   "labels": []
+  },
+  "G1": {
+   "uses": [
+    {
+     "function": "UART0 TX (USB bridge)",
+     "claim": "feature",
+     "feature": "serial_console"
+    }
+   ],
+   "exposed_on": [
+    "mbus:14"
+   ],
+   "labels": []
+  },
+  "G2": {
+   "uses": [
+    {
+     "function": "speaker I2S DATA",
+     "claim": "feature",
+     "feature": "speaker"
+    }
+   ],
+   "exposed_on": [
+    "mbus:23"
+   ],
+   "labels": []
+  },
+  "G3": {
+   "uses": [
+    {
+     "function": "UART0 RX (USB bridge)",
+     "claim": "feature",
+     "feature": "serial_console"
+    }
+   ],
+   "exposed_on": [
+    "mbus:13"
+   ],
+   "labels": []
+  },
+  "G4": {
+   "uses": [
+    {
+     "function": "microSD CS",
+     "claim": "feature",
+     "feature": "sd"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G5": {
+   "uses": [
+    {
+     "function": "LCD CS",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G12": {
+   "uses": [
+    {
+     "function": "speaker I2S BCLK",
+     "claim": "feature",
+     "feature": "speaker"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G13": {
+   "uses": [],
+   "exposed_on": [
+    "port_c:rx",
+    "mbus:15"
+   ],
+   "labels": []
+  },
+  "G14": {
+   "uses": [],
+   "exposed_on": [
+    "port_c:tx",
+    "mbus:16"
+   ],
+   "labels": []
+  },
+  "G15": {
+   "uses": [
+    {
+     "function": "LCD DC",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G16": {
+   "uses": [
+    {
+     "function": "PSRAM",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G17": {
+   "uses": [
+    {
+     "function": "PSRAM",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G18": {
+   "uses": [
+    {
+     "function": "SPI SCK (LCD, microSD)",
+     "claim": "bus",
+     "owner": "spi_main"
+    }
+   ],
+   "exposed_on": [
+    "mbus:11"
+   ],
+   "labels": []
+  },
+  "G19": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:22"
+   ],
+   "labels": []
+  },
+  "G21": {
+   "uses": [
+    {
+     "function": "internal I2C SDA",
+     "claim": "bus",
+     "owner": "i2c_internal"
+    }
+   ],
+   "exposed_on": [
+    "mbus:17"
+   ],
+   "labels": []
+  },
+  "G22": {
+   "uses": [
+    {
+     "function": "internal I2C SCL",
+     "claim": "bus",
+     "owner": "i2c_internal"
+    }
+   ],
+   "exposed_on": [
+    "mbus:18"
+   ],
+   "labels": []
+  },
+  "G23": {
+   "uses": [
+    {
+     "function": "SPI MOSI (LCD, microSD)",
+     "claim": "bus",
+     "owner": "spi_main"
+    }
+   ],
+   "exposed_on": [
+    "mbus:7"
+   ],
+   "labels": []
+  },
+  "G25": {
+   "uses": [
+    {
+     "function": "SK6812 LED bar data",
+     "claim": "feature",
+     "feature": "rgb_led"
+    }
+   ],
+   "exposed_on": [
+    "mbus:8"
+   ],
+   "labels": []
+  },
+  "G26": {
+   "uses": [],
+   "exposed_on": [
+    "port_b:out",
+    "mbus:10"
+   ],
+   "labels": []
+  },
+  "G27": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:21"
+   ],
+   "labels": []
+  },
+  "G32": {
+   "uses": [],
+   "exposed_on": [
+    "port_a:sda",
+    "mbus:19"
+   ],
+   "labels": []
+  },
+  "G33": {
+   "uses": [],
+   "exposed_on": [
+    "port_a:scl",
+    "mbus:20"
+   ],
+   "labels": []
+  },
+  "G34": {
+   "uses": [
+    {
+     "function": "mic PDM DATA",
+     "claim": "feature",
+     "dir": "in",
+     "feature": "mic"
+    }
+   ],
+   "exposed_on": [
+    "mbus:26"
+   ],
+   "labels": []
+  },
+  "G35": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:2"
+   ],
+   "labels": []
+  },
+  "G36": {
+   "uses": [],
+   "exposed_on": [
+    "port_b:in",
+    "mbus:4"
+   ],
+   "labels": []
+  },
+  "G38": {
+   "uses": [
+    {
+     "function": "SPI MISO (LCD, microSD)",
+     "claim": "bus",
+     "owner": "spi_main"
+    }
+   ],
+   "exposed_on": [
+    "mbus:9"
+   ],
+   "labels": []
+  },
+  "G39": {
+   "uses": [
+    {
+     "function": "touch INT",
+     "claim": "feature",
+     "dir": "in",
+     "feature": "touch"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  }
+ },
+ "notes": "G16/G17 are marked fixed because the board carries PSRAM; ESP-IDF documents them as the module's PSRAM pins.",
+ "src": [
+  "m5-core2-for-aws",
+  "idf-gpio-esp32"
+ ],
+ "confidence": "high",
+ "last_verified": "2026-09-26"
+}

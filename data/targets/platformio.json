@@ -1,0 +1,106 @@
+{
+ "schema_version": 1,
+ "toolchain": "platformio",
+ "targets": [
+  {
+   "id": "m5stack-core-esp32",
+   "covers": [
+    "basic@v1.4"
+   ],
+   "per_revision": {},
+   "src": [
+    "pio-esp32"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-08-07",
+   "note": "flash_size 4MB"
+  },
+  {
+   "id": "m5stack-core-esp32-16M",
+   "covers": [
+    "basic@v2.5",
+    "basic@v2.6",
+    "basic@v2.7"
+   ],
+   "per_revision": {},
+   "src": [
+    "pio-esp32"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-08-07",
+   "note": "flash_size 16MB; emits the same ARDUINO_M5Stack_Core_ESP32 define as the 4MB id"
+  },
+  {
+   "id": "m5stack-grey",
+   "covers": [
+    "gray@2017.09",
+    "gray@2017.12",
+    "gray@2019.06"
+   ],
+   "per_revision": {},
+   "src": [
+    "pio-esp32"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-08-07",
+   "note": "emits the same ARDUINO_M5Stack_Core_ESP32 define as Basic, so compile-time code cannot tell Gray from Basic"
+  },
+  {
+   "id": "m5stack-fire",
+   "covers": [
+    "fire@2018.06",
+    "fire@2019.07",
+    "fire@2019.08",
+    "fire@2020.04",
+    "fire@v2.7"
+   ],
+   "per_revision": {
+    "fire@2018.06": "board_build.partitions = default_16MB.csv, -DBOARD_HAS_PSRAM (M5's own example)",
+    "fire@2019.07": "board_build.partitions = default_16MB.csv, -DBOARD_HAS_PSRAM (M5's own example)",
+    "fire@2019.08": "board_build.partitions = default_16MB.csv, -DBOARD_HAS_PSRAM (M5's own example)",
+    "fire@2020.04": "board_build.partitions = default_16MB.csv, -DBOARD_HAS_PSRAM (M5's own example)",
+    "fire@v2.7": "board_build.partitions = default_16MB.csv, -DBOARD_HAS_PSRAM (M5's own example)"
+   },
+   "src": [
+    "pio-esp32",
+    "m5-fire-v2.7"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-08-07"
+  },
+  {
+   "id": "m5stack-core2",
+   "covers": [
+    "core2@v1.0",
+    "core2@2023.02",
+    "core2@v1.1",
+    "core2@v1.3"
+   ],
+   "per_revision": {
+    "core2@v1.0": "board_build.partitions = default_16MB.csv, -DBOARD_HAS_PSRAM (M5's own example)",
+    "core2@2023.02": "board_build.partitions = default_16MB.csv, -DBOARD_HAS_PSRAM (M5's own example)",
+    "core2@v1.1": "board_build.partitions = default_16MB.csv, -DBOARD_HAS_PSRAM (M5's own example)",
+    "core2@v1.3": "board_build.partitions = default_16MB.csv, -DBOARD_HAS_PSRAM (M5's own example)"
+   },
+   "src": [
+    "pio-esp32",
+    "m5-core2"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-08-07"
+  },
+  {
+   "id": "m5stack-cores3",
+   "covers": [
+    "cores3@v1.0"
+   ],
+   "per_revision": {},
+   "src": [
+    "pio-esp32"
+   ],
+   "confidence": "medium",
+   "last_verified": "2026-08-07",
+   "note": "present in platform-espressif32 develop (87cbed0); M5's own page uses esp32-s3-devkitc-1 instead"
+  }
+ ]
+}

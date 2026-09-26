@@ -1,0 +1,236 @@
+{
+ "schema_version": 1,
+ "sources": [
+  {
+   "id": "m5-basic",
+   "kind": "m5-docs",
+   "title": "Basic (legacy page, covers v1.4 to v2.6)",
+   "url": "https://docs.m5stack.com/en/core/basic",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-basic-v2.7",
+   "kind": "m5-docs",
+   "title": "Basic v2.7",
+   "url": "https://docs.m5stack.com/en/core/basic_v2.7",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-gray",
+   "kind": "m5-docs",
+   "title": "Gray",
+   "url": "https://docs.m5stack.com/en/core/gray",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-fire",
+   "kind": "m5-docs",
+   "title": "Fire (legacy page)",
+   "url": "https://docs.m5stack.com/en/core/fire",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-fire-v2.7",
+   "kind": "m5-docs",
+   "title": "Fire v2.7",
+   "url": "https://docs.m5stack.com/en/core/fire_v2.7",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-m5go-v2.7",
+   "kind": "m5-docs",
+   "title": "M5GO IoT Kit v2.7",
+   "url": "https://docs.m5stack.com/en/core/m5go_v2.7",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-core2",
+   "kind": "m5-docs",
+   "title": "Core2",
+   "url": "https://docs.m5stack.com/en/core/core2",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-core2-v1.1",
+   "kind": "m5-docs",
+   "title": "Core2 v1.1",
+   "url": "https://docs.m5stack.com/en/core/Core2%20v1.1",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-core2-v1.3",
+   "kind": "m5-docs",
+   "title": "Core2 v1.3",
+   "url": "https://docs.m5stack.com/en/core/Core2_v1.3",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-core2-for-aws",
+   "kind": "m5-docs",
+   "title": "Core2 for AWS",
+   "url": "https://docs.m5stack.com/en/core/core2_for_aws",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-core2-for-aws-v1.3",
+   "kind": "m5-docs",
+   "title": "Core2 for AWS v1.3",
+   "url": "https://docs.m5stack.com/en/core/Core2_For_AWS_v1.3",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-tough",
+   "kind": "m5-docs",
+   "title": "Tough",
+   "url": "https://docs.m5stack.com/en/core/tough",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-cores3",
+   "kind": "m5-docs",
+   "title": "CoreS3",
+   "url": "https://docs.m5stack.com/en/core/CoreS3",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-cores3-se",
+   "kind": "m5-docs",
+   "title": "CoreS3-SE",
+   "url": "https://docs.m5stack.com/en/core/M5CoreS3%20SE",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-cores3-lite",
+   "kind": "m5-docs",
+   "title": "CoreS3-Lite",
+   "url": "https://docs.m5stack.com/en/core/CoreS3-Lite",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-cores3-thread-br",
+   "kind": "m5-docs",
+   "title": "CoreS3 Thread BR",
+   "url": "https://docs.m5stack.com/en/core/CoreS3_Thread_BR",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-powerhub",
+   "kind": "m5-docs",
+   "title": "PowerHub",
+   "url": "https://docs.m5stack.com/en/core/PowerHub",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-coremp135",
+   "kind": "m5-docs",
+   "title": "CoreMP135",
+   "url": "https://docs.m5stack.com/en/core/M5CoreMP135",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-cm4stack",
+   "kind": "m5-docs",
+   "title": "CM4Stack",
+   "url": "https://docs.m5stack.com/en/core/CM4Stack",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-tab5",
+   "kind": "m5-docs",
+   "title": "Tab5",
+   "url": "https://docs.m5stack.com/en/core/Tab5",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "board-id-csv",
+   "kind": "registry",
+   "title": "m5stack-board-id board.csv",
+   "url": "https://github.com/m5stack/m5stack-board-id/blob/0b3aa6c9be2308fca4e5b4bda4de5ed0216c03b6/board.csv",
+   "ref": "0b3aa6c"
+  },
+  {
+   "id": "m5gfx",
+   "kind": "library-source",
+   "title": "M5GFX board_t enum and board autodetection",
+   "url": "https://github.com/m5stack/M5GFX/blob/729297d6e3d657ddc1ec5189bac2f2ea68828085/src/M5GFX.cpp",
+   "ref": "729297d"
+  },
+  {
+   "id": "m5unified",
+   "kind": "library-source",
+   "title": "M5Unified power, IMU and INA3221 drivers",
+   "url": "https://github.com/m5stack/M5Unified/tree/4fb444784c85791e0b0207701392b42be234b2e7/src/utility",
+   "ref": "4fb4447"
+  },
+  {
+   "id": "m5core2-lib",
+   "kind": "library-source",
+   "title": "Legacy M5Core2 library AXP192 driver",
+   "url": "https://github.com/m5stack/M5Core2/blob/master/src/AXP192.cpp",
+   "ref": "master, retrieved 2026-08-09"
+  },
+  {
+   "id": "arduino-esp32-boards",
+   "kind": "boards.txt",
+   "title": "espressif/arduino-esp32 boards.txt",
+   "url": "https://github.com/espressif/arduino-esp32/blob/d8a1bf60d01aac021fc5f3cff30126f11d1e10a6/boards.txt",
+   "ref": "d8a1bf6"
+  },
+  {
+   "id": "arduino-m5stack-boards",
+   "kind": "boards.txt",
+   "title": "M5Stack Arduino core boards.txt",
+   "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/arduino/m5stack-3.3.8.zip",
+   "ref": "3.3.8"
+  },
+  {
+   "id": "pio-esp32",
+   "kind": "boards.txt",
+   "title": "platformio/platform-espressif32 boards/",
+   "url": "https://github.com/platformio/platform-espressif32/tree/87cbed0ab9e66a78e99a5ddfa19c6bf900a79bc7/boards",
+   "ref": "87cbed0 (develop, v7.0.1)"
+  },
+  {
+   "id": "uiflow2-boards",
+   "kind": "library-source",
+   "title": "uiflow_micropython m5stack/boards/",
+   "url": "https://github.com/m5stack/uiflow_micropython/tree/ac4226f72a48809b7ed7a892cdf550f6703331dc/m5stack/boards",
+   "ref": "ac4226f"
+  },
+  {
+   "id": "uiflow2-release",
+   "kind": "library-source",
+   "title": "uiflow_micropython release assets",
+   "url": "https://github.com/m5stack/uiflow_micropython/releases",
+   "ref": "2.4.6, retrieved 2026-08-09"
+  },
+  {
+   "id": "esp-bsp",
+   "kind": "library-source",
+   "title": "espressif/esp-bsp M5 BSP components",
+   "url": "https://github.com/espressif/esp-bsp/tree/f0ef9497efce684997ce391edd19733483e250a5/bsp",
+   "ref": "f0ef949"
+  },
+  {
+   "id": "idf-gpio-esp32",
+   "kind": "datasheet",
+   "title": "ESP-IDF GPIO reference, ESP32",
+   "url": "https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/peripherals/gpio.html",
+   "ref": "stable, retrieved 2026-09-26"
+  },
+  {
+   "id": "idf-gpio-esp32s3",
+   "kind": "datasheet",
+   "title": "ESP-IDF GPIO reference, ESP32-S3",
+   "url": "https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html",
+   "ref": "stable, retrieved 2026-09-26"
+  },
+  {
+   "id": "usb-ids",
+   "kind": "registry",
+   "title": "Linux USB ID repository (usb.ids)",
+   "url": "http://www.linux-usb.org/usb.ids",
+   "ref": "2026.06.26"
+  }
+ ]
+}

@@ -1,0 +1,194 @@
+{
+ "schema_version": 1,
+ "product": {
+  "id": "tough",
+  "name": "Tough",
+  "family": "core",
+  "aliases": [
+   "m5tough",
+   "m5stack tough"
+  ]
+ },
+ "revisions": {
+  "tough@v1.0": {
+   "label": "v1.0 (the only documented revision)",
+   "sku": [
+    "K034"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 8,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-tough"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "listed",
+   "derived_from": null,
+   "pin_map": "tough-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6-V3",
+    "src": [
+     "m5-tough"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-tough"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "value": "8MB quad",
+    "src": [
+     "m5-tough"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": "ILI9342C",
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "src": [
+     "m5-tough"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": "CHSC6540",
+    "bus": "i2c_internal",
+    "address": "0x2E",
+    "src": [
+     "m5-tough"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "imu": {
+    "part": null,
+    "src": [
+     "m5-tough"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "the spec table and pin map list no IMU"
+   },
+   "magnetometer": {
+    "part": null,
+    "src": [
+     "m5-tough"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "pmic": {
+    "part": "AXP192",
+    "bus": "i2c_internal",
+    "address": "0x34",
+    "note": "the page has no version history, so a later AXP2101 Tough cannot be ruled out",
+    "src": [
+     "m5-tough"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": "BM8563",
+    "bus": "i2c_internal",
+    "address": "0x51",
+    "backup_battery": null,
+    "src": [
+     "m5-tough"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "audio": {
+    "amp": "NS4168 (I2S)",
+    "speaker": "1W",
+    "mic": "present, part not named",
+    "src": [
+     "m5-tough"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "CH9102",
+    "src": [
+     "m5-tough"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI), up to 16 GB",
+    "src": [
+     "m5-tough"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "unknown": true,
+    "note": "the spec table lists no battery; Tough takes 6-24 V through its RS485 port",
+    "src": [
+     "m5-tough"
+    ],
+    "confidence": "low",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 76.0,
+    "h": 58.0,
+    "d": 41.6,
+    "unit": "mm",
+    "weight_g": 117.5,
+    "src": [
+     "m5-tough"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [
+    {
+     "role": "rs485-transceiver",
+     "part": "RS485 port with 6-24 V input",
+     "src": [
+      "m5-tough"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "errata": [],
+   "recommended_targets": {
+    "platformio": {
+     "target": "m5stack-core2",
+     "gaps": "No PlatformIO board id exists for Tough. The Core2 id defines ARDUINO_M5STACK_Core2, so code keyed on that define assumes an FT6336U touch panel; M5Unified still detects Tough at runtime.",
+     "src": [
+      "pio-esp32"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-08-07"
+    }
+   }
+  }
+ }
+}

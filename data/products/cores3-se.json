@@ -1,0 +1,245 @@
+{
+ "schema_version": 1,
+ "product": {
+  "id": "cores3-se",
+  "name": "CoreS3-SE",
+  "family": "core",
+  "aliases": [
+   "m5cores3 se",
+   "cores3 se",
+   "core s3 se",
+   "m5stack cores3 se"
+  ]
+ },
+ "revisions": {
+  "cores3-se@v1.0": {
+   "label": "v1.0 (the only documented revision)",
+   "sku": [
+    "K128-SE"
+   ],
+   "soc": "esp32-s3",
+   "platform": "esp32-s3",
+   "bid": {
+    "value": 17,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-cores3-se"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "listed",
+   "derived_from": null,
+   "pin_map": "cores3-se-a",
+   "soc_part": {
+    "value": "ESP32-S3",
+    "src": [
+     "m5-cores3-se"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-cores3-se"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "value": "8MB quad",
+    "src": [
+     "m5-cores3-se"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": "ILI9342C",
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "src": [
+     "m5-cores3-se"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": "FT6336U",
+    "bus": "i2c_internal",
+    "address": "0x38",
+    "src": [
+     "m5-cores3-se"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "imu": {
+    "part": null,
+    "src": [
+     "m5-cores3-se"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "absent per M5's comparison table"
+   },
+   "magnetometer": {
+    "part": null,
+    "src": [
+     "m5-cores3-se"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "absent per M5's comparison table"
+   },
+   "pmic": {
+    "part": "AXP2101",
+    "bus": "i2c_internal",
+    "address": "0x34",
+    "src": [
+     "m5-cores3-se"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": "BM8563",
+    "bus": "i2c_internal",
+    "address": "0x51",
+    "src": [
+     "m5-cores3-se"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "audio": {
+    "amp": "AW88298 (I2S)",
+    "codec": "ES7210",
+    "mic": "dual, through the ES7210",
+    "bus": "i2c_internal",
+    "i2c": [
+     {
+      "part": "AW88298",
+      "address": "0x36"
+     },
+     {
+      "part": "ES7210",
+      "address": "0x40"
+     }
+    ],
+    "src": [
+     "m5-cores3-se"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "native USB (ESP32-S3 USB Serial/JTAG)",
+    "src": [
+     "m5-cores3-se"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-cores3-se"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "part": null,
+    "src": [
+     "m5-cores3-se"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26",
+    "note": "no battery per M5's comparison table"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 15.5,
+    "unit": "mm",
+    "weight_g": 37.8,
+    "src": [
+     "m5-cores3-se"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [
+    {
+     "role": "io-expander",
+     "part": "AW9523B",
+     "bus": "i2c_internal",
+     "address": "0x58",
+     "src": [
+      "m5-cores3-se"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "errata": [],
+   "recommended_targets": {
+    "arduino-esp32": {
+     "target": "esp32:esp32:m5stack_cores3",
+     "gaps": "No target of its own. M5Unified tells the boards apart at runtime; the parts this board lacks are simply absent.",
+     "src": [
+      "arduino-esp32-boards"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-08-07"
+    },
+    "arduino-m5stack": {
+     "target": "m5stack:esp32:m5stack_cores3",
+     "gaps": "No target of its own; same as the upstream CoreS3 target.",
+     "src": [
+      "arduino-m5stack-boards"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-08-07"
+    },
+    "platformio": {
+     "target": "m5stack-cores3",
+     "gaps": "No board id of its own. M5's CoreS3 page itself configures PlatformIO with board = esp32-s3-devkitc-1 and -DBOARD_HAS_PSRAM instead.",
+     "src": [
+      "pio-esp32"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-08-07"
+    },
+    "uiflow2": {
+     "target": "M5STACK_CoreS3",
+     "gaps": "No image of its own; whether the CoreS3 image works on this board is not documented.",
+     "src": [
+      "uiflow2-boards"
+     ],
+     "confidence": "low",
+     "last_verified": "2026-08-07"
+    },
+    "esp-bsp": {
+     "target": "espressif/m5stack_core_s3",
+     "gaps": "No BSP of its own; the CoreS3 BSP expects the full CoreS3 part list.",
+     "src": [
+      "esp-bsp",
+      "m5-cores3-se"
+     ],
+     "confidence": "low",
+     "last_verified": "2026-09-26"
+    }
+   }
+  }
+ }
+}

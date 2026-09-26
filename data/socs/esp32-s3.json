@@ -1,0 +1,120 @@
+{
+ "schema_version": 1,
+ "id": "esp32-s3",
+ "name": "ESP32-S3 (Xtensa LX7)",
+ "gpios": [
+  "G0",
+  "G1",
+  "G2",
+  "G3",
+  "G4",
+  "G5",
+  "G6",
+  "G7",
+  "G8",
+  "G9",
+  "G10",
+  "G11",
+  "G12",
+  "G13",
+  "G14",
+  "G15",
+  "G16",
+  "G17",
+  "G18",
+  "G19",
+  "G20",
+  "G21",
+  "G26",
+  "G27",
+  "G28",
+  "G29",
+  "G30",
+  "G31",
+  "G32",
+  "G33",
+  "G34",
+  "G35",
+  "G36",
+  "G37",
+  "G38",
+  "G39",
+  "G40",
+  "G41",
+  "G42",
+  "G43",
+  "G44",
+  "G45",
+  "G46",
+  "G47",
+  "G48"
+ ],
+ "rules": [
+  {
+   "id": "flash",
+   "effect": "unusable",
+   "pins": [
+    "G26",
+    "G27",
+    "G28",
+    "G29",
+    "G30",
+    "G31",
+    "G32"
+   ],
+   "text": "used by SPI flash and PSRAM; not recommended for other uses",
+   "src": [
+    "idf-gpio-esp32s3"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "octal",
+   "effect": "caution",
+   "pins": [
+    "G33",
+    "G34",
+    "G35",
+    "G36",
+    "G37"
+   ],
+   "text": "taken by octal flash or octal PSRAM where fitted",
+   "src": [
+    "idf-gpio-esp32s3"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "strapping",
+   "effect": "caution",
+   "pins": [
+    "G0",
+    "G3",
+    "G45",
+    "G46"
+   ],
+   "text": "strapping pin: its level at reset selects the boot mode",
+   "src": [
+    "idf-gpio-esp32s3"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  },
+  {
+   "id": "usb_jtag",
+   "effect": "caution",
+   "pins": [
+    "G19",
+    "G20"
+   ],
+   "text": "USB Serial/JTAG by default; reusing them disables USB flashing and the console",
+   "src": [
+    "idf-gpio-esp32s3"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  }
+ ]
+}

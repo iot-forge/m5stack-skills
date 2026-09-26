@@ -1,0 +1,32 @@
+{
+ "schema_version": 1,
+ "product": {
+  "id": "coremp135",
+  "name": "CoreMP135",
+  "family": "core",
+  "aliases": [
+   "m5coremp135",
+   "core mp135",
+   "mp135"
+  ]
+ },
+ "revisions": {
+  "coremp135@v1.0": {
+   "label": "v1.0",
+   "sku": [
+    "K135"
+   ],
+   "soc": "STM32MP135DAE7",
+   "platform": "stm32mp1-linux",
+   "market_status": "listed",
+   "support": {
+    "status": "out-of-scope",
+    "reason": "An STM32MP1 board running Linux, with no ESP32 on board. None of this plugin's frameworks (Arduino, PlatformIO, ESP-IDF, UIFlow2) apply.",
+    "src": [
+     "m5-coremp135"
+    ],
+    "last_verified": "2026-09-26"
+   }
+  }
+ }
+}

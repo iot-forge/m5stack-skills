@@ -1,0 +1,31 @@
+{
+ "schema_version": 1,
+ "product": {
+  "id": "cores3-thread-br",
+  "name": "CoreS3 Thread BR",
+  "family": "core",
+  "aliases": [
+   "thread br",
+   "cores3 thread border router"
+  ]
+ },
+ "revisions": {
+  "cores3-thread-br@v1.0": {
+   "label": "v1.0",
+   "sku": [
+    "K149"
+   ],
+   "soc": "ESP32-S3 + ESP32-H2-MINI-1 (802.15.4 radio co-processor)",
+   "platform": "esp32-s3",
+   "market_status": "listed",
+   "support": {
+    "status": "roadmap",
+    "reason": "An ESP32-S3 Core with a second SoC (ESP32-H2) as a Thread radio co-processor. Missing from the board list when scope was set; how the second radio changes the framework support matrix is not yet worked out.",
+    "src": [
+     "m5-cores3-thread-br"
+    ],
+    "last_verified": "2026-09-26"
+   }
+  }
+ }
+}

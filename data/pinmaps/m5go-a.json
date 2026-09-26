@@ -1,0 +1,28 @@
+{
+ "schema_version": 1,
+ "id": "m5go-a",
+ "soc": "esp32",
+ "populated": false,
+ "buses": {
+  "i2c_internal": {
+   "kind": "i2c",
+   "pins": {
+    "sda": "G21",
+    "scl": "G22"
+   },
+   "src": [
+    "m5-m5go-v2.7"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-26"
+  }
+ },
+ "connectors": [],
+ "pins": {},
+ "notes": "Not yet populated: GPIO uses, claims and connectors are TODO for the implementation backlog. Only the bus pins below are sourced.",
+ "src": [
+  "m5-m5go-v2.7"
+ ],
+ "confidence": "high",
+ "last_verified": "2026-09-26"
+}

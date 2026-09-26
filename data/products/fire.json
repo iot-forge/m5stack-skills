@@ -1,0 +1,862 @@
+{
+ "schema_version": 1,
+ "product": {
+  "id": "fire",
+  "name": "Fire",
+  "family": "core",
+  "aliases": [
+   "m5stack fire",
+   "fire core"
+  ]
+ },
+ "revisions": {
+  "fire@2018.06": {
+   "label": "2018.6 (first release)",
+   "sku": [
+    "K007"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 1,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-fire"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "delisted",
+   "derived_from": null,
+   "pin_map": "fire-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6",
+    "note": "the Fire pages omit the -V3 suffix other pages give",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "value": "4MB",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": "ILI9342C",
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": null,
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "three physical buttons, no touch panel"
+   },
+   "imu": {
+    "part": "MPU9250",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "part": "MPU9250",
+    "note": "the MPU9250 is a 9-axis part",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "pmic": {
+    "part": "IP5306",
+    "bus": "i2c_internal",
+    "address": "0x75",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": null,
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "spec table lists no RTC"
+   },
+   "audio": {
+    "speaker": "1W-0928",
+    "mic": "BSE3729 (analog MEMS)",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "CP2104",
+    "note": "the legacy page lists CP2104 drivers only",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": 600,
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 28.6,
+    "unit": "mm",
+    "weight_g": 62.6,
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [
+    {
+     "role": "rgb-led-bar",
+     "part": "SK6812 x10",
+     "src": [
+      "m5-fire"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "errata": [
+    {
+     "id": "tn-panel",
+     "text": "Units made before 2019.7 have a TN panel; later ones an IPS panel on the same ILI9342C controller. The old M5Stack library before 0.2.8 shows inverted colours on IPS units.",
+     "src": [
+      "m5-fire"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ]
+  },
+  "fire@2019.07": {
+   "label": "2019.7",
+   "sku": [
+    "K007"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 1,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-fire"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "delisted",
+   "derived_from": "fire@2018.06",
+   "pin_map": "fire-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6",
+    "note": "the Fire pages omit the -V3 suffix other pages give",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "value": "4MB",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": "ILI9342C",
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": null,
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "three physical buttons, no touch panel"
+   },
+   "imu": {
+    "part": "SH200Q",
+    "bus": "i2c_internal",
+    "note": "address not documented",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "part": "BMM150",
+    "bus": "i2c_internal",
+    "address": "0x10",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "pmic": {
+    "part": "IP5306",
+    "bus": "i2c_internal",
+    "address": "0x75",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": null,
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "spec table lists no RTC"
+   },
+   "audio": {
+    "speaker": "1W-0928",
+    "mic": "BSE3729 (analog MEMS)",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "CP2104",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": 600,
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 28.6,
+    "unit": "mm",
+    "weight_g": 62.6,
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [
+    {
+     "role": "rgb-led-bar",
+     "part": "SK6812 x10",
+     "src": [
+      "m5-fire"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "errata": []
+  },
+  "fire@2019.08": {
+   "label": "2019.8",
+   "sku": [
+    "K007"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 1,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-fire"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "delisted",
+   "derived_from": "fire@2019.07",
+   "pin_map": "fire-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6",
+    "note": "the Fire pages omit the -V3 suffix other pages give",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "value": "4MB",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": "ILI9342C",
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": null,
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "three physical buttons, no touch panel"
+   },
+   "imu": {
+    "part": "MPU6886",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "part": "BMM150",
+    "bus": "i2c_internal",
+    "address": "0x10",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "pmic": {
+    "part": "IP5306",
+    "bus": "i2c_internal",
+    "address": "0x75",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": null,
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "spec table lists no RTC"
+   },
+   "audio": {
+    "speaker": "1W-0928",
+    "mic": "BSE3729 (analog MEMS)",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "CP2104",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": [
+     600,
+     500
+    ],
+    "note": "600 mAh until 2019.11, then 500 mAh",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 28.6,
+    "unit": "mm",
+    "weight_g": 62.6,
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [
+    {
+     "role": "rgb-led-bar",
+     "part": "SK6812 x10",
+     "src": [
+      "m5-fire"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "errata": []
+  },
+  "fire@2020.04": {
+   "label": "2020.4",
+   "sku": [
+    "K007"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 1,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-fire"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "delisted",
+   "derived_from": "fire@2019.08",
+   "pin_map": "fire-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6",
+    "note": "the Fire pages omit the -V3 suffix other pages give",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "value": "8MB quad",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": "ILI9342C",
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": null,
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "three physical buttons, no touch panel"
+   },
+   "imu": {
+    "part": "MPU6886",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "part": "BMM150",
+    "bus": "i2c_internal",
+    "address": "0x10",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "pmic": {
+    "part": "IP5306",
+    "bus": "i2c_internal",
+    "address": "0x75",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": null,
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "spec table lists no RTC"
+   },
+   "audio": {
+    "speaker": "1W-0928",
+    "mic": "BSE3729 (analog MEMS)",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "CP2104",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": 500,
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 28.6,
+    "unit": "mm",
+    "weight_g": 62.6,
+    "src": [
+     "m5-fire"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [
+    {
+     "role": "rgb-led-bar",
+     "part": "SK6812 x10",
+     "src": [
+      "m5-fire"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "errata": []
+  },
+  "fire@v2.7": {
+   "label": "v2.7",
+   "sku": [
+    "K007-V27"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 1,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-fire-v2.7"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "listed",
+   "derived_from": "fire@2020.04",
+   "pin_map": "fire-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6",
+    "note": "the Fire pages omit the -V3 suffix other pages give",
+    "src": [
+     "m5-fire-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-fire-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "value": "8MB quad",
+    "src": [
+     "m5-fire-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": "ILI9342C",
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "src": [
+     "m5-fire-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": null,
+    "src": [
+     "m5-fire-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "three physical buttons, no touch panel"
+   },
+   "imu": {
+    "part": "MPU6886",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "src": [
+     "m5-fire-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "unknown": true,
+    "note": "the v2.7 spec table lists only a 6-axis MPU6886 and no magnetometer, but no changelog records the BMM150's removal (M5GO's does)",
+    "src": [
+     "m5-fire-v2.7"
+    ],
+    "confidence": "low",
+    "last_verified": "2026-09-26"
+   },
+   "pmic": {
+    "part": "IP5306",
+    "bus": "i2c_internal",
+    "address": "0x75",
+    "src": [
+     "m5-fire-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": null,
+    "src": [
+     "m5-fire-v2.7"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "spec table lists no RTC"
+   },
+   "audio": {
+    "speaker": "1W-0928",
+    "mic": "BSE3729 (analog MEMS)",
+    "src": [
+     "m5-fire-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "CH9102F",
+    "src": [
+     "m5-fire-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-fire-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": 500,
+    "src": [
+     "m5-fire-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 28.6,
+    "unit": "mm",
+    "weight_g": 88.8,
+    "src": [
+     "m5-fire-v2.7"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [
+    {
+     "role": "rgb-led-bar",
+     "part": "SK6812 x10",
+     "src": [
+      "m5-fire-v2.7"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "errata": []
+  }
+ }
+}

@@ -1,0 +1,625 @@
+{
+ "schema_version": 1,
+ "product": {
+  "id": "gray",
+  "name": "Gray",
+  "family": "core",
+  "aliases": [
+   "m5stack gray",
+   "m5stack grey",
+   "grey",
+   "gray core"
+  ]
+ },
+ "revisions": {
+  "gray@2017.09": {
+   "label": "2017.9 (first release)",
+   "sku": [
+    "K002"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 1,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-gray"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "delisted",
+   "derived_from": null,
+   "pin_map": "gray-2017.09",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6",
+    "note": "the Gray page omits the -V3 suffix other pages give; the stepping is not confirmed",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "unknown": true,
+    "note": "the Gray spec table has no PSRAM row; board.csv gives None/8MB for BID 1, which spans Basic and Fire",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "low",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": "ILI9342C",
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": null,
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "three physical buttons, no touch panel"
+   },
+   "imu": {
+    "part": "MPU6050",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "note": "0x68 is where M5Unified probes the MPU family; M5's page names only the part",
+    "src": [
+     "m5-gray",
+     "m5unified"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "part": "MAG3110",
+    "note": "address not documented",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "pmic": {
+    "part": "IP5306",
+    "note": "not connected to I2C on this revision",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": null,
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "spec table lists no RTC"
+   },
+   "audio": {
+    "speaker": "1W-0928",
+    "mic": null,
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "unknown": true,
+    "note": "the Gray spec table has no USB chip row; its driver section lists both CP2104 and CH9102 drivers",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "low",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": 150,
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 17.0,
+    "unit": "mm",
+    "weight_g": 47.7,
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [],
+   "errata": [
+    {
+     "id": "tn-panel",
+     "text": "Units made before 2019.7 have a TN panel; later ones an IPS panel on the same ILI9342C controller. The old M5Stack library before 0.2.8 shows inverted colours on IPS units.",
+     "src": [
+      "m5-gray"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    },
+    {
+     "id": "ip5306-no-i2c",
+     "text": "The IP5306 is not connected to I2C before 2017.12. Battery level and charge status read nothing, while the code still compiles; M5Unified has no fallback for this.",
+     "src": [
+      "m5-gray",
+      "m5unified"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "recommended_targets": {
+    "arduino-esp32": {
+     "target": "esp32:esp32:m5stack_core",
+     "gaps": "No Gray target exists. Choose Flash Size 16MB. The define is Basic's, so compile-time code cannot tell that Gray has an IMU.",
+     "src": [
+      "arduino-esp32-boards"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-08-07"
+    },
+    "arduino-m5stack": {
+     "target": "m5stack:esp32:m5stack_core",
+     "gaps": "No Gray target exists. Choose Flash Size 16MB.",
+     "src": [
+      "arduino-m5stack-boards"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-08-07"
+    },
+    "uiflow2": {
+     "target": "M5STACK_Basic",
+     "gaps": "No Gray image exists; whether the Basic image drives Gray's IMU is not documented.",
+     "src": [
+      "uiflow2-boards"
+     ],
+     "confidence": "low",
+     "last_verified": "2026-08-07"
+    }
+   }
+  },
+  "gray@2017.12": {
+   "label": "2017.12",
+   "sku": [
+    "K002"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 1,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-gray"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "delisted",
+   "derived_from": "gray@2017.09",
+   "pin_map": "gray-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6",
+    "note": "the Gray page omits the -V3 suffix other pages give; the stepping is not confirmed",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "unknown": true,
+    "note": "the Gray spec table has no PSRAM row; board.csv gives None/8MB for BID 1, which spans Basic and Fire",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "low",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": "ILI9342C",
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": null,
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "three physical buttons, no touch panel"
+   },
+   "imu": {
+    "part": "MPU9250",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "note": "address from M5Unified's MPU-family probe",
+    "src": [
+     "m5-gray",
+     "m5unified"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "part": "MPU9250",
+    "note": "the MPU9250 is a 9-axis part; the page names no separate magnetometer",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "pmic": {
+    "part": "IP5306",
+    "bus": "i2c_internal",
+    "address": "0x75",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": null,
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "spec table lists no RTC"
+   },
+   "audio": {
+    "speaker": "1W-0928",
+    "mic": null,
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "unknown": true,
+    "note": "the Gray spec table has no USB chip row; its driver section lists both CP2104 and CH9102 drivers",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "low",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": 150,
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 17.0,
+    "unit": "mm",
+    "weight_g": 47.7,
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [],
+   "errata": [
+    {
+     "id": "tn-panel",
+     "text": "Units made before 2019.7 have a TN panel; later ones an IPS panel on the same ILI9342C controller. The old M5Stack library before 0.2.8 shows inverted colours on IPS units.",
+     "src": [
+      "m5-gray"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "recommended_targets": {
+    "arduino-esp32": {
+     "target": "esp32:esp32:m5stack_core",
+     "gaps": "No Gray target exists. Choose Flash Size 16MB. The define is Basic's, so compile-time code cannot tell that Gray has an IMU.",
+     "src": [
+      "arduino-esp32-boards"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-08-07"
+    },
+    "arduino-m5stack": {
+     "target": "m5stack:esp32:m5stack_core",
+     "gaps": "No Gray target exists. Choose Flash Size 16MB.",
+     "src": [
+      "arduino-m5stack-boards"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-08-07"
+    },
+    "uiflow2": {
+     "target": "M5STACK_Basic",
+     "gaps": "No Gray image exists; whether the Basic image drives Gray's IMU is not documented.",
+     "src": [
+      "uiflow2-boards"
+     ],
+     "confidence": "low",
+     "last_verified": "2026-08-07"
+    }
+   }
+  },
+  "gray@2019.06": {
+   "label": "2019.6",
+   "sku": [
+    "K002"
+   ],
+   "soc": "esp32",
+   "platform": "esp32",
+   "bid": {
+    "value": 1,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-gray"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "delisted",
+   "derived_from": "gray@2017.12",
+   "pin_map": "gray-a",
+   "soc_part": {
+    "value": "ESP32-D0WDQ6",
+    "note": "the Gray page omits the -V3 suffix other pages give; the stepping is not confirmed",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "unknown": true,
+    "note": "the Gray spec table has no PSRAM row; board.csv gives None/8MB for BID 1, which spans Basic and Fire",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "low",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": "ILI9342C",
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": null,
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "three physical buttons, no touch panel"
+   },
+   "imu": {
+    "part": "MPU6886",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "part": "BMM150",
+    "bus": "i2c_internal",
+    "address": "0x10",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "pmic": {
+    "part": "IP5306",
+    "bus": "i2c_internal",
+    "address": "0x75",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": null,
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26",
+    "note": "spec table lists no RTC"
+   },
+   "audio": {
+    "speaker": "1W-0928",
+    "mic": null,
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "unknown": true,
+    "note": "the Gray spec table has no USB chip row; its driver section lists both CP2104 and CH9102 drivers",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "low",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": [
+     150,
+     110
+    ],
+    "note": "150 mAh until 2020.3, then 110 mAh",
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 17.0,
+    "unit": "mm",
+    "weight_g": 47.7,
+    "src": [
+     "m5-gray"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [],
+   "errata": [
+    {
+     "id": "tn-panel",
+     "text": "Units made before 2019.7 have a TN panel; later ones an IPS panel on the same ILI9342C controller. The old M5Stack library before 0.2.8 shows inverted colours on IPS units.",
+     "src": [
+      "m5-gray"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "recommended_targets": {
+    "arduino-esp32": {
+     "target": "esp32:esp32:m5stack_core",
+     "gaps": "No Gray target exists. Choose Flash Size 16MB. The define is Basic's, so compile-time code cannot tell that Gray has an IMU.",
+     "src": [
+      "arduino-esp32-boards"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-08-07"
+    },
+    "arduino-m5stack": {
+     "target": "m5stack:esp32:m5stack_core",
+     "gaps": "No Gray target exists. Choose Flash Size 16MB.",
+     "src": [
+      "arduino-m5stack-boards"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-08-07"
+    },
+    "uiflow2": {
+     "target": "M5STACK_Basic",
+     "gaps": "No Gray image exists; whether the Basic image drives Gray's IMU is not documented.",
+     "src": [
+      "uiflow2-boards"
+     ],
+     "confidence": "low",
+     "last_verified": "2026-08-07"
+    }
+   }
+  }
+ }
+}

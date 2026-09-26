@@ -1,0 +1,139 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "soc.schema.json",
+ "title": "SoC: data/socs/<id>.json",
+ "type": "object",
+ "required": [
+  "schema_version",
+  "id",
+  "name",
+  "gpios",
+  "rules"
+ ],
+ "properties": {
+  "schema_version": {
+   "const": 1
+  },
+  "id": {
+   "type": "string"
+  },
+  "name": {
+   "type": "string"
+  },
+  "gpios": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/gpio"
+   }
+  },
+  "rules": {
+   "type": "array",
+   "items": {
+    "allOf": [
+     {
+      "$ref": "#/$defs/provenance"
+     },
+     {
+      "type": "object",
+      "required": [
+       "id",
+       "effect",
+       "pins",
+       "text"
+      ],
+      "properties": {
+       "effect": {
+        "enum": [
+         "unusable",
+         "input_only",
+         "caution"
+        ]
+       },
+       "pins": {
+        "type": "array",
+        "items": {
+         "$ref": "#/$defs/gpio"
+        }
+       }
+      }
+     }
+    ]
+   }
+  }
+ },
+ "$defs": {
+  "provenance": {
+   "type": "object",
+   "required": [
+    "src",
+    "confidence",
+    "last_verified"
+   ],
+   "properties": {
+    "src": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "minItems": 1
+    },
+    "confidence": {
+     "enum": [
+      "high",
+      "medium",
+      "low"
+     ]
+    },
+    "last_verified": {
+     "type": "string",
+     "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    }
+   }
+  },
+  "fact": {
+   "$ref": "#/$defs/provenance"
+  },
+  "gpio": {
+   "type": "string",
+   "pattern": "^G\\d{1,2}$"
+  },
+  "revision_id": {
+   "type": "string",
+   "pattern": "^[a-z0-9-]+@[a-z0-9.-]+$"
+  },
+  "support": {
+   "type": "object",
+   "required": [
+    "status",
+    "reason",
+    "src",
+    "last_verified"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "status": {
+     "enum": [
+      "supported",
+      "roadmap",
+      "out-of-scope"
+     ]
+    },
+    "reason": {
+     "type": "string",
+     "minLength": 10
+    },
+    "src": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "minItems": 1
+    },
+    "last_verified": {
+     "type": "string",
+     "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    }
+   }
+  }
+ }
+}

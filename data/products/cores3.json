@@ -1,0 +1,246 @@
+{
+ "schema_version": 1,
+ "product": {
+  "id": "cores3",
+  "name": "CoreS3",
+  "family": "core",
+  "aliases": [
+   "m5cores3",
+   "m5stack cores3",
+   "core s3",
+   "cores 3"
+  ]
+ },
+ "revisions": {
+  "cores3@v1.0": {
+   "label": "v1.0 (the only documented revision)",
+   "sku": [
+    "K128"
+   ],
+   "soc": "esp32-s3",
+   "platform": "esp32-s3",
+   "bid": {
+    "value": 10,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-family Core controller",
+    "src": [
+     "m5-cores3"
+    ],
+    "last_verified": "2026-09-26"
+   },
+   "market_status": "listed",
+   "derived_from": null,
+   "pin_map": "cores3-a",
+   "soc_part": {
+    "value": "ESP32-S3",
+    "src": [
+     "m5-cores3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-cores3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "psram": {
+    "value": "8MB quad",
+    "src": [
+     "m5-cores3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "display": {
+    "part": [
+     "ILI9342C",
+     "ILI9342E"
+    ],
+    "resolution": "320x240",
+    "bus": "spi_main",
+    "note": "ILI9342E on units made from 2026.8.7",
+    "src": [
+     "m5-cores3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "touch": {
+    "part": "FT6336U",
+    "bus": "i2c_internal",
+    "address": "0x38",
+    "src": [
+     "m5-cores3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "imu": {
+    "part": "BMI270",
+    "bus": "i2c_internal",
+    "address": "0x69",
+    "src": [
+     "m5-cores3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "magnetometer": {
+    "part": "BMM150",
+    "bus": "bmi270_aux",
+    "address": "0x10",
+    "note": "behind the BMI270's auxiliary interface, not on the main bus",
+    "src": [
+     "m5-cores3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "pmic": {
+    "part": "AXP2101",
+    "bus": "i2c_internal",
+    "address": "0x34",
+    "src": [
+     "m5-cores3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "rtc": {
+    "part": "BM8563",
+    "bus": "i2c_internal",
+    "address": "0x51",
+    "src": [
+     "m5-cores3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "audio": {
+    "amp": "AW88298 (I2S)",
+    "codec": "ES7210",
+    "mic": "dual, through the ES7210",
+    "bus": "i2c_internal",
+    "i2c": [
+     {
+      "part": "AW88298",
+      "address": "0x36"
+     },
+     {
+      "part": "ES7210",
+      "address": "0x40"
+     }
+    ],
+    "src": [
+     "m5-cores3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "usb_bridge": {
+    "part": "native USB (ESP32-S3 USB Serial/JTAG)",
+    "src": [
+     "m5-cores3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "sd": {
+    "value": "microSD (SPI)",
+    "src": [
+     "m5-cores3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "battery": {
+    "capacity_mah": 500,
+    "note": "in the DinBase",
+    "src": [
+     "m5-cores3"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-26"
+   },
+   "dimensions": {
+    "w": 54.0,
+    "h": 54.0,
+    "d": 15.5,
+    "unit": "mm",
+    "weight_g": 72.7,
+    "src": [
+     "m5-cores3"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-09-26"
+   },
+   "extra_components": [
+    {
+     "role": "io-expander",
+     "part": "AW9523B",
+     "bus": "i2c_internal",
+     "address": "0x58",
+     "src": [
+      "m5-cores3"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    },
+    {
+     "role": "camera",
+     "part": "GC0308 (0.3 MP)",
+     "bus": "i2c_internal",
+     "address": "0x21",
+     "src": [
+      "m5-cores3"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    },
+    {
+     "role": "proximity-light-sensor",
+     "part": "LTR-553ALS-WA",
+     "bus": "i2c_internal",
+     "address": "0x23",
+     "src": [
+      "m5-cores3"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    }
+   ],
+   "errata": [
+    {
+     "id": "lcd-ili9342e",
+     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units; older builds may show a blank or wrong display.",
+     "src": [
+      "m5-cores3"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-09-26"
+    },
+    {
+     "id": "m5-pio-devkitc",
+     "text": "M5's own PlatformIO example for CoreS3 uses board = esp32-s3-devkitc-1 with -DBOARD_HAS_PSRAM, not the m5stack-cores3 board id. Which platform-espressif32 release first shipped m5stack-cores3 is not recorded; an older platform reports it as an unknown board.",
+     "src": [
+      "m5-cores3",
+      "pio-esp32"
+     ],
+     "confidence": "medium",
+     "last_verified": "2026-09-26"
+    }
+   ]
+  }
+ }
+}

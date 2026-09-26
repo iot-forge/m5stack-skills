@@ -1,0 +1,33 @@
+{
+ "schema_version": 1,
+ "product": {
+  "id": "cm4stack",
+  "name": "CM4Stack",
+  "family": "core",
+  "aliases": [
+   "cm4 stack",
+   "m5stack cm4"
+  ]
+ },
+ "revisions": {
+  "cm4stack@v1.0": {
+   "label": "v1.0",
+   "sku": [
+    "K127",
+    "K127-US",
+    "K127-EU"
+   ],
+   "soc": "Broadcom BCM2711 (Raspberry Pi CM4)",
+   "platform": "rpi-cm4",
+   "market_status": "listed",
+   "support": {
+    "status": "out-of-scope",
+    "reason": "A Raspberry Pi Compute Module 4 running Raspberry Pi OS or Home Assistant OS, with no ESP32 on board. None of this plugin's frameworks apply.",
+    "src": [
+     "m5-cm4stack"
+    ],
+    "last_verified": "2026-09-26"
+   }
+  }
+ }
+}

@@ -1,0 +1,272 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "pinmap.schema.json",
+ "title": "Pin map: data/pinmaps/<id>.json",
+ "type": "object",
+ "required": [
+  "schema_version",
+  "id",
+  "soc",
+  "populated",
+  "buses",
+  "connectors",
+  "pins",
+  "src",
+  "confidence",
+  "last_verified"
+ ],
+ "properties": {
+  "schema_version": {
+   "const": 1
+  },
+  "id": {
+   "type": "string"
+  },
+  "soc": {
+   "type": "string"
+  },
+  "populated": {
+   "type": "boolean"
+  },
+  "notes": {
+   "type": "string"
+  },
+  "buses": {
+   "type": "object",
+   "additionalProperties": {
+    "allOf": [
+     {
+      "$ref": "#/$defs/provenance"
+     },
+     {
+      "type": "object",
+      "required": [
+       "kind",
+       "pins"
+      ],
+      "properties": {
+       "kind": {
+        "enum": [
+         "i2c",
+         "spi",
+         "uart",
+         "i2s"
+        ]
+       },
+       "note": {
+        "type": "string"
+       },
+       "pins": {
+        "anyOf": [
+         {
+          "type": "null"
+         },
+         {
+          "type": "object",
+          "additionalProperties": {
+           "$ref": "#/$defs/gpio"
+          }
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  "connectors": {
+   "type": "array",
+   "items": {
+    "allOf": [
+     {
+      "$ref": "#/$defs/provenance"
+     },
+     {
+      "type": "object",
+      "required": [
+       "id",
+       "kind"
+      ],
+      "properties": {
+       "id": {
+        "type": "string"
+       },
+       "kind": {
+        "type": "string"
+       },
+       "bus": {
+        "type": "string"
+       },
+       "positions": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "required": [
+          "n"
+         ]
+        }
+       }
+      }
+     }
+    ]
+   }
+  },
+  "pins": {
+   "type": "object",
+   "propertyNames": {
+    "pattern": "^G\\d{1,2}$"
+   },
+   "additionalProperties": {
+    "type": "object",
+    "required": [
+     "uses",
+     "exposed_on",
+     "labels"
+    ],
+    "properties": {
+     "uses": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "required": [
+        "function",
+        "claim"
+       ],
+       "additionalProperties": false,
+       "properties": {
+        "function": {
+         "type": "string"
+        },
+        "claim": {
+         "enum": [
+          "fixed",
+          "feature",
+          "bus"
+         ]
+        },
+        "feature": {
+         "type": "string"
+        },
+        "owner": {
+         "type": "string"
+        },
+        "dir": {
+         "enum": [
+          "in",
+          "out",
+          "io"
+         ]
+        }
+       }
+      }
+     },
+     "exposed_on": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "labels": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "src": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "confidence": {
+   "enum": [
+    "high",
+    "medium",
+    "low"
+   ]
+  },
+  "last_verified": {
+   "type": "string",
+   "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+  }
+ },
+ "$defs": {
+  "provenance": {
+   "type": "object",
+   "required": [
+    "src",
+    "confidence",
+    "last_verified"
+   ],
+   "properties": {
+    "src": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "minItems": 1
+    },
+    "confidence": {
+     "enum": [
+      "high",
+      "medium",
+      "low"
+     ]
+    },
+    "last_verified": {
+     "type": "string",
+     "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    }
+   }
+  },
+  "fact": {
+   "$ref": "#/$defs/provenance"
+  },
+  "gpio": {
+   "type": "string",
+   "pattern": "^G\\d{1,2}$"
+  },
+  "revision_id": {
+   "type": "string",
+   "pattern": "^[a-z0-9-]+@[a-z0-9.-]+$"
+  },
+  "support": {
+   "type": "object",
+   "required": [
+    "status",
+    "reason",
+    "src",
+    "last_verified"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "status": {
+     "enum": [
+      "supported",
+      "roadmap",
+      "out-of-scope"
+     ]
+    },
+    "reason": {
+     "type": "string",
+     "minLength": 10
+    },
+    "src": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "minItems": 1
+    },
+    "last_verified": {
+     "type": "string",
+     "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    }
+   }
+  }
+ }
+}
