@@ -1,0 +1,10 @@
+{
+  "name": "m5core-skills",
+  "version": "0.1.0",
+  "description": "Skills for M5Stack Core controllers (Basic, Gray, Fire, M5GO, Core2, Core2 for AWS, Tough, CoreS3 family) across Arduino + M5Unified, PlatformIO, ESP-IDF and UIFlow2 MicroPython. Board facts come from bundled, sourced, per-revision data.",
+  "author": {
+    "name": "IoT Forge"
+  },
+  "license": "MIT",
+  "keywords": ["m5stack", "esp32", "esp32-s3", "embedded", "arduino", "platformio", "esp-idf", "micropython", "uiflow2"]
+}

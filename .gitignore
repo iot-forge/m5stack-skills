@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+*.stackdump
+.DS_Store
+Thumbs.db
+# smoke projects are generated fresh per run
+verification/smoke/*/build/
+verification/smoke/*/.pio/

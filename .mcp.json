@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "m5stack": {
+      "type": "http",
+      "url": "https://mcp.m5stack.com/mcp"
+    }
+  }
+}

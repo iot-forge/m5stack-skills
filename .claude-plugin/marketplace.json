@@ -1,0 +1,15 @@
+{
+  "name": "m5core-skills",
+  "owner": {
+    "name": "IoT Forge"
+  },
+  "plugins": [
+    {
+      "name": "m5core-skills",
+      "source": "./",
+      "description": "Skills for M5Stack Core controllers across Arduino + M5Unified, PlatformIO, ESP-IDF and UIFlow2 MicroPython, answering board facts from bundled per-revision data.",
+      "category": "embedded",
+      "keywords": ["m5stack", "esp32", "embedded"]
+    }
+  ]
+}
