@@ -6,10 +6,7 @@
   "family": "core",
   "aliases": [
    "m5stack basic",
-   "basic core",
-   "m5stack core",
-   "m5stack core esp32",
-   "core esp32"
+   "basic core"
   ]
  },
  "revisions": {
