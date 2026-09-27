@@ -1,0 +1,48 @@
+# B09 · Author the esp-idf skill
+
+Status: open
+Blocked by: [B06](B06-shared-procedures.md)
+Gate: none
+
+## Before you start
+
+1. If `verification/runs/` holds a report, read the **Failures** section of the latest `<date>.md`. Anything there that touches this issue comes first.
+2. Read [`backlog/README.md`](README.md) (how issues work, the checkpoint rule) if you haven't this session.
+3. Set `Status: in-progress`, update the status table in the README, and commit. That commit is your claim.
+
+## Job
+
+Write the task sections of the `esp-idf` skill: **Create or configure an idf.py project**; **Add M5Unified or an esp-bsp component**; **Build and flash with idf.py**. The skill's job, description and hand-offs are already in [`skills/esp-idf/SKILL.md`](../skills/esp-idf/SKILL.md); write inside that boundary. What it uses (`board.py` subcommands, `doctor.py` detections, shared procedures) is under `esp-idf` in [`docs/authoring/boundaries.md`](../docs/authoring/boundaries.md).
+
+The esp-bsp Core2 component makes the PMIC a compile-time menuconfig choice; `board.py targets` prints it per revision. This is the case where a skill must identify the revision before building (`references/identifying-a-revision.md`).
+
+## Inputs
+
+- [`skills/esp-idf/SKILL.md`](../skills/esp-idf/SKILL.md) (the skeleton)
+- [`docs/authoring/skill-template.md`](../docs/authoring/skill-template.md), [`boundaries.md`](../docs/authoring/boundaries.md), [`standing-rules.md`](../docs/authoring/standing-rules.md)
+- [`skills/board-identification/SKILL.md`](../skills/board-identification/SKILL.md): the worked example
+- `uv run scripts/board.py --help` and the data it reads
+
+## Definition of done
+
+- [ ] Every `<!-- TODO: ... -->` marker in `skills/esp-idf/SKILL.md` is replaced by written sections; none remains
+- [ ] Every step ends on a completion criterion the agent can check; every hardware fact comes from a `board.py` command in the step
+- [ ] The body stays under 10 kB (warn) and must stay under 16 kB (fail); material only some runs need is moved to `skills/esp-idf/references/`
+- [ ] `uv run scripts/validate.py` exits 0
+- [ ] `python -m unittest discover tests` passes
+- [ ] Trigger rows `trigger.row-07` pass 3/3 (VERIFICATION.md section 4; command: `claude -p "<request>" --plugin-dir <repo> --allowedTools Skill --output-format stream-json --verbose`, run from a fixture directory holding the project files the request implies). Record each run's date and result in the Checkpoint
+- [ ] `handoff.esp-idf` passes, or is recorded `blocked` because no bare USB-to-serial adapter is at hand (VERIFICATION.md section 4)
+
+## Stopping rule
+
+At about 90% of your context, or before ending for any other reason: overwrite the Checkpoint below, commit everything, and stop. When the Definition of done is fully ticked: set `Status: done`, update the README's status table, clear the Checkpoint to `Done: all`, and commit.
+
+## Checkpoint
+
+<!-- Overwrite, never append. The next session starts from here. -->
+
+- **Done**: nothing yet
+- **Next**: Draft 'Add M5Unified or an esp-bsp component' from `board.py targets --toolchain esp-idf`
+- **Files touched**: none
+- **Last commit**: none
+- **Open questions**: none

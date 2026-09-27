@@ -70,6 +70,21 @@ Other M5Stack skills exist. As of 2026-09-21 there were about fifteen sources; n
 - `m5stack-assistant` (yuyun2000, on ClawHub): the client for the same M5 knowledge server this plugin declares.
 - Single-board skills: [`charlesliang924/m5stack-dev-skill`](https://github.com/charlesliang924/m5stack-dev-skill) (Arduino), [`fxp/m5stack-embedded-dev-skill`](https://github.com/fxp/m5stack-embedded-dev-skill), [`ishamehra/m5stack-uiflow-skill`](https://github.com/ishamehra/m5stack-uiflow-skill), [`grapeot/m5stack-sticks3-skill`](https://github.com/grapeot/m5stack-sticks3-skill), [`cguldogan/m5papercolor-skill`](https://github.com/cguldogan/m5papercolor-skill).
 
+## Roadmap
+
+Not in this version. Until each exists, its questions go to the skill named here.
+
+| Later | Covers | Until then |
+|---|---|---|
+| `display-graphics` skill | M5GFX and LVGL in depth | `arduino-m5unified` for the display API |
+| `power-and-battery` skill | the AXP192/AXP2101 PMIC split across Core2 revisions, battery and charging | `board-identification` for PMIC and battery facts |
+| `units-and-peripherals` skill | a catalogue of Grove and M-Bus units | `pinout-lookup` for the port's pins; a unit's own wiring or driver is pointed at the `m5stack` MCP server |
+| JTAG / OpenOCD debugging | on-chip debugging; only the ESP32-S3 boards have USB-JTAG built in, the ESP32 boards need an external probe | declined by `flashing-and-debugging` |
+| CoreS3 Thread BR, Tab5 | boards whose data is a `roadmap` stub: a second radio SoC, and an ESP32-P4 | `board.py` refuses them and gives the reason |
+| Other M5 families | Stick, Atom, Cardputer, Stamp, E-Paper and others; the data schema already accepts them | not covered |
+
+Work still to do on v1 is in [`backlog/`](backlog/README.md).
+
 ## Verification
 
 How the skills are checked against real hardware is in [`VERIFICATION.md`](VERIFICATION.md), which stands on its own.
