@@ -142,6 +142,27 @@
    "ref": "retrieved 2026-09-26"
   },
   {
+   "id": "m5-toughc5",
+   "kind": "m5-docs",
+   "title": "ToughC5 (Chinese page only)",
+   "url": "https://docs.m5stack.com/zh_CN/core/ToughC5",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-core-metal",
+   "kind": "m5-docs",
+   "title": "Core Metal",
+   "url": "https://docs.m5stack.com/en/core/CORE%20Metal",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
+   "id": "m5-faces-kit",
+   "kind": "m5-docs",
+   "title": "Faces Kit",
+   "url": "https://docs.m5stack.com/en/core/face_kit",
+   "ref": "retrieved 2026-09-26"
+  },
+  {
    "id": "board-id-csv",
    "kind": "registry",
    "title": "m5stack-board-id board.csv",

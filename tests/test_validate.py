@@ -93,6 +93,11 @@ class Planted(unittest.TestCase):
         self.edit("products/coremp135.json", lambda o: o["revisions"]["coremp135@v1.0"].update(flash={"value": "x", "src": ["m5-coremp135"], "confidence": "high", "last_verified": "2026-09-26"}))
         self.assertFails("data.v1-fields")
 
+    def test_upcoming_stub_passes(self):  # market status: documented, not yet on M5's product index
+        self.edit("products/tab5.json", lambda o: o["revisions"]["tab5@v1.0"].update(market_status="upcoming"))
+        code, out = run_validate(self.tmp, "--data")
+        self.assertEqual(code, 0, out)
+
     def test_feature_not_in_list(self):  # amendment D
         self.edit("pinmaps/core2-a.json", lambda o: o["pins"]["G4"]["uses"][0].update(feature="sdcard"))
         self.assertFails("data.features")

@@ -9,7 +9,7 @@ M5Stack's own form-factor taxonomy as published on `docs.m5stack.com` — `core`
 _Avoid_: series, category, product line
 
 **Platform**:
-The silicon and runtime a board is built on — `esp32`, `esp32-s3`, `esp32-p4`, `stm32mp1-linux`, `rpi-cm4`. Orthogonal to **Family**: a single family spans several platforms. Platform, not family, decides whether a given development framework applies to a board.
+The silicon and runtime a board is built on — `esp32`, `esp32-s3`, `esp32-p4`, `esp32-c5`, `stm32mp1-linux`, `rpi-cm4`. Orthogonal to **Family**: a single family spans several platforms. Platform, not family, decides whether a given development framework applies to a board.
 _Avoid_: architecture, chip (use `soc` for the specific part number)
 
 **Support status**:
@@ -59,7 +59,7 @@ M5Stack's integer board registry key (`m5stack-board-id`), shared by M5GFX, M5Un
 _Avoid_: board id (lowercase, ambiguous with our own ids), board type
 
 **Market status**:
-Whether a revision is currently `listed` on M5's product index or `delisted` (documented, no longer sold). Independent of **Support status**: a delisted revision such as Gray can be fully supported. Lets a skill say "discontinued" without changing what it answers.
+Whether a revision is currently `listed` on M5's product index, `delisted` (documented, no longer sold) or `upcoming` (documented by M5, not yet on its product index or on sale). Independent of **Support status**: a delisted revision such as Gray can be fully supported. Lets a skill say "discontinued" or "not released yet" without changing what it answers.
 _Avoid_: EOL, legacy, deprecated
 
 **Build target**:

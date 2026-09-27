@@ -1,0 +1,31 @@
+{
+ "schema_version": 1,
+ "product": {
+  "id": "faces-kit",
+  "name": "Faces Kit",
+  "family": "core",
+  "aliases": [
+   "m5stack faces",
+   "faces"
+  ]
+ },
+ "revisions": {
+  "faces-kit@v1.0": {
+   "label": "v1.0",
+   "sku": [
+    "K005"
+   ],
+   "soc": "ESP32-D0WDQ6",
+   "platform": "esp32",
+   "market_status": "delisted",
+   "support": {
+    "status": "roadmap",
+    "reason": "A discontinued kit: a Gray with a charging base and three FACES panels (GameBoy, Calculator, QWERTY) driven by a MEGA328 at I2C 0x08. Its own facts are not recorded; M5's page points to the Gray's tutorials, but that the Gray's answers hold for it is not verified.",
+    "src": [
+     "m5-faces-kit"
+    ],
+    "last_verified": "2026-09-26"
+   }
+  }
+ }
+}

@@ -163,7 +163,8 @@
     "market_status": {
      "enum": [
       "listed",
-      "delisted"
+      "delisted",
+      "upcoming"
      ]
     },
     "derived_from": {

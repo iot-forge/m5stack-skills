@@ -1,0 +1,31 @@
+{
+ "schema_version": 1,
+ "product": {
+  "id": "core-metal",
+  "name": "Core Metal",
+  "family": "core",
+  "aliases": [
+   "m5stack core metal",
+   "metal core"
+  ]
+ },
+ "revisions": {
+  "core-metal@v1.0": {
+   "label": "v1.0",
+   "sku": [
+    "C001-CNC"
+   ],
+   "soc": "ESP32-D0WDQ6-V3",
+   "platform": "esp32",
+   "market_status": "delisted",
+   "support": {
+    "status": "roadmap",
+    "reason": "A discontinued limited-edition Basic in a metal CNC case. Its own facts are not recorded; M5's page points to the Basic's tutorials, but that the Basic's answers hold for it is not verified.",
+    "src": [
+     "m5-core-metal"
+    ],
+    "last_verified": "2026-09-26"
+   }
+  }
+ }
+}

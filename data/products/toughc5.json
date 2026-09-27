@@ -1,0 +1,32 @@
+{
+ "schema_version": 1,
+ "product": {
+  "id": "toughc5",
+  "name": "ToughC5",
+  "family": "core",
+  "aliases": [
+   "tough c5",
+   "m5stack toughc5",
+   "m5toughc5"
+  ]
+ },
+ "revisions": {
+  "toughc5@v1.0": {
+   "label": "v1.0",
+   "sku": [
+    "K162"
+   ],
+   "soc": "ESP32-C5HR8 (RISC-V)",
+   "platform": "esp32-c5",
+   "market_status": "upcoming",
+   "support": {
+    "status": "roadmap",
+    "reason": "Not released yet: M5 documents it on a Chinese page only, and it is not on the product index. A Tough-style controller on the ESP32-C5 (single-core RISC-V, dual-band Wi-Fi 6) with a 2.0-inch touch screen; the framework support matrix for the ESP32-C5 is not yet worked out.",
+    "src": [
+     "m5-toughc5"
+    ],
+    "last_verified": "2026-09-26"
+   }
+  }
+ }
+}

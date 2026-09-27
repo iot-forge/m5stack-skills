@@ -59,6 +59,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B19 · Align VERIFICATION.md with B01](B19-align-verification-with-b01.md) | open | B01 | yes |
 | [B20 · Rename the CoreS3 download-mode checks after M5's procedure](B20-rename-cores3-download-checks.md) | open | — |  |
 | [B21 · Cite each expected probe value to its own source](B21-per-value-probe-sources.md) | open | — |  |
+| [B22 · Update ToughC5 once M5 releases it](B22-toughc5-release.md) | open | M5's release of ToughC5 |  |
 
 **First issue: B01.** After it, B03 and B06 can run in parallel.
 
