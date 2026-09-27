@@ -47,7 +47,7 @@ At about 90% of your context, or before ending for any other reason: overwrite t
   - Image `M5STACK_CoreInk` and PlatformIO `m5stack-coreink` (in the fresh report, but not listed in this issue): the docs product list gives CoreInk series `E-Paper`, so it is not a Core product. Nothing was added.
   - Image `M5STACK_ToughC5`: see Open questions.
   - `arduino-esp32` ids not in our data: informational; the report itself says they are mostly other families. `m5stack_tab5` belongs to the Tab5 stub, which has no targets.
-  - `validate.py` exits 0 (15 warnings, none new except core2@v1.3's low confidence); 32 tests pass.
+  - `validate.py` exits 0 (15 warnings, the same set as before B02); 32 tests pass.
 - **Next**: none
 - **Files touched**: `data/sources.json`, `data/targets/uiflow2.json`, `data/targets/arduino-m5stack.json`, `data/products/core2.json`, `data/products/core2-for-aws.json`, `data/products/cores3-lite.json`, `data/products/cores3-se.json`, `data/products/gray.json`, `data/products/m5go.json`
 - **Last commit**: see `git log -- backlog/B02-repin-data-and-triage-drift.md`
