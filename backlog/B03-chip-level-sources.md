@@ -1,6 +1,6 @@
 # B03 · Cite chip-level facts to datasheets
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: hardware-ready
 
