@@ -99,8 +99,10 @@ Each check runs `board.py` and compares its output with what `data/` says. The e
 Each request is run through Claude Code headless, with this plugin loaded, from a fixture directory holding the project files the request implies (a `platformio.ini`, an `sdkconfig`, a plain-Python `main.py`, …):
 
 ```
-claude -p "<request>" --plugin-dir <this repo> --output-format stream-json --verbose
+claude -p "<request>" --plugin-dir <this repo> --allowedTools Skill --output-format stream-json --verbose
 ```
+
+Without `--allowedTools Skill`, `claude -p` denies the Skill tool: the owner's Skill call still shows in the stream, but the skill never loads. On Windows, `claude -p` also needs stdin closed: run it from Git Bash and append `< /dev/null`.
 
 Read the stream for Skill tool calls. This plugin's skills appear as `<plugin>:<skill>`.
 
@@ -224,6 +226,7 @@ Record what happens. Each observation goes into the report verbatim, including e
 - `open-question.stdout-raw-repl.core2@v1.3`: with `boot_option=0`, does `print()` output from `mpremote run` reach the host?
 - `open-question.touch-below-240.core2@v1.3`: do the three touch buttons below the display (y ≥ 240) register?
 - `open-question.playraw-1mb.core2@v1.3`: does `playRaw` truncate a clip larger than about 1 MB?
+- `open-question.lcd-driver.core2@v1.3`: which LCD driver does the unit carry, ILI9342C or ILI9342E? M5 dates the change to the ILI9342E to units made from 2026.8.7. Record the driver and how it was determined. Either way, the smoke program needs M5GFX 0.2.27 or later.
 
 **Needs a CoreS3-family unit, so `not-run` in the Core2 session:**
 

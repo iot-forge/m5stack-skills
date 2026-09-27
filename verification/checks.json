@@ -309,6 +309,15 @@
    "note": "VERIFICATION.md section 7"
   },
   {
+   "id": "open-question.lcd-driver.core2@v1.3",
+   "kind": "open-question",
+   "skills": [
+    "arduino-m5unified"
+   ],
+   "revision": "core2@v1.3",
+   "note": "VERIFICATION.md section 7"
+  },
+  {
    "id": "open-question.g0-download.cores3@v1.0",
    "kind": "open-question",
    "skills": [

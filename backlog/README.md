@@ -38,7 +38,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 
 | Issue | Status | Blocked by | Gate |
 |---|---|---|---|
-| [B01 · Fix the verification documents](B01-fix-verification-documents.md) | in-progress | — | yes |
+| [B01 · Fix the verification documents](B01-fix-verification-documents.md) | done | — | yes |
 | [B02 · Re-pin the data and triage upstream drift](B02-repin-data-and-triage-drift.md) | open | — |  |
 | [B03 · Cite chip-level facts to datasheets](B03-chip-level-sources.md) | open | — | yes |
 | [B04 · Populate the ESP32 Basic-lineage pin maps](B04-pinmaps-esp32-basic-lineage.md) | open | — |  |

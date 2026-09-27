@@ -1,6 +1,6 @@
 # B01 · Fix the verification documents
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: hardware-ready
 
@@ -27,10 +27,10 @@ Three small corrections found while scaffolding, all to documents the hardware s
 
 ## Definition of done
 
-- [ ] The three changes are made, and nothing else in `VERIFICATION.md` changes
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
-- [ ] `uv run scripts/verify.py run --offline` passes
+- [x] The three changes are made, and nothing else in `VERIFICATION.md` changes
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
+- [x] `uv run scripts/verify.py run --offline` passes
 
 ## Stopping rule
 
@@ -40,8 +40,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Edit VERIFICATION.md section 4's headless command
-- **Files touched**: none
-- **Last commit**: none
-- **Open questions**: none
+- **Done**: all
+- **Next**: none
+- **Files touched**: `VERIFICATION.md`, `CONTEXT.md`, `verification/checks.json`
+- **Last commit**: "Close B01: fix the verification documents"
+- **Open questions** (maintainer decides; left alone because of "nothing else in `VERIFICATION.md` changes"): section 1's **Result** line still lacks `observed`; section 7's power-LED bullet still says M5's docs say nothing for v1.3; section 6's session table has no row for `open-question.lcd-driver.core2@v1.3`
