@@ -11,7 +11,7 @@ Run `board.py facts <board> usb_bridge`:
 
 ## Through a USB bridge
 
-esptool enters download mode by itself. Before each operation it toggles the bridge's DTR and RTS lines, which drive the ESP32's GPIO0 and EN pins, and resets the chip into download mode (`--before default-reset`, the default). Afterwards it resets the chip into the new firmware (`--after hard-reset`, the default). The toolchains' uploads (`arduino-cli upload`, `pio run -t upload`, `idf.py flash`) call esptool the same way. No button press is needed. On Core2 v1.3 this has not been checked on the unit *(untested on hardware: open-question.auto-download.core2@v1.3)*. The step is done when esptool gets past `Connecting...` and names the chip.
+esptool enters download mode by itself. Before each operation it toggles the bridge's DTR and RTS lines, which drive the ESP32's GPIO0 and EN pins, and resets the chip into download mode (`--before default-reset`, the default). Afterwards it resets the chip into the new firmware (`--after hard-reset`, the default). The toolchains' uploads run esptool for the write. No button press is needed. On Core2 v1.3 this has not been checked on the unit *(untested on hardware: open-question.auto-download.core2@v1.3)*. The step is done when esptool gets past `Connecting...` and names the chip.
 
 When it fails:
 
