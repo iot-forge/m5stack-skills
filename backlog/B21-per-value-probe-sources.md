@@ -16,10 +16,11 @@ B03 added `validate.py` rule `data.probe-datasheet` and the `probe.datasheet_gap
 
 1. **Per-value sources.** In `data/signals.json`, turn each `expected` entry of a register read into an object: `{"value": "0x03", "src": [...]}`, with an optional `datasheet_gap` of its own. `value` keeps today's string, or array of bytes for the ATECC reply. Move each datasheet from the signal's `src` onto the values it backs; the signal's `src` keeps the sources for its outcomes. Move `pmic-probe`'s gap onto its two values, each worded for that part alone.
 2. **The rule, per value.** For every expected value of a read with a register, `data.probe-datasheet` fails unless the value cites a `datasheet` or `hardware-test` source, and warns instead when the value carries a `datasheet_gap`. Drop the probe-level `datasheet_gap`.
-3. **A kind for vendor documentation.** Add `vendor-docs` to the `kind` enum in `data/schema/sources.schema.json` and reclassify `idf-gpio-esp32`, `idf-gpio-esp32s3` and `idf-adc-oneshot-esp32s3`. Only `datasheet` and `hardware-test` satisfy the rule. Check that nothing else reads `kind == "datasheet"` first.
+3. **A kind for vendor documentation.** Add `vendor-docs` to the `kind` enum in `data/schema/sources.schema.json` and reclassify `idf-gpio-esp32`, `idf-gpio-esp32s3` and `idf-adc-oneshot-esp32s3`. Only `datasheet` and `hardware-test` satisfy the rule. Check that nothing else reads `kind == "datasheet"` first, and add the new kind to the **Source** entry in `CONTEXT.md`.
 4. **board.py.** `tell-apart` prints each value, and its gap, from the new shape; `test_probe_gap_shown` follows it.
 5. **Readers of the old shape.** If B14's generator exists, update it to the new shape. If B15's `verify.py ingest` exists, make it able to cite a `hardware-test` source on one expected value; if not, add that to B15's Job.
 6. **ADR 0005.** Update its Consequences to say the gap and the sources are per value.
+7. **`VERIFICATION.md` section 5** says the probe values "come from the parts' datasheets". Reword it: from the datasheet, or from library source with a `datasheet_gap` (ADR 0005). Coordinate with B19, which also edits that file.
 
 ## Inputs
 
