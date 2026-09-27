@@ -102,7 +102,7 @@ Each request is run through Claude Code headless, with this plugin loaded, from 
 claude -p "<request>" --plugin-dir <this repo> --allowedTools Skill --output-format stream-json --verbose
 ```
 
-Without `--allowedTools Skill`, `claude -p` denies the Skill tool: the owner's Skill call still shows in the stream, but the skill never loads. On Windows, `claude -p` also needs stdin closed: run it from Git Bash and append `< /dev/null`.
+Without `--allowedTools Skill`, `claude -p` denies the Skill tool: the owner's Skill call still shows in the stream, but the skill never loads. On Windows, `claude -p` also needs stdin closed: run it from Git Bash and append `< /dev/null`. Run the requests one at a time, never in parallel: concurrent `claude -p` processes race on the user's `~/.claude.json` (on 2026-09-27, 12 parallel runs left several reporting it corrupted).
 
 Read the stream for Skill tool calls. This plugin's skills appear as `<plugin>:<skill>`.
 

@@ -46,3 +46,13 @@ Done when the user reports a press registering.
 3. Check that the volume is set (`M5.Speaker.setVolume()`) and that nothing ends the speaker before the clip finishes (`M5.Speaker.isPlaying()`).
 
 Done when the user reports the whole clip playing.
+
+## Sources
+
+The M5Unified and M5GFX API claims in this file and in SKILL.md's Write section, checked 2026-09-27:
+
+- M5Unified `src/M5Unified.hpp` at `4fb4447` (`M5.config()`, `M5.begin(cfg)`, `M5.update()`, `M5.Lcd` as a reference to `M5.Display`, the `Imu`, `Power`, `Rtc`, `Touch`, `Speaker`, `Mic` and `BtnA`–`BtnC` members, `getBoard()`, `setTouchButtonHeight()`): https://github.com/m5stack/M5Unified/blob/4fb444784c85791e0b0207701392b42be234b2e7/src/M5Unified.hpp
+- M5Unified `src/M5Unified.cpp` at `4fb4447`, `M5Unified::update()` (on the Core2, Tough and CoreS3 board types, `BtnA`–`BtnC` are read from touches at y ≥ 240 minus the touch-button height, which defaults to 0): https://github.com/m5stack/M5Unified/blob/4fb444784c85791e0b0207701392b42be234b2e7/src/M5Unified.cpp
+- M5Unified `src/utility/Speaker_Class.hpp` and `Mic_Class.hpp` at `4fb4447` (`begin()`, `end()`, `isPlaying()`, `setVolume()`, `playRaw()` with its `channel` and `stop_current_sound` parameters): https://github.com/m5stack/M5Unified/tree/4fb444784c85791e0b0207701392b42be234b2e7/src/utility
+- M5Unified `src/utility/Touch_Class.hpp` at `4fb4447` (`getCount()`): same folder
+- The legacy M5Core2 library, `src/M5Core2.h` at `63dd4c0` (`M5.Lcd`, `M5.Axp`, `M5.IMU`): https://github.com/m5stack/M5Core2/blob/63dd4c038bd34a5c3ec02818b40fffb9999ecf6e/src/M5Core2.h

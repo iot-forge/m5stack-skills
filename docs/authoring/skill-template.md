@@ -123,6 +123,7 @@ Board data never appears in markdown: a skill queries `board.py` and answers fro
 - **Pointers sit where they are needed**, worded `Read <file> when <condition>` — never gathered into a list at the end.
 - Every reference is **one hop** from SKILL.md: a reference file never points on to another reference file.
 - A reference file over 100 lines opens with a table of contents. **(CI)**
+- A reference file that states library, toolchain or API behaviour ends with a `## Sources` section: each claim cited to a pinned commit, a version or a dated page, as the shared procedures do. Board facts stay in `board.py`, never here.
 
 ## Shared material
 
