@@ -1,7 +1,7 @@
 # B15 · Finish verify.py and checks.json
 
 Status: open
-Blocked by: [B14](B14-smoke-program.md)
+Blocked by: [B14](B14-smoke-program.md), [B19](B19-align-verification-with-b01.md)
 Gate: hardware-ready
 
 ## Before you start
@@ -16,7 +16,7 @@ Finish `scripts/verify.py` (only `run --offline` works; the rest exit 5) and com
 
 - `run --offline`: add `build.*`, and `trigger.*` through the headless command (VERIFICATION.md section 4, with `--allowedTools Skill`). Keep `handoff.*` operator-read.
 - `run --board <revision>`: walk the operator through section 6's steps in order, record every observation, and mark the dependants of a failure `blocked`.
-- `ingest`: apply section 8's rules exactly: hardware-test sources, `last_verified`, `confidence: high`, and each skill's `metadata.verification` and `tested-with`. A failure never edits `data/` (ADR 0004).
+- `ingest`: apply section 8's rules exactly: hardware-test sources, `last_verified`, `confidence: high`, and each skill's `metadata.verification` and `tested-with`. A failure never edits `data/` (ADR 0004), and neither does an `open-question` result. An `open-question` check counts toward a skill's status once its result is `observed`, since it never passes (section 10).
 - `report`: write `<date>.md` with section 8's five report sections.
 - `checks.json`: every check in VERIFICATION.md with its kind, skills, revision and the data entries it covers (ingest relies on `covers`).
 
@@ -33,7 +33,7 @@ Test ingest against a fixture run file on a copy of `data/`, the way `tests/test
 
 - [ ] No `verify.py` command exits 5
 - [ ] `checks.json` lists every check in VERIFICATION.md
-- [ ] An ingest test on fixture results passes: pass results write sources, failures write nothing
+- [ ] An ingest test on fixture results passes: pass results write sources, failures and `observed` results write nothing, and a skill whose only unpassed checks are `observed` open questions gets a `partial` or `verified` status
 - [ ] `uv run scripts/verify.py run --offline` passes (the hardware-ready gate)
 - [ ] `uv run scripts/validate.py` exits 0
 - [ ] `python -m unittest discover tests` passes

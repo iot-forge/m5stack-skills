@@ -28,6 +28,7 @@ Write the task sections of the `platformio` skill: **Create or configure platfor
 - [ ] Every `<!-- TODO: ... -->` marker in `skills/platformio/SKILL.md` is replaced by written sections; none remains
 - [ ] Every step ends on a completion criterion the agent can check; every hardware fact comes from a `board.py` command in the step
 - [ ] The body stays under 10 kB (warn) and must stay under 16 kB (fail); material only some runs need is moved to `skills/platformio/references/`
+- [ ] A minimum library version in `lib_deps` (M5GFX 0.2.27 or later where a Core2 may have an ILI9342E panel) comes from the erratum `board.py facts <revision> display` prints, never from a version written into the skill
 - [ ] `uv run scripts/validate.py` exits 0
 - [ ] `python -m unittest discover tests` passes
 - [ ] Trigger rows `trigger.row-04`, `trigger.row-05`, `trigger.row-06` pass 3/3 (VERIFICATION.md section 4; command: `claude -p "<request>" --plugin-dir <repo> --allowedTools Skill --output-format stream-json --verbose`, run from a fixture directory holding the project files the request implies). Record each run's date and result in the Checkpoint
