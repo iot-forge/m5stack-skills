@@ -180,8 +180,8 @@
    "id": "arduino-m5stack-boards",
    "kind": "boards.txt",
    "title": "M5Stack Arduino core boards.txt",
-   "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/arduino/m5stack-3.3.8.zip",
-   "ref": "3.3.8"
+   "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/arduino/m5stack-3.3.9.zip",
+   "ref": "3.3.9"
   },
   {
    "id": "pio-esp32",
@@ -194,15 +194,36 @@
    "id": "uiflow2-boards",
    "kind": "library-source",
    "title": "uiflow_micropython m5stack/boards/",
-   "url": "https://github.com/m5stack/uiflow_micropython/tree/ac4226f72a48809b7ed7a892cdf550f6703331dc/m5stack/boards",
-   "ref": "ac4226f"
+   "url": "https://github.com/m5stack/uiflow_micropython/tree/50e440780492aa847378c7d3477ab912f7063bac/m5stack/boards",
+   "ref": "50e4407 (tag 2.5.3)"
   },
   {
    "id": "uiflow2-release",
    "kind": "library-source",
    "title": "uiflow_micropython release assets",
-   "url": "https://github.com/m5stack/uiflow_micropython/releases",
-   "ref": "2.4.6, retrieved 2026-08-09"
+   "url": "https://github.com/m5stack/uiflow_micropython/releases/tag/2.5.3",
+   "ref": "2.5.3, retrieved 2026-09-26"
+  },
+  {
+   "id": "uiflow2-m5unified",
+   "kind": "library-source",
+   "title": "M5Unified 0.2.21 IMU_Class::begin, the submodule UIFlow2 2.5.3 builds",
+   "url": "https://github.com/m5stack/M5Unified/blob/8530f5377d782e4a25a6c482de2e71c3f75ca8eb/src/utility/IMU_Class.cpp",
+   "ref": "8530f53"
+  },
+  {
+   "id": "uiflow2-m5gfx",
+   "kind": "library-source",
+   "title": "M5GFX 0.2.28 library.properties, the submodule UIFlow2 2.5.3 builds",
+   "url": "https://github.com/m5stack/M5GFX/blob/9bcedf4e19d4cab7a0793de0598ae5390b4689fe/library.properties",
+   "ref": "9bcedf4"
+  },
+  {
+   "id": "uiflow2-m5gfx-2.4.6",
+   "kind": "library-source",
+   "title": "M5GFX 0.2.21 library.properties, the submodule UIFlow2 2.4.6 builds",
+   "url": "https://github.com/m5stack/M5GFX/blob/b3d3ccbbfd77254b518e79818365c23c05a7f7d5/library.properties",
+   "ref": "b3d3ccb"
   },
   {
    "id": "esp-bsp",

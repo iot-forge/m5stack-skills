@@ -209,7 +209,7 @@
       "arduino-m5stack-boards"
      ],
      "confidence": "high",
-     "last_verified": "2026-08-07"
+     "last_verified": "2026-09-26"
     },
     "platformio": {
      "target": "m5stack-cores3",
@@ -227,7 +227,7 @@
       "uiflow2-boards"
      ],
      "confidence": "low",
-     "last_verified": "2026-08-07"
+     "last_verified": "2026-09-26"
     },
     "esp-bsp": {
      "target": "espressif/m5stack_core_s3",

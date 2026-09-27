@@ -202,7 +202,7 @@
       "arduino-m5stack-boards"
      ],
      "confidence": "medium",
-     "last_verified": "2026-08-07"
+     "last_verified": "2026-09-26"
     },
     "platformio": {
      "target": "m5stack-core-esp32-16M",
@@ -411,7 +411,7 @@
       "arduino-m5stack-boards"
      ],
      "confidence": "medium",
-     "last_verified": "2026-08-07"
+     "last_verified": "2026-09-26"
     },
     "platformio": {
      "target": "m5stack-core-esp32-16M",
@@ -605,7 +605,7 @@
       "arduino-m5stack-boards"
      ],
      "confidence": "medium",
-     "last_verified": "2026-08-07"
+     "last_verified": "2026-09-26"
     },
     "platformio": {
      "target": "m5stack-core-esp32-16M",
@@ -801,7 +801,7 @@
       "arduino-m5stack-boards"
      ],
      "confidence": "medium",
-     "last_verified": "2026-08-07"
+     "last_verified": "2026-09-26"
     },
     "platformio": {
      "target": "m5stack-core-esp32-16M",

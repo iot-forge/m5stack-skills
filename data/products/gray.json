@@ -207,7 +207,7 @@
       "arduino-m5stack-boards"
      ],
      "confidence": "high",
-     "last_verified": "2026-08-07"
+     "last_verified": "2026-09-26"
     },
     "uiflow2": {
      "target": "M5STACK_Basic",
@@ -216,7 +216,7 @@
       "uiflow2-boards"
      ],
      "confidence": "low",
-     "last_verified": "2026-08-07"
+     "last_verified": "2026-09-26"
     }
    }
   },
@@ -406,7 +406,7 @@
       "arduino-m5stack-boards"
      ],
      "confidence": "high",
-     "last_verified": "2026-08-07"
+     "last_verified": "2026-09-26"
     },
     "uiflow2": {
      "target": "M5STACK_Basic",
@@ -415,7 +415,7 @@
       "uiflow2-boards"
      ],
      "confidence": "low",
-     "last_verified": "2026-08-07"
+     "last_verified": "2026-09-26"
     }
    }
   },
@@ -608,7 +608,7 @@
       "arduino-m5stack-boards"
      ],
      "confidence": "high",
-     "last_verified": "2026-08-07"
+     "last_verified": "2026-09-26"
     },
     "uiflow2": {
      "target": "M5STACK_Basic",
@@ -617,7 +617,7 @@
       "uiflow2-boards"
      ],
      "confidence": "low",
-     "last_verified": "2026-08-07"
+     "last_verified": "2026-09-26"
     }
    }
   }
