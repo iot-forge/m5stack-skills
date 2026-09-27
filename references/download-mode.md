@@ -30,7 +30,7 @@ esptool recognises the ESP32-S3's own USB Serial/JTAG port by its vendor and pro
 
 ### Entering download mode by hand
 
-This is M5's procedure, as printed on each native-USB board's own page *(untested on hardware: open-question.g0-download.cores3@v1.0)*:
+This is M5's procedure, as printed on each native-USB board's own page *(untested on hardware: open-question.g0-download.cores3@v1.0)* *(untested on hardware: open-question.g0-download.cores3-se@v1.0)*:
 
 1. Hold the **RESET** (RST) button for about 3 seconds.
 2. When the green LED lights, release the button.

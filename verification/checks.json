@@ -327,6 +327,15 @@
    "note": "VERIFICATION.md section 7; needs a CoreS3-family unit"
   },
   {
+   "id": "open-question.g0-download.cores3-se@v1.0",
+   "kind": "open-question",
+   "skills": [
+    "flashing-and-debugging"
+   ],
+   "revision": "cores3-se@v1.0",
+   "note": "VERIFICATION.md section 7; needs a CoreS3-SE unit"
+  },
+  {
    "id": "open-question.mpremote.cores3-se@v1.0",
    "kind": "open-question",
    "skills": [

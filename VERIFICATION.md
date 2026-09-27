@@ -230,7 +230,7 @@ Record what happens. Each observation goes into the report verbatim, including e
 
 **Needs a CoreS3-family unit, so `not-run` in the Core2 session:**
 
-- `open-question.g0-download.cores3@v1.0` and `…cores3-se@…`: download mode needs a G0 long-press until the LED changes from red to green. Confirm it, and confirm that nothing else works.
+- `open-question.g0-download.cores3@v1.0` and `open-question.g0-download.cores3-se@v1.0`: download mode needs a G0 long-press until the LED changes from red to green. Confirm it, and confirm that nothing else works.
 - `open-question.mpremote.cores3-se@…`: a third-party report says `mpremote` fails on CoreS3-SE, with no error output or firmware version given. It contradicts upstream's raw-REPL behaviour. Reproduce it or refute it, with output.
 - `open-question.lite-image.cores3-lite@…`: CoreS3-Lite has no UIFlow2 image of its own. Does the CoreS3 image work on it?
 - `open-question.ghost-touch.cores3-se@…`: a reported phantom-touch fault on one CoreS3-SE unit.
