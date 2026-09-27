@@ -1,6 +1,6 @@
 # B06 · Write the shared procedures
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: none
 
@@ -27,10 +27,10 @@ A file over 100 lines opens with a table of contents, and neither points on to a
 
 ## Definition of done
 
-- [ ] Both files written, with no TODO marker, and every command in them run or cited
-- [ ] Every step relying on an open question carries its marker
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
+- [x] Both files written, with no TODO marker, and every command in them run or cited
+- [x] Every step relying on an open question carries its marker
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
 
 ## Stopping rule
 
@@ -40,8 +40,11 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Draft serial-ports.md from doctor.py's actual output
-- **Files touched**: none
-- **Last commit**: none
-- **Open questions**: none
+- **Done**: all
+- **Next**: none
+- **Files touched**: `references/serial-ports.md`, `references/download-mode.md`, `docs/authoring/boundaries.md` (the `download-mode.md` row of the Shared procedures table, to match what the file now holds)
+- **Last commit**: see `git log -- backlog/B06-shared-procedures.md`
+- **Open questions** (the maintainer decides; B06 did not change `VERIFICATION.md`, `verification/checks.json` or other issues):
+  - M5's CoreS3, CoreS3-SE and CoreS3-Lite pages give download mode as: hold RESET about 3 s, release when the green LED lights, and the LED goes out. `VERIFICATION.md` section 7, the check id `open-question.g0-download.cores3@v1.0` and B12's Definition of done describe a G0 long-press, red to green. `download-mode.md` follows M5's pages and carries the existing marker. Should the check's wording and id change to match?
+  - `VERIFICATION.md` section 7 names a CoreS3-SE download-mode check (`…cores3-se@…`), but `verification/checks.json` has no such id, so `download-mode.md` carries only the CoreS3 marker. Add the id?
+  - `--no-stub` and a fixed 115200 baud for native USB (the cwc-makers lead) are not in Espressif's esptool docs, so `download-mode.md` leaves them out. The boundaries.md row was updated to match.

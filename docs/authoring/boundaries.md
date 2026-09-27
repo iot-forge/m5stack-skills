@@ -28,7 +28,7 @@ Plugin-root `references/`, reached by `Read ${CLAUDE_PLUGIN_ROOT}/references/<fi
 | File | Holds | Read by |
 |---|---|---|
 | `serial-ports.md` | Listing ports; recognising the USB bridge by VID (`0x1A86` CH9102, `0x10C4` CP210x, `0x303A` native USB); choosing a port; a busy port | the four framework skills, `flashing-and-debugging` |
-| `download-mode.md` | Auto-reset through the USB bridge vs the physical G0 long-press on CoreS3/CoreS3-SE; native-USB flags (`--no-stub`, 115200). The cwc-makers inputs must be checked against primary sources before they go in | the four framework skills, `flashing-and-debugging` |
+| `download-mode.md` | Auto-reset through the USB bridge vs native USB; the manual RESET long-press on the native-USB boards (M5's procedure); leaving a manually entered download mode (`--after watchdog-reset`); the esptool options native USB needs, from Espressif's docs only | the four framework skills, `flashing-and-debugging` |
 | `identifying-a-revision.md` | Why a board's self-report is not evidence (cached in NVS across reflashes, made up by a fallback on failure); walking the user through `tell-apart` and `--seen`, cheapest signal first | all seven |
 
 ## What each skill uses
