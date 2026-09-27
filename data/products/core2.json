@@ -815,15 +815,16 @@
    "recommended_targets": {
     "uiflow2": {
      "target": "M5STACK_Core2",
-     "gaps": "No v1.3 image exists. The 2.5.3 Core2 image builds M5Unified 0.2.21, which probes a BMI270 at 0x68, then 0x69, when no MPU6886 answers, on any board; it has no Core2-specific BMI270 axis handling, so the axis orientation is unchecked. It bundles M5GFX 0.2.28, enough for the ILI9342E panel; 2.4.6 bundled 0.2.21, which is not. Use 2.5.3 or later. Untested on v1.3 hardware (open question uiflow2-image-v1.3).",
+     "gaps": "No v1.3 image exists. The 2.5.3 Core2 image's M5Unified probes a BMI270 (0x68, then 0x69) when no MPU6886 answers, but has no Core2-specific axis handling for it; its M5GFX is new enough for the ILI9342E panel, so use 2.5.3 or later. Untested on v1.3 hardware (open question uiflow2-image-v1.3).",
      "src": [
       "uiflow2-boards",
       "uiflow2-release",
+      "uiflow2-submodules",
       "uiflow2-m5unified",
       "uiflow2-m5gfx",
-      "uiflow2-m5gfx-2.4.6"
+      "m5-core2-v1.3"
      ],
-     "confidence": "medium",
+     "confidence": "low",
      "last_verified": "2026-09-26"
     }
    }

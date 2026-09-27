@@ -61,13 +61,13 @@
    "src": [
     "uiflow2-boards",
     "uiflow2-release",
+    "uiflow2-submodules",
     "uiflow2-m5gfx",
-    "uiflow2-m5gfx-2.4.6",
     "m5-core2"
    ],
    "confidence": "high",
    "last_verified": "2026-09-26",
-   "note": "one image; M5Unified detects the PMIC at runtime. Units with the ILI9342E panel need M5GFX 0.2.27 or later: 2.5.3 bundles 0.2.28, 2.4.6 bundled 0.2.21, so use 2.5.3 or later."
+   "note": "one image; M5Unified detects the PMIC at runtime. ILI9342E units need M5GFX 0.2.27 or later; the 2.5.3 image bundles 0.2.28, so use 2.5.3 or later"
   },
   {
    "id": "M5STACK_Tough",
@@ -91,13 +91,13 @@
    "src": [
     "uiflow2-boards",
     "uiflow2-release",
+    "uiflow2-submodules",
     "uiflow2-m5gfx",
-    "uiflow2-m5gfx-2.4.6",
     "m5-cores3"
    ],
    "confidence": "high",
    "last_verified": "2026-09-26",
-   "note": "Units with the ILI9342E panel need M5GFX 0.2.27 or later: 2.5.3 bundles 0.2.28, 2.4.6 bundled 0.2.21, so use 2.5.3 or later."
+   "note": "ILI9342E units need M5GFX 0.2.27 or later; the 2.5.3 image bundles 0.2.28, so use 2.5.3 or later"
   }
  ]
 }

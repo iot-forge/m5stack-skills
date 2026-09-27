@@ -205,25 +205,25 @@
    "ref": "2.5.3, retrieved 2026-09-26"
   },
   {
+   "id": "uiflow2-submodules",
+   "kind": "library-source",
+   "title": "uiflow_micropython M5Unified and M5GFX submodule pointers",
+   "url": "https://github.com/m5stack/uiflow_micropython/tree/50e440780492aa847378c7d3477ab912f7063bac/m5stack/components/M5Unified",
+   "ref": "50e4407 (tag 2.5.3)"
+  },
+  {
    "id": "uiflow2-m5unified",
    "kind": "library-source",
-   "title": "M5Unified 0.2.21 IMU_Class::begin, the submodule UIFlow2 2.5.3 builds",
+   "title": "M5Unified IMU_Class::begin, as UIFlow2 builds it",
    "url": "https://github.com/m5stack/M5Unified/blob/8530f5377d782e4a25a6c482de2e71c3f75ca8eb/src/utility/IMU_Class.cpp",
-   "ref": "8530f53"
+   "ref": "8530f53 (0.2.21, UIFlow2 2.5.3)"
   },
   {
    "id": "uiflow2-m5gfx",
    "kind": "library-source",
-   "title": "M5GFX 0.2.28 library.properties, the submodule UIFlow2 2.5.3 builds",
+   "title": "M5GFX library.properties, as UIFlow2 builds it",
    "url": "https://github.com/m5stack/M5GFX/blob/9bcedf4e19d4cab7a0793de0598ae5390b4689fe/library.properties",
-   "ref": "9bcedf4"
-  },
-  {
-   "id": "uiflow2-m5gfx-2.4.6",
-   "kind": "library-source",
-   "title": "M5GFX 0.2.21 library.properties, the submodule UIFlow2 2.4.6 builds",
-   "url": "https://github.com/m5stack/M5GFX/blob/b3d3ccbbfd77254b518e79818365c23c05a7f7d5/library.properties",
-   "ref": "b3d3ccb"
+   "ref": "9bcedf4 (0.2.28, UIFlow2 2.5.3)"
   },
   {
    "id": "esp-bsp",

@@ -527,9 +527,14 @@
     },
     "uiflow2": {
      "target": "M5STACK_Core2",
-     "gaps": "There is no Core2 for AWS image. Whether the Core2 image drives the SK6812 bar and ATECC608B is not documented.",
+     "gaps": "There is no Core2 for AWS image. Whether the Core2 image drives the SK6812 bar and ATECC608B is not documented. The 2.5.3 image's M5Unified probes a BMI270 when no MPU6886 answers, but has no Core2-specific axis handling for it; use 2.5.3 or later for the ILI9342E panel.",
      "src": [
-      "uiflow2-boards"
+      "uiflow2-boards",
+      "uiflow2-release",
+      "uiflow2-submodules",
+      "uiflow2-m5unified",
+      "uiflow2-m5gfx",
+      "m5-core2-for-aws-v1.3"
      ],
      "confidence": "low",
      "last_verified": "2026-09-26"
