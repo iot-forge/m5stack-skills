@@ -21,6 +21,15 @@ Read these in order, and stop when you have what your issue needs:
 - **Done**: every box in the Definition of done is ticked. Set `Status: done`, update the table, commit.
 - **Something the issue didn't foresee**: if it is a design question, write it under Open questions and ask the maintainer rather than deciding it inside the issue. If it is new work, add an issue file with the next number and a row in the table.
 
+## Tools for a session
+
+Use these if your environment has them; if not, the issue and `docs/authoring/` are enough to work from.
+
+- **Writing skill prose** (B06–B13, and any SKILL.md or `references/` edit): the `/writing-for-agents` skill and the maintainer's skill-authoring cheatsheet (`~/.claude/docs/Claude Skill authoring cheatsheet.md`). Use the `skill-creator` skill for the skill folder and for a first review of its description; the cross-skill tuning waits for B16.
+- **A decision issue** (B17, B18): settle it in a `/grilling` session with the maintainer. The agent asks; it never answers for the maintainer.
+- **An issue too big for one session** (most likely B14 or B15): plan it with the `writing-plans` skill, but keep the issue as the plan of record. Put the plan's next step in the Checkpoint's Next field, not in a separate file.
+- **Design questions piling up**: if several issues raise Open questions that depend on each other, stop picking issues. Chart a new map with the `/wayfinder` skill instead of settling them one issue at a time.
+
 ## The hardware-ready gate
 
 The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Before hardware day, the gate issues must be `done` and `uv run scripts/verify.py run --offline` must pass. The other skills are not needed on the day: the toolchain `flash` and `device` checks cover the hardware, and `handoff.live` needs one framework skill, B07.
