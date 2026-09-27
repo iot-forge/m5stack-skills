@@ -10,7 +10,7 @@ uv run scripts/smoke.py check-targets           # build.target-from-data
 
 | Framework | Hand-written | Generated | Built image |
 |---|---|---|---|
-| Arduino / M5Unified (the reference) | `arduino/smoke/smoke.ino` | `smoke_gen.h`, `smoke_probe.hpp` beside it | `arduino/build/<fqbn>/smoke.ino.bin` |
+| Arduino / M5Unified (the reference) | `arduino/smoke/smoke.ino` | `smoke_gen.h`, `smoke_probe.hpp` beside it | `arduino/build/<fqbn, colons as underscores>/smoke.ino.bin` |
 | PlatformIO | none: `src/` gets a copy of `smoke.ino` | the whole `platformio/` folder | `platformio/.pio/build/<board>/firmware.bin` |
 | ESP-IDF | `esp-idf/CMakeLists.txt`, `esp-idf/main/` | `main/smoke_gen.h`, `main/smoke_probe.hpp`, `sdkconfig.defaults` | `esp-idf/build/smoke.bin` |
 | UIFlow2 | `uiflow2/main.template.py` | `uiflow2/main.py` (push this one with `mpremote`) | none |

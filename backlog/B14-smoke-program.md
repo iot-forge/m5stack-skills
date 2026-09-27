@@ -1,6 +1,6 @@
 # B14 · Build the smoke program in four frameworks
 
-Status: in-progress
+Status: done
 Blocked by: [B01](B01-fix-verification-documents.md), [B03](B03-chip-level-sources.md)
 Gate: hardware-ready
 
@@ -31,11 +31,11 @@ Also add the `build.*` checks and `build.target-from-data` to `verification/chec
 
 ## Definition of done
 
-- [ ] Four smoke projects generate with a fresh nonce
-- [ ] `build.*` passes for Arduino, PlatformIO and ESP-IDF: the build exits 0 and the nonce is in the image (or `blocked` with the missing toolchain named)
-- [ ] `build.target-from-data` passes
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
+- [x] Four smoke projects generate with a fresh nonce
+- [x] `build.*` passes for Arduino, PlatformIO and ESP-IDF: the build exits 0 and the nonce is in the image (or `blocked` with the missing toolchain named)
+- [x] `build.target-from-data` passes
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
 
 ## Stopping rule
 
@@ -45,8 +45,14 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Write the Arduino smoke sketch by hand once, then turn its probe part into the generator
-- **Files touched**: none
-- **Last commit**: none
-- **Open questions**: none
+- **Done**: all. `build.platformio.m5stack-core2` passes (nonce found in `firmware.bin`, M5GFX 0.2.30). `build.arduino.*` and `build.esp-idf.esp32` are `blocked`: arduino-cli and `idf.py` are not installed here. `build.target-from-data` passes. `tests/test_smoke.py` runs the UIFlow2 program under CPython against a simulated bus for each Core2-family revision.
+- **Next**: none. B15 wires `scripts/smoke.py build` and `check-targets` into `verify.py run --offline`; their output is already in the results-file shape.
+- **Files touched**: `scripts/smoke.py`, `tests/test_smoke.py`, `verification/smoke/**`, `verification/checks.json`, `.gitignore`
+- **Last commit**: see `git log -- verification/smoke`
+- **Open questions** (the maintainer confirms or reverses these calls; each is a small edit):
+  1. **ESP-IDF target.** The project uses the bare `idf.py set-target esp32` from `board.py targets`' `bare_esp_idf_set_target`, not esp-bsp's `espressif/m5stack_core_2`: section 5 puts M5Unified in charge of the display, and the BSP would fight it. The check id is `build.esp-idf.esp32`. Should `VERIFICATION.md` section 4 say so?
+  2. **LCD driver record.** The C++ builds log at Info level, so M5GFX prints its own `[Autodetect] ILI9342 read-back DDh:.. CBh:.. -> ILI9342C/E` line, the panel's register read-back, during `M5.begin()`. The smoke program does not read the panel itself. The line appears once, before `SMOKE`, and not on screen, so the operator must capture serial from reset. UIFlow2 cannot read the panel.
+  3. **Probe selection.** The rule is every `probe` signal on `i2c_internal` whose outcomes name the revision. For Core2 that adds `touch-probe` (0x38 and 0x2E) to section 5's four.
+  4. **ESP-IDF probe order.** The ESP-IDF build probes before `M5.begin()`, on `I2C_NUM_0` routed to the internal-bus pins, and deletes the bus afterwards. Doing it after would share M5Unified's `I2C_NUM_1`, which M5GFX treats as a foreign bus. So the probe lines come before the nonce reaches the screen, and chips M5Unified powers or resets (touch, via the AXP192) may read differently from the Arduino build. The `fact` checks come from the Arduino build only (section 5).
+  5. **PlatformIO per-revision options.** `board_build.partitions = default_16MB.csv, -DBOARD_HAS_PSRAM` from the target's `per_revision` note are not applied. The note is prose, and the smoke program needs neither.
+  6. **Arduino in `build.target-from-data`.** An arduino-cli sketch carries no target of its own, so the check compares `smoke.json`'s FQBNs with `board.py`. It catches a stale or hand-edited project, not a generator bug.
