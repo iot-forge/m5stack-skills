@@ -1,6 +1,6 @@
 # B01 · Fix the verification documents
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: hardware-ready
 
