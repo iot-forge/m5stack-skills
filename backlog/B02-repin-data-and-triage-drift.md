@@ -1,6 +1,6 @@
 # B02 · Re-pin the data and triage upstream drift
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: none
 
