@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "note": "STUB: build, trigger and handoff.<skill> checks, and the per-check data entries for ingest, are filled in by the implementation backlog. Ids follow VERIFICATION.md.",
+ "note": "STUB: trigger and handoff.<skill> checks, and the per-check data entries for ingest, are filled in by the implementation backlog. Ids follow VERIFICATION.md.",
  "checks": [
   {
    "id": "data.validate",
@@ -62,6 +62,49 @@
    "skills": [
     "board-identification"
    ]
+  },
+  {
+   "id": "build.arduino.esp32:esp32:m5stack_core2",
+   "kind": "build",
+   "skills": [
+    "arduino-m5unified"
+   ],
+   "note": "VERIFICATION.md section 4; run by scripts/smoke.py build"
+  },
+  {
+   "id": "build.arduino.m5stack:esp32:m5stack_core2",
+   "kind": "build",
+   "skills": [
+    "arduino-m5unified"
+   ],
+   "note": "VERIFICATION.md section 4; run by scripts/smoke.py build"
+  },
+  {
+   "id": "build.platformio.m5stack-core2",
+   "kind": "build",
+   "skills": [
+    "platformio"
+   ],
+   "note": "VERIFICATION.md section 4; run by scripts/smoke.py build"
+  },
+  {
+   "id": "build.esp-idf.esp32",
+   "kind": "build",
+   "skills": [
+    "esp-idf"
+   ],
+   "note": "VERIFICATION.md section 4; run by scripts/smoke.py build"
+  },
+  {
+   "id": "build.target-from-data",
+   "kind": "build",
+   "skills": [
+    "arduino-m5unified",
+    "platformio",
+    "esp-idf",
+    "uiflow2-micropython"
+   ],
+   "note": "VERIFICATION.md section 4; run by scripts/smoke.py check-targets"
   },
   {
    "id": "host.port.core2@v1.3",

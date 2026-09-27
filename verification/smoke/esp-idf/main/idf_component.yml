@@ -1,0 +1,6 @@
+## M5GFX 0.2.27 or later drives the ILI9342E panel on Core2 units made from 2026.8.7
+## (erratum lcd-ili9342e in data/products/core2.json). A floor, never a pin.
+dependencies:
+  idf: ">=5.2"
+  m5stack/m5unified: "*"
+  m5stack/m5gfx: ">=0.2.27"

@@ -5,6 +5,16 @@ __pycache__/
 *.stackdump
 .DS_Store
 Thumbs.db
-# smoke projects are generated fresh per run
+# smoke projects are generated fresh per run (scripts/smoke.py generate)
 verification/smoke/*/build/
 verification/smoke/*/.pio/
+verification/smoke/*/smoke.json
+verification/smoke/arduino/smoke/smoke_gen.h
+verification/smoke/arduino/smoke/smoke_probe.hpp
+verification/smoke/platformio/
+verification/smoke/esp-idf/main/smoke_gen.h
+verification/smoke/esp-idf/main/smoke_probe.hpp
+verification/smoke/esp-idf/sdkconfig*
+verification/smoke/esp-idf/managed_components/
+verification/smoke/esp-idf/dependencies.lock
+verification/smoke/uiflow2/main.py
