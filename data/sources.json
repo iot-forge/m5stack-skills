@@ -226,6 +226,55 @@
    "ref": "stable, retrieved 2026-09-26"
   },
   {
+   "id": "idf-adc-oneshot-esp32s3",
+   "kind": "datasheet",
+   "title": "ESP-IDF ADC oneshot mode driver, ESP32-S3 (Hardware Limitations)",
+   "url": "https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/adc/adc_oneshot.html",
+   "ref": "stable (v6.1), retrieved 2026-09-26"
+  },
+  {
+   "id": "ds-mpu6886",
+   "kind": "datasheet",
+   "title": "TDK InvenSense MPU-6886 datasheet (register 117, WHO_AM_I)",
+   "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/MPU-6886-000193%2Bv1.1_GHIC_en.pdf",
+   "ref": "DS-000193 rev 1.1, retrieved 2026-09-26"
+  },
+  {
+   "id": "ds-mpu9250",
+   "kind": "datasheet",
+   "title": "InvenSense MPU-9250 Register Map and Descriptions (register 117, WHO_AM_I)",
+   "url": "https://store-9baf2.mybigcommerce.com/content/docs/invensense/RM-MPU-9250A-00.pdf",
+   "ref": "RM-MPU-9250A-00 rev 1.4 (2013-09-09), retrieved 2026-09-26"
+  },
+  {
+   "id": "ds-mpu6050",
+   "kind": "datasheet",
+   "title": "InvenSense MPU-6000 and MPU-6050 Register Map and Descriptions (register 117, WHO_AM_I)",
+   "url": "https://cdn.sparkfun.com/datasheets/Sensors/Accelerometers/RM-MPU-6000A.pdf",
+   "ref": "RM-MPU-6000A-00 rev 4.0 (2012-03-09), retrieved 2026-09-26"
+  },
+  {
+   "id": "ds-bmi270",
+   "kind": "datasheet",
+   "title": "Bosch Sensortec BMI270 datasheet (register 0x00, CHIP_ID; I2C address)",
+   "url": "https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmi270-ds000.pdf",
+   "ref": "BST-BMI270-DS000-08 rev 1.6, retrieved 2026-09-26"
+  },
+  {
+   "id": "ds-ina3221",
+   "kind": "datasheet",
+   "title": "TI INA3221 datasheet (register 0xFF, Die ID)",
+   "url": "https://www.ti.com/lit/ds/symlink/ina3221.pdf",
+   "ref": "SBOS576C, revised September 2026, retrieved 2026-09-26"
+  },
+  {
+   "id": "ds-atecc608b-tngtls",
+   "kind": "datasheet",
+   "title": "Microchip ATECC608B-TNGTLS CryptoAuthentication data sheet (I2C address, wake, status codes)",
+   "url": "https://ww1.microchip.com/downloads/aemDocuments/documents/SCBU/ProductDocuments/DataSheets/ATECC608B-TNGTLS-CryptoAuthentication-Data-Sheet-DS40002250.pdf",
+   "ref": "DS40002250B, retrieved 2026-09-26"
+  },
+  {
    "id": "usb-ids",
    "kind": "registry",
    "title": "Linux USB ID repository (usb.ids)",

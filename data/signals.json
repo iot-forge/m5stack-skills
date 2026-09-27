@@ -193,7 +193,8 @@
     "expected": {
      "AXP192": "0x03",
      "AXP2101": "0x4A"
-    }
+    },
+    "datasheet_gap": "The expected values come from M5Unified. The AXP192 datasheet does not document register 0x03, and the one AXP2101 datasheet that does (rev 0.1, 2019) gives 0x47 or 0x57, not 0x4A; raised in B03."
    },
    "outcomes": {
     "AXP192": [
@@ -293,6 +294,10 @@
    "caveats": "Needs flashing, and is inferred from a chip ID. Fire 2019.7 (SH200Q) is not covered.",
    "src": [
     "m5unified",
+    "ds-mpu6886",
+    "ds-mpu9250",
+    "ds-mpu6050",
+    "ds-bmi270",
     "m5-core2",
     "m5-core2-v1.3",
     "m5-cores3",
@@ -332,6 +337,7 @@
    "caveats": "Core2 family only. On CoreS3 an ES7210 audio codec sits at 0x40, so presence at that address means nothing there.",
    "src": [
     "m5unified",
+    "ds-ina3221",
     "m5-core2-v1.1"
    ],
    "confidence": "high",
@@ -340,16 +346,28 @@
   {
    "id": "atecc-probe",
    "kind": "probe",
-   "observe": "Flash a sketch that wakes the ATECC608B and checks whether it answers at I2C 0x35.",
+   "observe": "Flash a sketch that wakes the ATECC608B, then reads 4 bytes from I2C 0x35 and compares them with the wake reply.",
    "probe": {
     "bus": "i2c_internal",
     "address": "0x35",
     "register": null,
     "width": null,
-    "expected": {
-     "present": "answers after the wake sequence"
+    "wake": {
+     "sda_low_us_min": 60,
+     "or_write_zero_byte_at_hz": 100000,
+     "then_wait_us_min": 1500
     },
-    "note": "The wake sequence and the reply to check come from the ATECC608B datasheet, which has not been cited yet; the smoke program must not be generated from this entry until it is."
+    "read_bytes": 4,
+    "expected": {
+     "present": [
+      "0x04",
+      "0x11",
+      "0x33",
+      "0x43"
+     ],
+     "absent": "no ACK at 0x35 after the wake"
+    },
+    "note": "Wake by holding SDA low for at least 60 us, or by writing one 0x00 byte at 100 kHz, then wait at least 1500 us (SelfTest does not run at wake on the TNGTLS part). A plain read with no word address returns count 0x04, status 0x11 (after wake, before the first command) and a CRC-16. The CRC bytes 0x33 0x43 are computed with the data sheet's rule (polynomial 0x8005, initial value 0), not quoted from it."
    },
    "outcomes": {
     "present": [
@@ -367,7 +385,8 @@
    "caveats": "Needs flashing. The ATECC608B sleeps; a plain address scan may miss it.",
    "src": [
     "m5-core2-for-aws",
-    "m5-core2-for-aws-v1.3"
+    "m5-core2-for-aws-v1.3",
+    "ds-atecc608b-tngtls"
    ],
    "confidence": "medium",
    "last_verified": "2026-09-26"

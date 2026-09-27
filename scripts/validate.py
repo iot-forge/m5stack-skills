@@ -313,8 +313,15 @@ def check_data(root, rep):
             for rid in t["covers"] + list(t["per_revision"]):
                 if rid not in revisions:
                     rep.fail("data.revision-refs", f"targets/{tc} {t['id']}: revision '{rid}' does not exist")
+    datasheets = {x["id"] for x in (sources or {}).get("sources", []) if x.get("kind") == "datasheet"}
     for s in (signals or {}).get("signals", []):
         cite(f"signals {s['id']}", s.get("src"))
+        probe = s.get("probe") or {}
+        if any(r.get("register") is not None for r in probe.get("reads", [probe])) and not datasheets & set(s.get("src", [])):
+            if probe.get("datasheet_gap"):
+                rep.warn("data.probe-datasheet", f"signal {s['id']}: reads a register no cited datasheet backs: {probe['datasheet_gap']}")
+            else:
+                rep.fail("data.probe-datasheet", f"signal {s['id']}: reads a register but cites no datasheet (or give probe.datasheet_gap)")
         for out, rids in s["outcomes"].items():
             for rid in rids:
                 if rid not in revisions:
