@@ -1,6 +1,6 @@
 # B07 · Author the arduino-m5unified skill
 
-Status: in-progress
+Status: done
 Blocked by: [B06](B06-shared-procedures.md)
 Gate: hardware-ready
 
@@ -25,14 +25,14 @@ This skill is on the hardware-ready gate: `handoff.live.core2@v1.3` exercises it
 
 ## Definition of done
 
-- [ ] Every `<!-- TODO: ... -->` marker in `skills/arduino-m5unified/SKILL.md` is replaced by written sections; none remains
-- [ ] Every step ends on a completion criterion the agent can check; every hardware fact comes from a `board.py` command in the step
-- [ ] The body stays under 10 kB (warn) and must stay under 16 kB (fail); material only some runs need is moved to `skills/arduino-m5unified/references/`
-- [ ] Steps that rely on an open question carry *(untested on hardware: <id>)*, using: `open-question.touch-below-240.core2@v1.3`, `open-question.playraw-1mb.core2@v1.3`
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
-- [ ] Trigger rows `trigger.row-01`, `trigger.row-02`, `trigger.row-03`, `trigger.row-11` pass 3/3 (VERIFICATION.md section 4; command: `claude -p "<request>" --plugin-dir <repo> --allowedTools Skill --output-format stream-json --verbose`, run from a fixture directory holding the project files the request implies). Record each run's date and result in the Checkpoint
-- [ ] `handoff.arduino-m5unified` passes, or is recorded `blocked` because no bare USB-to-serial adapter is at hand (VERIFICATION.md section 4)
+- [x] Every `<!-- TODO: ... -->` marker in `skills/arduino-m5unified/SKILL.md` is replaced by written sections; none remains
+- [x] Every step ends on a completion criterion the agent can check; every hardware fact comes from a `board.py` command in the step
+- [x] The body stays under 10 kB (warn) and must stay under 16 kB (fail); material only some runs need is moved to `skills/arduino-m5unified/references/`
+- [x] Steps that rely on an open question carry *(untested on hardware: <id>)*, using: `open-question.touch-below-240.core2@v1.3`, `open-question.playraw-1mb.core2@v1.3`
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
+- [x] Trigger rows `trigger.row-01`, `trigger.row-02`, `trigger.row-03`, `trigger.row-11` pass 3/3 (VERIFICATION.md section 4; command: `claude -p "<request>" --plugin-dir <repo> --allowedTools Skill --output-format stream-json --verbose`, run from a fixture directory holding the project files the request implies). Record each run's date and result in the Checkpoint
+- [x] `handoff.arduino-m5unified` passes, or is recorded `blocked` because no bare USB-to-serial adapter is at hand (VERIFICATION.md section 4)
 
 ## Stopping rule
 
@@ -42,8 +42,19 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Read the skeleton and boundaries.md, then draft 'Choose the FQBN for the revision' from `board.py targets --toolchain arduino`
-- **Files touched**: none
-- **Last commit**: none
-- **Open questions**: none
+- **Done**: all. Recorded results:
+  - Trigger rows, 2026-09-27, `claude` 2.1.283, 3 runs each, from fixture directories (row 01: `platformio.ini` plus `src/main.cpp` including `M5Unified.h`; rows 02, 03 and 11: a sketch folder with an `.ino`):
+    - `trigger.row-01`: pass, 3/3. `arduino-m5unified` fired first every run. In run 1, `platformio` fired after it (allowed), and so did `dataviz` from another installed plugin (recorded, doesn't fail the row).
+    - `trigger.row-02`: pass, 3/3.
+    - `trigger.row-03`: pass, 3/3.
+    - `trigger.row-11`: pass, 3/3. `board-identification` fired first every run, and every answer refused `M5.getBoard()` as evidence of the revision.
+  - `handoff.arduino-m5unified`: blocked, 2026-09-27. There is no bare USB-to-serial adapter, and arduino-cli isn't installed on the host (`doctor.py`). `handoff.live.core2@v1.3` covers it on hardware day.
+  - `validate.py` exits 0 with no skill warnings. The SKILL.md body is 9,996 bytes. `python -m unittest discover tests`: 33 OK.
+- **Next**: none
+- **Files touched**: `skills/arduino-m5unified/SKILL.md`, `skills/arduino-m5unified/references/fixing-m5-code.md` (new), `skills/arduino-m5unified/references/installing-a-core.md` (new)
+- **Last commit**: see `git log -- skills/arduino-m5unified backlog/B07-skill-arduino-m5unified.md`
+- **Open questions** (the maintainer decides):
+  - The body is 4 bytes under the 10 kB warning. Any addition must move material to `references/` first.
+  - The M5Unified API guidance (`M5.config()`/`M5.begin()`, `M5.update()`, the legacy `M5.Lcd`/`M5.Axp`/`M5.IMU` mapping, `Speaker`/`Mic` `end()` before `begin()`, `playRaw` queuing) is library knowledge, checked in review but not cited. Should skill references carry a Sources section for API claims, as the shared procedures do for esptool?
+  - When the revisions in play diverge on an FQBN option and the user can observe nothing, the fallback of taking the option every revision accepts (the smaller flash size) is reasoning, not data. Should `data/targets` mark a safe default per target?
+  - Running the trigger rows in parallel (12 `claude -p` at once) raced on `~/.claude.json`: several runs reported it corrupted and wrote backups. The file survived. Should `VERIFICATION.md` section 4, or `verify.py` in B15, say to run the rows sequentially?
