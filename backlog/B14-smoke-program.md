@@ -1,6 +1,6 @@
 # B14 · Build the smoke program in four frameworks
 
-Status: open
+Status: in-progress
 Blocked by: [B01](B01-fix-verification-documents.md), [B03](B03-chip-level-sources.md)
 Gate: hardware-ready
 
