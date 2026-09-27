@@ -1,6 +1,6 @@
 # B07 · Author the arduino-m5unified skill
 
-Status: open
+Status: in-progress
 Blocked by: [B06](B06-shared-procedures.md)
 Gate: hardware-ready
 

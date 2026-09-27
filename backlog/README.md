@@ -44,7 +44,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B04 · Populate the ESP32 Basic-lineage pin maps](B04-pinmaps-esp32-basic-lineage.md) | open | — |  |
 | [B05 · Populate the CoreS3-family pin maps](B05-pinmaps-cores3-family.md) | open | — |  |
 | [B06 · Write the shared procedures](B06-shared-procedures.md) | done | — |  |
-| [B07 · Author the arduino-m5unified skill](B07-skill-arduino-m5unified.md) | open | B06 | yes |
+| [B07 · Author the arduino-m5unified skill](B07-skill-arduino-m5unified.md) | in-progress | B06 | yes |
 | [B08 · Author the platformio skill](B08-skill-platformio.md) | open | B06 |  |
 | [B09 · Author the esp-idf skill](B09-skill-esp-idf.md) | open | B06 |  |
 | [B10 · Author the uiflow2-micropython skill](B10-skill-uiflow2-micropython.md) | open | B06, B02 |  |
