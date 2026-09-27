@@ -55,7 +55,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B15 · Finish verify.py and checks.json](B15-verify-py-and-checks.md) | open | B14, B19 | yes |
 | [B16 · Tune the seven descriptions together, then run every trigger row](B16-description-tuning.md) | open | B07, B08, B09, B10, B11, B12, B13 |  |
 | [B17 · Decide: where and when the checks run](B17-decide-ci.md) | open | B15 |  |
-| [B18 · Decide: publication](B18-decide-publication.md) | open | B01, B02, B03, B04, B05, B06, B07, B08, B09, B10, B11, B12, B13, B14, B15, B16, B17, B19, B20, B21 |  |
+| [B18 · Decide: publication](B18-decide-publication.md) | open | B01, B02, B03, B04, B05, B06, B07, B08, B09, B10, B11, B12, B13, B14, B15, B16, B17, B19, B20, B21, B23 |  |
 | [B19 · Align VERIFICATION.md with B01](B19-align-verification-with-b01.md) | open | B01 | yes |
 | [B20 · Rename the CoreS3 download-mode checks after M5's procedure](B20-rename-cores3-download-checks.md) | open | — |  |
 | [B21 · Cite each expected probe value to its own source](B21-per-value-probe-sources.md) | open | — |  |
