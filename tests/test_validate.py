@@ -97,28 +97,28 @@ class Planted(unittest.TestCase):
         self.edit("pinmaps/core2-a.json", lambda o: o["pins"]["G4"]["uses"][0].update(feature="sdcard"))
         self.assertFails("data.features")
 
-    def test_register_probe_without_datasheet(self):  # B03
+    def test_register_probe_without_datasheet(self):  # data.probe-datasheet
         def strip(o):
             imu = next(s for s in o["signals"] if s["id"] == "imu-probe")
             imu["src"] = ["m5unified"]
         self.edit("signals.json", strip)
         self.assertFails("data.probe-datasheet")
 
-    def test_address_only_probe_needs_no_datasheet(self):  # B03
+    def test_address_only_probe_needs_no_datasheet(self):  # data.probe-datasheet
         def strip(o):
             touch = next(s for s in o["signals"] if s["id"] == "touch-probe")
             touch["src"] = ["m5-core2"]
         self.edit("signals.json", strip)
-        code, out = run_validate(self.tmp, "--data")
+        _, out = run_validate(self.tmp, "--data")
         self.assertNotIn("signal touch-probe", out)
 
-    def test_datasheet_gap_downgrades_to_warning(self):  # B03
+    def test_datasheet_gap_downgrades_to_warning(self):  # data.probe-datasheet
         def gap(o):
             imu = next(s for s in o["signals"] if s["id"] == "imu-probe")
             imu["src"] = ["m5unified"]
             imu["probe"]["datasheet_gap"] = "no datasheet documents this register"
         self.edit("signals.json", gap)
-        code, out = run_validate(self.tmp, "--data")
+        _, out = run_validate(self.tmp, "--data")
         self.assertIn("WARN [data.probe-datasheet] signal imu-probe", out)
         self.assertNotIn("FAIL [data.probe-datasheet] signal imu-probe", out)
 

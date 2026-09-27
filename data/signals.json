@@ -354,7 +354,7 @@
     "width": null,
     "wake": {
      "sda_low_us_min": 60,
-     "or_write_zero_byte_at_hz": 100000,
+     "alt_zero_address_byte_at_hz": 100000,
      "then_wait_us_min": 1500
     },
     "read_bytes": 4,
@@ -367,7 +367,7 @@
      ],
      "absent": "no ACK at 0x35 after the wake"
     },
-    "note": "Wake by holding SDA low for at least 60 us, or by writing one 0x00 byte at 100 kHz, then wait at least 1500 us (SelfTest does not run at wake on the TNGTLS part). A plain read with no word address returns count 0x04, status 0x11 (after wake, before the first command) and a CRC-16. The CRC bytes 0x33 0x43 are computed with the data sheet's rule (polynomial 0x8005, initial value 0), not quoted from it."
+    "note": "Wake by holding SDA low for at least 60 us, or by sending 0x00 as the address byte at 100 kHz (nothing ACKs it), then wait at least 1500 us (SelfTest does not run at wake on the TNGTLS part). A plain read with no word address returns count 0x04, status 0x11 (after wake, before the first command) and a CRC-16. The chip ignores a wake while already awake, and 0x11 is only returned before its first command, so run the probe before anything else talks to it. The CRC bytes 0x33 0x43 are computed with the data sheet's rule (polynomial 0x8005, initial value 0), not quoted from it."
    },
    "outcomes": {
     "present": [

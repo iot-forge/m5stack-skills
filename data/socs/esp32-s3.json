@@ -131,7 +131,7 @@
     "G19",
     "G20"
    ],
-   "text": "ADC2 pin: ADC2 is shared with Wi-Fi, so an analog read can fail (ESP_ERR_TIMEOUT) while Wi-Fi is using it; use an ADC1 pin",
+   "text": "ADC2 pin: ADC2 is also used by Wi-Fi, and a one-shot read fails (ESP_ERR_TIMEOUT) while another driver holds the ADC; use an ADC1 pin",
    "src": [
     "idf-adc-oneshot-esp32s3",
     "idf-gpio-esp32s3"
