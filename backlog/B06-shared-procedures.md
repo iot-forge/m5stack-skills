@@ -1,6 +1,6 @@
 # B06 · Write the shared procedures
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: none
 
