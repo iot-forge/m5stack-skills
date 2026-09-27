@@ -27,7 +27,7 @@ Where only a library version decides (the ILI9342E LCD on units from 2026.8.7 ne
 
 1. **Physical** — the SKU on the sticker or box, the power LED colour. No tools, no risk. A sticker without a suffix (`K010`) still covers several revisions.
 2. **Host** — read from the computer, with the board plugged in: the USB vendor ID (`doctor.py` prints it; Device Manager or `lsusb` also show it), or the flash size from `esptool flash-id`. Both are read-only. Some only rule revisions out: a CH9102 bridge never proves a later Core2, because Core2 v1.0 shipped with either chip.
-3. **Probe** — a small sketch that reads a chip-ID register (`tell-apart` prints the I2C address, register and expected values). This flashes the board, so standing rule 2 applies: name the port, the board and what the flash overwrites, and wait for the go-ahead. Offer a probe only when the physical and host signals are exhausted and the answer still needs the revision. A probe result is inferred from a chip ID; say so when you report it.
+3. **Probe** — a small sketch that reads a chip-ID register (`tell-apart` prints the I2C address, register and expected values). This flashes the board, so standing rule 2 applies: name the port, the board and what the flash overwrites, and wait for the go-ahead. Offer a probe only when the physical and host signals are exhausted and the answer still needs the revision. A probe result is inferred from a chip ID; say so when you report it. If `tell-apart` prints a `probe gap` for the probe, tell the user before flashing that its expected values are not confirmed by the datasheet. A value outside the expected ones is reported raw, as possibly wrong data rather than a wrong board, and does not narrow the revisions.
 
 ## Narrowing
 

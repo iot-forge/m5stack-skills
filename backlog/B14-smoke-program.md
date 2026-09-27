@@ -15,7 +15,7 @@ Gate: hardware-ready
 Write the smoke program `VERIFICATION.md` section 5 describes, in `verification/smoke/<framework>/`, for Arduino/M5Unified (the reference), PlatformIO, ESP-IDF and UIFlow2. It:
 
 1. prints `SMOKE <nonce>` and shows the nonce large;
-2. reads chip IDs directly, using the probe fields in `data/signals.json`: PMIC, IMU, ATECC608B presence, INA3221 presence;
+2. reads chip IDs directly, using the probe fields in `data/signals.json`: PMIC, IMU, ATECC608B presence, INA3221 presence. For a probe with a `datasheet_gap`, the probe line also prints the raw register value ([ADR 0005](../docs/adr/0005-probe-datasheet-gap.md));
 3. prints the libraries' self-report on a line labelled `SELF-REPORT (not evidence)`;
 4. records the LCD driver for `open-question.lcd-driver.core2@v1.3`.
 

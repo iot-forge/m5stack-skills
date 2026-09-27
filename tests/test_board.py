@@ -92,6 +92,18 @@ class Query(unittest.TestCase):
         self.assertEqual(code, 4)
         self.assertIn("not populated", out)
 
+    def test_probe_gap_shown(self):  # ADR 0005
+        signals = json.loads((DATA / "signals.json").read_text(encoding="utf-8"))["signals"]
+        gap = next(s for s in signals if s["id"] == "pmic-probe")["probe"].get("datasheet_gap")
+        if not gap:
+            self.skipTest("pmic-probe has no datasheet gap")
+        code, out = board("tell-apart", "core2")
+        self.assertIn(f"probe gap: {gap}", out)
+        self.assertIn("report the raw value", out)
+        code, out = board_json("tell-apart", "core2")
+        pmic = next(r for r in out["signals"] if r["signal"] == "pmic-probe")
+        self.assertEqual(pmic["probe"]["datasheet_gap"], gap)
+
     def test_directive_when_unverified(self):
         code, out = board("facts", "core2@v1.3", "pmic")
         self.assertIn("has not been checked on hardware", out)

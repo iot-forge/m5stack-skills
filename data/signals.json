@@ -194,7 +194,7 @@
      "AXP192": "0x03",
      "AXP2101": "0x4A"
     },
-    "datasheet_gap": "The expected values come from M5Unified. The AXP192 datasheet does not document register 0x03, and the one AXP2101 datasheet that does (rev 0.1, 2019) gives 0x47 or 0x57, not 0x4A; raised in B03."
+    "datasheet_gap": "The expected values come from M5Unified. The AXP192 datasheet does not document register 0x03, and the one AXP2101 datasheet that does (rev 0.1, 2019) gives 0x47 or 0x57, not 0x4A. A hardware run on a Core2 v1.3 settles the AXP192 value; the AXP2101 value needs a Core2 v1.1 or a CoreS3-family unit."
    },
    "outcomes": {
     "AXP192": [
@@ -291,7 +291,7 @@
     ]
    },
    "reliability": "high",
-   "caveats": "Needs flashing, and is inferred from a chip ID. Fire 2019.7 (SH200Q) is not covered.",
+   "caveats": "Needs flashing, and is inferred from a chip ID. Fire 2019.7 (SH200Q) is not covered. The MPU-9250 register map (RM-MPU-9250A-00 rev 1.4) contradicts itself on register 0x75: its header gives a reset value of 0x68, its text a default of 0x71. The data expects 0x71, as M5Unified does; a reading of 0x68 at 0x75 is ambiguous between an MPU-9250 and an MPU-6050.",
    "src": [
     "m5unified",
     "ds-mpu6886",

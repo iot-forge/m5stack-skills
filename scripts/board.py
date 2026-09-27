@@ -361,9 +361,13 @@ def cmd_tell_apart(db, a, res):
                     lines.append(f"      probe: I2C {addr(rd['address'])} register {rd['register']}: " + ", ".join(f"{k}={v}" for k, v in rd["expected"].items()))
             if p.get("note"):
                 lines.append(f"      probe note: {p['note']}")
+            if p.get("datasheet_gap"):
+                lines.append(f"      probe gap: {p['datasheet_gap']}")
         lines.append(f"      caveat: {r['caveats']}")
     if not rows:
         lines.append("  none recorded. Say that the data has no way to tell these revisions apart.")
+    if any((r["probe"] or {}).get("datasheet_gap") for r in rows):
+        lines.append("A probe with a gap expects values no datasheet confirms. Say so before the user flashes it. If it reads a value outside the expected ones, report the raw value, say the data may be wrong rather than the board, and do not narrow on it.")
     lines.append("Offer the cheapest observation first and pass what the user reports back with --seen SIGNAL=VALUE.")
     lines.append("Never use the board's self-report (M5.getBoard(), UIFlow2 BOARD_ID) as evidence: it is cached in NVS across reflashes and made up by a fallback when detection fails.")
     return "\n".join(lines)
