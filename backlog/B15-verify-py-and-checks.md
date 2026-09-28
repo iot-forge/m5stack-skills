@@ -15,6 +15,7 @@ Gate: hardware-ready
 Finish `scripts/verify.py` (only `run --offline` works; the rest exit 5) and complete `verification/checks.json`:
 
 - `run --offline`: add `build.*`, and `trigger.*` through the headless command (VERIFICATION.md section 4, with `--allowedTools Skill`). Keep `handoff.*` operator-read.
+- `run --offline`, planted results: report only the rule fixtures in `tests/test_validate.py` as `data.planted-<rule>`. Two tests there guard the fixture, not a rule: `test_committed_data_passes` (the unbroken copy validates) and `test_fixture_leaves_out_smoke` (B24: the copy leaves out `verification/smoke/`). Name them in a set in `verify.py`, the way `query_map` names the query tests, and never report them as `data.planted-*`. If either fails, every `data.planted-*` result is `blocked` (a prerequisite failed, VERIFICATION.md section 1), with the failing test's line as its output.
 - `run --board <revision>`: walk the operator through section 6's steps in order, record every observation, and mark the dependants of a failure `blocked`.
 - `ingest`: apply section 8's rules exactly: hardware-test sources, `last_verified`, `confidence: high`, and each skill's `metadata.verification` and `tested-with`. A failure never edits `data/` (ADR 0004), and neither does an `open-question` result. An `open-question` check counts toward a skill's status once its result is `observed`, since it never passes (section 10).
 - `report`: write `<date>.md` with section 8's five report sections.
@@ -34,6 +35,7 @@ Test ingest against a fixture run file on a copy of `data/`, the way `tests/test
 - [ ] No `verify.py` command exits 5
 - [ ] `checks.json` lists every check in VERIFICATION.md
 - [ ] An ingest test on fixture results passes: pass results write sources, failures and `observed` results write nothing, and a skill whose only unpassed checks are `observed` open questions gets a `partial` or `verified` status
+- [ ] `run --offline` reports no `data.planted-*` result for the two fixture-guard tests, and a failing guard makes every `data.planted-*` result `blocked`
 - [ ] `uv run scripts/verify.py run --offline` passes (the hardware-ready gate)
 - [ ] `uv run scripts/validate.py` exits 0
 - [ ] `python -m unittest discover tests` passes

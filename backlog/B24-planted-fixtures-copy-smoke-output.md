@@ -48,4 +48,4 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 - **Next**: none.
 - **Files touched**: `tests/test_validate.py`
 - **Last commit**: see `git log -- tests/test_validate.py`
-- **Open questions**: none. Note: `verify.py run_offline` maps every `test_validate` test to `data.planted-<name>`, so the new test reports as `data.planted-fixture-leaves-out-smoke`, like `test_committed_data_passes` before it. B15 may want to filter non-rule tests.
+- **Open questions**: none. Until B15 lands, `verify.py run_offline` reports the new test as `data.planted-fixture-leaves-out-smoke`, as it does `test_committed_data_passes`. The maintainer chose to keep the test; B15 now stops reporting both as planted checks.
