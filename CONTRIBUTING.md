@@ -27,5 +27,7 @@ A skill's own references go in `skills/<name>/references/`. A procedure several 
 ```
 uv run scripts/validate.py          # data rules and skill rules; must exit 0
 python -m unittest discover tests  # the query checks and a planted fixture per data rule
-uv run scripts/verify.py run --offline
+uv run scripts/verify.py run --offline --skip build --skip trigger   # quick: data and query only
 ```
+
+The full `uv run scripts/verify.py run --offline` also builds the smoke program in every toolchain and runs each trigger row 3 times through `claude -p`, one at a time (VERIFICATION.md section 4). It takes about an hour. Run it before a hardware session and before a release.

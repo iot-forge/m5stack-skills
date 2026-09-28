@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "note": "Every check in VERIFICATION.md, with its kind, the skills whose status it counts toward, its revision, and the data entries a pass cites (covers, used by verify.py ingest). A trigger check carries its request, the fixture project it runs from (verification/triggers/<fixture>, or an empty directory when null), its owner skills and the siblings that may fire after the owner. A check with satisfied_by also counts when <satisfied_by>.<revision> passed.",
+ "note": "Every check in VERIFICATION.md, with its kind, the skills whose status it counts toward, its revision, and the data entries a pass cites (covers, used by verify.py ingest). A trigger check carries its request, the fixture project it runs from (verification/triggers/<fixture>, or an empty directory when null) and its owner skills (any of them may fire first). A blocked check with satisfied_by counts toward a skill's status when <satisfied_by>.<revision> passed.",
  "checks": [
   {
    "id": "data.validate",
@@ -196,9 +196,6 @@
    "fixture": "platformio",
    "owner": [
     "arduino-m5unified"
-   ],
-   "may_follow": [
-    "platformio"
    ]
   },
   {
@@ -211,8 +208,7 @@
    "fixture": "arduino",
    "owner": [
     "arduino-m5unified"
-   ],
-   "may_follow": []
+   ]
   },
   {
    "id": "trigger.row-03",
@@ -224,8 +220,7 @@
    "fixture": null,
    "owner": [
     "arduino-m5unified"
-   ],
-   "may_follow": []
+   ]
   },
   {
    "id": "trigger.row-04",
@@ -237,8 +232,7 @@
    "fixture": null,
    "owner": [
     "platformio"
-   ],
-   "may_follow": []
+   ]
   },
   {
    "id": "trigger.row-05",
@@ -250,9 +244,6 @@
    "fixture": "platformio",
    "owner": [
     "platformio"
-   ],
-   "may_follow": [
-    "esp-idf"
    ]
   },
   {
@@ -265,8 +256,7 @@
    "fixture": "platformio",
    "owner": [
     "platformio"
-   ],
-   "may_follow": []
+   ]
   },
   {
    "id": "trigger.row-07",
@@ -278,9 +268,6 @@
    "fixture": null,
    "owner": [
     "esp-idf"
-   ],
-   "may_follow": [
-    "arduino-m5unified"
    ]
   },
   {
@@ -293,9 +280,6 @@
    "fixture": null,
    "owner": [
     "uiflow2-micropython"
-   ],
-   "may_follow": [
-    "flashing-and-debugging"
    ]
   },
   {
@@ -308,8 +292,7 @@
    "fixture": "uiflow2",
    "owner": [
     "uiflow2-micropython"
-   ],
-   "may_follow": []
+   ]
   },
   {
    "id": "trigger.row-10",
@@ -321,8 +304,7 @@
    "fixture": null,
    "owner": [
     "board-identification"
-   ],
-   "may_follow": []
+   ]
   },
   {
    "id": "trigger.row-11",
@@ -337,7 +319,6 @@
     "board-identification",
     "arduino-m5unified"
    ],
-   "may_follow": [],
    "judge": "The answer refuses to trust M5.getBoard() as evidence of the revision."
   },
   {
@@ -350,8 +331,7 @@
    "fixture": null,
    "owner": [
     "board-identification"
-   ],
-   "may_follow": []
+   ]
   },
   {
    "id": "trigger.row-13",
@@ -363,8 +343,7 @@
    "fixture": null,
    "owner": [
     "board-identification"
-   ],
-   "may_follow": []
+   ]
   },
   {
    "id": "trigger.row-14",
@@ -376,8 +355,7 @@
    "fixture": null,
    "owner": [
     "pinout-lookup"
-   ],
-   "may_follow": []
+   ]
   },
   {
    "id": "trigger.row-15",
@@ -389,8 +367,7 @@
    "fixture": null,
    "owner": [
     "pinout-lookup"
-   ],
-   "may_follow": []
+   ]
   },
   {
    "id": "trigger.row-16",
@@ -402,8 +379,7 @@
    "fixture": "firmware",
    "owner": [
     "flashing-and-debugging"
-   ],
-   "may_follow": []
+   ]
   },
   {
    "id": "trigger.row-17",
@@ -415,10 +391,6 @@
    "fixture": null,
    "owner": [
     "flashing-and-debugging"
-   ],
-   "may_follow": [
-    "platformio",
-    "esp-idf"
    ]
   },
   {
@@ -431,8 +403,7 @@
    "fixture": null,
    "owner": [
     "flashing-and-debugging"
-   ],
-   "may_follow": []
+   ]
   },
   {
    "id": "trigger.neg-01",
@@ -448,8 +419,7 @@
    ],
    "request": "Add argparse to my main.py",
    "fixture": "plain-python",
-   "owner": [],
-   "may_follow": []
+   "owner": []
   },
   {
    "id": "trigger.neg-02",
@@ -465,8 +435,7 @@
    ],
    "request": "Blink an LED on my ESP32 DevKitC",
    "fixture": null,
-   "owner": [],
-   "may_follow": []
+   "owner": []
   },
   {
    "id": "trigger.neg-03",
@@ -482,8 +451,7 @@
    ],
    "request": "Flash MicroPython onto my Raspberry Pi Pico",
    "fixture": null,
-   "owner": [],
-   "may_follow": []
+   "owner": []
   },
   {
    "id": "handoff.arduino-m5unified",

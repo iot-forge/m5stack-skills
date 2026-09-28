@@ -120,6 +120,17 @@ class Ingest(unittest.TestCase):
         self.ingest(run_file(results))
         self.assertEqual(self.skill_meta("uiflow2-micropython")["verification"], f"partial {DATE}: {REV}")
 
+    def test_failed_handoff_does_not_count_even_when_the_live_handoff_passed(self):
+        results = self.all_passing("uiflow2-micropython")
+        next(r for r in results if r["check"] == "handoff.uiflow2-micropython")["result"] = "fail"
+        self.ingest(run_file(results))
+        self.assertEqual(self.skill_meta("uiflow2-micropython")["verification"], "unverified")
+
+    def test_a_pass_that_covers_nothing_adds_no_source(self):
+        snapshot = {p: p.read_bytes() for p in (self.tmp / "data").rglob("*.json")}
+        self.ingest(run_file([{"check": f"host.port.{REV}", "result": "pass"}, {"check": f"device.arduino.{REV}", "result": "pass"}]))
+        self.assertEqual({p: p.read_bytes() for p in (self.tmp / "data").rglob("*.json")}, snapshot)
+
     def test_skill_line_endings_survive(self):
         before = (REPO / "skills/uiflow2-micropython/SKILL.md").read_bytes()
         self.ingest(run_file(self.all_passing("uiflow2-micropython")))
@@ -221,6 +232,15 @@ class Triggers(unittest.TestCase):
         self.seen = seen
         return verify.trigger_result(self.check(cid), FakeRunner(claude=claude), ask=ask)
 
+    def test_a_stray_line_in_the_stream_is_ignored(self):
+        r = self.row("trigger.row-10", *["not json\n" + stream("board-identification")] * 3)
+        self.assertEqual(r["result"], "pass", r["output"])
+
+    def test_claude_failing_to_run_blocks_the_row(self):  # like a missing toolchain: no verdict on the skill
+        r = verify.trigger_result(self.check("trigger.row-10"), lambda cmd, cwd=None, stdin=None: (1, "", "Not logged in"))
+        self.assertEqual(r["result"], "blocked")
+        self.assertIn("Not logged in", r["output"])
+
     def test_owner_in_every_run_passes(self):
         r = self.row("trigger.row-10", *[stream("board-identification")] * 3)
         self.assertEqual(r["result"], "pass", r["output"])
@@ -280,6 +300,8 @@ class Triggers(unittest.TestCase):
         self.assertEqual(res["trigger.neg-03"]["result"], "pass")
         self.assertEqual(res["trigger.row-04"]["result"], "fail")
         self.assertEqual(sum(1 for c in runner.calls if c[0] == "claude"), 21 * 3)
+        # section 4: without a port that exists but fails, handoff.<skill> is blocked until the hardware session
+        self.assertEqual(res["handoff.platformio"]["result"], "blocked")
 
 
 class Operator:
@@ -290,6 +312,8 @@ class Operator:
 
     def __call__(self, prompt):
         self.prompts.append(prompt)
+        if len(self.prompts) > 1000:
+            raise AssertionError(f"run_board keeps asking: {prompt}")
         if prompt.startswith("SKU"):
             return "K010-V13"
         if " version" in prompt:
@@ -331,11 +355,21 @@ class Board(unittest.TestCase):
     def test_a_failure_blocks_its_dependants_without_asking(self):
         _, res = self.board({f"flash.arduino.{REV}": "f"})
         self.assertEqual(res[f"flash.arduino.{REV}"]["result"], "fail")
+        self.assertEqual(res[f"device.arduino.{REV}"]["blocked_by"], [f"flash.arduino.{REV}"])
         for dep in ("device.arduino", "fact.pmic", "fact.no-atecc", "open-question.lcd-driver"):
             self.assertEqual(res[f"{dep}.{REV}"]["result"], "blocked", dep)
-            self.assertEqual(res[f"{dep}.{REV}"]["blocked_by"], [f"flash.arduino.{REV}"])
             self.assertFalse(self.asked(f"{dep}.{REV}"), dep)
         self.assertEqual(res[f"device.platformio.{REV}"]["result"], "pass")
+
+    def test_facts_need_the_nonce_on_the_display(self):  # section 5: a wrong nonce means some other firmware is running
+        _, res = self.board({f"device.arduino.{REV}": "f"})
+        for dep in ("fact.pmic", "fact.imu", "fact.no-atecc", "fact.no-ina3221", "fact.port-a-bus", "open-question.lcd-driver"):
+            self.assertEqual(res[f"{dep}.{REV}"]["blocked_by"], [f"device.arduino.{REV}"], dep)
+        self.assertEqual(res[f"open-question.auto-download.{REV}"]["result"], "observed")  # seen during the upload itself
+
+    def test_an_open_question_can_be_blocked(self):
+        _, res = self.board({f"open-question.speaker-mic.{REV}": "b"})
+        self.assertEqual(res[f"open-question.speaker-mic.{REV}"]["result"], "blocked")
 
     def test_blocking_is_transitive(self):
         _, res = self.board({f"host.port.{REV}": "f"})
@@ -375,6 +409,14 @@ class WriteRun(unittest.TestCase):
         self.assertEqual([r["check"] for r in merged["results"]], ["data.validate", "trigger.row-10", "fact.pmic.core2@v1.3"])
         self.assertEqual(merged["run"]["unit"], board["run"]["unit"])
         self.assertEqual(merged["run"]["toolchains"], {"esptool": "4.8.1"})
+
+    def test_an_unnamed_rerun_keeps_the_recorded_operator(self):
+        named = run_file([], unit=None)
+        named["run"]["operator"] = "kk"
+        verify.write_run(named, self.tmp)
+        anonymous = run_file([], unit=None)
+        anonymous["run"]["operator"] = "unknown"
+        self.assertEqual(verify.read_json(verify.write_run(anonymous, self.tmp))["run"]["operator"], "kk")
 
     def test_a_rerun_check_replaces_its_earlier_result(self):
         verify.write_run(run_file([{"check": "trigger.row-10", "result": "fail"}], unit=None), self.tmp)
@@ -420,6 +462,16 @@ class Report(unittest.TestCase):
         row = next(l for l in bar.splitlines() if l.startswith(f"| `{REV}`"))
         self.assertIn("fail", row)
         self.assertIn("every other `supported` revision", bar)
+
+    def test_release_bar_keeps_the_mandatory_row_on_an_offline_run(self):
+        md = verify.render_report(run_file([{"check": "data.validate", "result": "pass"}], unit=None), REPO)
+        row = next(l for l in md.split("## Release bar", 1)[1].splitlines() if l.startswith(f"| `{REV}`"))
+        self.assertIn("not-run", row)
+
+    def test_a_failed_fact_expects_what_the_data_says(self):
+        md = verify.render_report(run_file([{"check": f"fact.pmic.{REV}", "result": "fail", "observed": "AXP2101"}]), REPO)
+        expected = md.split("- **Expected**:", 1)[1].splitlines()[0]
+        self.assertIn("AXP192", expected)  # data/products/core2.json gives core2@v1.3's PMIC as the AXP192
 
     def test_failures_in_section_9_shape(self):
         f = self.section("Failures")

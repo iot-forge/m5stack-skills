@@ -6,7 +6,7 @@
 
   uv run scripts/verify.py run --offline [--skip build|trigger]   # section 4: data, query, build (smoke.py),
                                                                  # trigger (claude -p, 3 runs a row, one at a time);
-                                                                 # handoff.<skill> is operator-read, recorded not-run
+                                                                 # handoff.<skill> is operator-read, recorded blocked
   uv run scripts/verify.py run --board REV                       # section 6, step by step, asking the operator
   uv run scripts/verify.py ingest RESULTS                        # section 8: cite passing hardware checks in data/,
                                                                  # set each skill's metadata; never commits
@@ -62,10 +62,10 @@ def ingest(obj, root=ROOT):
     """Section 8: cite a hardware-test source on every entry a passing fact/device/host check covers."""
     run, date = obj["run"], obj["run"]["date"]
     checks = {c["id"]: c for c in read_json(root / "verification/checks.json")["checks"]}
-    passed = [checks[r["check"]] for r in obj["results"]
-              if r["result"] == "pass" and r["check"].split(".", 1)[0] in INGESTED_KINDS and r["check"] in checks]
+    passed = [checks[r["check"]] for r in obj["results"] if r["result"] == "pass" and r["check"] in checks
+              and checks[r["check"]]["kind"] in INGESTED_KINDS and checks[r["check"]].get("covers")]
     if not passed or not run.get("unit"):
-        return []
+        return []  # a source nothing cites fails data.sources
     revision = run["unit"]["revision"]
     sid = f"hw-{date}-{revision}"
     docs, touched = {}, []
@@ -95,11 +95,11 @@ def supported_revisions(root):
 
 
 def satisfied(check, revision, results):
-    """Section 10: a check counts when it passed, an open question when it was observed, and a check with
-    `satisfied_by` (handoff.<skill>) also when that check passed on REVISION (handoff.live.<revision>)."""
+    """Section 10: a check counts when it passed, an open question when it was observed, and a blocked check with
+    `satisfied_by` (handoff.<skill>) when that check passed on REVISION (handoff.live.<revision>)."""
     r = results.get(check["id"])
     return (r == "pass" or (check["kind"] == "open-question" and r == "observed")
-            or ("satisfied_by" in check and results.get(f"{check['satisfied_by']}.{revision}") == "pass"))
+            or (r == "blocked" and "satisfied_by" in check and results.get(f"{check['satisfied_by']}.{revision}") == "pass"))
 
 
 def set_skill_status(obj, root=ROOT):
@@ -161,7 +161,6 @@ FIXTURE_GUARDS = {"test_committed_data_passes", "test_fixture_leaves_out_smoke"}
 QUERY_TESTS = {"branch-core2": "test_branch_core2", "narrow-seen": "test_narrow_seen", "bid-coarse": "test_bid_coarse",
                "target-many": "test_target_many", "stub-refuses": "test_stub_refuses", "pin-conflict": "test_pin_conflict",
                "strict-name": "test_strict_name", "no-self-report": "test_no_self_report"}
-OFFLINE_KINDS = ("data", "query", "build", "trigger", "handoff")
 
 
 def sh(cmd, cwd=None, stdin=None, timeout=3600):
@@ -208,23 +207,25 @@ def smoke_results(runner, args, ids):
 TRIGGER_RUNS = 3  # section 4: each request runs 3 times, one at a time
 
 
-def fired_skills(stream):
-    """The skills a `claude -p --output-format stream-json` run called, in order."""
-    out = []
+def stream_events(stream):
+    """The JSON events of a `claude -p --output-format stream-json` run; any other line is skipped."""
     for line in stream.splitlines():
         try:
             ev = json.loads(line)
         except json.JSONDecodeError:
             continue
-        if ev.get("type") == "assistant":
-            out += [c["input"].get("skill", "") for c in ev.get("message", {}).get("content", [])
-                    if c.get("type") == "tool_use" and c.get("name") == "Skill"]
-    return out
+        if isinstance(ev, dict):
+            yield ev
+
+
+def fired_skills(stream):
+    """The skills the run called, in order."""
+    return [c["input"].get("skill", "") for ev in stream_events(stream) if ev.get("type") == "assistant"
+            for c in ev.get("message", {}).get("content", []) if c.get("type") == "tool_use" and c.get("name") == "Skill"]
 
 
 def final_answer(stream):
-    return next((ev.get("result", "") for ev in map(json.loads, filter(str.strip, stream.splitlines()))
-                 if ev.get("type") == "result"), "")
+    return next((ev.get("result", "") for ev in stream_events(stream) if ev.get("type") == "result"), "")
 
 
 def run_verdict(check, skills, prefix):
@@ -255,7 +256,7 @@ def trigger_result(check, runner=sh, ask=None):
             except subprocess.TimeoutExpired:
                 code, out, err = None, "", "timed out"
         skills = fired_skills(out)
-        v = run_verdict(check, skills, prefix) if code == 0 else "fail"
+        v = run_verdict(check, skills, prefix) if code == 0 else "blocked"  # claude could not run: no verdict on the skill
         verdicts.append(v)
         lines.append(f"run {n}: {', '.join(skills) or 'no skill fired'} -> {v}" + ("" if code == 0 else f" (claude exited {code}: {err[-500:]})"))
         answers.append(final_answer(out))
@@ -296,12 +297,14 @@ def run_offline(operator, runner=sh, skip=(), ask=None):
             results.append({"check": c["id"], "result": "not-run", "output": "skipped (--skip trigger)"} if "trigger" in skip
                            else trigger_result(c, runner, ask))
         elif c["kind"] == "handoff" and "revision" not in c:
-            results.append({"check": c["id"], "result": "not-run", "output": "operator-read (VERIFICATION.md section 4): run it in Claude Code and record the result"})
+            results.append({"check": c["id"], "result": "blocked", "output": "operator-read (VERIFICATION.md section 4): blocked "
+                            "until there is a port that exists but fails; handoff.live.<revision> covers it in the hardware session"})
     date = datetime.date.today().isoformat()
     return {"run": {"date": date, "operator": operator, "host_os": f"{platform.system()} {platform.release()}",
                     "plugin_commit": git_head(), "unit": None, "toolchains": {}}, "results": results}
 
 
+FRAMEWORKS = ("arduino", "platformio", "esp-idf", "uiflow2")
 # Section 6, in order: UIFlow2 replaces the firmware, so it goes last. Check ids here drop the .<revision> suffix.
 BOARD_STEPS = [
     ("Plug the unit in. doctor.py should list exactly one new port; compare its VID/PID with the USB bridge "
@@ -324,10 +327,12 @@ BOARD_STEPS = [
 ANY_TIME = "Any time: the remaining checks for this revision (VERIFICATION.md sections 6 and 7)."
 # a check is blocked when the check it depends on did not pass; dependencies chain (host.port -> flash -> device)
 DEPENDS = {"host.bridge": "host.port", "host.driver": "host.port", "fact.bridge": "host.bridge", "handoff.live": "host.port",
-           **{f"flash.{fw}": "host.port" for fw in ("arduino", "platformio", "esp-idf", "uiflow2")},
-           **{f"device.{fw}": f"flash.{fw}" for fw in ("arduino", "platformio", "esp-idf", "uiflow2")},
-           **{c: "flash.arduino" for c in ("fact.pmic", "fact.imu", "fact.no-atecc", "fact.no-ina3221", "fact.port-a-bus",
-                                           "open-question.lcd-driver", "open-question.auto-download")},
+           **{f"flash.{fw}": "host.port" for fw in FRAMEWORKS},
+           **{f"device.{fw}": f"flash.{fw}" for fw in FRAMEWORKS},
+           # the probe lines count only once the nonce on the display shows the smoke program is what runs (section 5)
+           **{c: "device.arduino" for c in ("fact.pmic", "fact.imu", "fact.no-atecc", "fact.no-ina3221", "fact.port-a-bus",
+                                            "open-question.lcd-driver")},
+           "open-question.auto-download": "host.port",  # observed during the upload itself
            **{c: "flash.uiflow2" for c in ("open-question.mpremote-launcher", "open-question.uiflow2-image-v1.3",
                                            "open-question.stdout-raw-repl")},
            # these need a sketch of their own, not the smoke program
@@ -351,7 +356,8 @@ def run_board(revision, operator, ask=input):
     for n, (text, bases) in enumerate(steps, 1):
         print(f"\nStep {n}: {text}")
         if not bases:
-            ask(f"Step {n} done? [y/n] ")
+            if not ask(f"Step {n} done? [y/n] ").strip().lower().startswith("y"):
+                print("  Not done: record why in the report; later answers may come from an earlier firmware.")
             continue
         for base in bases:
             cid, dep = by_base[base]["id"], DEPENDS.get(base)
@@ -361,7 +367,7 @@ def run_board(revision, operator, ask=input):
                 print(f"  {cid}: blocked by {dep}.{revision}")
                 continue
             kind = by_base[base]["kind"]
-            choices = "o/n" if kind == "open-question" else "p/f/b/n"
+            choices = "o/b/n" if kind == "open-question" else "p/f/b/n"
             while (a := ask(f"{cid} result [{choices}]: ").strip().lower()[:1]) not in choices.split("/"):
                 print(f"  answer one of {choices}")
             r = {"check": cid, "result": ANSWERS[a]}
@@ -378,6 +384,7 @@ def run_board(revision, operator, ask=input):
 
 RESULTS = ("pass", "fail", "blocked", "not-run", "observed")
 KINDS = ("data", "query", "build", "trigger", "handoff", "host", "flash", "device", "fact", "open-question")
+RELEASE_UNIT = "core2@v1.3"  # the release bar's mandatory revision (section 3)
 MARKER_RE = re.compile(r"\(untested on hardware: ([^)]+)\)")
 
 
@@ -385,6 +392,22 @@ def cell(results):
     """A release-bar cell: the results' counts, e.g. 'pass 3 · fail 1', or 'not-run' when there are none."""
     counts = [f"{r} {sum(1 for x in results if x == r)}" for r in RESULTS if r in results]
     return " · ".join(counts) or "not-run"
+
+
+def expected(cid, covers, root):
+    """What data/ says for the entries a check covers, or where its pass condition is written."""
+    said = []
+    for cover in covers:
+        rel, fragment = cover.split("#", 1)
+        node = covered_entry(read_json(root / "data" / rel), rel, fragment)
+        if isinstance(node, list):
+            value = ", ".join(e.get("part") or e.get("role", "?") for e in node)
+        elif "outcomes" in node:  # a signal: the outcome data/ maps this check's revision to
+            value = " or ".join(k for k, revs in node["outcomes"].items() if any(cid.endswith(f".{r}") for r in revs))
+        else:
+            value = node.get("part", node.get("value", node.get("pins")))
+        said.append(f"`{cover}` = {value}")
+    return "data/ says " + "; ".join(said) if said else f"the pass condition VERIFICATION.md gives for `{cid}`"
 
 
 def render_report(obj, root=ROOT):
@@ -407,24 +430,25 @@ def render_report(obj, root=ROOT):
     out += ["", "## Release bar", "", "Hardware-free checks (VERIFICATION.md section 3, item 1):", ""]
     for k in ("data", "query", "build", "trigger", "handoff"):
         out.append(f"- `{k}`: {cell([r['result'] for r in results if kind(r['check']) == k and '@' not in r['check']])}")
-    cols = [("host", "host."), *((f"flash {fw}", f"flash.{fw}.") for fw in ("arduino", "platformio", "esp-idf", "uiflow2")),
-            *((f"device {fw}", f"device.{fw}.") for fw in ("arduino", "platformio", "esp-idf", "uiflow2")),
+    cols = [("host", "host."), *((f"flash {fw}", f"flash.{fw}.") for fw in FRAMEWORKS),
+            *((f"device {fw}", f"device.{fw}.") for fw in FRAMEWORKS),
             ("fact", "fact."), ("open-question", "open-question.")]
     out += ["", "| Revision | " + " | ".join(f"`{c}`" for c, _ in cols) + " |", "|---|" + "---|" * len(cols)]
-    if unit:
-        out.append(f"| `{unit}` | " + " | ".join(cell([r["result"] for r in results if r["check"].startswith(p)
-                                                          and r["check"].endswith(f".{unit}")]) for _, p in cols) + " |")
+    for rev in dict.fromkeys([RELEASE_UNIT, *([unit] if unit else [])]):  # section 3's mandatory row is always shown
+        out.append(f"| `{rev}` | " + " | ".join(cell([r["result"] for r in results if r["check"].startswith(p)
+                                                         and r["check"].endswith(f".{rev}")]) for _, p in cols) + " |")
     out.append("| every other `supported` revision | " + " | ".join("not-run" for _ in cols) + " |")
 
     out += ["", "## Failures", ""]
     failures = [r for r in results if r["result"] == "fail"]
+    covers = {c["id"]: c.get("covers", []) for c in read_json(root / "verification/checks.json")["checks"]}
     for r in failures:
         blocks = [b["check"] for b in results if r["check"] in b.get("blocked_by", [])]
         out += [f"### {r['check']}", "",
-                f"- **Expected**: the pass condition VERIFICATION.md gives for `{r['check']}`",
+                f"- **Expected**: {expected(r['check'], covers.get(r['check'], []), root)}",
                 f"- **Observed**: {r.get('observed') or 'not recorded'}",
                 f"- **Output**: {r.get('output') or 'none recorded'}",
-                "- **Suspected cause**: unknown",
+                "- **Suspected cause**: unknown (to diagnose after the session: data, skill, script, toolchain or unit)",
                 f"- **Blocks**: {', '.join(blocks) or 'nothing'}", ""]
     if not failures:
         out += ["None.", ""]
@@ -465,6 +489,7 @@ def write_run(obj, runs=ROOT / "verification/runs"):
         merged = {r["check"]: r for r in old["results"]}
         merged.update((r["check"], r) for r in obj["results"])
         run = {**old["run"], **obj["run"], "unit": obj["run"]["unit"] or old["run"]["unit"],
+               "operator": obj["run"]["operator"] if obj["run"]["operator"] != "unknown" else old["run"]["operator"],
                "toolchains": {**old["run"]["toolchains"], **obj["run"]["toolchains"]}}
         obj = {"run": run, "results": list(merged.values())}
     out.parent.mkdir(parents=True, exist_ok=True)
