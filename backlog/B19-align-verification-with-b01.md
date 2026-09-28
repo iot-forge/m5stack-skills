@@ -1,6 +1,6 @@
 # B19 · Align VERIFICATION.md with B01
 
-Status: open
+Status: in-progress
 Blocked by: [B01](B01-fix-verification-documents.md)
 Gate: hardware-ready
 
