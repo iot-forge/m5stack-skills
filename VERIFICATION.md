@@ -96,7 +96,7 @@ Each check runs `board.py` and compares its output with what `data/` says. The e
 
 ### `trigger`
 
-Each request is run through Claude Code headless, with this plugin loaded, from a fixture directory holding the project files the request implies (a `platformio.ini`, an `sdkconfig`, a plain-Python `main.py`, …):
+Each request is run through Claude Code headless, with this plugin loaded, from a fixture directory holding the project files the request implies (a `platformio.ini`, a UIFlow2 `boot.py`, a plain-Python `main.py`, …). The fixtures are in `verification/triggers/`, and `checks.json` names each row's fixture, request and owner:
 
 ```
 claude -p "<request>" --plugin-dir <this repo> --allowedTools Skill --output-format stream-json --verbose
@@ -237,7 +237,7 @@ Record what happens. Each observation goes into the report verbatim, including e
 
 ## 8. Recording results
 
-A run writes two files, named by date: `verification/runs/<YYYY-MM-DD>.json` (results) and `verification/runs/<YYYY-MM-DD>.md` (report). `verify.py report` writes the report from the results. You can write both by hand if `verify.py` is unavailable.
+A run writes two files, named by date: `verification/runs/<YYYY-MM-DD>.json` (results) and `verification/runs/<YYYY-MM-DD>.md` (report). `verify.py run --write` merges into that date's results file, so the hardware-free checks and the hardware session run on one day make one file; a check run twice keeps its later result. `verify.py report` writes the report from the results. You can write both by hand if `verify.py` is unavailable.
 
 **Results file** (validated against `verification/results.schema.json`):
 
@@ -304,7 +304,7 @@ Until a run passes, everything ships unverified. Four places show it:
   - `partial`: all of the skill's checks passed on the listed revisions, but not on every supported one;
   - `verified`: all of them passed on every supported revision.
 
-  Example: `partial 2026-10-20: core2@v1.3`. A skill's checks are the ones `checks.json` tags with its name. An `open-question` check never passes, so it counts as satisfied when its result is `observed`. `validate.py` enforces the format.
+  Example: `partial 2026-10-20: core2@v1.3`. A skill's checks are the ones `checks.json` tags with its name. An `open-question` check never passes, so it counts as satisfied when its result is `observed`. A `handoff.<skill>` check also counts when `handoff.live.<revision>` passed (its `satisfied_by` in `checks.json`). A run that leaves any of a skill's checks unsatisfied leaves that skill's metadata as it was. `validate.py` enforces the format.
 - **`metadata.tested-with`**: the toolchain versions from the run that set the status, as `<tool> <version>` pairs, comma-separated. Only the tools that skill uses are listed. `none` until then.
 - **`board.py` output**: a fact with a `hardware-test` source ends with `[hardware-verified <date>]`, and a `confidence: low` fact still ends with `[low confidence]`. Unmarked facts are `sourced`. When the output includes any fact not hardware-verified, it ends with one directive line: before any write to the board that relies on such a fact, tell the user that fact comes from documentation and has not been checked on hardware.
 - **Inline markers in skills**: a step that relies on an open question carries *(untested on hardware: <check id>)*. `validate.py` checks that every marker names an existing `open-question` check. The report lists the markers a run has answered.
