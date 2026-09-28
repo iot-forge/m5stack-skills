@@ -382,6 +382,78 @@ class WriteRun(unittest.TestCase):
         self.assertEqual(verify.read_json(self.tmp / f"{DATE}.json")["results"], [{"check": "trigger.row-10", "result": "pass"}])
 
 
+class Report(unittest.TestCase):
+    RESULTS = [
+        {"check": "data.validate", "result": "pass"},
+        {"check": "trigger.row-10", "result": "pass"},
+        {"check": f"host.port.{REV}", "result": "pass", "observed": "COM7"},
+        {"check": f"flash.arduino.{REV}", "result": "pass"},
+        {"check": f"flash.platformio.{REV}", "result": "fail", "observed": "upload hung at Connecting...",
+         "output": "A fatal error occurred: Failed to connect to ESP32"},
+        {"check": f"device.platformio.{REV}", "result": "blocked", "blocked_by": [f"flash.platformio.{REV}"]},
+        {"check": f"fact.pmic.{REV}", "result": "pass", "observed": "I2C 0x34 AXP192"},
+        {"check": f"open-question.auto-download.{REV}", "result": "observed",
+         "observed": "esptool entered download mode with no button press", "output": "esptool v4.8.1 ..."},
+        {"check": f"open-question.speaker-mic.{REV}", "result": "not-run"},
+    ]
+
+    def setUp(self):
+        self.md = verify.render_report(run_file(self.RESULTS), REPO)
+
+    def section(self, title):
+        return self.md.split(f"## {title}", 1)[1].split("\n## ", 1)[0]
+
+    def test_five_sections_in_order(self):
+        self.assertEqual(re.findall(r"^## (.+)$", self.md, re.M),
+                         ["Summary", "Release bar", "Failures", "Open-question observations", "Markers cleared"])
+
+    def test_summary_counts_by_kind_and_result(self):
+        rows = {l.split("|")[1].strip(): [x.strip() for x in l.split("|")[2:-1]]
+                for l in self.section("Summary").splitlines() if l.startswith("| ") and not l.startswith("| Kind")}
+        header = [x.strip() for x in next(l for l in self.section("Summary").splitlines() if l.startswith("| Kind")).split("|")[2:-1]]
+        self.assertEqual(header, ["pass", "fail", "blocked", "not-run", "observed"])
+        self.assertEqual(rows["flash"], ["1", "1", "0", "0", "0"])
+        self.assertEqual(rows["open-question"], ["0", "0", "0", "1", "1"])
+
+    def test_release_bar_fills_the_unit_row(self):
+        bar = self.section("Release bar")
+        row = next(l for l in bar.splitlines() if l.startswith(f"| `{REV}`"))
+        self.assertIn("fail", row)
+        self.assertIn("every other `supported` revision", bar)
+
+    def test_failures_in_section_9_shape(self):
+        f = self.section("Failures")
+        self.assertIn(f"### flash.platformio.{REV}", f)
+        for field in ("Expected", "Observed", "Output", "Suspected cause", "Blocks"):
+            self.assertIn(f"- **{field}**:", f)
+        self.assertIn("upload hung at Connecting...", f)
+        self.assertIn("A fatal error occurred: Failed to connect to ESP32", f)
+        self.assertIn(f"device.platformio.{REV}", f.split("**Blocks**:", 1)[1])
+
+    def test_observations_verbatim(self):
+        o = self.section("Open-question observations")
+        self.assertIn("esptool entered download mode with no button press", o)
+        self.assertIn(f"open-question.speaker-mic.{REV}", o)  # listed as not run, so the gap shows
+
+    def test_markers_cleared_names_where_each_answered_marker_is(self):
+        m = self.section("Markers cleared")
+        self.assertIn(f"open-question.auto-download.{REV}", m)
+        self.assertIn("references/download-mode.md", m)
+        self.assertNotIn("touch-below-240", m)
+
+    def test_report_command_writes_next_to_the_results(self):
+        tmp = Path(tempfile.mkdtemp())
+        try:
+            f = tmp / f"{DATE}.json"
+            f.write_text(json.dumps(run_file(self.RESULTS)), encoding="utf-8")
+            p = subprocess.run([sys.executable, str(REPO / "scripts/verify.py"), "report", str(f)],
+                               capture_output=True, text=True, encoding="utf-8")
+            self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+            self.assertTrue((tmp / f"{DATE}.md").read_text(encoding="utf-8").startswith("# Verification run"))
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+
 class ChecksJson(unittest.TestCase):
     def setUp(self):
         self.ids = [c["id"] for c in verify.read_json(REPO / "verification/checks.json")["checks"]]

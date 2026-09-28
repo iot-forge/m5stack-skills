@@ -4,22 +4,22 @@
 # ///
 """Run verification checks and record results. Maintainer script; see VERIFICATION.md.
 
-  uv run scripts/verify.py run --offline     # hardware-free checks: data and query run here;
-                                             # build, trigger and handoff are recorded not-run (TODO)
-  uv run scripts/verify.py run --board REV   # TODO
-  uv run scripts/verify.py ingest RESULTS    # TODO
-  uv run scripts/verify.py report RESULTS    # TODO
+  uv run scripts/verify.py run --offline [--skip build|trigger]   # section 4: data, query, build (smoke.py),
+                                                                 # trigger (claude -p, 3 runs a row, one at a time);
+                                                                 # handoff.<skill> is operator-read, recorded not-run
+  uv run scripts/verify.py run --board REV                       # section 6, step by step, asking the operator
+  uv run scripts/verify.py ingest RESULTS                        # section 8: cite passing hardware checks in data/,
+                                                                 # set each skill's metadata; never commits
+  uv run scripts/verify.py report RESULTS                        # section 8: write <date>.md next to RESULTS
 
-Every TODO command exits 5 and says so. Until it exists, VERIFICATION.md sections 6 and 8
-describe doing the same by hand.
+`run` prints the results; with --write it merges them into verification/runs/<date>.json, so an offline run
+and a board run on the same day make one results file. trigger.row-11 asks the operator to judge the answers
+when stdin is a terminal, and is not-run otherwise. Exit codes: 0 no check failed; 1 a check failed.
 """
-# TODO: authored in the implementation backlog (verify.py: build, trigger and handoff checks,
-# run --board, ingest, report). It must exist before the hardware session.
 import argparse, datetime, json, platform, re, shutil, subprocess, sys, tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-EXIT_TODO = 5
 INGESTED_KINDS = ("fact", "device", "host")  # a pass of these cites the unit (section 8)
 # metadata.tested-with lists only the tools a skill uses (section 10), in this order; keys are the run's `toolchains`
 SKILL_TOOLS = {
@@ -376,6 +376,86 @@ def run_board(revision, operator, ask=input):
                     "unit": unit, "toolchains": toolchains}, "results": results}
 
 
+RESULTS = ("pass", "fail", "blocked", "not-run", "observed")
+KINDS = ("data", "query", "build", "trigger", "handoff", "host", "flash", "device", "fact", "open-question")
+MARKER_RE = re.compile(r"\(untested on hardware: ([^)]+)\)")
+
+
+def cell(results):
+    """A release-bar cell: the results' counts, e.g. 'pass 3 · fail 1', or 'not-run' when there are none."""
+    counts = [f"{r} {sum(1 for x in results if x == r)}" for r in RESULTS if r in results]
+    return " · ".join(counts) or "not-run"
+
+
+def render_report(obj, root=ROOT):
+    """Section 8's report: summary, release bar, failures (section 9's shape), observations, markers cleared."""
+    run, results = obj["run"], obj["results"]
+    kind = lambda cid: cid.split(".", 1)[0]
+    unit = (run.get("unit") or {}).get("revision")
+    out = [f"# Verification run {run['date']}", "",
+           f"Operator {run['operator']}, host {run['host_os']}, plugin commit `{run['plugin_commit']}`, "
+           f"unit {'`' + unit + '` (sticker ' + run['unit']['sku_sticker'] + ')' if unit else 'none'}.", ""]
+    if run.get("toolchains"):
+        out += ["Toolchains: " + ", ".join(f"{t} {v}" for t, v in run["toolchains"].items()) + ".", ""]
+
+    out += ["## Summary", "", "| Kind | " + " | ".join(RESULTS) + " |", "|---|" + "---|" * len(RESULTS)]
+    for k in KINDS:
+        got = [r["result"] for r in results if kind(r["check"]) == k]
+        if got:
+            out.append(f"| {k} | " + " | ".join(str(got.count(r)) for r in RESULTS) + " |")
+
+    out += ["", "## Release bar", "", "Hardware-free checks (VERIFICATION.md section 3, item 1):", ""]
+    for k in ("data", "query", "build", "trigger", "handoff"):
+        out.append(f"- `{k}`: {cell([r['result'] for r in results if kind(r['check']) == k and '@' not in r['check']])}")
+    cols = [("host", "host."), *((f"flash {fw}", f"flash.{fw}.") for fw in ("arduino", "platformio", "esp-idf", "uiflow2")),
+            *((f"device {fw}", f"device.{fw}.") for fw in ("arduino", "platformio", "esp-idf", "uiflow2")),
+            ("fact", "fact."), ("open-question", "open-question.")]
+    out += ["", "| Revision | " + " | ".join(f"`{c}`" for c, _ in cols) + " |", "|---|" + "---|" * len(cols)]
+    if unit:
+        out.append(f"| `{unit}` | " + " | ".join(cell([r["result"] for r in results if r["check"].startswith(p)
+                                                          and r["check"].endswith(f".{unit}")]) for _, p in cols) + " |")
+    out.append("| every other `supported` revision | " + " | ".join("not-run" for _ in cols) + " |")
+
+    out += ["", "## Failures", ""]
+    failures = [r for r in results if r["result"] == "fail"]
+    for r in failures:
+        blocks = [b["check"] for b in results if r["check"] in b.get("blocked_by", [])]
+        out += [f"### {r['check']}", "",
+                f"- **Expected**: the pass condition VERIFICATION.md gives for `{r['check']}`",
+                f"- **Observed**: {r.get('observed') or 'not recorded'}",
+                f"- **Output**: {r.get('output') or 'none recorded'}",
+                "- **Suspected cause**: unknown",
+                f"- **Blocks**: {', '.join(blocks) or 'nothing'}", ""]
+    if not failures:
+        out += ["None.", ""]
+
+    out += ["## Open-question observations", ""]
+    for r in (r for r in results if kind(r["check"]) == "open-question"):
+        if r["result"] == "observed":
+            out += [f"### {r['check']}", "", r.get("observed", ""), ""]
+            if r.get("output"):
+                out += ["```", r["output"], "```", ""]
+        else:
+            out += [f"### {r['check']}", "", f"{r['result']}{': blocked by ' + ', '.join(r['blocked_by']) if r.get('blocked_by') else ''}.", ""]
+
+    out += ["## Markers cleared", "",
+            "Each marker below names an open question this run observed. Update the step it sits on and remove it (section 7).", ""]
+    answered = {r["check"] for r in results if r["result"] == "observed"}
+    found = {}
+    for f in sorted([*(root / "skills").rglob("*.md"), *(root / "references").glob("*.md")]):
+        for cid in MARKER_RE.findall(f.read_text(encoding="utf-8")):
+            if cid in answered:
+                found.setdefault(cid, []).append(f.relative_to(root).as_posix())
+    out += [f"- `{cid}`: {', '.join(dict.fromkeys(files))}" for cid, files in found.items()] or ["None."]
+    return "\n".join(out) + "\n"
+
+
+def write_report(obj, runs, root=ROOT):
+    out = Path(runs) / f"{obj['run']['date']}.md"
+    out.write_bytes(render_report(obj, root).encode("utf-8"))
+    return out
+
+
 def write_run(obj, runs=ROOT / "verification/runs"):
     """Write OBJ to <runs>/<date>.json, merging into that date's file: one results file per sitting (section 8).
     A check already there is replaced in place; the unit and toolchains are filled in, never cleared."""
@@ -421,7 +501,7 @@ def main():
         print("Review the git diff, then commit it with the run files (VERIFICATION.md section 8).")
         return 0
     if a.cmd == "report":
-        out = write_report(read_json(a.results), a.root.resolve())
+        out = write_report(read_json(a.results), a.results.parent, a.root.resolve())
         print(f"wrote {out}")
         return 0
     if a.offline:
