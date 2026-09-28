@@ -92,7 +92,7 @@ Each check runs `board.py` and compares its output with what `data/` says. The e
 ### `build`
 
 - `build.<framework>.<target>`: for each framework and each recommended build target, the smoke project (section 5) is generated fresh with a new nonce and built. **Passes** only if the build exits 0 *and* the nonce string appears in the output image. UIFlow2 has no build step, so it has no `build` check.
-- `build.target-from-data`: the target each smoke project uses equals the one `board.py targets` recommends for that revision and toolchain. **Fails** if a project hard-codes a target the data does not recommend.
+- `build.target-from-data`: the target each smoke project uses equals the one `board.py targets` recommends for that revision and toolchain. For ESP-IDF that is the bare `idf.py set-target` it prints, not an esp-bsp board: the smoke project uses M5Unified for the display (section 5). **Fails** if a project hard-codes a target the data does not recommend.
 
 ### `trigger`
 
