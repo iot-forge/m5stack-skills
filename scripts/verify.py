@@ -264,11 +264,15 @@ def trigger_result(check, runner=sh, ask=None):
     if "judge" in check:
         lines += [f"answer {n}: {a}" for n, a in enumerate(answers, 1)]
         if result == "pass":
-            if ask is None:
+            try:  # on Windows the null device passes isatty(), so input() can meet EOF: nobody is there either
+                answer = ask("\n".join(lines) + f"\n{check['id']}: {check['judge']} [y/n] ") if ask else None
+            except EOFError:
+                answer = None
+            if answer is None:
                 result = "not-run"
                 lines.append(f"operator-read: {check['judge']} Nobody was there to judge.")
             else:
-                ok = ask("\n".join(lines) + f"\n{check['id']}: {check['judge']} [y/n] ").strip().lower().startswith("y")
+                ok = answer.strip().lower().startswith("y")
                 result = "pass" if ok else "fail"
                 lines.append(f"operator: {'yes' if ok else 'no'}: {check['judge']}")
     return {"check": check["id"], "result": result, "output": "\n".join(lines)}

@@ -286,6 +286,13 @@ class Triggers(unittest.TestCase):
         self.assertEqual(self.row("trigger.row-11", *runs, ask=lambda prompt: "y")["result"], "pass")
         self.assertEqual(self.row("trigger.row-11", *runs, ask=lambda prompt: "n")["result"], "fail")
 
+    def test_row_11_with_stdin_at_end_of_file_is_not_run(self):
+        # on Windows, the null device passes isatty(), so input() is asked and meets EOF: nobody is there to judge
+        def eof(prompt):
+            raise EOFError
+        runs = [stream("board-identification", answer="getBoard() is a self-report, not evidence")] * 3
+        self.assertEqual(self.row("trigger.row-11", *runs, ask=eof)["result"], "not-run")
+
     def test_row_11_either_owner_may_fire_first(self):
         runs = [stream("arduino-m5unified")] * 2 + [stream("board-identification")]
         self.assertEqual(self.row("trigger.row-11", *runs, ask=lambda prompt: "y")["result"], "pass")
