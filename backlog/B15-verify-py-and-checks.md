@@ -1,6 +1,6 @@
 # B15 · Finish verify.py and checks.json
 
-Status: open
+Status: in-progress
 Blocked by: [B14](B14-smoke-program.md), [B19](B19-align-verification-with-b01.md)
 Gate: hardware-ready
 
