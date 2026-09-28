@@ -1,6 +1,6 @@
 # B24 · Keep the smoke build output out of the planted-error fixtures
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: hardware-ready
 
