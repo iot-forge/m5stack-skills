@@ -268,6 +268,17 @@
    ]
   },
   {
+   "id": "fact.power-led.core2@v1.3",
+   "kind": "fact",
+   "skills": [
+    "board-identification"
+   ],
+   "revision": "core2@v1.3",
+   "covers": [
+    "signals.json#power-led"
+   ]
+  },
+  {
    "id": "handoff.live.core2@v1.3",
    "kind": "handoff",
    "skills": [
@@ -302,15 +313,6 @@
    "kind": "open-question",
    "skills": [
     "flashing-and-debugging"
-   ],
-   "revision": "core2@v1.3",
-   "note": "VERIFICATION.md section 7"
-  },
-  {
-   "id": "open-question.power-led.core2@v1.3",
-   "kind": "open-question",
-   "skills": [
-    "board-identification"
    ],
    "revision": "core2@v1.3",
    "note": "VERIFICATION.md section 7"

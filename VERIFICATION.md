@@ -24,7 +24,7 @@ Full definitions are in `CONTEXT.md`. The ones this file leans on:
 
 - **Check**: one assertion about the plugin that can fail. Every check states its pass condition and the plausible wrong answer it must reject. A check that passes on the right answer *and* on a convincing wrong one is broken, not passing.
 - **Check kind**: what sort of assertion a check makes (section 2).
-- **Result**: `pass`, `fail`, `blocked` (a prerequisite failed or is missing), or `not-run`.
+- **Result**: `pass`, `fail`, `blocked` (a prerequisite failed or is missing), `not-run`, or `observed` (an `open-question` check that ran and had its observation recorded).
 - **Run**: one sitting in which checks are executed. It produces a dated report and a results file.
 - **Verification tier** of a board fact: `hardware-verified` (it cites a `hardware-test` source), `sourced` (primary sources only), or `starting-point` (`confidence: low`). It is worked out from the fact's sources and never stored separately.
 - **Revision**: one hardware configuration of a product, written `<product>@<revision>` (`core2@v1.3`). Checks that need a board name a revision, never a product.
@@ -196,12 +196,12 @@ Before starting, record in the results file:
 |---|---|---|---|
 | 1 | `host.port.core2@v1.3`, `host.bridge.core2@v1.3`, `host.driver.core2@v1.3` | Plug in. `doctor.py` lists exactly one new port; its VID/PID matches the USB bridge `board.py facts core2@v1.3` gives; the bridge driver is present | Plugging in |
 | 2 | (none) | `esptool erase-flash` on that port, once. This clears M5's cached board identity in NVS, which survives reflashing and would otherwise answer identity questions from an earlier firmware | Confirming the erase |
-| 3 | `flash.arduino.core2@v1.3`, `device.arduino.core2@v1.3`, and the `fact` checks below | Build and upload the Arduino smoke program | Reading the nonce off the display |
+| 3 | `flash.arduino.core2@v1.3`, `device.arduino.core2@v1.3`, `open-question.lcd-driver.core2@v1.3`, and the `fact` checks below | Build and upload the Arduino smoke program | Reading the nonce off the display |
 | 4 | `flash.platformio.core2@v1.3`, `device.platformio.core2@v1.3` | Same, through PlatformIO | Reading the nonce |
 | 5 | `flash.esp-idf.core2@v1.3`, `device.esp-idf.core2@v1.3` | Same, through `idf.py` | Reading the nonce |
 | 6 | `handoff.live.core2@v1.3` | Ask a framework skill to upload while the operator holds the unit in reset. Same pass rule as `handoff.<skill>` | Holding reset |
 | 7 | `flash.uiflow2.core2@v1.3`, `device.uiflow2.core2@v1.3`, and the UIFlow2 open questions | Flash the UIFlow2 image `board.py targets` recommends, with `esptool write-flash 0x0`, then push the smoke `main.py` with `mpremote` | Reading the nonce; the observations in section 7 |
-| any time | `open-question.power-led.core2@v1.3` | Note the power LED's colour | Looking |
+| any time | `fact.power-led.core2@v1.3` | Note the power LED's colour | Looking |
 
 **`fact` checks, from step 3's probe output.** Each one compares the observed value with what `board.py facts core2@v1.3` says, and **fails** if the observation matches another Core2 revision's value instead:
 
@@ -211,6 +211,7 @@ Before starting, record in the results file:
 - `fact.no-ina3221.core2@v1.3`: no INA3221, which is on v1.1 only.
 - `fact.bridge.core2@v1.3`: comes from step 1's VID/PID.
 - `fact.port-a-bus.core2@v1.3`: with any I2C Grove unit on Port A, a scan on the Port A pins `board.py pins` gives finds the unit, and a scan of the internal bus does not. With no Grove unit to hand, the result is `blocked`.
+- `fact.power-led.core2@v1.3`: comes from the "any time" row. The power LED is green, not blue; a blue LED means the unit is a Core2 v1.1.
 
 ## 7. Open questions
 
@@ -221,7 +222,6 @@ Record what happens. Each observation goes into the report verbatim, including e
 - `open-question.mpremote-launcher.core2@v1.3`: **highest priority.** With UIFlow2's default boot (the launcher running), does `mpremote connect <port> repl` get a prompt by sending Ctrl-C? Does `mpremote run smoke.py` work without first changing `boot_option`? If not, record what does work: `boot_option.set_boot_option(0)` then reset, or removing `boot.py`. The whole UIFlow2 edit-and-run workflow rests on this answer.
 - `open-question.uiflow2-image-v1.3.core2@v1.3`: does the Core2 UIFlow2 image boot and drive the display on v1.3, given that v1.3's IMU differs from the one the image was built around? Record the image version.
 - `open-question.auto-download.core2@v1.3`: does `esptool` enter download mode with no button press?
-- `open-question.power-led.core2@v1.3`: the power LED's colour. M5's docs give green for v1.0 and blue for v1.1 but say nothing for v1.3. Once recorded, it becomes a `physical` distinguishing signal in `data/signals.json`.
 - `open-question.speaker-mic.core2@v1.3`: can the speaker play and the microphone record at the same time? Record either failing. This tests whether they share G0.
 - `open-question.stdout-raw-repl.core2@v1.3`: with `boot_option=0`, does `print()` output from `mpremote run` reach the host?
 - `open-question.touch-below-240.core2@v1.3`: do the three touch buttons below the display (y ≥ 240) register?
@@ -252,7 +252,8 @@ A run writes two files, named by date: `verification/runs/<YYYY-MM-DD>.json` (re
     "toolchains": {"arduino-cli": "<ver>", "esp32 core": "<ver>", "M5Unified": "<ver>", "platformio": "<ver>", "esp-idf": "<ver>", "esptool": "<ver>", "mpremote": "<ver>", "uiflow2 image": "<ver>", "claude-code": "<ver>"}
   },
   "results": [
-    {"check": "fact.pmic.core2@v1.3", "result": "pass", "observed": "<the probe line, e.g. the PMIC's address and AXP192>", "output": "<verbatim, or a path under verification/runs/>"}
+    {"check": "fact.pmic.core2@v1.3", "result": "pass", "observed": "<the probe line, e.g. the PMIC's address and AXP192>", "output": "<verbatim, or a path under verification/runs/>"},
+    {"check": "open-question.auto-download.core2@v1.3", "result": "observed", "observed": "<what happened, e.g. esptool entered download mode with no button press>", "output": "<verbatim, or a path under verification/runs/>"}
   ]
 }
 ```
@@ -272,7 +273,7 @@ A run writes two files, named by date: `verification/runs/<YYYY-MM-DD>.json` (re
   - adds that source to every entry the check covers (`checks.json` lists them per check);
   - sets `last_verified` to the run date and `confidence` to `high`.
 - For each skill, it rewrites `metadata.verification` and `metadata.tested-with` (section 10).
-- It creates signal entries for recorded `open-question` observations only where a check says so (the power-LED colour).
+- An `open-question` result never edits `data/`. The observation goes into the report's open-question observations section, and if it contradicts the data, a person edits the data.
 - A **failing** check **never** edits `data/`. It appears only in the report's Failures section.
 
 ## 9. When a check fails
@@ -303,7 +304,7 @@ Until a run passes, everything ships unverified. Four places show it:
   - `partial`: all of the skill's checks passed on the listed revisions, but not on every supported one;
   - `verified`: all of them passed on every supported revision.
 
-  Example: `partial 2026-10-20: core2@v1.3`. A skill's checks are the ones `checks.json` tags with its name. `validate.py` enforces the format.
+  Example: `partial 2026-10-20: core2@v1.3`. A skill's checks are the ones `checks.json` tags with its name. An `open-question` check never passes, so it counts as satisfied when its result is `observed`. `validate.py` enforces the format.
 - **`metadata.tested-with`**: the toolchain versions from the run that set the status, as `<tool> <version>` pairs, comma-separated. Only the tools that skill uses are listed. `none` until then.
 - **`board.py` output**: a fact with a `hardware-test` source ends with `[hardware-verified <date>]`, and a `confidence: low` fact still ends with `[low confidence]`. Unmarked facts are `sourced`. When the output includes any fact not hardware-verified, it ends with one directive line: before any write to the board that relies on such a fact, tell the user that fact comes from documentation and has not been checked on hardware.
 - **Inline markers in skills**: a step that relies on an open question carries *(untested on hardware: <check id>)*. `validate.py` checks that every marker names an existing `open-question` check. The report lists the markers a run has answered.
