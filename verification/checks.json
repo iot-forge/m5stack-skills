@@ -275,6 +275,7 @@
    ],
    "revision": "core2@v1.3",
    "covers": [
+    "products/core2.json#core2@v1.3.power_led",
     "signals.json#power-led"
    ]
   },

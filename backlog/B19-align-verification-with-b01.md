@@ -1,6 +1,6 @@
 # B19 · Align VERIFICATION.md with B01
 
-Status: in-progress
+Status: done
 Blocked by: [B01](B01-fix-verification-documents.md)
 Gate: hardware-ready
 
@@ -34,11 +34,11 @@ B01 changed `CONTEXT.md` and sections 4 and 7 of `VERIFICATION.md`, and was not 
 
 ## Definition of done
 
-- [ ] The five changes are made, and nothing else in `VERIFICATION.md` or `verification/checks.json` changes
-- [ ] `grep -rn "open-question.power-led" .` finds nothing outside `backlog/`
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
-- [ ] `uv run scripts/verify.py run --offline` passes
+- [x] The five changes are made, and nothing else in `VERIFICATION.md` or `verification/checks.json` changes
+- [x] `grep -rn "open-question.power-led" .` finds nothing outside `backlog/`
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
+- [x] `uv run scripts/verify.py run --offline` passes
 
 ## Stopping rule
 
@@ -48,8 +48,4 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Edit section 1's **Result** line
-- **Files touched**: none
-- **Last commit**: none
-- **Open questions**: none
+- **Done**: all
