@@ -48,8 +48,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Write the ingest test fixture first, then ingest
-- **Files touched**: none
-- **Last commit**: none
-- **Open questions**: none
+- **Done**: ingest (tests.test_verify.Ingest: pass cites `hw-<date>-<revision>`, failures and `observed` write nothing, `observed`-only skill gets `partial`, handoff `satisfied_by`), run --offline planted-per-rule and fixture guards (Offline), trigger rows through `claude -p` (Triggers), run --board (Board), merge-on-write (WriteRun), report (Report), checks.json lists every check in VERIFICATION.md (ChecksJson). New planted fixtures for data.json, data.schema, data.pinmap-stub.
+- **Next**: read the full `uv run scripts/verify.py run --offline` result (builds plus 63 trigger runs), apply the code-review findings, tick the Definition of done.
+- **Files touched**: scripts/verify.py, tests/test_verify.py, tests/test_validate.py, verification/checks.json, verification/triggers/, VERIFICATION.md
+- **Last commit**: 7807776
+- **Open questions**: design calls made in this session, for the maintainer to confirm: (1) `run --write` merges into the date's results file (confirmed); (2) trigger.row-11 is operator-read (confirmed); (3) `handoff.<skill>` counts when `handoff.live.<revision>` passes (confirmed); (4) ingest leaves a skill's metadata unchanged when any of its checks is unsatisfied, and unions the revisions it already listed; (5) `SKILL_TOOLS` in verify.py decides which toolchains each skill's `tested-with` lists, with claude-code on every skill; (6) negative trigger rows count toward all seven skills' status; (7) a `covers` item naming a list (`extra_components`) cites every element.
