@@ -19,9 +19,14 @@ def run_validate(root, *args):
 class Planted(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
-        for d in ("data", "docs", "skills", "references", "verification"):
+        for d in ("data", "docs", "skills", "references", "verification/runs"):
             if (REPO / d).exists():
                 shutil.copytree(REPO / d, self.tmp / d)
+        # only what validate.py reads from verification/; never smoke/, whose build output is huge
+        (self.tmp / "verification").mkdir(exist_ok=True)
+        for f in ("verification/checks.json", "verification/results.schema.json"):
+            if (REPO / f).exists():
+                shutil.copy2(REPO / f, self.tmp / f)
 
     def tearDown(self):
         shutil.rmtree(self.tmp, ignore_errors=True)
@@ -40,6 +45,11 @@ class Planted(unittest.TestCase):
     def test_committed_data_passes(self):  # data.validate
         code, out = run_validate(self.tmp, "--data")
         self.assertEqual(code, 0, out)
+
+    def test_fixture_leaves_out_smoke(self):  # B24: smoke build output is large and changes mid-build
+        self.assertFalse((self.tmp / "verification/smoke").exists())
+        for p in ("checks.json", "results.schema.json", "runs"):
+            self.assertTrue((self.tmp / "verification" / p).exists(), p)
 
     def test_file_name(self):  # rule 1
         (self.tmp / "data/products/core2.json").rename(self.tmp / "data/products/core-2.json")
