@@ -137,6 +137,18 @@ class Planted(unittest.TestCase):
         self.assertIn("WARN [data.probe-datasheet] signal imu-probe", out)
         self.assertNotIn("FAIL [data.probe-datasheet] signal imu-probe", out)
 
+    def test_malformed_json(self):  # data.json
+        (self.tmp / "data/features.json").write_text("{", encoding="utf-8")
+        self.assertFails("data.json")
+
+    def test_schema_violation(self):  # data.schema
+        self.edit("sources.json", lambda o: o["sources"][0].update(kind="blog-post"))
+        self.assertFails("data.schema")
+
+    def test_unpopulated_pin_map_with_pins(self):  # data.pinmap-stub
+        self.edit("pinmaps/core2-a.json", lambda o: o.update(populated=False))
+        self.assertFails("data.pinmap-stub")
+
     def test_unknown_without_note(self):
         self.edit("products/gray.json", lambda o: o["revisions"]["gray@2019.06"]["psram"].pop("note"))
         self.assertFails("data.unknown")

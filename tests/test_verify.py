@@ -4,7 +4,7 @@ Ingest runs against a copy of data/ and skills/, the way test_validate.py does, 
 file. The run commands take an injected runner or operator, so no subprocess, toolchain or board is needed.
 Run: python -m unittest discover tests
 """
-import importlib.util, json, shutil, subprocess, sys, tempfile, unittest
+import importlib.util, json, shutil, subprocess, sys, tempfile, unittest, unittest.mock
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -115,6 +115,83 @@ class Ingest(unittest.TestCase):
         after = (self.tmp / "skills/uiflow2-micropython/SKILL.md").read_bytes()
         self.assertEqual(after.count(b"\r\n"), before.count(b"\r\n"))
         self.assertTrue(after != before, "SKILL.md was not rewritten")
+
+
+def unittest_line(test, module, verdict="ok"):
+    cls = "Planted" if module == "test_validate" else "Queries"
+    return f"{test} (tests.{module}.{cls}.{test}) ... {verdict}"
+
+
+class FakeRunner:
+    """Stands in for subprocess: answers each command from canned output and records the calls."""
+    def __init__(self, validate_tests=None, query_tests=None, build=None, targets=None, claude=None):
+        self.validate_tests, self.query_tests = validate_tests or {}, query_tests or {}
+        self.build = build if build is not None else []
+        self.targets = targets or {"check": "build.target-from-data", "result": "pass", "output": ""}
+        self.claude, self.calls = claude or (lambda request, cwd: ""), []
+
+    def __call__(self, cmd, cwd=None, stdin=None):
+        self.calls.append(cmd)
+        text = " ".join(map(str, cmd))
+        if "validate.py" in text:
+            return 0, "ok\n", ""
+        if "unittest" in text:
+            log = [unittest_line(t, "test_validate", v) for t, v in self.validate_tests.items()]
+            log += [unittest_line(t, "test_board", v) for t, v in self.query_tests.items()]
+            return 0, "", "\n".join(log) + "\n"
+        if "smoke.py" in text and "check-targets" in cmd:
+            return 0, json.dumps([self.targets]), ""
+        if "smoke.py" in text:
+            return 0, json.dumps(self.build), ""
+        if cmd[0] == "claude":
+            return 0, self.claude(cmd[cmd.index("-p") + 1], cwd), ""
+        raise AssertionError(f"unexpected command {cmd}")
+
+
+ALL_PLANTED_OK = {t: "ok" for tests in verify.PLANTED.values() for t in tests}
+GUARDS_OK = {t: "ok" for t in verify.FIXTURE_GUARDS}
+
+
+class Offline(unittest.TestCase):
+    def results(self, runner, skip=("trigger",)):
+        return {r["check"]: r for r in verify.run_offline("test", runner=runner, skip=skip)["results"]}
+
+    def test_planted_results_are_per_rule(self):
+        tests = {**GUARDS_OK, **ALL_PLANTED_OK, "test_uncited_source": "FAIL"}
+        res = self.results(FakeRunner(validate_tests=tests))
+        self.assertEqual(res["data.planted-sources"]["result"], "fail")
+        self.assertIn("test_uncited_source", res["data.planted-sources"]["output"])
+        self.assertEqual(res["data.planted-derived-from"]["result"], "pass")
+
+    def test_rule_with_no_fixture_is_not_run(self):
+        runner = FakeRunner(validate_tests={**GUARDS_OK, **ALL_PLANTED_OK})
+        with unittest.mock.patch.dict(verify.PLANTED, {"new-rule": ()}):
+            self.assertEqual(self.results(runner)["data.planted-new-rule"]["result"], "not-run")
+
+    def test_fixture_guards_are_not_planted_results(self):
+        res = self.results(FakeRunner(validate_tests={**GUARDS_OK, **ALL_PLANTED_OK}))
+        self.assertFalse([c for c in res if "committed-data" in c or "leaves-out-smoke" in c])
+
+    def test_failing_guard_blocks_every_planted_result(self):
+        tests = {**GUARDS_OK, **ALL_PLANTED_OK, "test_fixture_leaves_out_smoke": "FAIL"}
+        res = self.results(FakeRunner(validate_tests=tests))
+        planted = [r for c, r in res.items() if c.startswith("data.planted-")]
+        self.assertTrue(planted)
+        for r in planted:
+            self.assertEqual(r["result"], "blocked", r["check"])
+            self.assertEqual(r["output"], unittest_line("test_fixture_leaves_out_smoke", "test_validate", "FAIL"))
+
+    def test_every_validate_test_is_a_guard_or_plants_a_rule(self):
+        names = {n for n in dir(verify_tests("test_validate").Planted) if n.startswith("test_")}
+        mapped = set(verify.FIXTURE_GUARDS) | {t for tests in verify.PLANTED.values() for t in tests}
+        self.assertEqual(names, mapped)
+
+
+def verify_tests(module):
+    s = importlib.util.spec_from_file_location(module, REPO / "tests" / f"{module}.py")
+    m = importlib.util.module_from_spec(s)
+    s.loader.exec_module(m)
+    return m
 
 
 if __name__ == "__main__":

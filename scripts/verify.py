@@ -135,29 +135,99 @@ def git_head():
         return "0000000"
 
 
-def run_offline(operator):
-    checks = json.loads((ROOT / "verification/checks.json").read_text(encoding="utf-8"))["checks"]
+# data.planted-<rule>: the test_validate.py tests that plant each rule validate.py fails on. A rule with no test is
+# not-run (section 4). Every test there is either named here or a fixture guard; test_verify.py checks that.
+PLANTED = {
+    "file-name": ("test_file_name",),
+    "derived-from": ("test_derived_from_other_product",),
+    "sources": ("test_unknown_source", "test_uncited_source"),
+    "revision-refs": ("test_target_covers_missing_revision",),
+    "refs": ("test_pin_map_missing",),
+    "soc-rules": ("test_use_on_unusable_pin", "test_output_on_input_only_pin"),
+    "component-bus": ("test_component_bus_missing",),
+    "i2c-duplicate": ("test_duplicate_address",),
+    "provenance": ("test_missing_provenance",),
+    "v1-fields": ("test_missing_v1_field", "test_stub_with_facts", "test_upcoming_stub_passes"),
+    "features": ("test_feature_not_in_list",),
+    "probe-datasheet": ("test_register_probe_without_datasheet", "test_address_only_probe_needs_no_datasheet",
+                        "test_datasheet_gap_downgrades_to_warning"),
+    "unknown": ("test_unknown_without_note",),
+    "json": ("test_malformed_json",),
+    "schema": ("test_schema_violation",),
+    "pinmap-stub": ("test_unpopulated_pin_map_with_pins",),
+}
+# tests that guard the fixture copy, not a rule: never a data.planted-* result; if one fails, every planted result is blocked
+FIXTURE_GUARDS = {"test_committed_data_passes", "test_fixture_leaves_out_smoke"}
+QUERY_TESTS = {"branch-core2": "test_branch_core2", "narrow-seen": "test_narrow_seen", "bid-coarse": "test_bid_coarse",
+               "target-many": "test_target_many", "stub-refuses": "test_stub_refuses", "pin-conflict": "test_pin_conflict",
+               "strict-name": "test_strict_name", "no-self-report": "test_no_self_report"}
+OFFLINE_KINDS = ("data", "query", "build", "trigger", "handoff")
+
+
+def sh(cmd, cwd=None, stdin=None):
+    """Run CMD; return (exit code, stdout, stderr). The seam run_offline and the trigger checks take a stand-in for."""
+    p = subprocess.run(cmd, cwd=cwd or ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
+                       stdin=subprocess.DEVNULL if stdin is None else stdin)
+    return p.returncode, p.stdout or "", p.stderr or ""
+
+
+def test_lines(log, module):
+    """{test name: its `unittest -v` line} for MODULE's tests in LOG."""
+    return {l.split()[0]: l for l in log.splitlines() if l.startswith("test_") and f"(tests.{module}." in l}
+
+
+def verdict(line):
+    return "pass" if line.endswith(" ok") else ("not-run" if not line or "skipped" in line else "fail")
+
+
+def planted_results(lines):
+    failed_guard = next((lines[g] for g in sorted(FIXTURE_GUARDS) if verdict(lines.get(g, "")) != "pass"), None)
+    out = []
+    for rule, tests in PLANTED.items():
+        check = f"data.planted-{rule}"
+        if failed_guard is not None:
+            out.append({"check": check, "result": "blocked", "output": failed_guard})
+            continue
+        got = [lines.get(t, "") for t in tests]
+        res = [verdict(l) for l in got]
+        result = "not-run" if not tests or "not-run" in res else ("fail" if "fail" in res else "pass")
+        out.append({"check": check, "result": result, "output": "\n".join(l or f"{t}: not in the test log" for t, l in zip(tests, got))
+                    or "no fixture plants this rule"})
+    return out
+
+
+def smoke_results(runner, args, ids):
+    """smoke.py's results for ARGS; every id in IDS fails if it printed none."""
+    code, out, err = runner([sys.executable, str(ROOT / "scripts/smoke.py"), *args])
+    try:
+        return json.loads(out)
+    except json.JSONDecodeError:
+        return [{"check": i, "result": "fail", "output": f"smoke.py {' '.join(args)} exited {code}: {(err or out)[-2000:]}"} for i in ids]
+
+
+def run_offline(operator, runner=sh, skip=()):
+    """Section 4's hardware-free checks. Kinds in SKIP are recorded not-run."""
+    checks = read_json(ROOT / "verification/checks.json")["checks"]
     results = []
-    v = subprocess.run([sys.executable, str(ROOT / "scripts/validate.py"), "--data"], capture_output=True, text=True, encoding="utf-8")
-    results.append({"check": "data.validate", "result": "pass" if v.returncode == 0 else "fail", "output": v.stdout[-2000:]})
-    t = subprocess.run([sys.executable, "-m", "unittest", "-v", "tests.test_board", "tests.test_validate"], cwd=ROOT,
-                       capture_output=True, text=True, encoding="utf-8")
-    log = t.stderr
-    query_map = {"branch-core2": "test_branch_core2", "narrow-seen": "test_narrow_seen", "bid-coarse": "test_bid_coarse",
-                 "target-many": "test_target_many", "stub-refuses": "test_stub_refuses", "pin-conflict": "test_pin_conflict",
-                 "strict-name": "test_strict_name", "no-self-report": "test_no_self_report"}
+    code, out, _ = runner([sys.executable, str(ROOT / "scripts/validate.py"), "--data"])
+    results.append({"check": "data.validate", "result": "pass" if code == 0 else "fail", "output": out[-2000:]})
+    _, _, log = runner([sys.executable, "-m", "unittest", "-v", "tests.test_board", "tests.test_validate"], cwd=ROOT)
+    queries = test_lines(log, "test_board")
     for c in checks:
         if c["kind"] == "query":
-            test = query_map.get(c["id"].split(".", 1)[1])
-            line = next((l for l in log.splitlines() if l.startswith(f"{test} ")), "")
-            res = "pass" if line.endswith("ok") else ("not-run" if "skipped" in line or not line else "fail")
-            results.append({"check": c["id"], "result": res, "output": line})
-        elif c["kind"] in ("build", "trigger", "handoff") and "revision" not in c:
-            results.append({"check": c["id"], "result": "not-run", "output": "verify.py does not run this kind yet"})
-    for l in log.splitlines():
-        if l.startswith("test_") and "test_validate." in l:
-            name = l.split()[0].removeprefix("test_")
-            results.append({"check": f"data.planted-{name.replace('_', '-')}", "result": "pass" if l.endswith("ok") else "fail", "output": l})
+            line = queries.get(QUERY_TESTS.get(c["id"].split(".", 1)[1]), "")
+            results.append({"check": c["id"], "result": verdict(line), "output": line})
+    results += planted_results(test_lines(log, "test_validate"))
+    builds = [c["id"] for c in checks if c["kind"] == "build" and c["id"] != "build.target-from-data"]
+    if "build" in skip:
+        results += [{"check": i, "result": "not-run", "output": "skipped (--skip build)"} for i in builds + ["build.target-from-data"]]
+    else:
+        results += smoke_results(runner, ["build"], builds) + smoke_results(runner, ["check-targets"], ["build.target-from-data"])
+    for c in checks:
+        if c["kind"] == "trigger":
+            results.append({"check": c["id"], "result": "not-run", "output": "skipped (--skip trigger)"})
+        elif c["kind"] == "handoff" and "revision" not in c:
+            results.append({"check": c["id"], "result": "not-run", "output": "operator-read (VERIFICATION.md section 4): run it in Claude Code and record the result"})
     date = datetime.date.today().isoformat()
     return {"run": {"date": date, "operator": operator, "host_os": f"{platform.system()} {platform.release()}",
                     "plugin_commit": git_head(), "unit": None, "toolchains": {}}, "results": results}
@@ -174,6 +244,8 @@ def main():
     g = r.add_mutually_exclusive_group(required=True)
     g.add_argument("--offline", action="store_true")
     g.add_argument("--board", metavar="REVISION")
+    r.add_argument("--skip", action="append", default=[], choices=("build", "trigger"),
+                   help="record this kind not-run instead of running it (repeatable)")
     r.add_argument("--operator", default="unknown")
     r.add_argument("--write", action="store_true", help="write verification/runs/<date>.json instead of printing")
     for name in ("ingest", "report"):
@@ -189,7 +261,7 @@ def main():
             print(line)
         return 0
     if a.cmd == "run" and a.offline:
-        obj = run_offline(a.operator)
+        obj = run_offline(a.operator, skip=a.skip)
         text = json.dumps(obj, indent=1) + "\n"
         if a.write:
             out = ROOT / "verification/runs" / f"{obj['run']['date']}.json"
