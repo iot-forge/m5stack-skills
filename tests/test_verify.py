@@ -4,7 +4,7 @@ Ingest runs against a copy of data/ and skills/, the way test_validate.py does, 
 file. The run commands take an injected runner or operator, so no subprocess, toolchain or board is needed.
 Run: python -m unittest discover tests
 """
-import importlib.util, json, re, shutil, subprocess, sys, tempfile, unittest, unittest.mock
+import contextlib, importlib.util, io, json, re, shutil, subprocess, sys, tempfile, unittest, unittest.mock
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -108,6 +108,17 @@ class Ingest(unittest.TestCase):
         next(r for r in results if r["result"] == "pass")["result"] = "fail"
         self.ingest(run_file(results))
         self.assertEqual(self.skill_meta("uiflow2-micropython"), {"verification": "unverified", "tested-with": "none"})
+
+    def test_blocked_handoff_counts_when_the_live_handoff_passed(self):
+        results = self.all_passing("uiflow2-micropython")
+        next(r for r in results if r["check"] == "handoff.uiflow2-micropython")["result"] = "blocked"
+        live = next(r for r in results if r["check"] == f"handoff.live.{REV}")
+        live["result"] = "fail"
+        self.ingest(run_file(results))
+        self.assertEqual(self.skill_meta("uiflow2-micropython")["verification"], "unverified")
+        live["result"] = "pass"
+        self.ingest(run_file(results))
+        self.assertEqual(self.skill_meta("uiflow2-micropython")["verification"], f"partial {DATE}: {REV}")
 
     def test_skill_line_endings_survive(self):
         before = (REPO / "skills/uiflow2-micropython/SKILL.md").read_bytes()
@@ -269,6 +280,106 @@ class Triggers(unittest.TestCase):
         self.assertEqual(res["trigger.neg-03"]["result"], "pass")
         self.assertEqual(res["trigger.row-04"]["result"], "fail")
         self.assertEqual(sum(1 for c in runner.calls if c[0] == "claude"), 21 * 3)
+
+
+class Operator:
+    """A scripted operator for run --board: answers each check's result prompt from RESULTS (default pass, or
+    observed for an open question) and records every prompt."""
+    def __init__(self, results=None):
+        self.results, self.prompts = results or {}, []
+
+    def __call__(self, prompt):
+        self.prompts.append(prompt)
+        if prompt.startswith("SKU"):
+            return "K010-V13"
+        if " version" in prompt:
+            return "1.0" if prompt.startswith("esptool") else ""
+        if " result " in prompt:
+            cid = prompt.split(" result ", 1)[0]
+            return self.results.get(cid, "o" if cid.startswith("open-question.") else "p")
+        if " observed" in prompt:
+            return f"saw {prompt.split(' observed', 1)[0]}"
+        return ""
+
+
+class Board(unittest.TestCase):
+    def board(self, results=None):
+        self.op = Operator(results)
+        with contextlib.redirect_stdout(io.StringIO()):
+            obj = verify.run_board(REV, "test", self.op)
+        return obj, {r["check"]: r for r in obj["results"]}
+
+    def asked(self, cid):
+        return any(p.startswith(f"{cid} result") for p in self.op.prompts)
+
+    def test_every_check_for_the_revision_is_recorded_in_step_order(self):
+        obj, res = self.board()
+        mine = [c["id"] for c in verify.read_json(REPO / "verification/checks.json")["checks"] if c.get("revision") == REV]
+        self.assertEqual(sorted(res), sorted(mine))
+        order = [r["check"] for r in obj["results"]]
+        self.assertLess(order.index(f"host.port.{REV}"), order.index(f"flash.arduino.{REV}"))
+        self.assertLess(order.index(f"device.esp-idf.{REV}"), order.index(f"handoff.live.{REV}"))
+        self.assertLess(order.index(f"handoff.live.{REV}"), order.index(f"flash.uiflow2.{REV}"))  # UIFlow2 goes last
+        self.assertEqual(obj["run"]["unit"], {"revision": REV, "sku_sticker": "K010-V13"})
+        self.assertEqual(obj["run"]["toolchains"], {"esptool": "1.0"})
+
+    def test_observations_are_recorded(self):
+        _, res = self.board()
+        self.assertEqual(res[f"fact.pmic.{REV}"], {"check": f"fact.pmic.{REV}", "result": "pass", "observed": f"saw fact.pmic.{REV}"})
+        self.assertEqual(res[f"open-question.auto-download.{REV}"]["result"], "observed")
+
+    def test_a_failure_blocks_its_dependants_without_asking(self):
+        _, res = self.board({f"flash.arduino.{REV}": "f"})
+        self.assertEqual(res[f"flash.arduino.{REV}"]["result"], "fail")
+        for dep in ("device.arduino", "fact.pmic", "fact.no-atecc", "open-question.lcd-driver"):
+            self.assertEqual(res[f"{dep}.{REV}"]["result"], "blocked", dep)
+            self.assertEqual(res[f"{dep}.{REV}"]["blocked_by"], [f"flash.arduino.{REV}"])
+            self.assertFalse(self.asked(f"{dep}.{REV}"), dep)
+        self.assertEqual(res[f"device.platformio.{REV}"]["result"], "pass")
+
+    def test_blocking_is_transitive(self):
+        _, res = self.board({f"host.port.{REV}": "f"})
+        self.assertEqual(res[f"device.uiflow2.{REV}"]["result"], "blocked")
+        self.assertEqual(res[f"device.uiflow2.{REV}"]["blocked_by"], [f"flash.uiflow2.{REV}"])
+        self.assertEqual(res[f"fact.power-led.{REV}"]["result"], "pass")  # looking at the LED needs no port
+
+    def test_an_operator_blocked_check_blocks_its_dependants_too(self):
+        _, res = self.board({f"flash.esp-idf.{REV}": "b"})
+        self.assertEqual(res[f"flash.esp-idf.{REV}"]["result"], "blocked")
+        self.assertEqual(res[f"device.esp-idf.{REV}"]["blocked_by"], [f"flash.esp-idf.{REV}"])
+
+    def test_the_run_validates_against_the_results_schema(self):
+        obj, _ = self.board({f"flash.arduino.{REV}": "f"})
+        schema = verify.read_json(REPO / "verification/results.schema.json")
+        vspec = importlib.util.spec_from_file_location("validate", REPO / "scripts/validate.py")
+        validate = importlib.util.module_from_spec(vspec)
+        vspec.loader.exec_module(validate)
+        self.assertEqual(list(validate.schema_errors(obj, schema, schema)), [])
+
+
+class WriteRun(unittest.TestCase):
+    """--write merges into the date's results file: one file per sitting (section 8)."""
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def test_board_results_merge_into_the_offline_file(self):
+        offline = run_file([{"check": "data.validate", "result": "pass"}, {"check": "trigger.row-10", "result": "fail"}], unit=None)
+        board = run_file([{"check": "fact.pmic.core2@v1.3", "result": "pass"}], toolchains={"esptool": "4.8.1"})
+        verify.write_run(offline, self.tmp)
+        out = verify.write_run(board, self.tmp)
+        self.assertEqual(out, self.tmp / f"{DATE}.json")
+        merged = verify.read_json(out)
+        self.assertEqual([r["check"] for r in merged["results"]], ["data.validate", "trigger.row-10", "fact.pmic.core2@v1.3"])
+        self.assertEqual(merged["run"]["unit"], board["run"]["unit"])
+        self.assertEqual(merged["run"]["toolchains"], {"esptool": "4.8.1"})
+
+    def test_a_rerun_check_replaces_its_earlier_result(self):
+        verify.write_run(run_file([{"check": "trigger.row-10", "result": "fail"}], unit=None), self.tmp)
+        verify.write_run(run_file([{"check": "trigger.row-10", "result": "pass"}], unit=None), self.tmp)
+        self.assertEqual(verify.read_json(self.tmp / f"{DATE}.json")["results"], [{"check": "trigger.row-10", "result": "pass"}])
 
 
 class ChecksJson(unittest.TestCase):

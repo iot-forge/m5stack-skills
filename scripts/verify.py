@@ -302,6 +302,96 @@ def run_offline(operator, runner=sh, skip=(), ask=None):
                     "plugin_commit": git_head(), "unit": None, "toolchains": {}}, "results": results}
 
 
+# Section 6, in order: UIFlow2 replaces the firmware, so it goes last. Check ids here drop the .<revision> suffix.
+BOARD_STEPS = [
+    ("Plug the unit in. doctor.py should list exactly one new port; compare its VID/PID with the USB bridge "
+     "`board.py facts <revision>` gives, and check the bridge driver is present.",
+     ["host.port", "host.bridge", "host.driver", "fact.bridge"]),
+    ("Run `esptool erase-flash` on that port, once, after confirming the erase. It clears M5's cached board identity in NVS.", []),
+    ("Build and upload the Arduino smoke program (`smoke.py generate arduino`, then arduino-cli). Type the nonce you "
+     "read off the display, and record the serial probe lines.",
+     ["flash.arduino", "device.arduino", "open-question.auto-download", "open-question.lcd-driver", "fact.pmic",
+      "fact.imu", "fact.no-atecc", "fact.no-ina3221", "fact.port-a-bus"]),
+    ("Same, through PlatformIO.", ["flash.platformio", "device.platformio"]),
+    ("Same, through idf.py.", ["flash.esp-idf", "device.esp-idf"]),
+    ("Ask a framework skill to upload while you hold the unit in reset. Pass: one attempt, the serial-port and "
+     "download-mode procedures, exactly one retry, then a hand-off to flashing-and-debugging.", ["handoff.live"]),
+    ("Flash the UIFlow2 image `board.py targets` recommends with `esptool write-flash 0x0`, then push the smoke "
+     "main.py with mpremote. Record the UIFlow2 observations in section 7.",
+     ["flash.uiflow2", "device.uiflow2", "open-question.mpremote-launcher", "open-question.uiflow2-image-v1.3",
+      "open-question.stdout-raw-repl"]),
+]
+ANY_TIME = "Any time: the remaining checks for this revision (VERIFICATION.md sections 6 and 7)."
+# a check is blocked when the check it depends on did not pass; dependencies chain (host.port -> flash -> device)
+DEPENDS = {"host.bridge": "host.port", "host.driver": "host.port", "fact.bridge": "host.bridge", "handoff.live": "host.port",
+           **{f"flash.{fw}": "host.port" for fw in ("arduino", "platformio", "esp-idf", "uiflow2")},
+           **{f"device.{fw}": f"flash.{fw}" for fw in ("arduino", "platformio", "esp-idf", "uiflow2")},
+           **{c: "flash.arduino" for c in ("fact.pmic", "fact.imu", "fact.no-atecc", "fact.no-ina3221", "fact.port-a-bus",
+                                           "open-question.lcd-driver", "open-question.auto-download")},
+           **{c: "flash.uiflow2" for c in ("open-question.mpremote-launcher", "open-question.uiflow2-image-v1.3",
+                                           "open-question.stdout-raw-repl")},
+           # these need a sketch of their own, not the smoke program
+           **{c: "host.port" for c in ("open-question.playraw-1mb", "open-question.touch-below-240", "open-question.speaker-mic")}}
+TOOLCHAINS = ("arduino-cli", "esp32 core", "M5Unified", "platformio", "esp-idf", "esptool", "mpremote", "uiflow2 image", "claude-code")
+ANSWERS = {"p": "pass", "f": "fail", "b": "blocked", "n": "not-run", "o": "observed"}
+
+
+def run_board(revision, operator, ask=input):
+    """Walk the operator through section 6 for REVISION and record every result. ASK(prompt) -> the operator's answer."""
+    checks = [c for c in read_json(ROOT / "verification/checks.json")["checks"] if c.get("revision") == revision]
+    if not checks:
+        raise SystemExit(f"verification/checks.json has no checks for {revision}; derive them from data/ first (section 3)")
+    by_base = {c["id"].removesuffix(f".{revision}"): c for c in checks}
+    placed = {b for _, bases in BOARD_STEPS for b in bases}
+    steps = [(text, [b for b in bases if b in by_base]) for text, bases in BOARD_STEPS]
+    steps.append((ANY_TIME, [b for b in by_base if b not in placed]))
+    unit = {"revision": revision, "sku_sticker": ask("SKU on the unit's sticker: ").strip()}
+    toolchains = {t: v for t in TOOLCHAINS if (v := ask(f"{t} version (blank if not used): ").strip())}
+    results, outcome = [], {}
+    for n, (text, bases) in enumerate(steps, 1):
+        print(f"\nStep {n}: {text}")
+        if not bases:
+            ask(f"Step {n} done? [y/n] ")
+            continue
+        for base in bases:
+            cid, dep = by_base[base]["id"], DEPENDS.get(base)
+            if dep in outcome and outcome[dep] != "pass":
+                outcome[base] = "blocked"
+                results.append({"check": cid, "result": "blocked", "blocked_by": [f"{dep}.{revision}"]})
+                print(f"  {cid}: blocked by {dep}.{revision}")
+                continue
+            kind = by_base[base]["kind"]
+            choices = "o/n" if kind == "open-question" else "p/f/b/n"
+            while (a := ask(f"{cid} result [{choices}]: ").strip().lower()[:1]) not in choices.split("/"):
+                print(f"  answer one of {choices}")
+            r = {"check": cid, "result": ANSWERS[a]}
+            if a != "n":
+                r["observed"] = ask(f"{cid} observed: ").strip()
+                if out := ask(f"{cid} output (verbatim, or a path under verification/runs/; blank for none): ").strip():
+                    r["output"] = out
+            outcome[base] = r["result"]
+            results.append(r)
+    return {"run": {"date": datetime.date.today().isoformat(), "operator": operator,
+                    "host_os": f"{platform.system()} {platform.release()}", "plugin_commit": git_head(),
+                    "unit": unit, "toolchains": toolchains}, "results": results}
+
+
+def write_run(obj, runs=ROOT / "verification/runs"):
+    """Write OBJ to <runs>/<date>.json, merging into that date's file: one results file per sitting (section 8).
+    A check already there is replaced in place; the unit and toolchains are filled in, never cleared."""
+    out = Path(runs) / f"{obj['run']['date']}.json"
+    if out.exists():
+        old = read_json(out)
+        merged = {r["check"]: r for r in old["results"]}
+        merged.update((r["check"], r) for r in obj["results"])
+        run = {**old["run"], **obj["run"], "unit": obj["run"]["unit"] or old["run"]["unit"],
+               "toolchains": {**old["run"]["toolchains"], **obj["run"]["toolchains"]}}
+        obj = {"run": run, "results": list(merged.values())}
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_bytes((json.dumps(obj, indent=1, ensure_ascii=False) + "\n").encode("utf-8"))
+    return out
+
+
 def main():
     try:
         sys.stdout.reconfigure(encoding="utf-8")
@@ -314,9 +404,9 @@ def main():
     g.add_argument("--offline", action="store_true")
     g.add_argument("--board", metavar="REVISION")
     r.add_argument("--skip", action="append", default=[], choices=("build", "trigger"),
-                   help="record this kind not-run instead of running it (repeatable)")
+                   help="run --offline: record this kind not-run instead of running it (repeatable)")
     r.add_argument("--operator", default="unknown")
-    r.add_argument("--write", action="store_true", help="write verification/runs/<date>.json instead of printing")
+    r.add_argument("--write", action="store_true", help="merge into verification/runs/<date>.json instead of printing")
     for name in ("ingest", "report"):
         p = sub.add_parser(name)
         p.add_argument("results", type=Path)
@@ -328,22 +418,23 @@ def main():
             print(f"cited {line}")
         for line in set_skill_status(obj, a.root.resolve()):
             print(line)
+        print("Review the git diff, then commit it with the run files (VERIFICATION.md section 8).")
         return 0
-    if a.cmd == "run" and a.offline:
+    if a.cmd == "report":
+        out = write_report(read_json(a.results), a.root.resolve())
+        print(f"wrote {out}")
+        return 0
+    if a.offline:
         obj = run_offline(a.operator, skip=a.skip, ask=input if sys.stdin.isatty() else None)
-        text = json.dumps(obj, indent=1) + "\n"
-        if a.write:
-            out = ROOT / "verification/runs" / f"{obj['run']['date']}.json"
-            out.write_text(text, encoding="utf-8")
-            print(f"wrote {out.relative_to(ROOT)}")
-        else:
-            print(text)
-        failed = [x["check"] for x in obj["results"] if x["result"] == "fail"]
-        print(f"{len(obj['results'])} results, {len(failed)} failed{': ' + ', '.join(failed) if failed else ''}", file=sys.stderr)
-        return 1 if failed else 0
-    print(f"verify.py {a.cmd}{' --board' if a.cmd == 'run' else ''} is not implemented yet (TODO for the implementation backlog). "
-          "Do it by hand as VERIFICATION.md sections 6 and 8 describe.")
-    return EXIT_TODO
+    else:
+        obj = run_board(a.board, a.operator)
+    if a.write:
+        print(f"wrote {write_run(obj).relative_to(ROOT)}")
+    else:
+        print(json.dumps(obj, indent=1, ensure_ascii=False))
+    failed = [x["check"] for x in obj["results"] if x["result"] == "fail"]
+    print(f"{len(obj['results'])} results, {len(failed)} failed{': ' + ', '.join(failed) if failed else ''}", file=sys.stderr)
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":
