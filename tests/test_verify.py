@@ -4,7 +4,7 @@ Ingest runs against a copy of data/ and skills/, the way test_validate.py does, 
 file. The run commands take an injected runner or operator, so no subprocess, toolchain or board is needed.
 Run: python -m unittest discover tests
 """
-import importlib.util, json, shutil, subprocess, sys, tempfile, unittest, unittest.mock
+import importlib.util, json, re, shutil, subprocess, sys, tempfile, unittest, unittest.mock
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -185,6 +185,114 @@ class Offline(unittest.TestCase):
         names = {n for n in dir(verify_tests("test_validate").Planted) if n.startswith("test_")}
         mapped = set(verify.FIXTURE_GUARDS) | {t for tests in verify.PLANTED.values() for t in tests}
         self.assertEqual(names, mapped)
+
+
+def stream(*skills, answer="done"):
+    """claude -p --output-format stream-json output, in the shape of a real run: init, one Skill call per skill, result."""
+    lines = [{"type": "system", "subtype": "init", "skills": []}]
+    lines += [{"type": "assistant", "message": {"content": [
+        {"type": "tool_use", "name": "Skill", "input": {"skill": s if ":" in s else f"m5core-skills:{s}"}}]}} for s in skills]
+    lines.append({"type": "result", "subtype": "success", "is_error": False, "result": answer})
+    return "\n".join(json.dumps(l) for l in lines) + "\n"
+
+
+class Triggers(unittest.TestCase):
+    def check(self, cid):
+        return next(c for c in verify.read_json(REPO / "verification/checks.json")["checks"] if c["id"] == cid)
+
+    def row(self, cid, *runs, ask=None):
+        """Run trigger CID with the three streams RUNS; return its result."""
+        it, seen = iter(runs), []
+
+        def claude(request, cwd):
+            seen.append((request, sorted(p.name for p in Path(cwd).iterdir())))
+            return next(it)
+        self.seen = seen
+        return verify.trigger_result(self.check(cid), FakeRunner(claude=claude), ask=ask)
+
+    def test_owner_in_every_run_passes(self):
+        r = self.row("trigger.row-10", *[stream("board-identification")] * 3)
+        self.assertEqual(r["result"], "pass", r["output"])
+
+    def test_runs_three_times_from_the_fixture(self):
+        self.row("trigger.row-05", *[stream("platformio")] * 3)
+        self.assertEqual(self.seen, [("Enable PSRAM in platformio.ini", ["platformio.ini", "src"])] * 3)
+
+    def test_owner_missing_from_one_run_fails(self):
+        r = self.row("trigger.row-10", stream("board-identification"), stream(), stream("board-identification"))
+        self.assertEqual(r["result"], "fail")
+
+    def test_sibling_before_owner_fails(self):
+        r = self.row("trigger.row-10", stream("board-identification"), stream("pinout-lookup", "board-identification"),
+                     stream("board-identification"))
+        self.assertEqual(r["result"], "fail")
+        self.assertIn("pinout-lookup", r["output"])
+
+    def test_sibling_after_owner_is_recorded_not_failed(self):
+        r = self.row("trigger.row-01", *[stream("arduino-m5unified", "platformio")] * 3)
+        self.assertEqual(r["result"], "pass")
+        self.assertIn("platformio", r["output"])
+
+    def test_negative_row_fails_on_any_plugin_skill(self):
+        r = self.row("trigger.neg-01", stream(), stream("uiflow2-micropython"), stream())
+        self.assertEqual(r["result"], "fail")
+
+    def test_other_plugins_never_fail_a_row(self):
+        r = self.row("trigger.neg-02", *[stream("superpowers:brainstorming")] * 3)
+        self.assertEqual(r["result"], "pass")
+        self.assertIn("superpowers:brainstorming", r["output"])
+
+    def test_other_plugin_crowding_out_the_owner_blocks(self):
+        r = self.row("trigger.row-10", stream("board-identification"), stream("superpowers:brainstorming"),
+                     stream("board-identification"))
+        self.assertEqual(r["result"], "blocked")
+
+    def test_row_11_needs_the_operator(self):
+        runs = [stream("board-identification", answer="getBoard() is a self-report, not evidence")] * 3
+        r = self.row("trigger.row-11", *runs)
+        self.assertEqual(r["result"], "not-run")
+        self.assertIn("getBoard() is a self-report, not evidence", r["output"])
+        self.assertEqual(self.row("trigger.row-11", *runs, ask=lambda prompt: "y")["result"], "pass")
+        self.assertEqual(self.row("trigger.row-11", *runs, ask=lambda prompt: "n")["result"], "fail")
+
+    def test_row_11_either_owner_may_fire_first(self):
+        runs = [stream("arduino-m5unified")] * 2 + [stream("board-identification")]
+        self.assertEqual(self.row("trigger.row-11", *runs, ask=lambda prompt: "y")["result"], "pass")
+        wrong = [stream("pinout-lookup", "board-identification")] + [stream("board-identification")] * 2
+        self.assertEqual(self.row("trigger.row-11", *wrong, ask=lambda prompt: "y")["result"], "fail")
+
+    def test_run_offline_runs_every_trigger_row(self):
+        runner = FakeRunner(validate_tests={**GUARDS_OK, **ALL_PLANTED_OK}, claude=lambda request, cwd: stream())
+        res = {r["check"]: r for r in verify.run_offline("test", runner=runner, skip=("build",))["results"]}
+        rows = [c for c in res if c.startswith("trigger.")]
+        self.assertEqual(len(rows), 21)
+        self.assertEqual(res["trigger.neg-03"]["result"], "pass")
+        self.assertEqual(res["trigger.row-04"]["result"], "fail")
+        self.assertEqual(sum(1 for c in runner.calls if c[0] == "claude"), 21 * 3)
+
+
+class ChecksJson(unittest.TestCase):
+    def setUp(self):
+        self.ids = [c["id"] for c in verify.read_json(REPO / "verification/checks.json")["checks"]]
+        self.doc = (REPO / "VERIFICATION.md").read_text(encoding="utf-8")
+
+    def test_lists_every_check_in_verification_md(self):
+        kinds = "data|query|build|trigger|handoff|host|flash|device|fact|open-question"
+        for cid in sorted(set(re.findall(rf"`((?:{kinds})\.[^`\s]+)`", self.doc))):
+            # a <placeholder> or a trailing @… stands for any value
+            pattern = "".join(r"\S+" if part.startswith("<") or part == "…" else re.escape(part)
+                              for part in re.split(r"(<[^>]+>|…)", cid))
+            self.assertTrue(any(re.fullmatch(pattern, i) for i in self.ids), cid)
+        for skill in ("arduino-m5unified", "platformio", "esp-idf", "uiflow2-micropython"):
+            self.assertIn(f"handoff.{skill}", self.ids)
+
+    def test_trigger_rows_match_the_table(self):
+        checks = {c["id"]: c for c in verify.read_json(REPO / "verification/checks.json")["checks"]}
+        rows = re.findall(r'^\| `(trigger\.[a-z0-9-]+)` \| "([^"]+)"[^|]*\| ([^|]+) \|', self.doc, re.M)
+        self.assertEqual(len(rows), 21)
+        for cid, request, owner in rows:
+            self.assertEqual(checks[cid]["request"], request)
+            self.assertEqual(checks[cid]["owner"], re.findall(r"`([a-z0-9-]+)`", owner), cid)
 
 
 def verify_tests(module):

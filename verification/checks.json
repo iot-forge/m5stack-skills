@@ -1,9 +1,89 @@
 {
  "schema_version": 1,
- "note": "STUB: trigger and handoff.<skill> checks, and the per-check data entries for ingest, are filled in by the implementation backlog. Ids follow VERIFICATION.md.",
+ "note": "Every check in VERIFICATION.md, with its kind, the skills whose status it counts toward, its revision, and the data entries a pass cites (covers, used by verify.py ingest). A trigger check carries its request, the fixture project it runs from (verification/triggers/<fixture>, or an empty directory when null), its owner skills and the siblings that may fire after the owner. A check with satisfied_by also counts when <satisfied_by>.<revision> passed.",
  "checks": [
   {
    "id": "data.validate",
+   "kind": "data",
+   "skills": []
+  },
+  {
+   "id": "data.planted-file-name",
+   "kind": "data",
+   "skills": []
+  },
+  {
+   "id": "data.planted-derived-from",
+   "kind": "data",
+   "skills": []
+  },
+  {
+   "id": "data.planted-sources",
+   "kind": "data",
+   "skills": []
+  },
+  {
+   "id": "data.planted-revision-refs",
+   "kind": "data",
+   "skills": []
+  },
+  {
+   "id": "data.planted-refs",
+   "kind": "data",
+   "skills": []
+  },
+  {
+   "id": "data.planted-soc-rules",
+   "kind": "data",
+   "skills": []
+  },
+  {
+   "id": "data.planted-component-bus",
+   "kind": "data",
+   "skills": []
+  },
+  {
+   "id": "data.planted-i2c-duplicate",
+   "kind": "data",
+   "skills": []
+  },
+  {
+   "id": "data.planted-provenance",
+   "kind": "data",
+   "skills": []
+  },
+  {
+   "id": "data.planted-v1-fields",
+   "kind": "data",
+   "skills": []
+  },
+  {
+   "id": "data.planted-features",
+   "kind": "data",
+   "skills": []
+  },
+  {
+   "id": "data.planted-probe-datasheet",
+   "kind": "data",
+   "skills": []
+  },
+  {
+   "id": "data.planted-unknown",
+   "kind": "data",
+   "skills": []
+  },
+  {
+   "id": "data.planted-json",
+   "kind": "data",
+   "skills": []
+  },
+  {
+   "id": "data.planted-schema",
+   "kind": "data",
+   "skills": []
+  },
+  {
+   "id": "data.planted-pinmap-stub",
    "kind": "data",
    "skills": []
   },
@@ -105,6 +185,341 @@
     "uiflow2-micropython"
    ],
    "note": "VERIFICATION.md section 4; run by scripts/smoke.py check-targets"
+  },
+  {
+   "id": "trigger.row-01",
+   "kind": "trigger",
+   "skills": [
+    "arduino-m5unified"
+   ],
+   "request": "Draw a gauge on the Core2 screen",
+   "fixture": "platformio",
+   "owner": [
+    "arduino-m5unified"
+   ],
+   "may_follow": [
+    "platformio"
+   ]
+  },
+  {
+   "id": "trigger.row-02",
+   "kind": "trigger",
+   "skills": [
+    "arduino-m5unified"
+   ],
+   "request": "M5.begin() hangs on my Core2 v1.1",
+   "fixture": "arduino",
+   "owner": [
+    "arduino-m5unified"
+   ],
+   "may_follow": []
+  },
+  {
+   "id": "trigger.row-03",
+   "kind": "trigger",
+   "skills": [
+    "arduino-m5unified"
+   ],
+   "request": "Which FQBN for CoreS3 in arduino-cli?",
+   "fixture": null,
+   "owner": [
+    "arduino-m5unified"
+   ],
+   "may_follow": []
+  },
+  {
+   "id": "trigger.row-04",
+   "kind": "trigger",
+   "skills": [
+    "platformio"
+   ],
+   "request": "New PlatformIO project for Tough",
+   "fixture": null,
+   "owner": [
+    "platformio"
+   ],
+   "may_follow": []
+  },
+  {
+   "id": "trigger.row-05",
+   "kind": "trigger",
+   "skills": [
+    "platformio"
+   ],
+   "request": "Enable PSRAM in platformio.ini",
+   "fixture": "platformio",
+   "owner": [
+    "platformio"
+   ],
+   "may_follow": [
+    "esp-idf"
+   ]
+  },
+  {
+   "id": "trigger.row-06",
+   "kind": "trigger",
+   "skills": [
+    "platformio"
+   ],
+   "request": "pio says unknown board m5stack-cores3",
+   "fixture": "platformio",
+   "owner": [
+    "platformio"
+   ],
+   "may_follow": []
+  },
+  {
+   "id": "trigger.row-07",
+   "kind": "trigger",
+   "skills": [
+    "esp-idf"
+   ],
+   "request": "IDF project for CoreS3 with M5Unified as a component",
+   "fixture": null,
+   "owner": [
+    "esp-idf"
+   ],
+   "may_follow": [
+    "arduino-m5unified"
+   ]
+  },
+  {
+   "id": "trigger.row-08",
+   "kind": "trigger",
+   "skills": [
+    "uiflow2-micropython"
+   ],
+   "request": "Put MicroPython on my Core2",
+   "fixture": null,
+   "owner": [
+    "uiflow2-micropython"
+   ],
+   "may_follow": [
+    "flashing-and-debugging"
+   ]
+  },
+  {
+   "id": "trigger.row-09",
+   "kind": "trigger",
+   "skills": [
+    "uiflow2-micropython"
+   ],
+   "request": "mpremote can't reach a REPL",
+   "fixture": "uiflow2",
+   "owner": [
+    "uiflow2-micropython"
+   ],
+   "may_follow": []
+  },
+  {
+   "id": "trigger.row-10",
+   "kind": "trigger",
+   "skills": [
+    "board-identification"
+   ],
+   "request": "Which Core2 have I got? Power LED is green",
+   "fixture": null,
+   "owner": [
+    "board-identification"
+   ],
+   "may_follow": []
+  },
+  {
+   "id": "trigger.row-11",
+   "kind": "trigger",
+   "skills": [
+    "board-identification",
+    "arduino-m5unified"
+   ],
+   "request": "getBoard() says Core2 but it's a Core2 v1.1",
+   "fixture": "arduino",
+   "owner": [
+    "board-identification",
+    "arduino-m5unified"
+   ],
+   "may_follow": [],
+   "judge": "The answer refuses to trust M5.getBoard() as evidence of the revision."
+  },
+  {
+   "id": "trigger.row-12",
+   "kind": "trigger",
+   "skills": [
+    "board-identification"
+   ],
+   "request": "Does Basic have PSRAM? What IMU is on Fire?",
+   "fixture": null,
+   "owner": [
+    "board-identification"
+   ],
+   "may_follow": []
+  },
+  {
+   "id": "trigger.row-13",
+   "kind": "trigger",
+   "skills": [
+    "board-identification"
+   ],
+   "request": "Which Core should I buy for a battery audio logger?",
+   "fixture": null,
+   "owner": [
+    "board-identification"
+   ],
+   "may_follow": []
+  },
+  {
+   "id": "trigger.row-14",
+   "kind": "trigger",
+   "skills": [
+    "pinout-lookup"
+   ],
+   "request": "Free pin on Port B if I use the SD card?",
+   "fixture": null,
+   "owner": [
+    "pinout-lookup"
+   ],
+   "may_follow": []
+  },
+  {
+   "id": "trigger.row-15",
+   "kind": "trigger",
+   "skills": [
+    "pinout-lookup"
+   ],
+   "request": "Is G0 safe to use on Core2? What's on the I2C bus?",
+   "fixture": null,
+   "owner": [
+    "pinout-lookup"
+   ],
+   "may_follow": []
+  },
+  {
+   "id": "trigger.row-16",
+   "kind": "trigger",
+   "skills": [
+    "flashing-and-debugging"
+   ],
+   "request": "Flash this firmware.bin to my Core2",
+   "fixture": "firmware",
+   "owner": [
+    "flashing-and-debugging"
+   ],
+   "may_follow": []
+  },
+  {
+   "id": "trigger.row-17",
+   "kind": "trigger",
+   "skills": [
+    "flashing-and-debugging"
+   ],
+   "request": "Guru Meditation Error, decode this backtrace",
+   "fixture": null,
+   "owner": [
+    "flashing-and-debugging"
+   ],
+   "may_follow": [
+    "platformio",
+    "esp-idf"
+   ]
+  },
+  {
+   "id": "trigger.row-18",
+   "kind": "trigger",
+   "skills": [
+    "flashing-and-debugging"
+   ],
+   "request": "No COM port shows up when I plug in the CoreS3",
+   "fixture": null,
+   "owner": [
+    "flashing-and-debugging"
+   ],
+   "may_follow": []
+  },
+  {
+   "id": "trigger.neg-01",
+   "kind": "trigger",
+   "skills": [
+    "arduino-m5unified",
+    "platformio",
+    "esp-idf",
+    "uiflow2-micropython",
+    "board-identification",
+    "pinout-lookup",
+    "flashing-and-debugging"
+   ],
+   "request": "Add argparse to my main.py",
+   "fixture": "plain-python",
+   "owner": [],
+   "may_follow": []
+  },
+  {
+   "id": "trigger.neg-02",
+   "kind": "trigger",
+   "skills": [
+    "arduino-m5unified",
+    "platformio",
+    "esp-idf",
+    "uiflow2-micropython",
+    "board-identification",
+    "pinout-lookup",
+    "flashing-and-debugging"
+   ],
+   "request": "Blink an LED on my ESP32 DevKitC",
+   "fixture": null,
+   "owner": [],
+   "may_follow": []
+  },
+  {
+   "id": "trigger.neg-03",
+   "kind": "trigger",
+   "skills": [
+    "arduino-m5unified",
+    "platformio",
+    "esp-idf",
+    "uiflow2-micropython",
+    "board-identification",
+    "pinout-lookup",
+    "flashing-and-debugging"
+   ],
+   "request": "Flash MicroPython onto my Raspberry Pi Pico",
+   "fixture": null,
+   "owner": [],
+   "may_follow": []
+  },
+  {
+   "id": "handoff.arduino-m5unified",
+   "kind": "handoff",
+   "skills": [
+    "arduino-m5unified"
+   ],
+   "satisfied_by": "handoff.live",
+   "note": "VERIFICATION.md section 4; operator-read. Blocked without a port that exists but fails; handoff.live.<revision> passing counts for it"
+  },
+  {
+   "id": "handoff.platformio",
+   "kind": "handoff",
+   "skills": [
+    "platformio"
+   ],
+   "satisfied_by": "handoff.live",
+   "note": "VERIFICATION.md section 4; operator-read. Blocked without a port that exists but fails; handoff.live.<revision> passing counts for it"
+  },
+  {
+   "id": "handoff.esp-idf",
+   "kind": "handoff",
+   "skills": [
+    "esp-idf"
+   ],
+   "satisfied_by": "handoff.live",
+   "note": "VERIFICATION.md section 4; operator-read. Blocked without a port that exists but fails; handoff.live.<revision> passing counts for it"
+  },
+  {
+   "id": "handoff.uiflow2-micropython",
+   "kind": "handoff",
+   "skills": [
+    "uiflow2-micropython"
+   ],
+   "satisfied_by": "handoff.live",
+   "note": "VERIFICATION.md section 4; operator-read. Blocked without a port that exists but fails; handoff.live.<revision> passing counts for it"
   },
   {
    "id": "host.port.core2@v1.3",

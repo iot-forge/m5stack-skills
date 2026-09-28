@@ -15,7 +15,7 @@ describe doing the same by hand.
 """
 # TODO: authored in the implementation backlog (verify.py: build, trigger and handoff checks,
 # run --board, ingest, report). It must exist before the hardware session.
-import argparse, datetime, json, platform, re, subprocess, sys
+import argparse, datetime, json, platform, re, shutil, subprocess, sys, tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -164,10 +164,10 @@ QUERY_TESTS = {"branch-core2": "test_branch_core2", "narrow-seen": "test_narrow_
 OFFLINE_KINDS = ("data", "query", "build", "trigger", "handoff")
 
 
-def sh(cmd, cwd=None, stdin=None):
+def sh(cmd, cwd=None, stdin=None, timeout=3600):
     """Run CMD; return (exit code, stdout, stderr). The seam run_offline and the trigger checks take a stand-in for."""
     p = subprocess.run(cmd, cwd=cwd or ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
-                       stdin=subprocess.DEVNULL if stdin is None else stdin)
+                       stdin=subprocess.DEVNULL if stdin is None else stdin, timeout=timeout)
     return p.returncode, p.stdout or "", p.stderr or ""
 
 
@@ -205,7 +205,75 @@ def smoke_results(runner, args, ids):
         return [{"check": i, "result": "fail", "output": f"smoke.py {' '.join(args)} exited {code}: {(err or out)[-2000:]}"} for i in ids]
 
 
-def run_offline(operator, runner=sh, skip=()):
+TRIGGER_RUNS = 3  # section 4: each request runs 3 times, one at a time
+
+
+def fired_skills(stream):
+    """The skills a `claude -p --output-format stream-json` run called, in order."""
+    out = []
+    for line in stream.splitlines():
+        try:
+            ev = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if ev.get("type") == "assistant":
+            out += [c["input"].get("skill", "") for c in ev.get("message", {}).get("content", [])
+                    if c.get("type") == "tool_use" and c.get("name") == "Skill"]
+    return out
+
+
+def final_answer(stream):
+    return next((ev.get("result", "") for ev in map(json.loads, filter(str.strip, stream.splitlines()))
+                 if ev.get("type") == "result"), "")
+
+
+def run_verdict(check, skills, prefix):
+    """One run of a trigger row. Other plugins' skills never fail a row, but one that keeps the owner from firing blocks it."""
+    mine = [s for s in skills if s.startswith(prefix)]
+    if not check["owner"]:
+        return "fail" if mine else "pass"
+    if mine:
+        return "pass" if mine[0].removeprefix(prefix) in check["owner"] else "fail"
+    return "blocked" if skills else "fail"
+
+
+def trigger_result(check, runner=sh, ask=None):
+    """A trigger.* check (section 4): the request run TRIGGER_RUNS times from a copy of its fixture. A check with
+    `judge` (trigger.row-11) also needs the operator to read the answers: ASK(prompt) -> 'y' or 'n', or None for not-run."""
+    prefix = read_json(ROOT / ".claude-plugin/plugin.json")["name"] + ":"
+    cmd = ["claude", "-p", check["request"], "--plugin-dir", str(ROOT), "--allowedTools", "Skill",
+           "--output-format", "stream-json", "--verbose"]
+    verdicts, lines, answers = [], [], []
+    for n in range(1, TRIGGER_RUNS + 1):
+        with tempfile.TemporaryDirectory() as d:
+            if check.get("fixture"):
+                shutil.copytree(ROOT / "verification/triggers" / check["fixture"], d, dirs_exist_ok=True)
+            try:
+                code, out, err = runner(cmd, cwd=d)
+            except FileNotFoundError:
+                return {"check": check["id"], "result": "blocked", "output": "Claude Code (claude) not found on PATH"}
+            except subprocess.TimeoutExpired:
+                code, out, err = None, "", "timed out"
+        skills = fired_skills(out)
+        v = run_verdict(check, skills, prefix) if code == 0 else "fail"
+        verdicts.append(v)
+        lines.append(f"run {n}: {', '.join(skills) or 'no skill fired'} -> {v}" + ("" if code == 0 else f" (claude exited {code}: {err[-500:]})"))
+        answers.append(final_answer(out))
+    result = "fail" if "fail" in verdicts else ("blocked" if "blocked" in verdicts else "pass")
+    if "judge" in check:
+        lines += [f"answer {n}: {a}" for n, a in enumerate(answers, 1)]
+        if result == "pass":
+            if ask is None:
+                result = "not-run"
+                lines.append(f"operator-read: {check['judge']} Nobody was there to judge.")
+            else:
+                ok = ask("\n".join(lines) + f"\n{check['id']}: {check['judge']} [y/n] ").strip().lower().startswith("y")
+                result = "pass" if ok else "fail"
+                lines.append(f"operator: {'yes' if ok else 'no'}: {check['judge']}")
+    return {"check": check["id"], "result": result, "output": "\n".join(lines)}
+
+
+def run_offline(operator, runner=sh, skip=(), ask=None):
     """Section 4's hardware-free checks. Kinds in SKIP are recorded not-run."""
     checks = read_json(ROOT / "verification/checks.json")["checks"]
     results = []
@@ -225,7 +293,8 @@ def run_offline(operator, runner=sh, skip=()):
         results += smoke_results(runner, ["build"], builds) + smoke_results(runner, ["check-targets"], ["build.target-from-data"])
     for c in checks:
         if c["kind"] == "trigger":
-            results.append({"check": c["id"], "result": "not-run", "output": "skipped (--skip trigger)"})
+            results.append({"check": c["id"], "result": "not-run", "output": "skipped (--skip trigger)"} if "trigger" in skip
+                           else trigger_result(c, runner, ask))
         elif c["kind"] == "handoff" and "revision" not in c:
             results.append({"check": c["id"], "result": "not-run", "output": "operator-read (VERIFICATION.md section 4): run it in Claude Code and record the result"})
     date = datetime.date.today().isoformat()
@@ -261,7 +330,7 @@ def main():
             print(line)
         return 0
     if a.cmd == "run" and a.offline:
-        obj = run_offline(a.operator, skip=a.skip)
+        obj = run_offline(a.operator, skip=a.skip, ask=input if sys.stdin.isatty() else None)
         text = json.dumps(obj, indent=1) + "\n"
         if a.write:
             out = ROOT / "verification/runs" / f"{obj['run']['date']}.json"
