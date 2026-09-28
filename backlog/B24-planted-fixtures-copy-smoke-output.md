@@ -1,6 +1,6 @@
 # B24 · Keep the smoke build output out of the planted-error fixtures
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: hardware-ready
 
@@ -30,11 +30,11 @@ Fix: `setUp` copies only what `validate.py` reads from `verification/`, which is
 
 ## Definition of done
 
-- [ ] `Planted.setUp` copies nothing under `verification/smoke/`
-- [ ] With the smoke build output present (run `uv run scripts/smoke.py build platformio` first), `python -m unittest tests.test_validate` takes about as long as on a clean tree. Record both times in the Checkpoint.
-- [ ] `uv run scripts/verify.py run --offline` passes 3 times in a row while `uv run scripts/smoke.py build platformio` runs in another terminal
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
+- [x] `Planted.setUp` copies nothing under `verification/smoke/`
+- [x] With the smoke build output present (run `uv run scripts/smoke.py build platformio` first), `python -m unittest tests.test_validate` takes about as long as on a clean tree. Record both times in the Checkpoint.
+- [x] `uv run scripts/verify.py run --offline` passes 3 times in a row while `uv run scripts/smoke.py build platformio` runs in another terminal
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
 
 ## Stopping rule
 
@@ -44,8 +44,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: List every path `scripts/validate.py` reads under `verification/`, then narrow `Planted.setUp`'s copy to those
-- **Files touched**: none
-- **Last commit**: none
-- **Open questions**: none
+- **Done**: all. `Planted.setUp` copies only `VERIFICATION_READS` (`checks.json`, `results.schema.json`, `runs/`) from `verification/`; `test_fixture_leaves_out_smoke` asserts `smoke/` stays out. Timings on 2026-09-27, `python -m unittest tests.test_validate`: 8.4 s on a clean tree; with PlatformIO build output present (291 MB, 579 files) 48.4 s with the old `setUp`, 6.5 s with the new (8.6 s on a rerun after the review refactor). `uv run scripts/verify.py run --offline` ran 3 times (19:00:32–19:01:29) inside a cold `smoke.py build platformio` (19:00:32–19:01:33): each 30 pass, 5 not-run, 0 fail, all 21 `data.planted-*` passing. `uv run scripts/validate.py` exits 0; `python -m unittest discover tests` passes (51 tests).
+- **Next**: none.
+- **Files touched**: `tests/test_validate.py`
+- **Last commit**: see `git log -- tests/test_validate.py`
+- **Open questions**: none. Note: `verify.py run_offline` maps every `test_validate` test to `data.planted-<name>`, so the new test reports as `data.planted-fixture-leaves-out-smoke`, like `test_committed_data_passes` before it. B15 may want to filter non-rule tests.

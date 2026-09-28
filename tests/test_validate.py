@@ -8,6 +8,8 @@ import json, shutil, subprocess, sys, tempfile, unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
+# what validate.py reads from verification/; never smoke/, whose build output is huge and changes mid-build
+VERIFICATION_READS = ("verification/checks.json", "verification/results.schema.json", "verification/runs")
 
 
 def run_validate(root, *args):
@@ -19,14 +21,12 @@ def run_validate(root, *args):
 class Planted(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
-        for d in ("data", "docs", "skills", "references", "verification/runs"):
-            if (REPO / d).exists():
-                shutil.copytree(REPO / d, self.tmp / d)
-        # only what validate.py reads from verification/; never smoke/, whose build output is huge
-        (self.tmp / "verification").mkdir(exist_ok=True)
-        for f in ("verification/checks.json", "verification/results.schema.json"):
-            if (REPO / f).exists():
-                shutil.copy2(REPO / f, self.tmp / f)
+        (self.tmp / "verification").mkdir()
+        for p in ("data", "docs", "skills", "references", *VERIFICATION_READS):
+            if (REPO / p).is_dir():
+                shutil.copytree(REPO / p, self.tmp / p)
+            elif (REPO / p).exists():
+                shutil.copy2(REPO / p, self.tmp / p)
 
     def tearDown(self):
         shutil.rmtree(self.tmp, ignore_errors=True)
@@ -48,8 +48,8 @@ class Planted(unittest.TestCase):
 
     def test_fixture_leaves_out_smoke(self):  # B24: smoke build output is large and changes mid-build
         self.assertFalse((self.tmp / "verification/smoke").exists())
-        for p in ("checks.json", "results.schema.json", "runs"):
-            self.assertTrue((self.tmp / "verification" / p).exists(), p)
+        for p in VERIFICATION_READS:
+            self.assertTrue((self.tmp / p).exists(), p)
 
     def test_file_name(self):  # rule 1
         (self.tmp / "data/products/core2.json").rename(self.tmp / "data/products/core-2.json")
