@@ -37,6 +37,7 @@ NONCE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"  # no 0/O, 1/I/L: the operato
 DEFAULT_I2C_HZ = 100000  # standard mode; a probe that wakes its chip with an address byte sets the rate instead
 MAX_ADDRS, MAX_READ_BYTES = 4, 16  # the sizes of SmokeRead.addrs and the read buffer in smoke_probe.hpp
 EXIT_OK, EXIT_FAIL, EXIT_DATA = 0, 1, 2
+VENV_BIN, EXE = ("Scripts", ".exe") if os.name == "nt" else ("bin", "")
 M5GFX_MIN = "0.2.27"  # erratum lcd-ili9342e: the ILI9342E panel needs M5GFX 0.2.27 or later
 BUILD_TIMEOUT = 3600
 
@@ -289,8 +290,7 @@ def find_tool(framework, which=shutil.which):
         p = which("arduino-cli")
         return [p] if p else None
     if framework == "esp-idf":
-        p = which("idf.py")
-        return [p] if p else None
+        return find_idf(which)
     for name in ("pio", "platformio"):
         p = which(name)
         if p:
@@ -299,17 +299,33 @@ def find_tool(framework, which=shutil.which):
         return None
     # Under `uv run`, PATH starts with uv's isolated environment, and the py launcher follows it; PlatformIO
     # installed with pip lives beside the interpreter that environment was built from.
-    scripts, exe = ("Scripts", ".exe") if os.name == "nt" else ("bin", "")
-    for d in (Path.home() / ".platformio/penv" / scripts, Path(sys.base_prefix) / scripts):
-        if (d / f"pio{exe}").exists():
-            return [str(d / f"pio{exe}")]
+    for d in (Path.home() / ".platformio/penv" / VENV_BIN, Path(sys.base_prefix) / VENV_BIN):
+        if (d / f"pio{EXE}").exists():
+            return [str(d / f"pio{EXE}")]
     for py in (getattr(sys, "_base_executable", None), which("python"), which("python3")):
         if py and subprocess.run([py, "-m", "platformio", "--version"], capture_output=True).returncode == 0:
             return [py, "-m", "platformio"]
     return None
 
 
-TOOL_NAMES = {"arduino": "arduino-cli", "platformio": "PlatformIO (pio)", "esp-idf": "idf.py (run ESP-IDF's export script first)"}
+def find_idf(which=shutil.which):
+    """idf.py, run by the Python of the ESP-IDF environment the shell activated: IDF_PATH and IDF_PYTHON_ENV_PATH,
+    set by EIM's IDF_PowerShell or ESP-IDF's export script. On Windows idf.py is a script that cannot be started
+    on its own, and under `uv run` a bare `python` is uv's, which lacks ESP-IDF's packages."""
+    if which is shutil.which:  # a test's stand-in PATH sees no environment either
+        idf, env = os.environ.get("IDF_PATH"), os.environ.get("IDF_PYTHON_ENV_PATH")
+        if idf and env:
+            script, py = Path(idf) / "tools/idf.py", Path(env) / VENV_BIN / f"python{EXE}"
+            if script.exists() and py.exists():
+                return [str(py), str(script)]
+    p = which("idf.py")
+    if p and (os.name != "nt" or not p.lower().endswith(".py")):  # a Unix script with a shebang, or idf.py.exe
+        return [p]
+    return None
+
+
+TOOL_NAMES = {"arduino": "arduino-cli", "platformio": "PlatformIO (pio)",
+              "esp-idf": "idf.py (open an ESP-IDF shell first: EIM's IDF_PowerShell, or source export.sh)"}
 
 
 def run(cmd, cwd=None):

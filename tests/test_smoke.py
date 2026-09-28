@@ -4,9 +4,10 @@ UIFlow2 main.py, run under CPython against a simulated I2C bus.
 
 Run: python -m unittest discover tests
 """
-import importlib.util, io, json, re, shutil, sys, tempfile, types, unittest
+import importlib.util, io, json, os, re, shutil, sys, tempfile, types, unittest
 from contextlib import redirect_stdout
 from pathlib import Path
+from unittest import mock
 
 REPO = Path(__file__).resolve().parent.parent
 DATA = REPO / "data"
@@ -290,6 +291,15 @@ class Build(Workdir):
         for r in results:
             self.assertEqual(r["result"], "blocked")
             self.assertIn("idf.py", r["output"])
+
+    def test_idf_py_runs_with_the_esp_idf_python(self):
+        idf, env = self.tmp / "esp-idf", self.tmp / "idf-venv"
+        script, py = idf / "tools/idf.py", env / smoke.VENV_BIN / f"python{smoke.EXE}"
+        for f in (script, py):
+            f.parent.mkdir(parents=True)
+            f.write_text("")
+        with mock.patch.dict(os.environ, {"IDF_PATH": str(idf), "IDF_PYTHON_ENV_PATH": str(env)}):
+            self.assertEqual(smoke.find_tool("esp-idf"), [str(py), str(script)])
 
     def test_check_ids_match_checks_json(self):
         ids = {c["id"] for c in json.loads((REPO / "verification/checks.json").read_text(encoding="utf-8"))["checks"]}
