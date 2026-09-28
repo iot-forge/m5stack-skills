@@ -45,7 +45,7 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: all. `build.platformio.m5stack-core2` passes (nonce found in `firmware.bin`, M5GFX 0.2.30). `build.arduino.*` and `build.esp-idf.esp32` are `blocked`: arduino-cli and `idf.py` are not installed here. `build.target-from-data` passes. `tests/test_smoke.py` runs the UIFlow2 program under CPython against a simulated bus for each Core2-family revision.
+- **Done**: all. On 2026-09-27 every `build.*` check passed, each with a fresh nonce found in its image: `build.arduino.esp32:esp32:m5stack_core2` (core 3.3.12), `build.arduino.m5stack:esp32:m5stack_core2` (core 3.3.9), `build.platformio.m5stack-core2` (espressif32 7.0.1) and `build.esp-idf.esp32` (ESP-IDF v6.1). All used M5Unified 0.2.23 and M5GFX 0.2.30, built with arduino-cli 1.5.2-rc.1 and PlatformIO 6.1.19. Every image contains M5GFX's `ILI9342 read-back` log strings, so the LCD-driver line will print. `build.target-from-data` passes. `tests/test_smoke.py` runs the UIFlow2 program under CPython against a simulated bus for each Core2-family revision.
 - **Next**: none. B15 wires `scripts/smoke.py build` and `check-targets` into `verify.py run --offline`; their output is already in the results-file shape.
 - **Files touched**: `scripts/smoke.py`, `tests/test_smoke.py`, `verification/smoke/**`, `verification/checks.json`, `.gitignore`; after the maintainer's answers: `VERIFICATION.md` section 4
 - **Last commit**: see `git log -- verification/smoke`
