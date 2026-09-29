@@ -489,6 +489,7 @@ class Report(unittest.TestCase):
         md = verify.render_report(run_file([{"check": "data.validate", "result": "pass"}], unit=None), REPO)
         row = next(l for l in md.split("## Release bar", 1)[1].splitlines() if l.startswith(f"| `{REV}`"))
         self.assertIn("not-run", row)
+        self.assertEqual(md.split("## Open-question observations", 1)[1].split("## ", 1)[0].strip(), "None.")
 
     def test_a_failed_fact_expects_what_the_data_says(self):
         md = verify.render_report(run_file([{"check": f"fact.pmic.{REV}", "result": "fail", "observed": "AXP2101"}]), REPO)

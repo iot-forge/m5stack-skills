@@ -478,6 +478,8 @@ def render_report(obj, root=ROOT):
                 out += ["```", r["output"], "```", ""]
         else:
             out += [f"### {r['check']}", "", f"{r['result']}{': blocked by ' + ', '.join(r['blocked_by']) if r.get('blocked_by') else ''}.", ""]
+    if not any(kind(r["check"]) == "open-question" for r in results):
+        out += ["None.", ""]
 
     out += ["## Markers cleared", "",
             "Each marker below names an open question this run observed. Update the step it sits on and remove it (section 7).", ""]

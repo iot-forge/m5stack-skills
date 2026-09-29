@@ -1,6 +1,6 @@
 # B15 · Finish verify.py and checks.json
 
-Status: in-progress
+Status: done
 Blocked by: [B14](B14-smoke-program.md), [B19](B19-align-verification-with-b01.md)
 Gate: hardware-ready
 
@@ -32,13 +32,13 @@ Test ingest against a fixture run file on a copy of `data/`, the way `tests/test
 
 ## Definition of done
 
-- [ ] No `verify.py` command exits 5
-- [ ] `checks.json` lists every check in VERIFICATION.md
-- [ ] An ingest test on fixture results passes: pass results write sources, failures and `observed` results write nothing, and a skill whose only unpassed checks are `observed` open questions gets a `partial` or `verified` status
-- [ ] `run --offline` reports no `data.planted-*` result for the two fixture-guard tests, and a failing guard makes every `data.planted-*` result `blocked`
-- [ ] `uv run scripts/verify.py run --offline` passes (the hardware-ready gate)
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
+- [x] No `verify.py` command exits 5
+- [x] `checks.json` lists every check in VERIFICATION.md
+- [x] An ingest test on fixture results passes: pass results write sources, failures and `observed` results write nothing, and a skill whose only unpassed checks are `observed` open questions gets a `partial` or `verified` status
+- [x] `run --offline` reports no `data.planted-*` result for the two fixture-guard tests, and a failing guard makes every `data.planted-*` result `blocked`
+- [x] `uv run scripts/verify.py run --offline` passes (the hardware-ready gate)
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
 
 ## Stopping rule
 
@@ -48,8 +48,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: ingest (tests.test_verify.Ingest: pass cites `hw-<date>-<revision>`, failures and `observed` write nothing, `observed`-only skill gets `partial`, handoff `satisfied_by`), run --offline planted-per-rule and fixture guards (Offline), trigger rows through `claude -p` (Triggers), run --board (Board), merge-on-write (WriteRun), report (Report), checks.json lists every check in VERIFICATION.md (ChecksJson). New planted fixtures for data.json, data.schema, data.pinmap-stub.
-- **Next**: rerun the gate on the current code, in PowerShell with arduino-cli on PATH and the ESP-IDF v6.1 profile dot-sourced: `uv run scripts/verify.py run --offline`. If it passes, tick the Definition of done and close. Gate run 2026-09-27 21:24-21:45 (code at 7807776, before the review fixes): exit 1. data, query and all 16 data.planted-* pass; build.platformio.m5stack-core2 and build.target-from-data pass; the two Arduino builds and build.esp-idf.esp32 blocked (arduino-cli and idf.py not on that shell's PATH); trigger.row-01 to row-06 pass in all 3 runs; row-07 to row-18 and neg-01 to neg-03 'fail' only because every claude -p run from row-07 on hit the account's monthly spend limit and exited 1. The code at 25d949f records that as blocked, not fail.
-- **Files touched**: scripts/verify.py, tests/test_verify.py, tests/test_validate.py, verification/checks.json, verification/triggers/, VERIFICATION.md
-- **Last commit**: 25d949f
-- **Open questions**: design calls made in this session, for the maintainer to confirm: (1) `run --write` merges into the date's results file (confirmed); (2) trigger.row-11 is operator-read (confirmed); (3) `handoff.<skill>` counts when `handoff.live.<revision>` passes (confirmed); (4) ingest leaves a skill's metadata unchanged when any of its checks is unsatisfied, and unions the revisions it already listed; (5) `SKILL_TOOLS` in verify.py decides which toolchains each skill's `tested-with` lists, with claude-code on every skill; (6) negative trigger rows count toward all seven skills' status; (7) a `covers` item naming a list (`extra_components`) cites every element.
+- **Done**: all. Tests: tests/test_verify.py (Ingest, Offline, Triggers, Board, WriteRun, Report, ChecksJson; 60 tests), 3 new planted fixtures in tests/test_validate.py; `python -m unittest discover tests` 107 pass; `uv run scripts/validate.py` exits 0. The gate: verification/runs/2026-09-28.json and .md, 0 fail: data 17, query 8, build 5, trigger 21 pass; handoff.<skill> 4 blocked (section 4: until a port that exists but fails; handoff.live covers it). The run is two sittings merged by --write, because the account's spend limit cut claude -p off three times: `run --offline` at 2e9902f (2026-09-28 09:13-09:51) for data, query, build and trigger rows 01-15, then `run --offline --only` at 81972f9 for rows 16-18 and neg-01 to neg-03 (17:11-17:20). trigger.row-11 was judged pass by the maintainer from its three saved answers.
+- **Next**: none. B17 (where and when the checks run) is unblocked.
+- **Files touched**: scripts/verify.py, tests/test_verify.py, tests/test_validate.py, verification/checks.json, verification/triggers/, verification/runs/2026-09-28.json and .md, VERIFICATION.md, CONTRIBUTING.md
+- **Last commit**: the B15 close commit (git log)
+- **Open questions** (for the maintainer): (1) ingest leaves a skill's metadata unchanged when any of its checks is unsatisfied, and unions the revisions it already listed; (2) `SKILL_TOOLS` in verify.py decides which toolchains each skill's `tested-with` lists, with claude-code on every skill; (3) negative trigger rows count toward all seven skills' status; (4) a `covers` item naming a list (`extra_components`) cites every element; (5) section 4's headless command allows only the Skill tool, so a skill cannot run `board.py` there: two of row-11's three answers say so. The trigger verdict only reads which skill fires, but row-11's operator judgment reads answers the skill could not ground in data. Allow `Bash(uv run *board.py*)` in the command? (6) `run --board`'s step list and dependencies (BOARD_STEPS, DEPENDS) live in verify.py and are Core2-specific; a second revision's session would need them in checks.json. (7) A spend limit makes every later claude -p call exit 1 (recorded blocked); `run --offline` could stop the trigger rows at the first limit message instead of spending the rest.
