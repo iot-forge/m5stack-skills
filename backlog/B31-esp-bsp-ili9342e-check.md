@@ -1,6 +1,6 @@
 # B31 · Add a hardware check: the esp-bsp Core2 display on an ILI9342E unit
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: hardware-ready
 
@@ -28,11 +28,11 @@ The `lcd-ili9342e` erratum (Core2 and CoreS3 units made from 2026.8.7 carry an I
 
 ## Definition of done
 
-- [ ] `open-question.esp-bsp-ili9342e.core2@v1.3` is in `verification/checks.json`
-- [ ] `VERIFICATION.md` section 7 states the question and what to record, and section 6 (or `checks.json`, after B26) has the step that runs it
-- [ ] `skills/esp-idf/references/esp-bsp.md` carries the untested marker for it
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
+- [x] `open-question.esp-bsp-ili9342e.core2@v1.3` is in `verification/checks.json`
+- [x] `VERIFICATION.md` section 7 states the question and what to record, and section 6 (or `checks.json`, after B26) has the step that runs it
+- [x] `skills/esp-idf/references/esp-bsp.md` carries the untested marker for it
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
 
 ## Stopping rule
 
@@ -42,8 +42,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Add `open-question.esp-bsp-ili9342e.core2@v1.3` to `verification/checks.json`
-- **Files touched**: none
-- **Last commit**: none
-- **Open questions**: none
+- **Done**: all
+- **Next**: none
+- **Files touched**: `verification/checks.json`, `VERIFICATION.md`, `scripts/verify.py`, `tests/test_verify.py`, `skills/esp-idf/references/esp-bsp.md`
+- **Last commit**: d1620ce
+- **Open questions**: none. Found while writing the step: at the pinned commit `examples/display` picks its board through `bsp_selector` and `sdkconfig.bsp.m5stack_core_2`, which sets `CONFIG_BSP_PMU_AXP2101=y`, so the section 6 step layers `CONFIG_BSP_PMU_AXP192=y` on top.

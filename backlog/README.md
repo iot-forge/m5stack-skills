@@ -68,7 +68,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B28 · Make the skills' `allowed-tools` pre-approve `board.py` and `doctor.py`](B28-skill-allowed-tools-preapproval.md) | open | — |  |
 | [B29 · Record the CoreS3 PlatformIO release and M5's whole example](B29-cores3-platformio-release-and-example.md) | open | — |  |
 | [B30 · Make doctor.py report the ESP-IDF version on Windows](B30-doctor-idf-version-on-windows.md) | open | — |  |
-| [B31 · Add a hardware check: the esp-bsp Core2 display on an ILI9342E unit](B31-esp-bsp-ili9342e-check.md) | in-progress | — | yes |
+| [B31 · Add a hardware check: the esp-bsp Core2 display on an ILI9342E unit](B31-esp-bsp-ili9342e-check.md) | done | — | yes |
 | [B32 · Print each connector's power, ground and control positions](B32-connector-power-positions.md) | open | — |  |
 
 **First issue: B01.** After it, B03 and B06 can run in parallel.
