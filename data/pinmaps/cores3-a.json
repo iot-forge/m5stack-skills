@@ -627,10 +627,12 @@
    "labels": []
   }
  },
- "notes": "Several resets and interrupts go through the AW9523B I/O expander on the internal bus, not GPIOs, so they claim no pins: LCD RST (P1_1), touch RST (P0_0) and INT (P1_2), amplifier RST (P0_2) and INT (P1_3), camera RESET (P1_0); the camera's XCLK and PWDN have no GPIO; BUS_OUT_EN and USB_OTG_EN set the power direction. The AXP2101 powers the LCD and its backlight. G35 is both the LCD's DC line and the microSD's MISO, so it is fixed and never free. The speaker amplifier (AW88298) and the mic codec (ES7210) share one I2S bus: BCK G34 and WS G33 are claimed by both, G13 carries speaker data out, G14 mic data in, and G0 the codec's MCLK. The M-Bus diagram labels G0 I2S_LRCK; the audio table's MCLK is followed. G0 is also a strapping pin: download mode (hold RESET for 3 seconds) depends on it, so nothing on the M-Bus may hold it low at reset. G19/G20 carry the USB-C port (native USB Serial/JTAG), which is the console; G43/G44 are UART0 (TXD0/RXD0) and reach only the M-Bus. Port A is its own I2C bus (G2/G1), not the internal one. M-Bus 25/27/29 are HVIN from the DIN base.",
+ "notes": "Several resets and interrupts go through the AW9523B I/O expander, not GPIOs, so they claim no pins: LCD RST (P1_1), touch RST (P0_0) and INT (P1_2), amplifier RST (P0_2) and INT (P1_3), camera RESET (P1_0); the camera's XCLK and PWDN have no GPIO; BUS_OUT_EN and USB_OTG_EN set the power direction. The LCD's power and backlight are not on GPIOs either. G35 is both the LCD's DC line and the microSD's MISO, so it is fixed and never free. Speaker and mic share the I2S clocks: BCK G34 and WS G33 are claimed by both features, G13 carries speaker data out, G14 mic data in, and G0 the mic's MCLK. The M-Bus diagram labels G0 I2S_LRCK; the audio table's MCLK is followed. G0 is also a strapping pin: download mode (hold RESET for 3 seconds) depends on it, so nothing on the M-Bus may hold it low at reset. G19/G20 carry the USB-C port (native USB Serial/JTAG), which is the console; G43/G44 are UART0 (TXD0/RXD0) and reach only the M-Bus. Port A is its own I2C bus (G2/G1), not the internal one. M5Unified configures the same audio pins for this board and runs speaker and mic on one I2S port, re-installing it for each, so under M5Unified it plays or records, not both at once. M-Bus 25/27/29 are HVIN from the DIN base.",
  "src": [
   "m5-cores3",
-  "idf-gpio-esp32s3"
+  "idf-gpio-esp32s3",
+  "m5unified-audio",
+  "m5unified"
  ],
  "confidence": "high",
  "last_verified": "2026-09-28"

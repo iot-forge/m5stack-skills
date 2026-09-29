@@ -184,6 +184,13 @@
    "ref": "4fb4447"
   },
   {
+   "id": "m5unified-audio",
+   "kind": "library-source",
+   "title": "M5Unified mic and speaker pin configuration per board (M5Unified.cpp)",
+   "url": "https://github.com/m5stack/M5Unified/blob/4fb444784c85791e0b0207701392b42be234b2e7/src/M5Unified.cpp",
+   "ref": "4fb4447"
+  },
+  {
    "id": "m5core2-lib",
    "kind": "library-source",
    "title": "Legacy M5Core2 library AXP192 driver",

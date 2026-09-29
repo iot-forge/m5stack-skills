@@ -34,6 +34,10 @@ def pin_map_of(product):
     return load(f"pinmaps/{ids.pop()}.json")
 
 
+def pins_claimed_by(pm, *features):
+    return {g for g, p in pm["pins"].items() for u in p["uses"] if u.get("feature") in features}
+
+
 class Query(unittest.TestCase):
     def test_branch_core2(self):  # query.branch-core2
         code, out = board_json("facts", "Core2", "pmic", "imu")
@@ -133,20 +137,19 @@ class Query(unittest.TestCase):
 
     def test_cores3_camera_and_sd_pins_taken(self):
         pm = pin_map_of("cores3")
-        claimed = {g for g, p in pm["pins"].items() for u in p["uses"] if u.get("feature") in ("camera", "sd")}
-        self.assertTrue({g for g, p in pm["pins"].items() for u in p["uses"] if u.get("feature") == "camera"},
-                        "CoreS3's pin map claims no camera pins")
+        self.assertTrue(pins_claimed_by(pm, "camera"), "CoreS3's pin map claims no camera pins")
         code, out = board_json("pins", "cores3", "--use", "camera,sd")
         self.assertEqual(code, 0)
-        self.assertLessEqual(claimed, {r["gpio"] for r in out["taken"]})
+        self.assertLessEqual(pins_claimed_by(pm, "camera", "sd"), {r["gpio"] for r in out["taken"]})
 
-    def test_cores3_se_has_no_camera(self):
-        pm = pin_map_of("cores3-se")
-        self.assertTrue(pm["populated"])
-        self.assertFalse([g for g, p in pm["pins"].items() for u in p["uses"] if u.get("feature") == "camera"])
-        code, out = board_json("pins", "cores3-se", "--use", "camera")
-        self.assertEqual(code, 0)
-        self.assertIn("camera", out["no_pins_for"])
+    def test_camera_claims_follow_the_camera_component(self):
+        for product in ("cores3", "cores3-se", "cores3-lite"):
+            has_camera = all(any(c["role"] == "camera" for c in r.get("extra_components", []))
+                             for r in load(f"products/{product}.json")["revisions"].values())
+            self.assertEqual(bool(pins_claimed_by(pin_map_of(product), "camera")), has_camera, product)
+            code, out = board_json("pins", product, "--use", "camera")
+            self.assertEqual(code, 0)
+            self.assertEqual("camera" in out["no_pins_for"], not has_camera, product)
 
     def test_fixed_pin_on_a_bus_is_taken(self):
         pm = pin_map_of("cores3")
