@@ -2,8 +2,21 @@
  "schema_version": 1,
  "id": "gray-2017.09",
  "soc": "esp32",
- "populated": false,
+ "populated": true,
  "buses": {
+  "spi_main": {
+   "kind": "spi",
+   "pins": {
+    "sck": "G18",
+    "mosi": "G23",
+    "miso": "G19"
+   },
+   "src": [
+    "m5-gray"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-28"
+  },
   "i2c_internal": {
    "kind": "i2c",
    "pins": {
@@ -14,15 +27,432 @@
     "m5-gray"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-09-28"
   }
  },
- "connectors": [],
- "pins": {},
- "notes": "Not yet populated: GPIO uses, claims and connectors are TODO for the implementation backlog. Only the bus pins below are sourced. The IP5306 is not on I2C in this wiring.",
+ "connectors": [
+  {
+   "id": "port_a",
+   "kind": "grove-i2c",
+   "bus": "i2c_internal",
+   "src": [
+    "m5-gray"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-28"
+  },
+  {
+   "id": "mbus",
+   "kind": "m-bus",
+   "positions": [
+    {
+     "n": 1,
+     "pin": "GND"
+    },
+    {
+     "n": 2,
+     "gpio": "G35"
+    },
+    {
+     "n": 3,
+     "pin": "GND"
+    },
+    {
+     "n": 4,
+     "gpio": "G36"
+    },
+    {
+     "n": 5,
+     "pin": "GND"
+    },
+    {
+     "n": 6,
+     "pin": "RST"
+    },
+    {
+     "n": 7,
+     "gpio": "G23"
+    },
+    {
+     "n": 8,
+     "gpio": "G25"
+    },
+    {
+     "n": 9,
+     "gpio": "G19"
+    },
+    {
+     "n": 10,
+     "gpio": "G26"
+    },
+    {
+     "n": 11,
+     "gpio": "G18"
+    },
+    {
+     "n": 12,
+     "pin": "3V3"
+    },
+    {
+     "n": 13,
+     "gpio": "G3"
+    },
+    {
+     "n": 14,
+     "gpio": "G1"
+    },
+    {
+     "n": 15,
+     "gpio": "G16"
+    },
+    {
+     "n": 16,
+     "gpio": "G17"
+    },
+    {
+     "n": 17,
+     "gpio": "G21"
+    },
+    {
+     "n": 18,
+     "gpio": "G22"
+    },
+    {
+     "n": 19,
+     "gpio": "G2"
+    },
+    {
+     "n": 20,
+     "gpio": "G5"
+    },
+    {
+     "n": 21,
+     "gpio": "G12"
+    },
+    {
+     "n": 22,
+     "gpio": "G13"
+    },
+    {
+     "n": 23,
+     "gpio": "G15"
+    },
+    {
+     "n": 24,
+     "gpio": "G0"
+    },
+    {
+     "n": 25,
+     "pin": "HPWR"
+    },
+    {
+     "n": 26,
+     "gpio": "G34"
+    },
+    {
+     "n": 27,
+     "pin": "HPWR"
+    },
+    {
+     "n": 28,
+     "pin": "5V"
+    },
+    {
+     "n": 29,
+     "pin": "HPWR"
+    },
+    {
+     "n": 30,
+     "pin": "BAT"
+    }
+   ],
+   "src": [
+    "m5-gray"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-28"
+  }
+ ],
+ "pins": {
+  "G0": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:24"
+   ],
+   "labels": []
+  },
+  "G1": {
+   "uses": [
+    {
+     "function": "UART0 TX (USB bridge)",
+     "claim": "feature",
+     "feature": "serial_console"
+    }
+   ],
+   "exposed_on": [
+    "mbus:14"
+   ],
+   "labels": []
+  },
+  "G2": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:19"
+   ],
+   "labels": []
+  },
+  "G3": {
+   "uses": [
+    {
+     "function": "UART0 RX (USB bridge)",
+     "claim": "feature",
+     "feature": "serial_console"
+    }
+   ],
+   "exposed_on": [
+    "mbus:13"
+   ],
+   "labels": []
+  },
+  "G4": {
+   "uses": [
+    {
+     "function": "microSD CS",
+     "claim": "feature",
+     "feature": "sd"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G5": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:20"
+   ],
+   "labels": []
+  },
+  "G12": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:21"
+   ],
+   "labels": []
+  },
+  "G13": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:22"
+   ],
+   "labels": []
+  },
+  "G14": {
+   "uses": [
+    {
+     "function": "LCD CS",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G15": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:23"
+   ],
+   "labels": []
+  },
+  "G16": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:15"
+   ],
+   "labels": []
+  },
+  "G17": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:16"
+   ],
+   "labels": []
+  },
+  "G18": {
+   "uses": [
+    {
+     "function": "SPI SCK (LCD, microSD)",
+     "claim": "bus",
+     "owner": "spi_main"
+    }
+   ],
+   "exposed_on": [
+    "mbus:11"
+   ],
+   "labels": []
+  },
+  "G19": {
+   "uses": [
+    {
+     "function": "SPI MISO (microSD)",
+     "claim": "bus",
+     "owner": "spi_main"
+    }
+   ],
+   "exposed_on": [
+    "mbus:9"
+   ],
+   "labels": []
+  },
+  "G21": {
+   "uses": [
+    {
+     "function": "internal I2C SDA",
+     "claim": "bus",
+     "owner": "i2c_internal"
+    }
+   ],
+   "exposed_on": [
+    "port_a:sda",
+    "mbus:17"
+   ],
+   "labels": []
+  },
+  "G22": {
+   "uses": [
+    {
+     "function": "internal I2C SCL",
+     "claim": "bus",
+     "owner": "i2c_internal"
+    }
+   ],
+   "exposed_on": [
+    "port_a:scl",
+    "mbus:18"
+   ],
+   "labels": []
+  },
+  "G23": {
+   "uses": [
+    {
+     "function": "SPI MOSI (LCD, microSD)",
+     "claim": "bus",
+     "owner": "spi_main"
+    }
+   ],
+   "exposed_on": [
+    "mbus:7"
+   ],
+   "labels": []
+  },
+  "G25": {
+   "uses": [
+    {
+     "function": "speaker (DAC)",
+     "claim": "feature",
+     "feature": "speaker"
+    }
+   ],
+   "exposed_on": [
+    "mbus:8"
+   ],
+   "labels": []
+  },
+  "G26": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:10"
+   ],
+   "labels": []
+  },
+  "G27": {
+   "uses": [
+    {
+     "function": "LCD DC",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G32": {
+   "uses": [
+    {
+     "function": "LCD backlight",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G33": {
+   "uses": [
+    {
+     "function": "LCD RST",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G34": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:26"
+   ],
+   "labels": []
+  },
+  "G35": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:2"
+   ],
+   "labels": []
+  },
+  "G36": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:4"
+   ],
+   "labels": []
+  },
+  "G37": {
+   "uses": [
+    {
+     "function": "button C",
+     "claim": "fixed",
+     "dir": "in"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G38": {
+   "uses": [
+    {
+     "function": "button B",
+     "claim": "fixed",
+     "dir": "in"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G39": {
+   "uses": [
+    {
+     "function": "button A",
+     "claim": "fixed",
+     "dir": "in"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  }
+ },
+ "notes": "Same GPIO wiring as gray-a. The map is separate because the IP5306 is not on I2C in this revision: the Gray changelog's 2017.12 entry connects it to the I2C bus. The Gray page does not state whether the unit has PSRAM; it lists G16/G17 as base-interface pins with no other use, so they carry no use here and the SoC's PSRAM caution applies. Port A is the internal I2C bus (G21/G22), shared with the IP5306 and the other on-board I2C parts. The unit has one Grove port, Port A. The pages' HY2.0-4P table also gives Port B (G26/G36) and Port C (G17/G16), the pins a base with those ports uses; here they reach only the M-Bus. Buttons A/B/C sit on input-only G39/G38/G37 and reach no connector, so they are marked fixed: no feature can be switched off to free them.",
  "src": [
   "m5-gray"
  ],
  "confidence": "high",
- "last_verified": "2026-09-26"
+ "last_verified": "2026-09-28"
 }

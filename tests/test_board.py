@@ -88,9 +88,29 @@ class Query(unittest.TestCase):
         self.assertEqual(code, 2)
 
     def test_unpopulated_pin_map_refuses(self):
-        code, out = board("pins", "basic")
+        # cores3-se-a is a stub until B05; point this at another stub when it is populated.
+        code, out = board("pins", "cores3-se")
         self.assertEqual(code, 4)
         self.assertIn("not populated", out)
+
+    def test_fire_psram_pins_never_free(self):
+        pm = json.loads((DATA / "pinmaps/fire-a.json").read_text(encoding="utf-8"))
+        psram = {g for g, p in pm["pins"].items() for u in p["uses"] if u["claim"] == "fixed" and "PSRAM" in u["function"]}
+        self.assertTrue(psram, "fire-a claims no PSRAM pins")
+        code, out = board_json("pins", "fire")
+        self.assertEqual(code, 0)
+        offered = {r["gpio"] for r in out["free"] + out["free_unless"]}
+        self.assertFalse(psram & offered, f"PSRAM pins offered as free: {psram & offered}")
+        self.assertLessEqual(psram, {r["gpio"] for r in out["taken"]})
+
+    def test_basic_port_a_is_the_internal_bus(self):
+        pm = json.loads((DATA / "pinmaps/basic-a.json").read_text(encoding="utf-8"))
+        bus = next(c["bus"] for c in pm["connectors"] if c["id"] == "port_a")
+        code, out = board_json("pins", "basic")
+        self.assertEqual(code, 0)
+        shared = {r["gpio"] for r in out["shared_bus"] if r["bus"] == bus}
+        self.assertEqual(shared, set(pm["buses"][bus]["pins"].values()))
+        self.assertTrue(out["buses"][bus]["members"], "Port A's bus lists no occupants")
 
     def test_probe_gap_shown(self):  # ADR 0005
         signals = json.loads((DATA / "signals.json").read_text(encoding="utf-8"))["signals"]
