@@ -76,7 +76,8 @@ Copy this checklist and tick it off:
 
 ## Decode panics, backtraces and reset loops
 
-<!-- TODO: authored in the implementation backlog issue for flashing-and-debugging. Until then this skill has no task guidance: follow the standing rules and the hand-offs, and say that this part of the skill is not written yet. -->
+1. Take the serial output the user pasted, or ask for it: unedited, from one `rst:` line to the next, with any `ELF file SHA256:` line. Run `board.py facts "<user's words>" soc_part psram flash`. Done when you have both.
+2. Read `${CLAUDE_SKILL_DIR}/references/decoding-crashes.md` and work the case that matches the output. Done when the user has the decoded frames or the named cause, and a fault in their own code has gone to the framework skill.
 
 ## Hand-offs
 
