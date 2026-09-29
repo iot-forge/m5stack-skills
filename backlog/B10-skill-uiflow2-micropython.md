@@ -51,6 +51,6 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 - **Next**: none
 - **Files touched**: `skills/uiflow2-micropython/SKILL.md`, `skills/uiflow2-micropython/references/images.md` (new), `skills/uiflow2-micropython/references/boot-option.md` (new), `VERIFICATION.md`
 - **Last commit**: see `git log -- skills/uiflow2-micropython backlog/B10-skill-uiflow2-micropython.md`
-- **Open questions** (the maintainer decides):
-  1. **Keep the launcher, or boot option 0?** The skill leaves the launcher in place and puts `resume` after the port in every mpremote command. mpremote 1.29.0 soft-resets before the first raw-REPL command, and on UIFlow2 a soft reset reruns `boot.py` and restarts the launcher. The skill sets boot option `0` (no launcher, no Wi-Fi at boot, plain mpremote commands work) only when the user wants `main.py` to run at power-up, and names the write first. Should `0` be the default for development instead? MicroPython's development branch (commit 336427fc, after 1.29.0) stops the auto soft reset, so after its next release `resume` becomes a no-op either way.
-  2. **The section 7 wording change.** Two open questions were widened to cover `resume`, since the skill's markers must name questions that test its actual commands. Keep them, or split `resume` into questions of its own?
+- **Open questions**: settled by the maintainer (2026-09-29):
+  1. The skill keeps the launcher and puts `resume` after the port in every mpremote command. It sets boot option `0` only when the user wants `main.py` to run at power-up, and names the write first. The skill stays as written.
+  2. The widened wording of `open-question.mpremote-launcher` and `open-question.stdout-raw-repl` in `VERIFICATION.md` section 7 stays.
