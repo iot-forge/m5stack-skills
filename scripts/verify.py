@@ -344,9 +344,10 @@ BOARD_STEPS = [
       "fact.imu", "fact.no-atecc", "fact.no-ina3221", "fact.port-a-bus"]),
     ("Same, through PlatformIO.", ["flash.platformio", "device.platformio"]),
     ("Same, through idf.py.", ["flash.esp-idf", "device.esp-idf"]),
-    ("Build esp-bsp's display example for m5stack_core_2 with idf.py, with the esp-bsp settings `board.py targets "
-     "<revision> --toolchain esp-idf` prints, and flash it. Record the component and ESP-IDF versions and what the "
-     "display shows (section 7).", ["open-question.esp-bsp-ili9342e"]),
+    ("Build esp-bsp's examples/display from a clone at the pinned esp-bsp commit, with idf.py -D SDKCONFIG_DEFAULTS= "
+     "the board's sdkconfig.bsp file plus the PMU setting `board.py targets <revision> --toolchain esp-idf` prints "
+     "(the bsp file's own PMU choice may be wrong for this revision), and flash it. Record the component and ESP-IDF "
+     "versions and what the display shows (section 7).", ["open-question.esp-bsp-ili9342e"]),
     ("Ask a framework skill to upload while you hold the unit in reset. Pass: one attempt, the serial-port and "
      "download-mode procedures, exactly one retry, then a hand-off to flashing-and-debugging.", ["handoff.live"]),
     ("Flash the UIFlow2 image `board.py targets` recommends with `esptool write-flash 0x0`, then push the smoke "
