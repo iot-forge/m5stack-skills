@@ -88,6 +88,14 @@ class Query(unittest.TestCase):
         code, out = board_json("pins", "core2@v1.3", "--use", "speaker,mic")
         self.assertIn("G0", [r["gpio"] for r in out["conflicts"]])
 
+    def test_cores3_shared_i2s_clocks_conflict(self):  # maintainer, B05: shared I2S clocks are a CONFLICT
+        pm = pin_map_of("cores3")
+        shared = {g for g, p in pm["pins"].items() if {"speaker", "mic"} <= {u.get("feature") for u in p["uses"]}}
+        self.assertTrue(shared, "CoreS3's speaker and mic share no pins")
+        code, out = board_json("pins", "cores3", "--use", "speaker,mic")
+        self.assertEqual(code, 0)
+        self.assertEqual(shared, {r["gpio"] for r in out["conflicts"]})
+
     def test_strict_name(self):  # query.strict-name
         code, out = board("facts", "Coer2")
         self.assertEqual(code, 2)
