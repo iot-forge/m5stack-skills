@@ -103,11 +103,41 @@ class Ingest(unittest.TestCase):
                          {"verification": f"partial {DATE}: {REV}",
                           "tested-with": "esptool 4.8.1, mpremote 1.24.1, uiflow2 image 2.2.0, claude-code 2.1.0"})
 
-    def test_skill_with_a_failing_check_keeps_its_status(self):
+    def test_skill_with_a_failing_check_stays_unverified(self):
         results = self.all_passing("uiflow2-micropython")
         next(r for r in results if r["result"] == "pass")["result"] = "fail"
         self.ingest(run_file(results))
         self.assertEqual(self.skill_meta("uiflow2-micropython"), {"verification": "unverified", "tested-with": "none"})
+
+    def set_meta(self, skill, verification, tested_with):
+        p = self.tmp / "skills" / skill / "SKILL.md"
+        b = p.read_bytes()
+        for key, value in (("verification", verification), ("tested-with", tested_with)):
+            b = re.sub(rf'(?m)^  {key}: "[^"]*"'.encode(), f'  {key}: "{value}"'.encode(), b, count=1)
+        p.write_bytes(b)
+
+    def test_a_failure_takes_the_revision_off_the_status(self):
+        self.set_meta("uiflow2-micropython", f"partial 2026-10-01: core2@v1.1, {REV}", "mpremote 1.24.1")
+        results = self.all_passing("uiflow2-micropython")
+        next(r for r in results if r["check"] == f"device.uiflow2.{REV}")["result"] = "fail"
+        self.ingest(run_file(results))
+        self.assertEqual(self.skill_meta("uiflow2-micropython"),
+                         {"verification": "partial 2026-10-01: core2@v1.1", "tested-with": "mpremote 1.24.1"})
+
+    def test_a_failure_on_the_only_revision_makes_it_unverified(self):
+        self.set_meta("uiflow2-micropython", f"partial 2026-10-01: {REV}", "mpremote 1.24.1")
+        results = self.all_passing("uiflow2-micropython")
+        next(r for r in results if r["check"] == f"device.uiflow2.{REV}")["result"] = "fail"
+        self.ingest(run_file(results))
+        self.assertEqual(self.skill_meta("uiflow2-micropython"), {"verification": "unverified", "tested-with": "none"})
+
+    def test_a_check_left_unrun_leaves_the_status_alone(self):  # a hardware-only run says nothing about the trigger rows
+        self.set_meta("uiflow2-micropython", f"partial 2026-10-01: {REV}", "mpremote 1.24.1")
+        results = [r for r in self.all_passing("uiflow2-micropython") if not r["check"].startswith("trigger.")]
+        next(r for r in results if r["check"] == f"device.uiflow2.{REV}")["result"] = "blocked"
+        self.ingest(run_file(results))
+        self.assertEqual(self.skill_meta("uiflow2-micropython"),
+                         {"verification": f"partial 2026-10-01: {REV}", "tested-with": "mpremote 1.24.1"})
 
     def test_blocked_handoff_counts_when_the_live_handoff_passed(self):
         results = self.all_passing("uiflow2-micropython")

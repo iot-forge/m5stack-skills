@@ -55,7 +55,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B15 · Finish verify.py and checks.json](B15-verify-py-and-checks.md) | done | B14, B19 | yes |
 | [B16 · Tune the seven descriptions together, then run every trigger row](B16-description-tuning.md) | open | B07, B08, B09, B10, B11, B12, B13 |  |
 | [B17 · Decide: where and when the checks run](B17-decide-ci.md) | open | B15 |  |
-| [B18 · Decide: publication](B18-decide-publication.md) | open | B01, B02, B03, B04, B05, B06, B07, B08, B09, B10, B11, B12, B13, B14, B15, B16, B17, B19, B20, B21, B23, B24, B25, B26, B27 |  |
+| [B18 · Decide: publication](B18-decide-publication.md) | open | B01, B02, B03, B04, B05, B06, B07, B08, B09, B10, B11, B12, B13, B14, B15, B16, B17, B19, B20, B21, B23, B24, B25, B26, B27, B28 |  |
 | [B19 · Align VERIFICATION.md with B01](B19-align-verification-with-b01.md) | done | B01 | yes |
 | [B20 · Rename the CoreS3 download-mode checks after M5's procedure](B20-rename-cores3-download-checks.md) | open | — |  |
 | [B21 · Cite each expected probe value to its own source](B21-per-value-probe-sources.md) | open | — |  |
@@ -65,6 +65,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B25 · Say what a `fact` check observes and which revisions it rejects](B25-fact-check-wording.md) | open | — |  |
 | [B26 · Move the hardware-session steps into checks.json](B26-board-steps-in-checks-json.md) | open | — |  |
 | [B27 · Stop the trigger rows at the first account-limit message](B27-stop-triggers-at-spend-limit.md) | open | — |  |
+| [B28 · Make the skills' `allowed-tools` pre-approve `board.py` and `doctor.py`](B28-skill-allowed-tools-preapproval.md) | open | — |  |
 
 **First issue: B01.** After it, B03 and B06 can run in parallel.
 

@@ -103,8 +103,10 @@ def satisfied(check, revision, results):
 
 
 def set_skill_status(obj, root=ROOT):
-    """Rewrite metadata.verification and metadata.tested-with of every skill whose checks all count on the run's unit.
-    A skill that falls short keeps the status it had: this run says nothing about the revisions listed before."""
+    """Rewrite metadata.verification and metadata.tested-with (section 10). A skill whose checks all count on the run's
+    unit adds that revision, under the run's date and toolchains. A skill with a failed check there loses that revision
+    and keeps the rest, with their date; with none left it is unverified. A check that is only missing, not-run or
+    blocked changes nothing: the run says nothing about it."""
     if not obj["run"].get("unit"):
         return []
     revision, date, toolchains = obj["run"]["unit"]["revision"], obj["run"]["date"], obj["run"]["toolchains"]
@@ -114,17 +116,25 @@ def set_skill_status(obj, root=ROOT):
     for skill_md in sorted((root / "skills").glob("*/SKILL.md")):
         skill = skill_md.parent.name
         mine = [c for c in checks if skill in c["skills"] and c.get("revision") in (None, revision)]
-        if not mine or not all(satisfied(c, revision, results) for c in mine):
+        if not mine:
             continue
         text = skill_md.read_bytes().decode("utf-8")
-        old = re.search(r'(?m)^  verification: "(?:partial|verified) [\d-]+: ([^"]+)"', text)
-        revs = sorted(set(old.group(1).split(", ") if old else []) | {revision})
-        status = "verified" if supported <= set(revs) else "partial"
-        tools = ", ".join(f"{t} {toolchains[t]}" for t in SKILL_TOOLS.get(skill, ()) if t in toolchains) or "none"
-        text = re.sub(r'(?m)^  verification: "[^"]*"', f'  verification: "{status} {date}: {", ".join(revs)}"', text, count=1)
-        text = re.sub(r'(?m)^  tested-with: "[^"]*"', f'  tested-with: "{tools}"', text, count=1)
+        old = re.search(r'(?m)^  verification: "(?:partial|verified) ([\d-]+): ([^"]+)"', text)
+        listed = set(old.group(2).split(", ")) if old else set()
+        if all(satisfied(c, revision, results) for c in mine):
+            revs, when = sorted(listed | {revision}), date
+            tools = ", ".join(f"{t} {toolchains[t]}" for t in SKILL_TOOLS.get(skill, ()) if t in toolchains) or "none"
+        elif revision in listed and any(results.get(c["id"]) == "fail" for c in mine):
+            revs, when = sorted(listed - {revision}), old.group(1)
+            tools = None if revs else "none"  # the remaining revisions keep the toolchains they passed with
+        else:
+            continue
+        line = f"{'verified' if supported <= set(revs) else 'partial'} {when}: {', '.join(revs)}" if revs else "unverified"
+        text = re.sub(r'(?m)^  verification: "[^"]*"', f'  verification: "{line}"', text, count=1)
+        if tools is not None:
+            text = re.sub(r'(?m)^  tested-with: "[^"]*"', f'  tested-with: "{tools}"', text, count=1)
         skill_md.write_bytes(text.encode("utf-8"))
-        changed.append(f"skills/{skill}: {status} {date}: {', '.join(revs)}")
+        changed.append(f"skills/{skill}: {line}")
     return changed
 
 
