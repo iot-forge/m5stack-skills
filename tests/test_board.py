@@ -19,8 +19,19 @@ def board_json(*args):
     return code, json.loads(out)
 
 
+def load(path):
+    return json.loads((DATA / path).read_text(encoding="utf-8"))
+
+
 def revisions_of(product):
-    return sorted(json.loads((DATA / f"products/{product}.json").read_text(encoding="utf-8"))["revisions"])
+    return sorted(load(f"products/{product}.json")["revisions"])
+
+
+def pin_map_of(product):
+    """The one pin map every revision of the product shares."""
+    ids = {r["pin_map"] for r in load(f"products/{product}.json")["revisions"].values()}
+    assert len(ids) == 1, f"{product} spans pin maps {sorted(ids)}"
+    return load(f"pinmaps/{ids.pop()}.json")
 
 
 class Query(unittest.TestCase):
@@ -88,15 +99,23 @@ class Query(unittest.TestCase):
         self.assertEqual(code, 2)
 
     def test_unpopulated_pin_map_refuses(self):
-        # cores3-se-a is a stub until B05; point this at another stub when it is populated.
-        code, out = board("pins", "cores3-se")
+        stubs = []
+        for f in sorted((DATA / "products").glob("*.json")):
+            revs = load(f"products/{f.name}")["revisions"].values()
+            ids = {r["pin_map"] for r in revs if r["support"]["status"] == "supported"}
+            if len(ids) == 1 and not load(f"pinmaps/{ids.pop()}.json")["populated"]:
+                stubs.append(f.stem)
+        if not stubs:
+            self.skipTest("every supported product's pin map is populated")
+        code, out = board("pins", stubs[0])
         self.assertEqual(code, 4)
         self.assertIn("not populated", out)
 
     def test_fire_psram_pins_never_free(self):
-        pm = json.loads((DATA / "pinmaps/fire-a.json").read_text(encoding="utf-8"))
-        psram = {g for g, p in pm["pins"].items() for u in p["uses"] if u["claim"] == "fixed" and "PSRAM" in u["function"]}
-        self.assertTrue(psram, "fire-a claims no PSRAM pins")
+        pm = pin_map_of("fire")
+        rule = next(r for r in load(f"socs/{pm['soc']}.json")["rules"] if r["id"] == "psram_pins")
+        psram = {g for g in rule["pins"] if any(u["claim"] == "fixed" for u in pm["pins"].get(g, {}).get("uses", []))}
+        self.assertTrue(psram, "Fire's pin map claims no PSRAM pins")
         code, out = board_json("pins", "fire")
         self.assertEqual(code, 0)
         offered = {r["gpio"] for r in out["free"] + out["free_unless"]}
@@ -104,7 +123,7 @@ class Query(unittest.TestCase):
         self.assertLessEqual(psram, {r["gpio"] for r in out["taken"]})
 
     def test_basic_port_a_is_the_internal_bus(self):
-        pm = json.loads((DATA / "pinmaps/basic-a.json").read_text(encoding="utf-8"))
+        pm = pin_map_of("basic")
         bus = next(c["bus"] for c in pm["connectors"] if c["id"] == "port_a")
         code, out = board_json("pins", "basic")
         self.assertEqual(code, 0)

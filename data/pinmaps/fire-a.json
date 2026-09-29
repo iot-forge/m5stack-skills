@@ -520,7 +520,7 @@
    "labels": []
   }
  },
- "notes": "G16/G17 are marked fixed because the board carries PSRAM: the Fire pages say GPIO 16/17 are connected to PSRAM by default, and ESP-IDF documents them as the module's PSRAM pins. Port C and M-Bus 15/16 still carry them, so Port C is not usable as a UART. Port A is the internal I2C bus (G21/G22), shared with the IP5306 and the other on-board I2C parts. Ports B and C are on the base. Buttons A/B/C sit on input-only G39/G38/G37 and reach no connector, so they are marked fixed: no feature can be switched off to free them.",
+ "notes": "G16/G17 are marked fixed because the board carries PSRAM: the Fire pages say GPIO 16/17 are connected to PSRAM by default, and ESP-IDF documents them as the module's PSRAM pins. Port C and M-Bus 15/16 still carry them, so Port C is not usable as a UART. Port A is the internal I2C bus (G21/G22); the revision's components say which chips sit on it. Ports B and C are on the base. Buttons A/B/C sit on input-only G39/G38/G37 and reach no connector, so they are marked fixed: no feature can be switched off to free them.",
  "src": [
   "m5-fire",
   "m5-fire-v2.7",

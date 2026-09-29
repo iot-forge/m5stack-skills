@@ -449,7 +449,7 @@
    "labels": []
   }
  },
- "notes": "The Gray page does not state whether the unit has PSRAM; it lists G16/G17 as base-interface pins with no other use, so they carry no use here and the SoC's PSRAM caution applies. Port A is the internal I2C bus (G21/G22), shared with the IP5306 and the other on-board I2C parts. The unit has one Grove port, Port A. The pages' HY2.0-4P table also gives Port B (G26/G36) and Port C (G17/G16), the pins a base with those ports uses; here they reach only the M-Bus. Buttons A/B/C sit on input-only G39/G38/G37 and reach no connector, so they are marked fixed: no feature can be switched off to free them.",
+ "notes": "The Gray page does not state whether the unit has PSRAM; it lists G16/G17 as base-interface pins with no other use, so they carry no use here and the SoC's PSRAM caution applies. Port A is the internal I2C bus (G21/G22); the revision's components say which chips sit on it. The unit has one Grove port, Port A. The pages' HY2.0-4P table also gives Port B (G26/G36) and Port C (G17/G16), the pins a base with those ports uses; here they reach only the M-Bus. Buttons A/B/C sit on input-only G39/G38/G37 and reach no connector, so they are marked fixed: no feature can be switched off to free them.",
  "src": [
   "m5-gray"
  ],
