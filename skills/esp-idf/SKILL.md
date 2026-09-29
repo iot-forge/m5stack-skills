@@ -48,15 +48,42 @@ Copy this checklist and tick it off:
 
 ## Create or configure an idf.py project
 
-<!-- TODO: authored in the implementation backlog issue for esp-idf. Until then this skill has no task guidance: follow the standing rules and the hand-offs, and say that this part of the skill is not written yet. -->
+1. Run `idf.py --version`. Read `${CLAUDE_SKILL_DIR}/references/idf-environment.md` when it fails, prints no `ESP-IDF v…`, or on Windows. In an existing project, read `sdkconfig` (`CONFIG_IDF_TARGET`), `sdkconfig.defaults` and `main/idf_component.yml`. In a `framework = espidf` PlatformIO project, `platformio.ini`, build and upload go to the `platformio` skill. Done when you have the ESP-IDF version and the project's target and dependencies.
+2. Run `board.py frameworks "<user's words>"`; if its `esp-idf` line is not `yes`, give the user what it prints. Run `board.py targets "<user's words>" --toolchain esp-idf`: its `bare ESP-IDF` line names the SoC (`idf.py set-target <soc>`). Done when you have one SoC.
+3. Run `board.py facts "<user's words>" flash psram` and write `sdkconfig.defaults`, keeping any other lines:
+   - `flash: <n>MB`: `CONFIG_ESPTOOLPY_FLASHSIZE_<n>MB=y`. On `DIVERGES`, run `board.py tell-apart "<user's words>"`, ask for the cheapest observation and re-run `facts` with `--seen`. Read `${CLAUDE_PLUGIN_ROOT}/references/identifying-a-revision.md` when only host or probe signals remain. If the user can observe nothing, use the smaller size and say what the others give up.
+   - PSRAM on every revision in play (sizes may differ): `CONFIG_SPIRAM=y`, and on `esp32s3` `CONFIG_SPIRAM_MODE_QUAD=y` or `CONFIG_SPIRAM_MODE_OCT=y`, as `facts` prints `quad` or `octal`. Any revision with `none` or `not documented`: leave PSRAM off and say why.
+   - Partitions: read `${CLAUDE_SKILL_DIR}/references/idf-environment.md` when the app outgrows the default 1 MB app partition, or the user wants OTA or a data partition.
+
+   Done when `sdkconfig.defaults` has a line for each fact that applies.
+4. New project: run `idf.py create-project <name>` (`--cpp` for M5Unified), put step 3's `sdkconfig.defaults` in its folder, then run `idf.py -C <folder> set-target <soc>`. Existing project with another `CONFIG_IDF_TARGET`: `set-target` replaces its `sdkconfig`; say so and wait for the go-ahead. Otherwise run `idf.py reconfigure`. M5Unified or M5GFX code, in `app_main`, comes from the `arduino-m5unified` skill. Done when it exits 0 and `sdkconfig` has `CONFIG_IDF_TARGET="<soc>"` and each line from step 3. A missing line is set another way in `sdkconfig`, which wins: read `${CLAUDE_SKILL_DIR}/references/idf-environment.md`.
 
 ## Add M5Unified or an esp-bsp component
 
-<!-- TODO: authored in the implementation backlog issue for esp-idf. Until then this skill has no task guidance: follow the standing rules and the hand-offs, and say that this part of the skill is not written yet. -->
+1. Choose one, not both (M5Unified brings M5GFX, an esp-bsp component its own panel and touch drivers): the one the manifest lists or the user asks for. Else, by the `esp-bsp` line `targets` printed in the section above: a component, ask which; `NO target`, M5Unified, and tell the user esp-bsp has none. Done when one is chosen.
+2. M5Unified: run `idf.py add-dependency "m5stack/m5unified"`. Run `board.py facts "<user's words>" display`; for each `erratum` line naming an M5GFX version, run `idf.py add-dependency "m5stack/m5gfx>=<that version>"`. If `m5stack/m5gfx` is already listed, it refuses (`already exists`): raise its lower bound in the file and tell the user why. Done when the manifest lists `m5stack/m5unified`, and each M5GFX version an erratum names as a lower bound.
+3. esp-bsp: run `idf.py add-dependency "<component>"` with the component the line names.
+   - `(covers all in play)`: each per-revision line `menuconfig <option> = <VALUE>` becomes `CONFIG_<VALUE>=y` in `sdkconfig.defaults`.
+   - `has no target of its own. Recommended: <component>. Gaps: ...`: use it, give the user the gaps as printed, once, and put a gap that names a setting into `sdkconfig.defaults` the same way.
+   - Pass on `note:` lines and confidence markers as printed. Pass on an M5GFX `erratum` from `facts display` too: the esp-bsp component has its own panel driver, on which the data has nothing.
+
+   Done when the manifest lists the component and `sdkconfig.defaults` has every setting the lines give.
+4. Per-revision lines that differ (the Core2 PMU): narrow the revisions as for `flash` above, re-running `targets` with `--seen`. If the user can observe nothing, don't pick a setting: offer M5Unified, which detects the PMIC at runtime, or stop until the revision is known. Done when one line is left per setting, or the user has chosen.
+5. Run `idf.py reconfigure`, which downloads the components; read `${CLAUDE_SKILL_DIR}/references/idf-environment.md` when it fails. Done when it exits 0 and `sdkconfig` has each setting from step 3 (a missing one: as above).
 
 ## Build and flash with idf.py
 
-<!-- TODO: authored in the implementation backlog issue for esp-idf. Until then this skill has no task guidance: follow the standing rules and the hand-offs, and say that this part of the skill is not written yet. -->
+1. Run `idf.py build`. Fix errors in `sdkconfig`, the manifest and the user's IDF code here; errors in M5Unified or M5GFX code go to the `arduino-m5unified` skill. Done when it exits 0.
+2. Run `doctor.py --ports` and `board.py facts "<user's words>" usb_bridge`. Read `${CLAUDE_PLUGIN_ROOT}/references/serial-ports.md` unless exactly one port has a `<-` marker that fits that bridge. No port: hand off to the `flashing-and-debugging` skill with what `doctor.py` found. Done when one port is named, or the hand-off is made.
+3. `idf.py flash` writes the bootloader, the partition table and the app: name the port, the board and all three, and wait for the go-ahead every time (standing rule 2). `idf.py -p <port> app-flash` writes the app alone, a routine flash confirmed once per port: use it after this session's first flash of the project, while flash size and partitions are unchanged. Done when the user has said to go ahead.
+4. Run `idf.py -p <port> flash` (or `app-flash`). Done when it exits 0 and esptool reports the hash verified.
+5. If the flash fails for a reason other than the code (`Failed to connect`, `Wrong boot mode detected`, a port that won't open, a write that stops part way):
+   1. Read `${CLAUDE_PLUGIN_ROOT}/references/serial-ports.md` and `${CLAUDE_PLUGIN_ROOT}/references/download-mode.md`, and apply the case that matches the error.
+   2. Retry the flash exactly once.
+   3. If it fails again, stop and hand off to the `flashing-and-debugging` skill with the `doctor.py` output and the exact error text.
+
+   Done when the retry succeeds, or the hand-off is made.
+6. Ask the user to run `idf.py -p <port> monitor` (it runs until Ctrl+]) and report the screen and serial output. Nothing on serial and step 2's `usb_bridge` reads `native USB`: read `${CLAUDE_SKILL_DIR}/references/idf-environment.md`. Still nothing, garbage, a panic or repeated resets: hand off to the `flashing-and-debugging` skill. The program misbehaves: fix it here, handing M5Unified or M5GFX code to the `arduino-m5unified` skill. Done when the user reports the board doing what the program should.
 
 ## Hand-offs
 
