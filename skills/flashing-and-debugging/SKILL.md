@@ -48,15 +48,31 @@ Copy this checklist and tick it off:
 
 ## Flash a .bin with esptool
 
-<!-- TODO: authored in the implementation backlog issue for flashing-and-debugging. Until then this skill has no task guidance: follow the standing rules and the hand-offs, and say that this part of the skill is not written yet. -->
+1. Read `doctor.py`'s `esptool` line. Missing: tell the user how to get it and stop. Version 5 is `esptool` with hyphens (`write-flash`); version 4 is `esptool.py` with underscores (`write_flash`). Use the installed spelling below. Done when esptool is found.
+2. Take each file's offset from where the file came from, never from a guess. A merged image from `esptool merge-bin` goes at `0x0`. For several files, take the offset and file pairs from their release notes, an ESP-IDF build's `build/flash_args`, or the toolchain's verbose upload. A UIFlow2 image goes to the `uiflow2-micropython` skill. An app built from the user's own project goes to its framework skill's upload. If nothing gives the offset, ask the user. Done when every file has an offset with a named source.
+3. Run `doctor.py --ports` and `board.py facts "<user's words>" usb_bridge soc_part flash`. Read `${CLAUDE_PLUGIN_ROOT}/references/serial-ports.md` unless exactly one port has a `<-` marker that fits that bridge. No port: use the Fix section. Done when one port is named.
+4. Run `esptool --port <port> flash-id`. It only reads, but it resets the board. On a USB-bridge board, esptool enters download mode by itself *(untested on hardware: open-question.auto-download.core2@v1.3)*. A chip family (ESP32, ESP32-S3) other than `soc_part`'s means another board or port: stop and ask. Where `flash` diverges, re-run `facts` with `--seen flash-size=<n>MB`. If it fails, use the Fix section. Done when the chip and flash size fit a revision in play.
+5. Name the port, the board, and each file's range (offset to offset plus size), all of which is replaced. An image at `0x0`, or an app with its bootloader and partition table, is a routine flash; a bootloader or partition table without its app is not (standing rule 2). Done when the user has said to go ahead.
+6. Run `esptool --port <port> write-flash <offset> <file> [<offset> <file> ...]`. If the board went into download mode by hand, add `--after watchdog-reset`. If esptool stops because the image doesn't suit the chip, the image is for another chip: never add `--force`. Done when it exits 0 and esptool reports the hash verified.
+7. A failure while connecting or part way through: apply the Fix section, then retry once. Done when the retry succeeds or the user has the Fix section's report.
+8. Ask the user what the screen and serial output show (standing rule 4). A panic or repeated resets: use the Decode section. Done when the user reports the new firmware running.
 
 ## Erase flash or NVS
 
-<!-- TODO: authored in the implementation backlog issue for flashing-and-debugging. Until then this skill has no task guidance: follow the standing rules and the hand-offs, and say that this part of the skill is not written yet. -->
+1. Ask what the erase should fix. An NVS erase clears saved settings (Wi-Fi credentials, preferences) and keeps the firmware. A full erase removes firmware and files too, and the board runs nothing until it is flashed again. Suggest NVS when settings are the problem. Done when the user has picked one.
+2. Choose the port and check the chip as in the flash section's steps 3 and 4.
+3. NVS: read `${CLAUDE_SKILL_DIR}/references/finding-nvs.md`. Done when you have its offset and size in hex bytes from the board's partition table, or have offered a full erase instead.
+4. Name the port, the board and what is destroyed (for NVS, offset to offset plus size). Confirm every time. Done when the user has said to go ahead.
+5. Run `esptool --port <port> erase-region <offset> <size>` or `esptool --port <port> erase-flash`. Done when it exits 0.
+6. After a full erase the board needs firmware: the flash section, or the framework skill's upload. After an NVS erase, ask the user what the board does now. Done when the user reports it.
 
 ## Fix ports, drivers and download mode
 
-<!-- TODO: authored in the implementation backlog issue for flashing-and-debugging. Until then this skill has no task guidance: follow the standing rules and the hand-offs, and say that this part of the skill is not written yet. -->
+1. Start from the `doctor.py` output and the exact error text, which a framework skill's hand-off brings. Otherwise, run `doctor.py` and ask for the error. Done when you have both.
+2. No port: read `${CLAUDE_PLUGIN_ROOT}/references/serial-ports.md` and apply its "None" case. If `usb_bridge` reads `native USB`, read `${CLAUDE_PLUGIN_ROOT}/references/download-mode.md` and walk the user through entering download mode by hand *(untested on hardware: open-question.g0-download.cores3@v1.0)*. Done when `doctor.py --ports` lists a port that fits the bridge, or the user has the report.
+3. A driver problem, esptool timing out, or `Failed to write to target RAM`: the user reinstalls the driver from `doctor.py`'s link and replugs the board. Done when `doctor.py --ports` shows the driver as ok.
+4. The port is listed but esptool can't connect, or a write stops part way through: read `${CLAUDE_SKILL_DIR}/references/no-connection.md` and work through it. Done when `flash-id` names the chip, or the user has its report.
+5. Once `flash-id` works, a project's upload goes back to its framework skill, and a `.bin` resumes at flash step 5. A native-USB board that loses its port after every reset runs firmware that turns USB off. Enter download mode by hand and do a full erase; the framework skill then fixes the app. Done when the user knows where to go next.
 
 ## Decode panics, backtraces and reset loops
 
