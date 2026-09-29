@@ -1,6 +1,6 @@
 # B11 · Author the pinout-lookup skill
 
-Status: in-progress
+Status: done
 Blocked by: [B04](B04-pinmaps-esp32-basic-lineage.md), [B05](B05-pinmaps-cores3-family.md)
 Gate: none
 
@@ -25,13 +25,13 @@ Write the task sections of the `pinout-lookup` skill: **Answer which pins are fr
 
 ## Definition of done
 
-- [ ] Every `<!-- TODO: ... -->` marker in `skills/pinout-lookup/SKILL.md` is replaced by written sections; none remains
-- [ ] Every step ends on a completion criterion the agent can check; every hardware fact comes from a `board.py` command in the step
-- [ ] The body stays under 10 kB (warn) and must stay under 16 kB (fail); material only some runs need is moved to `skills/pinout-lookup/references/`
-- [ ] Steps that rely on an open question carry *(untested on hardware: <id>)*, using: `open-question.speaker-mic.core2@v1.3`
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
-- [ ] Trigger rows `trigger.row-14`, `trigger.row-15` pass 3/3 (VERIFICATION.md section 4; command: `claude -p "<request>" --plugin-dir <repo> --allowedTools Skill --output-format stream-json --verbose`, run from a fixture directory holding the project files the request implies). Record each run's date and result in the Checkpoint
+- [x] Every `<!-- TODO: ... -->` marker in `skills/pinout-lookup/SKILL.md` is replaced by written sections; none remains
+- [x] Every step ends on a completion criterion the agent can check; every hardware fact comes from a `board.py` command in the step
+- [x] The body stays under 10 kB (warn) and must stay under 16 kB (fail); material only some runs need is moved to `skills/pinout-lookup/references/`
+- [x] Steps that rely on an open question carry *(untested on hardware: <id>)*, using: `open-question.speaker-mic.core2@v1.3`
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
+- [x] Trigger rows `trigger.row-14`, `trigger.row-15` pass 3/3 (VERIFICATION.md section 4; command: `claude -p "<request>" --plugin-dir <repo> --allowedTools Skill --output-format stream-json --verbose`, run from a fixture directory holding the project files the request implies). Record each run's date and result in the Checkpoint
 
 ## Stopping rule
 
@@ -41,8 +41,17 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Draft 'Answer which pins are free, taken or conflicting' around `board.py pins --use`
-- **Files touched**: none
-- **Last commit**: none
-- **Open questions**: none
+- **Done**: all. Recorded results:
+  - `trigger.row-14` and `trigger.row-15`, 2026-09-28, `claude` 2.1.284, 3 runs each through `verify.py run --offline --only`, from an empty folder (both checks' fixture is `null`):
+    - plugin commit 2c80075 (the first draft; the run recorded 32df718, which only adds B32): pass, 3/3 each. `pinout-lookup` fired every run.
+    - plugin commit d026aa5 (after the code-review fixes): pass, 3/3 each. `pinout-lookup` fired every run.
+  - `validate.py` exits 0 with no `pinout-lookup` warning. The SKILL.md body is 9,985 bytes, as `validate.py` measures it, with no TODO marker. `python -m unittest discover tests`: 117 OK (1 skipped).
+  - The speaker/mic steps ("Answer which pins…" step 3, **One pin** step 2) carry *(untested on hardware: open-question.speaker-mic.core2@v1.3)*.
+  - Fixed inline: `board.py pins` printed only each shared-bus pin's role, so Port A on the Basic, Fire, M5GO and Gray (their internal I2C) appeared on no line of the text output. The `SHARED BUS` line now prints each pin's connectors and cautions as the other lines do (cbadf86, test `test_shared_bus_line_names_its_connectors`).
+  - New work filed: [B32](B32-connector-power-positions.md), `board.py` prints no connector's power, ground or reset positions although the pin maps record them.
+- **Next**: none
+- **Files touched**: `skills/pinout-lookup/SKILL.md`, `scripts/board.py`, `tests/test_board.py`; `backlog/B32-connector-power-positions.md` (new), `backlog/B18-decide-publication.md`
+- **Last commit**: see `git log -- skills/pinout-lookup backlog/B11-skill-pinout-lookup.md`
+- **Open questions**: for the maintainer:
+  1. The `board.py` shared-bus fix was made inside B11 rather than filed as its own issue, since the skill could not answer "what is on Port A" for four products without it. Say if you would rather such fixes be filed.
+  2. On exit 4 (`DIFFERENT pin maps`) the skill narrows with `tell-apart` and `--seen` itself, and reads `identifying-a-revision.md` only when only host or probe observations remain or the user offers a self-report. The issue said to "point the user at" the file; say if every refusal should read it.
