@@ -2,8 +2,21 @@
  "schema_version": 1,
  "id": "cores3-se-a",
  "soc": "esp32-s3",
- "populated": false,
+ "populated": true,
  "buses": {
+  "spi_main": {
+   "kind": "spi",
+   "pins": {
+    "sck": "G36",
+    "mosi": "G37",
+    "miso": "G35"
+   },
+   "src": [
+    "m5-cores3-se"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-28"
+  },
   "i2c_internal": {
    "kind": "i2c",
    "pins": {
@@ -14,25 +27,480 @@
     "m5-cores3-se"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-09-28"
   },
-  "bmi270_aux": {
+  "i2c_port_a": {
    "kind": "i2c",
-   "pins": null,
-   "note": "the BMI270's auxiliary interface; no ESP32 GPIO",
+   "pins": {
+    "sda": "G2",
+    "scl": "G1"
+   },
    "src": [
     "m5-cores3-se"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-09-28"
   }
  },
- "connectors": [],
- "pins": {},
- "notes": "Not yet populated: GPIO uses, claims and connectors are TODO for the implementation backlog. Only the bus pins below are sourced.",
+ "connectors": [
+  {
+   "id": "port_a",
+   "kind": "grove-i2c",
+   "bus": "i2c_port_a",
+   "src": [
+    "m5-cores3-se"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-28"
+  },
+  {
+   "id": "port_b",
+   "kind": "grove-gpio",
+   "positions": [
+    {
+     "n": "out",
+     "gpio": "G9"
+    },
+    {
+     "n": "in",
+     "gpio": "G8"
+    }
+   ],
+   "src": [
+    "m5-cores3-se"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-28"
+  },
+  {
+   "id": "port_c",
+   "kind": "grove-uart",
+   "positions": [
+    {
+     "n": "tx",
+     "gpio": "G17"
+    },
+    {
+     "n": "rx",
+     "gpio": "G18"
+    }
+   ],
+   "src": [
+    "m5-cores3-se"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-28"
+  },
+  {
+   "id": "mbus",
+   "kind": "m-bus",
+   "positions": [
+    {
+     "n": 1,
+     "pin": "GND"
+    },
+    {
+     "n": 2,
+     "gpio": "G10"
+    },
+    {
+     "n": 3,
+     "pin": "GND"
+    },
+    {
+     "n": 4,
+     "gpio": "G8"
+    },
+    {
+     "n": 5,
+     "pin": "GND"
+    },
+    {
+     "n": 6,
+     "pin": "RST"
+    },
+    {
+     "n": 7,
+     "gpio": "G37"
+    },
+    {
+     "n": 8,
+     "gpio": "G5"
+    },
+    {
+     "n": 9,
+     "gpio": "G35"
+    },
+    {
+     "n": 10,
+     "gpio": "G9"
+    },
+    {
+     "n": 11,
+     "gpio": "G36"
+    },
+    {
+     "n": 12,
+     "pin": "3V3"
+    },
+    {
+     "n": 13,
+     "gpio": "G44"
+    },
+    {
+     "n": 14,
+     "gpio": "G43"
+    },
+    {
+     "n": 15,
+     "gpio": "G18"
+    },
+    {
+     "n": 16,
+     "gpio": "G17"
+    },
+    {
+     "n": 17,
+     "gpio": "G12"
+    },
+    {
+     "n": 18,
+     "gpio": "G11"
+    },
+    {
+     "n": 19,
+     "gpio": "G2"
+    },
+    {
+     "n": 20,
+     "gpio": "G1"
+    },
+    {
+     "n": 21,
+     "gpio": "G6"
+    },
+    {
+     "n": 22,
+     "gpio": "G7"
+    },
+    {
+     "n": 23,
+     "gpio": "G13"
+    },
+    {
+     "n": 24,
+     "gpio": "G0"
+    },
+    {
+     "n": 25,
+     "pin": "NC"
+    },
+    {
+     "n": 26,
+     "gpio": "G14"
+    },
+    {
+     "n": 27,
+     "pin": "NC"
+    },
+    {
+     "n": 28,
+     "pin": "5V"
+    },
+    {
+     "n": 29,
+     "pin": "NC"
+    },
+    {
+     "n": 30,
+     "pin": "BAT"
+    }
+   ],
+   "src": [
+    "m5-cores3-se"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-09-28"
+  }
+ ],
+ "pins": {
+  "G0": {
+   "uses": [
+    {
+     "function": "mic I2S MCLK",
+     "claim": "feature",
+     "feature": "mic"
+    }
+   ],
+   "exposed_on": [
+    "mbus:24"
+   ],
+   "labels": []
+  },
+  "G1": {
+   "uses": [],
+   "exposed_on": [
+    "port_a:scl",
+    "mbus:20"
+   ],
+   "labels": []
+  },
+  "G2": {
+   "uses": [],
+   "exposed_on": [
+    "port_a:sda",
+    "mbus:19"
+   ],
+   "labels": []
+  },
+  "G3": {
+   "uses": [
+    {
+     "function": "LCD CS",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G4": {
+   "uses": [
+    {
+     "function": "microSD CS",
+     "claim": "feature",
+     "feature": "sd"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G5": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:8"
+   ],
+   "labels": []
+  },
+  "G6": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:21"
+   ],
+   "labels": []
+  },
+  "G7": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:22"
+   ],
+   "labels": []
+  },
+  "G8": {
+   "uses": [],
+   "exposed_on": [
+    "port_b:in",
+    "mbus:4"
+   ],
+   "labels": []
+  },
+  "G9": {
+   "uses": [],
+   "exposed_on": [
+    "port_b:out",
+    "mbus:10"
+   ],
+   "labels": []
+  },
+  "G10": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:2"
+   ],
+   "labels": []
+  },
+  "G11": {
+   "uses": [
+    {
+     "function": "internal I2C SCL",
+     "claim": "bus",
+     "owner": "i2c_internal"
+    }
+   ],
+   "exposed_on": [
+    "mbus:18"
+   ],
+   "labels": []
+  },
+  "G12": {
+   "uses": [
+    {
+     "function": "internal I2C SDA",
+     "claim": "bus",
+     "owner": "i2c_internal"
+    }
+   ],
+   "exposed_on": [
+    "mbus:17"
+   ],
+   "labels": []
+  },
+  "G13": {
+   "uses": [
+    {
+     "function": "speaker I2S DOUT",
+     "claim": "feature",
+     "feature": "speaker"
+    }
+   ],
+   "exposed_on": [
+    "mbus:23"
+   ],
+   "labels": []
+  },
+  "G14": {
+   "uses": [
+    {
+     "function": "mic I2S DIN",
+     "claim": "feature",
+     "feature": "mic"
+    }
+   ],
+   "exposed_on": [
+    "mbus:26"
+   ],
+   "labels": []
+  },
+  "G17": {
+   "uses": [],
+   "exposed_on": [
+    "port_c:tx",
+    "mbus:16"
+   ],
+   "labels": []
+  },
+  "G18": {
+   "uses": [],
+   "exposed_on": [
+    "port_c:rx",
+    "mbus:15"
+   ],
+   "labels": []
+  },
+  "G19": {
+   "uses": [
+    {
+     "function": "native USB (USB-C port)",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G20": {
+   "uses": [
+    {
+     "function": "native USB (USB-C port)",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G33": {
+   "uses": [
+    {
+     "function": "speaker I2S WS",
+     "claim": "feature",
+     "feature": "speaker"
+    },
+    {
+     "function": "mic I2S WS",
+     "claim": "feature",
+     "feature": "mic"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G34": {
+   "uses": [
+    {
+     "function": "speaker I2S BCK",
+     "claim": "feature",
+     "feature": "speaker"
+    },
+    {
+     "function": "mic I2S BCK",
+     "claim": "feature",
+     "feature": "mic"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G35": {
+   "uses": [
+    {
+     "function": "LCD DC",
+     "claim": "fixed"
+    },
+    {
+     "function": "SPI MISO (microSD)",
+     "claim": "bus",
+     "owner": "spi_main"
+    }
+   ],
+   "exposed_on": [
+    "mbus:9"
+   ],
+   "labels": []
+  },
+  "G36": {
+   "uses": [
+    {
+     "function": "SPI SCK (LCD, microSD)",
+     "claim": "bus",
+     "owner": "spi_main"
+    }
+   ],
+   "exposed_on": [
+    "mbus:11"
+   ],
+   "labels": []
+  },
+  "G37": {
+   "uses": [
+    {
+     "function": "SPI MOSI (LCD, microSD)",
+     "claim": "bus",
+     "owner": "spi_main"
+    }
+   ],
+   "exposed_on": [
+    "mbus:7"
+   ],
+   "labels": []
+  },
+  "G43": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:14"
+   ],
+   "labels": []
+  },
+  "G44": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:13"
+   ],
+   "labels": []
+  }
+ },
+ "notes": "Several resets and interrupts go through the AW9523B I/O expander on the internal bus, not GPIOs, so they claim no pins: LCD RST (P1_1), touch RST (P0_0) and INT (P1_2), amplifier RST (P0_2) and INT (P1_3); BUS_OUT_EN and USB_OTG_EN set the power direction. The AXP2101 powers the LCD and its backlight. G35 is both the LCD's DC line and the microSD's MISO, so it is fixed and never free. The speaker amplifier (AW88298) and the mic codec (ES7210) share one I2S bus: BCK G34 and WS G33 are claimed by both, G13 carries speaker data out, G14 mic data in, and G0 the codec's MCLK. The M-Bus diagram labels G0 I2S_LRCK; the audio table's MCLK is followed. G0 is also a strapping pin: download mode (hold RESET for 3 seconds) depends on it, so nothing on the M-Bus may hold it low at reset. G19/G20 carry the USB-C port (native USB Serial/JTAG), which is the console; G43/G44 are UART0 (TXD0/RXD0) and reach only the M-Bus. Port A is its own I2C bus (G2/G1), not the internal one. The SE has no camera, so its camera pins are unclaimed and not brought out, and no BMI270, so it has no bmi270_aux bus. Its audio table puts G13 on the ES7210 and G14 on the AW88298, against its own M-Bus diagram (G13 I2S_DOUT, G14 I2S_DIN) and the CoreS3 page; the M-Bus assignment is followed.",
  "src": [
-  "m5-cores3-se"
+  "m5-cores3-se",
+  "idf-gpio-esp32s3"
  ],
  "confidence": "high",
- "last_verified": "2026-09-26"
+ "last_verified": "2026-09-28"
 }

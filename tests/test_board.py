@@ -131,6 +131,34 @@ class Query(unittest.TestCase):
         self.assertEqual(shared, set(pm["buses"][bus]["pins"].values()))
         self.assertTrue(out["buses"][bus]["members"], "Port A's bus lists no occupants")
 
+    def test_cores3_camera_and_sd_pins_taken(self):
+        pm = pin_map_of("cores3")
+        claimed = {g for g, p in pm["pins"].items() for u in p["uses"] if u.get("feature") in ("camera", "sd")}
+        self.assertTrue({g for g, p in pm["pins"].items() for u in p["uses"] if u.get("feature") == "camera"},
+                        "CoreS3's pin map claims no camera pins")
+        code, out = board_json("pins", "cores3", "--use", "camera,sd")
+        self.assertEqual(code, 0)
+        self.assertLessEqual(claimed, {r["gpio"] for r in out["taken"]})
+
+    def test_cores3_se_has_no_camera(self):
+        pm = pin_map_of("cores3-se")
+        self.assertTrue(pm["populated"])
+        self.assertFalse([g for g, p in pm["pins"].items() for u in p["uses"] if u.get("feature") == "camera"])
+        code, out = board_json("pins", "cores3-se", "--use", "camera")
+        self.assertEqual(code, 0)
+        self.assertIn("camera", out["no_pins_for"])
+
+    def test_fixed_pin_on_a_bus_is_taken(self):
+        pm = pin_map_of("cores3")
+        both = {g for g, p in pm["pins"].items()
+                if {"fixed", "bus"} <= {u["claim"] for u in p["uses"]}}
+        self.assertTrue(both, "CoreS3's pin map has no pin that is both fixed and on a bus")
+        code, out = board_json("pins", "cores3")
+        self.assertEqual(code, 0)
+        self.assertLessEqual(both, {r["gpio"] for r in out["taken"]})
+        offered = {r["gpio"] for r in out["free"] + out["free_unless"] + out["shared_bus"]}
+        self.assertFalse(both & offered, f"fixed pins offered: {both & offered}")
+
     def test_probe_gap_shown(self):  # ADR 0005
         signals = json.loads((DATA / "signals.json").read_text(encoding="utf-8"))["signals"]
         gap = next(s for s in signals if s["id"] == "pmic-probe")["probe"].get("datasheet_gap")
