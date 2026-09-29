@@ -19,8 +19,8 @@ Creates, configures and builds ESP-IDF projects for M5Stack Core boards with `id
 <!-- standing-rules:start -->
 1. **Board facts come from `board.py`.** Before stating any hardware fact (pins, chips, I2C addresses, memory, build targets), run `board.py` with the user's own words for the board and answer only from its output. Name the revisions in play. Where the output has no answer, say the data has none. A board's report of what it is (`M5.getBoard()`, UIFlow2's `BOARD_ID`) is never evidence.
 2. **Name every write to a board before it runs.** State the port, the board, and what the operation destroys, then wait for the user's go-ahead:
-   - routine application flash: confirm once per port per session;
-   - full erase, NVS erase, partition-table or bootloader write, deleting files on the device: confirm every time;
+   - routine application flash, including a toolchain's normal upload (`arduino-cli upload`, `pio run -t upload`, `idf.py flash`) that also rewrites the bootloader and partition table: confirm once per port per session;
+   - full erase, NVS erase, a partition-table or bootloader write on its own, deleting files on the device: confirm every time;
    - eFuse burn: print the command with a warning that it is irreversible, and let the user run it.
 3. **Discover read-only first.** Run `doctor.py` and list serial ports before any write. One candidate port: use it and name it. Several: ask which. None: report what `doctor.py` found (cable, driver, download mode).
 4. **The user reports what the board does.** Success is command output plus the user's observation of the screen, LEDs or serial monitor; ask for that observation before calling a step done.
@@ -70,8 +70,8 @@ Copy this checklist and tick it off:
 
 1. Run `idf.py build`. Fix errors in `sdkconfig`, the manifest and the user's IDF code here; errors in M5Unified or M5GFX code go to the `arduino-m5unified` skill. Read `${CLAUDE_SKILL_DIR}/references/sdkconfig.md` when it reports a partition `too small for binary`. Done when it exits 0.
 2. Run `doctor.py --ports` and `board.py facts "<user's words>" usb_bridge`. Read `${CLAUDE_PLUGIN_ROOT}/references/serial-ports.md` unless exactly one port has a `<-` marker that fits that bridge. No port: hand off to the `flashing-and-debugging` skill with what `doctor.py` found. Done when one port is named, or the hand-off is made.
-3. `idf.py flash` writes the bootloader, the partition table and the app: name the port, the board and all three, and wait for the go-ahead every time (standing rule 2). After this session's first flash of the project, while flash size and partitions are unchanged, `idf.py -p <port> app-flash` writes the app alone: name the port, the board and what it replaces (the application on it), once per port. Done when the user has said to go ahead.
-4. Run `idf.py -p <port> flash` (or `app-flash`). Done when it exits 0 and esptool reports the hash verified.
+3. Name the port, the board and what the flash replaces (the bootloader, the partition table and the application on it); wait for the go-ahead, once per port per session (standing rule 2). Done when the user has said to go ahead.
+4. Run `idf.py -p <port> flash`. Done when it exits 0 and esptool reports the hash verified.
 5. If the flash fails for a reason other than the code (`Failed to connect`, `Wrong boot mode detected`, a port that won't open, a write that stops part way):
    1. Read `${CLAUDE_PLUGIN_ROOT}/references/serial-ports.md` and `${CLAUDE_PLUGIN_ROOT}/references/download-mode.md`, and apply the case that matches the error.
    2. Retry the flash exactly once.

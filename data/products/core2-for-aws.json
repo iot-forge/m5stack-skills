@@ -276,12 +276,12 @@
     },
     "esp-bsp": {
      "target": "espressif/m5stack_core_2",
-     "gaps": "The Core2 BSP knows nothing of the ATECC608B or the SK6812 bar. Set PMU Version to AXP192.",
+     "gaps": "The Core2 BSP knows nothing of the ATECC608B or the SK6812 bar. menuconfig PMU Version = BSP_PMU_AXP192",
      "src": [
       "esp-bsp"
      ],
      "confidence": "low",
-     "last_verified": "2026-08-07"
+     "last_verified": "2026-09-28"
     }
    }
   },
@@ -541,12 +541,12 @@
     },
     "esp-bsp": {
      "target": "espressif/m5stack_core_2",
-     "gaps": "The Core2 BSP knows nothing of the ATECC608B or the SK6812 bar. Set PMU Version to AXP192.",
+     "gaps": "The Core2 BSP knows nothing of the ATECC608B or the SK6812 bar. menuconfig PMU Version = BSP_PMU_AXP192",
      "src": [
       "esp-bsp"
      ],
      "confidence": "low",
-     "last_verified": "2026-08-07"
+     "last_verified": "2026-09-28"
     }
    }
   }

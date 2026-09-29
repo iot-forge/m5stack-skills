@@ -28,7 +28,7 @@ Any other failure while resolving components: report the component manager's mes
 This file also cites the `idf.py` behaviour SKILL.md relies on.
 
 - ESP-IDF v6.1 (commit `fff9895c82d744c7237be8847347bdd1b07c6643`): `export.sh`, `export.ps1` in the ESP-IDF folder; `docs/en/get-started/eim-gui-activate-env.rst` ("Open IDF Terminal" launches "a terminal session with activated ESP-IDF environment"): https://github.com/espressif/esp-idf/tree/v6.1
-- ESP-IDF v6.1, `idf.py <command> --help`: `create-project --cpp` makes `main/<name>.cpp` with `extern "C" void app_main(void)`; `set-target` "will remove the existing sdkconfig file and corresponding CMakeCache and create new ones"; `add-dependency` adds to the manifest in `main`; `app-flash` "Flash the app only."; `flash` "Flash the project."
+- ESP-IDF v6.1, `idf.py <command> --help`: `create-project --cpp` makes `main/<name>.cpp` with `extern "C" void app_main(void)`; `set-target` "will remove the existing sdkconfig file and corresponding CMakeCache and create new ones"; `add-dependency` adds to the manifest in `main`; `flash` "Flash the project."
 - Observed with ESP-IDF v6.1 (installed by EIM, `idf.py.exe` launcher 1.0.3) on Windows 11, 2026-09-28:
   - `idf.py create-project --cpp`, then an `sdkconfig.defaults` holding flash-size and PSRAM lines, `idf.py set-target esp32s3`, `idf.py add-dependency "m5stack/m5unified"` and an `m5stack/m5gfx` dependency with a lower bound: `idf.py build` exits 0, with no change to `main/CMakeLists.txt`, and `sdkconfig` has each line from `sdkconfig.defaults`.
   - `idf.py add-dependency` for `m5stack/m5gfx` on a manifest that already lists it prints `ERROR: Dependency "m5stack/m5gfx" already exists` and leaves the manifest as it was.
