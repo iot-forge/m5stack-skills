@@ -1,6 +1,6 @@
 # B04 · Populate the ESP32 Basic-lineage pin maps
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: none
 
@@ -31,11 +31,11 @@ Set `populated: true` only when the whole map is sourced.
 
 ## Definition of done
 
-- [ ] All five maps `populated: true`, every entry cited
-- [ ] `board.py pins basic`, `pins gray@2019.06` and `pins fire` answer instead of refusing
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
-- [ ] A test in `tests/test_board.py` covers one of the new maps (for example, a Fire PSRAM pin is never free)
+- [x] All five maps `populated: true`, every entry cited
+- [x] `board.py pins basic`, `pins gray@2019.06` and `pins fire` answer instead of refusing
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
+- [x] A test in `tests/test_board.py` covers one of the new maps (for example, a Fire PSRAM pin is never free)
 
 ## Stopping rule
 
@@ -45,8 +45,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Fetch the Basic v2.7 page and transcribe basic-a
-- **Files touched**: none
-- **Last commit**: none
-- **Open questions**: none
+- **Done**: all. The five maps are transcribed from the pin tables on the basic, basic_v2.7, gray, fire, fire_v2.7 and m5go_v2.7 pages (retrieved 2026-09-28); every table and all 30 M-Bus positions were checked against the pages by an independent review. Choices made within the issue, each stated in the map's `notes`: buttons A/B/C (G39/G38/G37) are `fixed` with `dir: in`, not a new feature, because they reach no connector and nothing frees them; Ports B and C appear only on `fire-a` and `m5go-a`, since the Basic and Gray spec tables list one Grove port; Fire's G16/G17 are `fixed` PSRAM and still listed on Port C and M-Bus 15/16; on Gray and M5GO, whose PSRAM is `unknown` in the product data, G16/G17 carry no use and get the SoC's `psram_pins` caution; `gray-2017.09` has the same pins as `gray-a` (the IP5306 difference is product data). `board.py pins basic`, `pins gray@2019.06`, `pins gray@2017.09`, `pins fire` and `pins m5go` exit 0. `uv run scripts/validate.py` exits 0 (15 warnings, as before); `python -m unittest discover tests` passes (112 tests); `verify.py run --offline --skip build --skip trigger` has no failures. New tests: `test_fire_psram_pins_never_free`, `test_basic_port_a_is_the_internal_bus`; `test_unpopulated_pin_map_refuses` now picks a stub product from `data/`.
+- **Next**: none.
+- **Files touched**: `data/pinmaps/{basic-a,gray-2017.09,gray-a,fire-a,m5go-a}.json`, `tests/test_board.py`
+- **Last commit**: see `git log -- data/pinmaps/fire-a.json`
+- **Open questions**: none.

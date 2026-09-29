@@ -41,7 +41,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B01 · Fix the verification documents](B01-fix-verification-documents.md) | done | — | yes |
 | [B02 · Re-pin the data and triage upstream drift](B02-repin-data-and-triage-drift.md) | done | — |  |
 | [B03 · Cite chip-level facts to datasheets](B03-chip-level-sources.md) | done | — | yes |
-| [B04 · Populate the ESP32 Basic-lineage pin maps](B04-pinmaps-esp32-basic-lineage.md) | in-progress | — |  |
+| [B04 · Populate the ESP32 Basic-lineage pin maps](B04-pinmaps-esp32-basic-lineage.md) | done | — |  |
 | [B05 · Populate the CoreS3-family pin maps](B05-pinmaps-cores3-family.md) | open | — |  |
 | [B06 · Write the shared procedures](B06-shared-procedures.md) | done | — |  |
 | [B07 · Author the arduino-m5unified skill](B07-skill-arduino-m5unified.md) | done | B06 | yes |
