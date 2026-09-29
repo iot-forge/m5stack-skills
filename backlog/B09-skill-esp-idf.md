@@ -1,6 +1,6 @@
 # B09 · Author the esp-idf skill
 
-Status: open
+Status: in-progress
 Blocked by: [B06](B06-shared-procedures.md)
 Gate: none
 
