@@ -74,7 +74,7 @@ Copy this checklist and tick it off:
    3. If it fails again, stop and hand off to the `flashing-and-debugging` skill with the `doctor.py` output and the exact error text.
 
    Done when the retry succeeds, or the hand-off is made.
-6. Ask the user to run `pio device monitor -p <port> -b <monitor_speed>` themselves (it runs until stopped) and report what the screen and serial show. If serial shows nothing and step 2's `usb_bridge` reads `native USB`, `Serial` is on UART0: add `-DARDUINO_USB_CDC_ON_BOOT=1` to `build_flags`, then build and upload again. Garbage output, a panic or repeated resets: hand off to the `flashing-and-debugging` skill. The code runs but misbehaves: hand off to the `arduino-m5unified` skill. Done when the user reports the board doing what the code should.
+6. Ask the user to run `pio device monitor -p <port> -b <monitor_speed>` themselves (it runs until stopped) and report the screen and serial output. If serial shows nothing, step 2's `usb_bridge` reads `native USB` and `build_flags` lacks `-DARDUINO_USB_CDC_ON_BOOT=1`, add it (without it `Serial` may be on UART0), then build and upload again. Still nothing, garbage, a panic or repeated resets: hand off to the `flashing-and-debugging` skill. The code runs but misbehaves: hand off to the `arduino-m5unified` skill. Done when the user reports the board doing what the code should.
 
 ## Hand-offs
 
