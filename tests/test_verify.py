@@ -299,6 +299,21 @@ class Triggers(unittest.TestCase):
         wrong = [stream("pinout-lookup", "board-identification")] + [stream("board-identification")] * 2
         self.assertEqual(self.row("trigger.row-11", *wrong, ask=lambda prompt: "y")["result"], "fail")
 
+    def test_operator_prompts_stay_off_stdout(self):  # stdout carries the results JSON
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err), \
+                unittest.mock.patch("builtins.input", lambda prompt="": (print(prompt, end=""), "y")[1]):
+            self.assertEqual(verify.ask_operator("judge? "), "y")
+        self.assertEqual(out.getvalue(), "")
+        self.assertIn("judge? ", err.getvalue())
+
+    def test_only_runs_the_named_checks(self):
+        runner = FakeRunner(claude=lambda request, cwd: stream())
+        res = verify.run_offline("test", runner=runner, only={"trigger.neg-02", "trigger.row-17"})["results"]
+        self.assertEqual(sorted(r["check"] for r in res), ["trigger.neg-02", "trigger.row-17"])
+        self.assertTrue(all(c[0] == "claude" for c in runner.calls))  # no validate, unittest or build run
+        self.assertEqual(len(runner.calls), 2 * 3)
+
     def test_run_offline_runs_every_trigger_row(self):
         runner = FakeRunner(validate_tests={**GUARDS_OK, **ALL_PLANTED_OK}, claude=lambda request, cwd: stream())
         res = {r["check"]: r for r in verify.run_offline("test", runner=runner, skip=("build",))["results"]}
@@ -336,7 +351,7 @@ class Operator:
 class Board(unittest.TestCase):
     def board(self, results=None):
         self.op = Operator(results)
-        with contextlib.redirect_stdout(io.StringIO()):
+        with contextlib.redirect_stderr(io.StringIO()):
             obj = verify.run_board(REV, "test", self.op)
         return obj, {r["check"]: r for r in obj["results"]}
 

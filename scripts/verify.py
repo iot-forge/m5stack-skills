@@ -278,25 +278,37 @@ def trigger_result(check, runner=sh, ask=None):
     return {"check": check["id"], "result": result, "output": "\n".join(lines)}
 
 
-def run_offline(operator, runner=sh, skip=(), ask=None):
-    """Section 4's hardware-free checks. Kinds in SKIP are recorded not-run."""
+def ask_operator(prompt):
+    """input(), with the prompt on stderr: stdout carries the results JSON."""
+    print(prompt, end="", file=sys.stderr, flush=True)
+    return input()
+
+
+def run_offline(operator, runner=sh, skip=(), ask=None, only=None):
+    """Section 4's hardware-free checks. Kinds in SKIP are recorded not-run; with ONLY, just those check ids run."""
     checks = read_json(ROOT / "verification/checks.json")["checks"]
+    wanted = lambda cid: only is None or cid in only
     results = []
-    code, out, _ = runner([sys.executable, str(ROOT / "scripts/validate.py"), "--data"])
-    results.append({"check": "data.validate", "result": "pass" if code == 0 else "fail", "output": out[-2000:]})
-    _, _, log = runner([sys.executable, "-m", "unittest", "-v", "tests.test_board", "tests.test_validate"], cwd=ROOT)
-    queries = test_lines(log, "test_board")
-    for c in checks:
-        if c["kind"] == "query":
-            line = queries.get(QUERY_TESTS.get(c["id"].split(".", 1)[1]), "")
-            results.append({"check": c["id"], "result": verdict(line), "output": line})
-    results += planted_results(test_lines(log, "test_validate"))
+    if wanted("data.validate"):
+        code, out, _ = runner([sys.executable, str(ROOT / "scripts/validate.py"), "--data"])
+        results.append({"check": "data.validate", "result": "pass" if code == 0 else "fail", "output": out[-2000:]})
+    if any(wanted(c["id"]) for c in checks if c["kind"] == "query" or c["id"].startswith("data.planted-")):
+        _, _, log = runner([sys.executable, "-m", "unittest", "-v", "tests.test_board", "tests.test_validate"], cwd=ROOT)
+        queries = test_lines(log, "test_board")
+        for c in checks:
+            if c["kind"] == "query":
+                line = queries.get(QUERY_TESTS.get(c["id"].split(".", 1)[1]), "")
+                results.append({"check": c["id"], "result": verdict(line), "output": line})
+        results += planted_results(test_lines(log, "test_validate"))
     builds = [c["id"] for c in checks if c["kind"] == "build" and c["id"] != "build.target-from-data"]
     if "build" in skip:
         results += [{"check": i, "result": "not-run", "output": "skipped (--skip build)"} for i in builds + ["build.target-from-data"]]
     else:
-        results += smoke_results(runner, ["build"], builds) + smoke_results(runner, ["check-targets"], ["build.target-from-data"])
-    for c in checks:
+        if any(map(wanted, builds)):
+            results += smoke_results(runner, ["build"], builds)
+        if wanted("build.target-from-data"):
+            results += smoke_results(runner, ["check-targets"], ["build.target-from-data"])
+    for c in (c for c in checks if wanted(c["id"])):
         if c["kind"] == "trigger":
             results.append({"check": c["id"], "result": "not-run", "output": "skipped (--skip trigger)"} if "trigger" in skip
                            else trigger_result(c, runner, ask))
@@ -305,7 +317,8 @@ def run_offline(operator, runner=sh, skip=(), ask=None):
                             "until there is a port that exists but fails; handoff.live.<revision> covers it in the hardware session"})
     date = datetime.date.today().isoformat()
     return {"run": {"date": date, "operator": operator, "host_os": f"{platform.system()} {platform.release()}",
-                    "plugin_commit": git_head(), "unit": None, "toolchains": {}}, "results": results}
+                    "plugin_commit": git_head(), "unit": None, "toolchains": {}},
+            "results": [r for r in results if wanted(r["check"])]}
 
 
 FRAMEWORKS = ("arduino", "platformio", "esp-idf", "uiflow2")
@@ -358,22 +371,22 @@ def run_board(revision, operator, ask=input):
     toolchains = {t: v for t in TOOLCHAINS if (v := ask(f"{t} version (blank if not used): ").strip())}
     results, outcome = [], {}
     for n, (text, bases) in enumerate(steps, 1):
-        print(f"\nStep {n}: {text}")
+        print(f"\nStep {n}: {text}", file=sys.stderr)
         if not bases:
             if not ask(f"Step {n} done? [y/n] ").strip().lower().startswith("y"):
-                print("  Not done: record why in the report; later answers may come from an earlier firmware.")
+                print("  Not done: record why in the report; later answers may come from an earlier firmware.", file=sys.stderr)
             continue
         for base in bases:
             cid, dep = by_base[base]["id"], DEPENDS.get(base)
             if dep in outcome and outcome[dep] != "pass":
                 outcome[base] = "blocked"
                 results.append({"check": cid, "result": "blocked", "blocked_by": [f"{dep}.{revision}"]})
-                print(f"  {cid}: blocked by {dep}.{revision}")
+                print(f"  {cid}: blocked by {dep}.{revision}", file=sys.stderr)
                 continue
             kind = by_base[base]["kind"]
             choices = "o/b/n" if kind == "open-question" else "p/f/b/n"
             while (a := ask(f"{cid} result [{choices}]: ").strip().lower()[:1]) not in choices.split("/"):
-                print(f"  answer one of {choices}")
+                print(f"  answer one of {choices}", file=sys.stderr)
             r = {"check": cid, "result": ANSWERS[a]}
             if a != "n":
                 r["observed"] = ask(f"{cid} observed: ").strip()
@@ -514,6 +527,8 @@ def main():
     g.add_argument("--board", metavar="REVISION")
     r.add_argument("--skip", action="append", default=[], choices=("build", "trigger"),
                    help="run --offline: record this kind not-run instead of running it (repeatable)")
+    r.add_argument("--only", action="append", metavar="CHECK",
+                   help="run --offline: run only this check id (repeatable), e.g. to finish rows a limit cut short")
     r.add_argument("--operator", default="unknown")
     r.add_argument("--write", action="store_true", help="merge into verification/runs/<date>.json instead of printing")
     for name in ("ingest", "report"):
@@ -534,9 +549,10 @@ def main():
         print(f"wrote {out}")
         return 0
     if a.offline:
-        obj = run_offline(a.operator, skip=a.skip, ask=input if sys.stdin.isatty() else None)
+        obj = run_offline(a.operator, skip=a.skip, ask=ask_operator if sys.stdin.isatty() else None,
+                          only=set(a.only) if a.only else None)
     else:
-        obj = run_board(a.board, a.operator)
+        obj = run_board(a.board, a.operator, ask_operator)
     if a.write:
         print(f"wrote {write_run(obj).relative_to(ROOT)}")
     else:
