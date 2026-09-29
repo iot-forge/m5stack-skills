@@ -52,6 +52,6 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 - **Next**: none
 - **Files touched**: `skills/pinout-lookup/SKILL.md`, `scripts/board.py`, `tests/test_board.py`; `backlog/B32-connector-power-positions.md` (new), `backlog/B18-decide-publication.md`
 - **Last commit**: see `git log -- skills/pinout-lookup backlog/B11-skill-pinout-lookup.md`
-- **Open questions**: for the maintainer:
-  1. The `board.py` shared-bus fix was made inside B11 rather than filed as its own issue, since the skill could not answer "what is on Port A" for four products without it. Say if you would rather such fixes be filed.
-  2. On exit 4 (`DIFFERENT pin maps`) the skill narrows with `tell-apart` and `--seen` itself, and reads `identifying-a-revision.md` only when only host or probe observations remain or the user offers a self-report. The issue said to "point the user at" the file; say if every refusal should read it.
+- **Open questions**: settled by the maintainer (2026-09-28):
+  1. A small `board.py` fix that a skill needs can be made inside the skill's issue, as here, rather than filed on its own.
+  2. On exit 4 (`DIFFERENT pin maps`) the skill may narrow with `tell-apart` and `--seen` itself and read `identifying-a-revision.md` only when host or probe observations remain or the user offers a self-report; reading it on every refusal would be fine too. The skill stays as written.
