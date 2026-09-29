@@ -55,7 +55,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B15 · Finish verify.py and checks.json](B15-verify-py-and-checks.md) | done | B14, B19 | yes |
 | [B16 · Tune the seven descriptions together, then run every trigger row](B16-description-tuning.md) | open | B07, B08, B09, B10, B11, B12, B13 |  |
 | [B17 · Decide: where and when the checks run](B17-decide-ci.md) | open | B15 |  |
-| [B18 · Decide: publication](B18-decide-publication.md) | open | B01, B02, B03, B04, B05, B06, B07, B08, B09, B10, B11, B12, B13, B14, B15, B16, B17, B19, B20, B21, B23, B24, B25, B26, B27, B28, B29, B30, B31 |  |
+| [B18 · Decide: publication](B18-decide-publication.md) | open | B01, B02, B03, B04, B05, B06, B07, B08, B09, B10, B11, B12, B13, B14, B15, B16, B17, B19, B20, B21, B23, B24, B25, B26, B27, B28, B29, B30, B31, B32 |  |
 | [B19 · Align VERIFICATION.md with B01](B19-align-verification-with-b01.md) | done | B01 | yes |
 | [B20 · Rename the CoreS3 download-mode checks after M5's procedure](B20-rename-cores3-download-checks.md) | open | — |  |
 | [B21 · Cite each expected probe value to its own source](B21-per-value-probe-sources.md) | open | — |  |
@@ -69,6 +69,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B29 · Record the CoreS3 PlatformIO release and M5's whole example](B29-cores3-platformio-release-and-example.md) | open | — |  |
 | [B30 · Make doctor.py report the ESP-IDF version on Windows](B30-doctor-idf-version-on-windows.md) | open | — |  |
 | [B31 · Add a hardware check: the esp-bsp Core2 display on an ILI9342E unit](B31-esp-bsp-ili9342e-check.md) | open | — | yes |
+| [B32 · Print each connector's power, ground and control positions](B32-connector-power-positions.md) | open | — |  |
 
 **First issue: B01.** After it, B03 and B06 can run in parallel.
 
