@@ -12,7 +12,7 @@ Read the `esp-bsp` line:
 
 Run `idf.py add-dependency "<component>"`. In a `framework = espidf` PlatformIO project, add `<component>: "*"` under `dependencies:` in `src/idf_component.yml` instead.
 
-Then run `board.py facts "<user's words>" display`. Pass on each `erratum` line that names M5GFX, and say that the esp-bsp component drives the panel with its own LCD driver component, not M5GFX, and the data has nothing on that driver with the part the erratum names.
+Then run `board.py facts "<user's words>" display`. Pass on each `erratum` line that names M5GFX, and say that the esp-bsp component drives the panel with its own LCD driver component, not M5GFX, and the data has nothing on that driver with the part the erratum names *(untested on hardware: open-question.esp-bsp-ili9342e.core2@v1.3)*.
 
 Done when the manifest lists the component and the user has the gaps, notes and errata.
 

@@ -344,6 +344,9 @@ BOARD_STEPS = [
       "fact.imu", "fact.no-atecc", "fact.no-ina3221", "fact.port-a-bus"]),
     ("Same, through PlatformIO.", ["flash.platformio", "device.platformio"]),
     ("Same, through idf.py.", ["flash.esp-idf", "device.esp-idf"]),
+    ("Build esp-bsp's display example for m5stack_core_2 with idf.py, with the esp-bsp settings `board.py targets "
+     "<revision> --toolchain esp-idf` prints, and flash it. Record the component and ESP-IDF versions and what the "
+     "display shows (section 7).", ["open-question.esp-bsp-ili9342e"]),
     ("Ask a framework skill to upload while you hold the unit in reset. Pass: one attempt, the serial-port and "
      "download-mode procedures, exactly one retry, then a hand-off to flashing-and-debugging.", ["handoff.live"]),
     ("Flash the UIFlow2 image `board.py targets` recommends with `esptool write-flash 0x0`, then push the smoke "
@@ -363,7 +366,8 @@ DEPENDS = {"host.bridge": "host.port", "host.driver": "host.port", "fact.bridge"
            **{c: "flash.uiflow2" for c in ("open-question.mpremote-launcher", "open-question.uiflow2-image-v1.3",
                                            "open-question.stdout-raw-repl")},
            # these need a sketch of their own, not the smoke program
-           **{c: "host.port" for c in ("open-question.playraw-1mb", "open-question.touch-below-240", "open-question.speaker-mic")}}
+           **{c: "host.port" for c in ("open-question.playraw-1mb", "open-question.touch-below-240", "open-question.speaker-mic",
+                                       "open-question.esp-bsp-ili9342e")}}
 TOOLCHAINS = ("arduino-cli", "esp32 core", "M5Unified", "platformio", "esp-idf", "esptool", "mpremote", "uiflow2 image", "claude-code")
 ANSWERS = {"p": "pass", "f": "fail", "b": "blocked", "n": "not-run", "o": "observed"}
 

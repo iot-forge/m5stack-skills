@@ -419,6 +419,13 @@ class Board(unittest.TestCase):
             self.assertEqual(res[f"{dep}.{REV}"]["blocked_by"], [f"device.arduino.{REV}"], dep)
         self.assertEqual(res[f"open-question.auto-download.{REV}"]["result"], "observed")  # seen during the upload itself
 
+    def test_the_esp_bsp_display_runs_between_esp_idf_and_uiflow2(self):  # it replaces the ESP-IDF smoke program
+        _, res = self.board({f"host.port.{REV}": "f"})
+        self.assertEqual(res[f"open-question.esp-bsp-ili9342e.{REV}"]["blocked_by"], [f"host.port.{REV}"])
+        order = [r["check"] for r in self.board()[0]["results"]]
+        self.assertLess(order.index(f"device.esp-idf.{REV}"), order.index(f"open-question.esp-bsp-ili9342e.{REV}"))
+        self.assertLess(order.index(f"open-question.esp-bsp-ili9342e.{REV}"), order.index(f"flash.uiflow2.{REV}"))
+
     def test_an_open_question_can_be_blocked(self):
         _, res = self.board({f"open-question.speaker-mic.{REV}": "b"})
         self.assertEqual(res[f"open-question.speaker-mic.{REV}"]["result"], "blocked")

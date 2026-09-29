@@ -747,6 +747,15 @@
    "note": "VERIFICATION.md section 7"
   },
   {
+   "id": "open-question.esp-bsp-ili9342e.core2@v1.3",
+   "kind": "open-question",
+   "skills": [
+    "esp-idf"
+   ],
+   "revision": "core2@v1.3",
+   "note": "VERIFICATION.md section 7"
+  },
+  {
    "id": "open-question.g0-download.cores3@v1.0",
    "kind": "open-question",
    "skills": [
