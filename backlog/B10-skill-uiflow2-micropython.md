@@ -1,6 +1,6 @@
 # B10 · Author the uiflow2-micropython skill
 
-Status: open
+Status: in-progress
 Blocked by: [B06](B06-shared-procedures.md), [B02](B02-repin-data-and-triage-drift.md)
 Gate: none
 
