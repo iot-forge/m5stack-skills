@@ -1,6 +1,6 @@
 # B10 · Author the uiflow2-micropython skill
 
-Status: in-progress
+Status: done
 Blocked by: [B06](B06-shared-procedures.md), [B02](B02-repin-data-and-triage-drift.md)
 Gate: none
 
@@ -25,14 +25,14 @@ UIFlow2 API detail belongs to M5Stack's uiflow2-coder skill, or else the `m5stac
 
 ## Definition of done
 
-- [ ] Every `<!-- TODO: ... -->` marker in `skills/uiflow2-micropython/SKILL.md` is replaced by written sections; none remains
-- [ ] Every step ends on a completion criterion the agent can check; every hardware fact comes from a `board.py` command in the step
-- [ ] The body stays under 10 kB (warn) and must stay under 16 kB (fail); material only some runs need is moved to `skills/uiflow2-micropython/references/`
-- [ ] Steps that rely on an open question carry *(untested on hardware: <id>)*, using: `open-question.mpremote-launcher.core2@v1.3`, `open-question.stdout-raw-repl.core2@v1.3`, `open-question.uiflow2-image-v1.3.core2@v1.3`, `open-question.mpremote.cores3-se@v1.0`, `open-question.lite-image.cores3-lite@v1.0`
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
-- [ ] Trigger rows `trigger.row-08`, `trigger.row-09`, `trigger.neg-01` pass 3/3 (VERIFICATION.md section 4; command: `claude -p "<request>" --plugin-dir <repo> --allowedTools Skill --output-format stream-json --verbose`, run from a fixture directory holding the project files the request implies). Record each run's date and result in the Checkpoint
-- [ ] `handoff.uiflow2-micropython` passes, or is recorded `blocked` because no bare USB-to-serial adapter is at hand (VERIFICATION.md section 4)
+- [x] Every `<!-- TODO: ... -->` marker in `skills/uiflow2-micropython/SKILL.md` is replaced by written sections; none remains
+- [x] Every step ends on a completion criterion the agent can check; every hardware fact comes from a `board.py` command in the step
+- [x] The body stays under 10 kB (warn) and must stay under 16 kB (fail); material only some runs need is moved to `skills/uiflow2-micropython/references/`
+- [x] Steps that rely on an open question carry *(untested on hardware: <id>)*, using: `open-question.mpremote-launcher.core2@v1.3`, `open-question.stdout-raw-repl.core2@v1.3`, `open-question.uiflow2-image-v1.3.core2@v1.3`, `open-question.mpremote.cores3-se@v1.0`, `open-question.lite-image.cores3-lite@v1.0`
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
+- [x] Trigger rows `trigger.row-08`, `trigger.row-09`, `trigger.neg-01` pass 3/3 (VERIFICATION.md section 4; command: `claude -p "<request>" --plugin-dir <repo> --allowedTools Skill --output-format stream-json --verbose`, run from a fixture directory holding the project files the request implies). Record each run's date and result in the Checkpoint
+- [x] `handoff.uiflow2-micropython` passes, or is recorded `blocked` because no bare USB-to-serial adapter is at hand (VERIFICATION.md section 4)
 
 ## Stopping rule
 
@@ -42,8 +42,15 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Draft 'Pick and flash the UIFlow2 image' from `board.py targets --toolchain uiflow2` after B02's re-pin
-- **Files touched**: none
-- **Last commit**: none
-- **Open questions**: none
+- **Done**: all. Recorded results:
+  - `trigger.row-08`, `trigger.row-09`, `trigger.neg-01`: 2026-09-29, `claude` 2.1.284, plugin commit a2ba4b9. Each ran 3 times through `verify.py run --offline --only`, from each row's fixture. All pass 3/3: `uiflow2-micropython` fired in every run of row-08 and row-09, with no other skill before it, and no skill fired in any neg-01 run. The review fixes in f3ff48e leave the description unchanged.
+  - `handoff.uiflow2-micropython`: blocked, 2026-09-29. There is no bare USB-to-serial adapter (`doctor.py --ports` lists no serial ports). `handoff.live.core2@v1.3` covers it on hardware day.
+  - `validate.py` exits 0 with no warning for this skill and no TODO marker. The five open-question markers are in SKILL.md. `python -m unittest discover tests`: 117 OK (1 skipped).
+  - The toolchain behaviour sits in two new references, each cited to pinned sources: `references/images.md` (the release asset for an image id, and what the merged image replaces) and `references/boot-option.md` (the launcher, `boot_option`, and why every mpremote command takes `resume`). The sources are uiflow-micropython `50e4407` (2.5.3), micropython `78ff170` (its submodule) and mpremote 1.29.0.
+  - `VERIFICATION.md` section 7: `open-question.mpremote-launcher` and `open-question.stdout-raw-repl` now also ask about `mpremote connect <port> resume run`, the command the skill uses, so the hardware session tests the skill's own path.
+- **Next**: none
+- **Files touched**: `skills/uiflow2-micropython/SKILL.md`, `skills/uiflow2-micropython/references/images.md` (new), `skills/uiflow2-micropython/references/boot-option.md` (new), `VERIFICATION.md`
+- **Last commit**: see `git log -- skills/uiflow2-micropython backlog/B10-skill-uiflow2-micropython.md`
+- **Open questions** (the maintainer decides):
+  1. **Keep the launcher, or boot option 0?** The skill leaves the launcher in place and puts `resume` after the port in every mpremote command. mpremote 1.29.0 soft-resets before the first raw-REPL command, and on UIFlow2 a soft reset reruns `boot.py` and restarts the launcher. The skill sets boot option `0` (no launcher, no Wi-Fi at boot, plain mpremote commands work) only when the user wants `main.py` to run at power-up, and names the write first. Should `0` be the default for development instead? MicroPython's development branch (commit 336427fc, after 1.29.0) stops the auto soft reset, so after its next release `resume` becomes a no-op either way.
+  2. **The section 7 wording change.** Two open questions were widened to cover `resume`, since the skill's markers must name questions that test its actual commands. Keep them, or split `resume` into questions of its own?
