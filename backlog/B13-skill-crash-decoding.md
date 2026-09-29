@@ -50,4 +50,4 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 - **Next**: none
 - **Files touched**: `skills/flashing-and-debugging/SKILL.md`, `skills/flashing-and-debugging/references/decoding-crashes.md` (new)
 - **Last commit**: see `git log -- skills/flashing-and-debugging backlog/B13-skill-crash-decoding.md`
-- **Open questions**: should `doctor.py` search the toolchain folders for `addr2line` and print its path? The maintainer decides; it would be a new issue.
+- **Open questions**: none. `doctor.py` searching the toolchain folders for `addr2line` is filed as B34 (maintainer, 2026-09-29).
