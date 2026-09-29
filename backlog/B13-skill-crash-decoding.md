@@ -1,6 +1,6 @@
 # B13 · Author flashing-and-debugging: crash decoding
 
-Status: open
+Status: in-progress
 Blocked by: [B12](B12-skill-flashing-and-recovery.md)
 Gate: none
 
