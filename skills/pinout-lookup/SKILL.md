@@ -40,15 +40,66 @@ Copy this checklist and tick it off:
 
 ```
 - [ ] Resolve the board: board.py find "<user's words>"; note the revisions in play
+- [ ] Pick the job: pins for the user's features, or one pin, connector or bus (sections below)
+- [ ] Answer only from board.py output; name the revisions in play
 ```
+
+When `find` prints `Unknown board` with suggestions, ask which they mean. When the user has named no board, run `board.py list` and ask which one they have. Carry every `--seen` the user has already reported into each later command.
+
+Three outputs end the answer before any pin is named:
+
+- **Exit 3, `is ROADMAP` or `is OUT-OF-SCOPE`**: give the support status and the reason printed, and stop.
+- **Exit 4, `DIFFERENT pin maps`**: the revisions in play are wired differently, so no pin answer holds for all of them. Run `board.py tell-apart "<user's words>"`, ask for the cheapest observation it lists, and rerun `pins` with `--seen <signal>=<value>` until it answers. Read `${CLAUDE_PLUGIN_ROOT}/references/identifying-a-revision.md` when only host or probe observations remain, or when the user offers `M5.getBoard()` or `BOARD_ID` as evidence.
+- **Exit 4, `is not populated yet`**: tell the user the data has no GPIO map for those revisions, pass on the `Sourced so far` part as the only pins you can name, and stop there.
 
 ## Answer which pins are free, taken or conflicting
 
-<!-- TODO: authored in the implementation backlog issue for pinout-lookup. Until then this skill has no task guidance: follow the standing rules and the hand-offs, and say that this part of the skill is not written yet. -->
+Use this when the user wants a pin for something, asks whether features can run together, or asks what a connector leaves free while other features run.
+
+1. Map what the user's project uses onto feature names. The names `--use` accepts are the bracketed ones on the `FREE unless you use the feature` line of a plain `board.py pins "<user's words>"` run; `display` is always taken. Include `serial_console` when the user uploads or reads a serial monitor over USB. When unsure whether a feature is in use, include it and say which pins it holds back. Done when every part the user mentioned maps to a feature name.
+2. Run `board.py pins "<user's words>" --use <feature>,<feature>`. A `Note: … claims no pins on this board` line means the part is absent or wired off the GPIOs; run `board.py facts "<user's words>" <field>` (`audio`, `sd`, `display`) to say which.
+3. Report every `CONFLICTS` line first, as printed: the two features cannot run at once, and the user chooses one. When the pair is `speaker` and `mic`, add that this conflict comes from documentation and has not been tried on hardware *(untested on hardware: open-question.speaker-mic.core2@v1.3)*.
+4. Recommend pins from the `FREE` line. For a connector the user names, take the pins whose exposure names it (`port_b:in`, `port_c:tx`, `mbus:10`). Give each recommended pin with every `!` caution on it, in the words of the `Cautions:` line, and fit the pin to the job:
+   - an analog read while Wi-Fi runs: a pin without `!adc2_wifi`;
+   - an output, or an input that needs an internal pull-up or pull-down: a pin without `!input_only`;
+   - a part that holds the line high or low at power-on (a pull resistor, a sensor output): a pin without `!strapping`.
+
+   A pin on the `FREE unless` line is the user's only if they drop the bracketed feature; offer it that way when the `FREE` line runs out.
+5. For another I2C or SPI device, join a bus on the `SHARED BUS` lines rather than taking pins: on I2C the device's address must not appear in `occupied:`; on SPI it needs its own chip-select from the `FREE` line. A bus under `Buses on connectors that are yours alone` carries no on-board chip. When `occupied:` differs by revision, keep every branch and add the observation `board.py tell-apart "<user's words>"` gives for splitting them.
+6. Pins on `TAKEN`, `UNUSABLE` or `NOT BROUGHT OUT` are not the user's; when asked about one, say what holds it, as printed.
+
+Done when every pin you recommend is on the `FREE` line (or `FREE unless`, with its feature named) of a `pins` run for exactly the user's features, each carries its cautions in words, every `CONFLICTS` line is reported, and the answer names the revisions in play.
 
 ## Explain one pin or connector
 
-<!-- TODO: authored in the implementation backlog issue for pinout-lookup. Until then this skill has no task guidance: follow the standing rules and the hand-offs, and say that this part of the skill is not written yet. -->
+Use this when the user asks about a single GPIO, a connector (Port A, B or C, the M-Bus), or which chips sit on the I2C bus.
+
+**One pin**
+
+1. Run `board.py pins "<user's words>" --gpio <pin>` (`G0` or `0`). It lists every claim on the pin, whatever the user runs:
+   - `uses:` a claim with `[feature: X]` leaves the pin to the user only while X is off; `[bus: …]` means the pin is a shared bus line to join, never to repurpose; any other claim holds the pin for good; `none` means nothing on the board uses it.
+   - `exposed on:` where the user can reach it; `no connector (not brought out)` means nowhere.
+   - `SoC …:` each line is a caution to give in full. This is the one output that spells out the cautions of a taken pin.
+   - `bus … members:` the chips on that bus with their addresses, per revision.
+2. When `uses:` lists both `speaker` and `mic`, say those two cannot run at once, from documentation not yet tried on hardware *(untested on hardware: open-question.speaker-mic.core2@v1.3)*.
+3. When the user's features are known, run `board.py pins "<user's words>" --use <features>`: the line the pin sits on (`FREE`, `FREE unless`, `CONFLICTS`, `TAKEN`) is the verdict for their project.
+
+Done when the answer gives, for this pin: what uses it, where it is exposed, every SoC caution, and whether it is free for what the user runs or which features would have to be off.
+
+**A connector**
+
+1. Run `board.py pins "<user's words>"`, with `--use` for the user's features when known. Collect every pin whose exposure names the connector (`port_a:sda`, `port_b:in`, `mbus:24`) on every line, `SHARED BUS` and `TAKEN` included.
+2. For each pin give its role from the exposure, its status from the line it sits on, and its cautions. A connector whose pins sit on a `SHARED BUS` line shares that bus with the chips in `occupied:`; one under `Buses on connectors that are yours alone` does not.
+3. `pins` prints GPIO positions only. For a connector's power, ground or voltage, say `board.py` has no answer; a specific Grove or M-Bus unit belongs to the hand-off below.
+
+Done when every pin of the connector in the output is listed with its role, status and cautions, and the answer names the revisions in play.
+
+**The I2C bus**
+
+1. Run `board.py pins "<user's words>"`. Under `SHARED BUS`, the internal I2C line gives the bus pins and `occupied:` its chips with their addresses.
+2. When `occupied:` differs by revision, give every branch, then the observation `board.py tell-apart "<user's words>"` gives for splitting them.
+
+Done when every chip and address in your answer appears in `occupied:`, with every revision branch kept.
 
 ## Hand-offs
 
