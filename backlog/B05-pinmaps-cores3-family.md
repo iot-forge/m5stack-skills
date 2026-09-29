@@ -1,6 +1,6 @@
 # B05 · Populate the CoreS3-family pin maps
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: none
 
