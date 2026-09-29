@@ -1,6 +1,6 @@
 # B08 · Author the platformio skill
 
-Status: open
+Status: in-progress
 Blocked by: [B06](B06-shared-procedures.md)
 Gate: none
 
