@@ -1,6 +1,6 @@
 # The launcher, the boot option and mpremote
 
-For when `mpremote` can't reach a REPL on a UIFlow2 board, and for choosing how the board boots. Everything here is read from UIFlow2's and mpremote's source; on Core2 v1.3 none of it has been observed yet (the SKILL.md steps carry the markers).
+For when `mpremote` can't reach a REPL on a UIFlow2 board, and for choosing how the board boots. What follows is read from UIFlow2's and mpremote's source.
 
 ## How UIFlow2 boots
 
@@ -24,10 +24,10 @@ MicroPython's development branch (after 1.29.0) stops soft-resetting unless the 
 
 Two ways around it:
 
-- **Keep the launcher**: put `resume` straight after the port in every command, which skips the soft reset: `mpremote connect <port> resume run main.py`. `mpremote connect <port> repl` doesn't soft-reset either; its Ctrl-C stops the launcher.
+- **Keep the launcher**: put `resume` straight after the port in every command, which skips the soft reset: `mpremote connect <port> resume run main.py`. The Ctrl-C mpremote sends on entering the raw REPL stops the launcher. `mpremote connect <port> repl` neither soft-resets nor sends Ctrl-C: the user presses Ctrl-C to stop the launcher.
 - **Boot option `0`**: after a soft reset, `boot.py` returns at once and the raw REPL appears, so plain mpremote commands work. The launcher, and the Wi-Fi connection at boot, are gone until the option is set back to `1` or `2`.
 
-`mpremote reset` is a hard reset (`machine.reset()`): it reruns `boot.py`, and with boot option `1` the launcher starts again.
+`mpremote reset` is a hard reset, run as `exec --no-follow "…machine.reset()"`, so it needs `resume` too: `mpremote connect <port> resume reset`. It reruns `boot.py`, and with boot option `1` the launcher starts again.
 
 ## Changing the boot option
 
@@ -48,10 +48,10 @@ then check it with `mpremote connect <port> resume exec "import boot_option; pri
 ## "mpremote can't reach a REPL": in this order
 
 1. `doctor.py` reports `mpremote` missing: the user installs it (`pip install --user mpremote`, or `pipx install mpremote`).
-2. The port won't open or is in use: the shared serial-port procedure SKILL.md points to.
+2. The port won't open or is in use, or the board may still be in download mode (after a manual entry, it runs no MicroPython): the shared serial-port and download-mode procedures SKILL.md points to.
 3. `could not enter raw repl` shortly after `soft reboot` was printed: the launcher came back, as above. Use `resume`, or boot option `0`.
 4. `could not enter raw repl` with no `soft reboot`, or a REPL that shows nothing: the board may not be running UIFlow2 at all, or the port may belong to another device. Ask the user what the screen shows. No UIFlow2 boot screen or launcher: flash the image.
-5. Still failing: stop and report the command and its full output.
+5. Still failing: SKILL.md's retry and hand-off apply. Give the user the command and its full output.
 
 ## Sources
 
@@ -63,7 +63,7 @@ then check it with `mpremote connect <port> resume exec "import boot_option; pri
   - `libs/boot_option.py`: `get_boot_option()` and `set_boot_option()`.
   - `main.c`: runs `boot.py` after every reset, then `main.py` only if `boot.py` returned non-zero and `_uiflow_run_main` is true.
 - micropython/micropython at `78ff170` (UIFlow2 2.5.3's submodule): `shared/runtime/pyexec.c` and `pyexec.h`. Without `MICROPY_PYEXEC_ENABLE_EXIT_CODE_HANDLING` (off by default, `py/mpconfig.h`), a script that raises returns 0. https://github.com/micropython/micropython/blob/78ff170de9e32c79db6e64d3e33d2bd60002bdcd/shared/runtime/pyexec.c
-- micropython/micropython at `v1.29.0` (mpremote 1.29.0): `tools/mpremote/mpremote/transport_serial.py`, `enter_raw_repl` (Ctrl-C, Ctrl-A, Ctrl-D, waits for `soft reboot` and the banner, 10 s, raises `could not enter raw repl`); `tools/mpremote/mpremote/main.py` and `commands.py` (auto soft reset before the first raw-REPL command; `resume` turns it off). https://github.com/micropython/micropython/tree/v1.29.0/tools/mpremote/mpremote
+- micropython/micropython at `v1.29.0` (mpremote 1.29.0): `tools/mpremote/mpremote/transport_serial.py`, `enter_raw_repl` (Ctrl-C, Ctrl-A, Ctrl-D, waits for `soft reboot` and the banner, 10 s, raises `could not enter raw repl`); `tools/mpremote/mpremote/main.py` and `commands.py` (auto soft reset before the first raw-REPL command; `resume` turns it off; the `reset` shortcut is `exec --no-follow` of `machine.reset()`); `repl.py`, `do_repl` (no soft reset, no Ctrl-C). https://github.com/micropython/micropython/tree/v1.29.0/tools/mpremote/mpremote
 - micropython/micropython `master` at `336427fc` (2026-09-02, after 1.29.0), "tools/mpremote: Keep interpreter state between commands by default": `State(auto_soft_reset=False)` unless the config sets it. https://github.com/micropython/micropython/commit/336427fc
 - MicroPython docs (latest, which describe the development branch), "mpremote -- MicroPython remote control": install with `pip install --user mpremote` or `pipx install mpremote`; `resume` "is otherwise accepted but does nothing"; `run` executes from RAM without copying, `--no-follow` returns at once; `fs cp main.py :main.py`; `reset` is a hard reset; `repl` doesn't stop a running program, and Ctrl-] or Ctrl-x leaves it. https://docs.micropython.org/en/latest/reference/mpremote.html, retrieved 2026-09-29.
 - PyPI, mpremote: latest release 1.29.0, https://pypi.org/project/mpremote/, retrieved 2026-09-29.

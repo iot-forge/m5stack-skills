@@ -219,11 +219,11 @@ Record what happens. Each observation goes into the report verbatim, including e
 
 **Runnable on a Core2 v1.3:**
 
-- `open-question.mpremote-launcher.core2@v1.3`: **highest priority.** With UIFlow2's default boot (the launcher running), does `mpremote connect <port> repl` get a prompt by sending Ctrl-C? Does `mpremote run smoke.py` work without first changing `boot_option`? If not, record what does work: `boot_option.set_boot_option(0)` then reset, or removing `boot.py`. The whole UIFlow2 edit-and-run workflow rests on this answer.
+- `open-question.mpremote-launcher.core2@v1.3`: **highest priority.** With UIFlow2's default boot (the launcher running), does `mpremote connect <port> repl` get a prompt by sending Ctrl-C? Does `mpremote connect <port> resume run smoke.py` (the `uiflow2-micropython` skill's command: no soft reset) work without first changing `boot_option`, and does plain `mpremote run smoke.py`? Record the mpremote version. If neither works, record what does work: `boot_option.set_boot_option(0)` then reset, or removing `boot.py`. The whole UIFlow2 edit-and-run workflow rests on this answer.
 - `open-question.uiflow2-image-v1.3.core2@v1.3`: does the Core2 UIFlow2 image boot and drive the display on v1.3, given that v1.3's IMU differs from the one the image was built around? Record the image version.
 - `open-question.auto-download.core2@v1.3`: does `esptool` enter download mode with no button press?
 - `open-question.speaker-mic.core2@v1.3`: can the speaker play and the microphone record at the same time? Record either failing. This tests whether they share G0.
-- `open-question.stdout-raw-repl.core2@v1.3`: with `boot_option=0`, does `print()` output from `mpremote run` reach the host?
+- `open-question.stdout-raw-repl.core2@v1.3`: does `print()` output from `mpremote run` reach the host, both with `boot_option=0` and with the launcher stopped by `mpremote connect <port> resume run`?
 - `open-question.touch-below-240.core2@v1.3`: do the three touch buttons below the display (y ≥ 240) register?
 - `open-question.playraw-1mb.core2@v1.3`: does `playRaw` truncate a clip larger than about 1 MB?
 - `open-question.lcd-driver.core2@v1.3`: which LCD driver does the unit carry, ILI9342C or ILI9342E? M5 dates the change to the ILI9342E to units made from 2026.8.7. Record the driver and how it was determined. Either way, the smoke program needs M5GFX 0.2.27 or later.
