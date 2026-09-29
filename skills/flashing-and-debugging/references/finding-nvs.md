@@ -1,6 +1,6 @@
 # Finding the NVS partition
 
-Use this for an NVS erase. `esptool erase-region` needs the offset and size of the NVS partition, and those depend on the firmware. The Arduino esp32 core's default table puts NVS at `0x9000` with 20K. ESP-IDF's built-in single-app table puts it at `0x9000` with `0x6000`. So take both numbers from the partition table on the board, never from a default.
+Use this for an NVS erase. `esptool erase-region` needs the offset and size of the NVS partition, and those depend on the firmware. Even the Arduino esp32 core's default table and ESP-IDF's built-in table give NVS different sizes, so take both numbers from the partition table on the board, never from a default.
 
 ## Read the table off the board
 
@@ -20,8 +20,8 @@ If `gen_esp32part.py` fails with a `UnicodeDecodeError` traceback, the bytes at 
 
 ## Sources
 
-- Espressif, esptool basic commands: `read-flash`, and `erase-region` (address and length in multiples of the 0x1000 sector): https://docs.espressif.com/projects/esptool/en/latest/esp32/esptool/basic-commands.html
-- Espressif, ESP-IDF partition tables (default offset 0x8000, `CONFIG_PARTITION_TABLE_OFFSET`, the 0xC00-byte table, the single-app table's `nvs` at 0x9000 with 0x6000, `gen_esp32part.py` binary to CSV): https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-guides/partition-tables.html
-- arduino-esp32 3.3.12, `tools/partitions/default.csv` (`nvs` at 0x9000, 20K), and its `tools/gen_esp32part.py`. On 2026-09-29 it decoded a 3072-byte table to CSV, and it failed with `UnicodeDecodeError` on 0xFF-filled or non-table input
+- Espressif, esptool basic commands (read 2026-09-29): `read-flash`, and `erase-region` (address and length in multiples of the 0x1000 sector): https://docs.espressif.com/projects/esptool/en/latest/esp32/esptool/basic-commands.html
+- Espressif, ESP-IDF partition tables (read 2026-09-29; default offset 0x8000, `CONFIG_PARTITION_TABLE_OFFSET`, the 0xC00-byte table, the single-app table's `nvs` at 0x9000 with 0x6000, `gen_esp32part.py` binary to CSV): https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-guides/partition-tables.html
+- arduino-esp32 3.3.12, `tools/partitions/default.csv` (`nvs` at 0x9000, size 0x5000, which `gen_esp32part.py` prints as 20K), and its `tools/gen_esp32part.py`. On 2026-09-29 it decoded a 3072-byte table to CSV, and it failed with `UnicodeDecodeError` on 0xFF-filled or non-table input
 - esptool v5.3.1 (bundled with arduino-esp32 3.3.12), run 2026-09-29: `erase-region 0x9000 20K` fails with "'20K' is not a valid integer"
 - Toolchain paths: seen on 2026-09-29 in arduino-esp32 3.3.12, the m5stack core 3.3.9, PlatformIO's `framework-arduinoespressif32` and ESP-IDF v6.1

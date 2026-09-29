@@ -16,7 +16,7 @@ esptool enters download mode by itself. Before each operation it toggles the bri
 When it fails:
 
 1. **`Failed to connect`**: check that the port is the board's and that no serial monitor holds it open. This is the most common cause.
-2. **The write fails part way through**: retry at a lower baud rate, for example `-b 115200`. Espressif gives this for errors that come partway through a write; the first connection always runs at 115200 anyway.
+2. **The write fails part way through**: retry at a lower baud rate, for example `-b 115200`, placed before the command name (`esptool --port <port> -b 115200 write-flash ...`). Espressif gives this for errors that come partway through a write; the first connection always runs at 115200 anyway.
 3. **A timeout or `Failed to write to target RAM`**: M5's pages blame the USB driver and say to reinstall it. That is a driver case: a framework skill hands it to the `flashing-and-debugging` skill.
 
 M5's pages give no manual procedure for these boards. After one retry, a framework skill hands the failure to the `flashing-and-debugging` skill.
@@ -42,7 +42,7 @@ Ask the user to confirm that the green LED lit and then went out. If it didn't, 
 
 Over USB Serial/JTAG, esptool's reset after the write is only a core reset. A core reset doesn't re-read the boot pin, so a board that entered download mode by hand stays there and the new firmware doesn't start. To leave download mode:
 
-- **With esptool directly**: add `--after watchdog-reset` to the command. It triggers a full system reset.
+- **With esptool directly**: add `--after watchdog-reset` before the command name (`esptool --port <port> --after watchdog-reset write-flash ...`). It triggers a full system reset.
 - **Through a toolchain upload**: ask the user to press RST once, or to power-cycle the board.
 
 The step is done when the user reports the new firmware running (standing rule 4).
@@ -62,6 +62,7 @@ This file follows esptool v5. v5 installs as `esptool` and spells commands, opti
 - Espressif, esptool advanced options, "Reset Modes" (`--before`, `--after`, USB Serial/JTAG core reset): https://docs.espressif.com/projects/esptool/en/latest/esp32s3/esptool/advanced-options.html
 - Espressif, esptool troubleshooting ("Bootloader Won't Respond", "Writing to Flash Fails Part Way Through", "Issues and Debugging in USB-Serial/JTAG or USB-OTG modes", "Ports Without USB Descriptors", "Leaving Download Mode in USB-Serial/JTAG Mode"): https://docs.espressif.com/projects/esptool/en/latest/esp32s3/troubleshooting.html
 - Espressif, esptool basic options, "Baud Rate": https://docs.espressif.com/projects/esptool/en/latest/esp32s3/esptool/basic-options.html
+- esptool v5.3.1, run 2026-09-29: `--after` and `-b` are accepted before `write-flash` and rejected after it ("No such option")
 - Espressif, esptool v5 migration guide (hyphenated names, `esptool.py` → `esptool`): https://docs.espressif.com/projects/esptool/en/latest/esp32s3/migration-guide.html
 - M5Stack, "Download Mode" on the CoreS3, CoreS3-SE and CoreS3-Lite pages: https://docs.m5stack.com/en/core/CoreS3, https://docs.m5stack.com/en/core/M5CoreS3%20SE, https://docs.m5stack.com/en/core/CoreS3-Lite
 - M5Stack, Core2 and Core2 v1.3 pages, "USB Driver" (reinstall on timeout or `Failed to write to target RAM`): https://docs.m5stack.com/en/core/core2, https://docs.m5stack.com/en/core/Core2_v1.3
