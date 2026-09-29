@@ -1,6 +1,6 @@
 # B31 · Add a hardware check: the esp-bsp Core2 display on an ILI9342E unit
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: hardware-ready
 
