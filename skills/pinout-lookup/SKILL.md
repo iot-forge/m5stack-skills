@@ -48,7 +48,7 @@ When `find` prints `Unknown board` with suggestions, ask which they mean. When t
 
 Three outputs end the answer before any pin is named:
 
-- **`support=roadmap` or `support=out-of-scope`** (`find`), or exit 3 (`pins`): give the support status and the reason `pins` prints, and stop.
+- **`support=roadmap` or `support=out-of-scope`** (`find`), or exit 3 (`pins`): run `pins`; give the support status and the reason it prints, and stop.
 - **Exit 4, `DIFFERENT pin maps`**: the revisions in play are wired differently. Run `board.py tell-apart "<user's words>"`, ask for the cheapest observation it lists, and rerun `pins` with `--seen <signal>=<value>` until it answers. Read `${CLAUDE_PLUGIN_ROOT}/references/identifying-a-revision.md` when only host or probe observations remain, or when the user offers `M5.getBoard()` or `BOARD_ID` as evidence.
 - **Exit 4, `is not populated yet`**: tell the user the data has no GPIO map for those revisions, pass on the `Sourced so far` part as the only pins you can name, and stop there.
 
