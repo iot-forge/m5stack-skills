@@ -1,6 +1,6 @@
 # B04 · Populate the ESP32 Basic-lineage pin maps
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: none
 
