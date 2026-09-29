@@ -49,7 +49,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B09 · Author the esp-idf skill](B09-skill-esp-idf.md) | done | B06 |  |
 | [B10 · Author the uiflow2-micropython skill](B10-skill-uiflow2-micropython.md) | done | B06, B02 |  |
 | [B11 · Author the pinout-lookup skill](B11-skill-pinout-lookup.md) | done | B04, B05 |  |
-| [B12 · Author flashing-and-debugging: flashing, erasing, ports and download mode](B12-skill-flashing-and-recovery.md) | open | B06 |  |
+| [B12 · Author flashing-and-debugging: flashing, erasing, ports and download mode](B12-skill-flashing-and-recovery.md) | in-progress | B06 |  |
 | [B13 · Author flashing-and-debugging: crash decoding](B13-skill-crash-decoding.md) | open | B12 |  |
 | [B14 · Build the smoke program in four frameworks](B14-smoke-program.md) | done | B01, B03 | yes |
 | [B15 · Finish verify.py and checks.json](B15-verify-py-and-checks.md) | done | B14, B19 | yes |

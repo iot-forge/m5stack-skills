@@ -1,6 +1,6 @@
 # B12 · Author flashing-and-debugging: flashing, erasing, ports and download mode
 
-Status: open
+Status: in-progress
 Blocked by: [B06](B06-shared-procedures.md)
 Gate: none
 
