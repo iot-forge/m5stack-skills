@@ -499,9 +499,9 @@ def cmd_pins(db, a, res):
         uniq = {tuple(v) for v in mem.values()}
         if any(mem.values()):
             ms = ", ".join(next(iter(uniq))) if len(uniq) == 1 else "; ".join(f"{short(r, rids)}: {', '.join(v)}" for r, v in mem.items())
-            lines.append(f"  {b}: " + ", ".join(f"{r['gpio']} ({r['role']})" for r in pins) + f"  - occupied: {ms}")
+            lines.append(f"  {b}: " + ", ".join(f"{cell(r)} [{r['role']}]" for r in pins) + f"  - occupied: {ms}")
         else:
-            lines.append(f"  {b}: " + ", ".join(f"{r['gpio']} ({r['role']})" for r in pins))
+            lines.append(f"  {b}: " + ", ".join(f"{cell(r)} [{r['role']}]" for r in pins))
     lines.append("TAKEN: " + "; ".join(f"{cell(r)} [{', '.join(r['by'])}]" for r in res_["taken"]))
     lines.append("UNUSABLE: " + ", ".join(r["gpio"] for r in res_["unusable"]) + " (SoC: flash)")
     if res_["not_brought_out"]:

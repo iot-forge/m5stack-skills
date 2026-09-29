@@ -143,6 +143,17 @@ class Query(unittest.TestCase):
         self.assertEqual(shared, set(pm["buses"][bus]["pins"].values()))
         self.assertTrue(out["buses"][bus]["members"], "Port A's bus lists no occupants")
 
+    def test_shared_bus_line_names_its_connectors(self):
+        pm = pin_map_of("basic")
+        conn = next(c for c in pm["connectors"] if c["id"] == "port_a")
+        code, out = board("pins", "basic")
+        self.assertEqual(code, 0)
+        line = next(l for l in out.splitlines() if l.strip().startswith(f"{conn['bus']}:"))
+        for g in pm["buses"][conn["bus"]]["pins"].values():
+            exposed = ", ".join(pm["pins"][g]["exposed_on"])
+            self.assertIn("port_a:", exposed)
+            self.assertIn(f"{g} ({exposed})", line)
+
     def test_cores3_camera_and_sd_pins_taken(self):
         pm = pin_map_of("cores3")
         self.assertTrue(pins_claimed_by(pm, "camera"), "CoreS3's pin map claims no camera pins")
