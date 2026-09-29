@@ -48,11 +48,32 @@ Copy this checklist and tick it off:
 
 ## Create or configure platformio.ini
 
-<!-- TODO: authored in the implementation backlog issue for platformio. Until then this skill has no task guidance: follow the standing rules and the hand-offs, and say that this part of the skill is not written yet. -->
+1. Read `platformio.ini` if there is one: each `[env:…]` with its `platform`, `board`, `framework`, `build_flags` and `lib_deps`. Run `pio pkg list -g --only-platforms` for the installed `espressif32` version; on Windows, if it fails with `UnicodeEncodeError`, run it again prefixed with `PYTHONIOENCODING=utf-8`. Done when you have the project's `platform` pin, if any, and the installed version, or `pio` is reported missing (standing rule 5).
+2. Run `board.py frameworks "<user's words>"`; when its `platformio` line is not `yes`, give the user what it prints. Then run `board.py targets "<user's words>" --toolchain platformio`:
+   - `<id>  (covers all in play)`: `board = <id>`. Its per-revision lines are M5's own settings: a `board_build.…` setting goes into the env as printed, a `-D…` flag into `build_flags`.
+   - `has no target of its own. Recommended: <id>. Gaps: ...`: use `<id>`, and give the user the gaps as printed; never fill a gap from memory. Read `${CLAUDE_SKILL_DIR}/references/board-ids.md` when the user wants the id a gap names instead (M5's `esp32-s3-devkitc-1` example).
+   - Several ids that each cover only some revisions, or per-revision lines that differ: step 3.
+   - Pass on `note:` lines and `[medium confidence]` as printed.
+
+   Done when you have one board id, with its settings, that is right for every revision still in play.
+3. When the revisions in play disagree, run `board.py tell-apart "<user's words>"` and ask for the cheapest observation, then re-run `targets` with `--seen`. Read `${CLAUDE_PLUGIN_ROOT}/references/identifying-a-revision.md` when only host or probe signals remain. If the user can observe nothing, use the id every revision in play can run (for flash size, the smaller) and say what the others give up. Done when the lines agree for the revisions left, or the fallback is told.
+4. PSRAM: run `board.py facts "<user's words>" psram`. When every revision in play has PSRAM, `build_flags` carries `-DBOARD_HAS_PSRAM`. When one has none, or the data has none (`not documented`), leave it out and say why. In a `framework = espidf` project PSRAM is an sdkconfig option: hand that part to the `esp-idf` skill. Done when `build_flags` has the flag exactly when every revision in play has PSRAM, or the hand-off is made.
+5. Libraries: when the code uses M5Unified or M5GFX (and in a new project), `lib_deps` lists `m5stack/M5Unified`. Run `board.py facts "<user's words>" display`; for each `erratum` line that names an M5GFX version, add `m5stack/M5GFX@>=<that version>`, and raise a lower pin the project has. Done when every version an erratum names is a lower bound in `lib_deps`.
+6. Write the env: `platform = espressif32` (keep a pin the project has), `board`, `framework = arduino` unless the project says otherwise, `monitor_speed` equal to the rate the code opens `Serial` at, then the settings from steps 2–5. A new project gets `src/`; its code comes from the `arduino-m5unified` skill. Run `pio boards <id>`. Read `${CLAUDE_SKILL_DIR}/references/board-ids.md` when it prints no table row for the id, or `pio` reports `UnknownBoard: Unknown board ID`. Done when `pio boards` lists every board id in the file, and the user has the gaps and notes.
 
 ## Build, upload and monitor with pio
 
-<!-- TODO: authored in the implementation backlog issue for platformio. Until then this skill has no task guidance: follow the standing rules and the hand-offs, and say that this part of the skill is not written yet. -->
+1. Run `pio run -e <env>` in the project folder. Fix errors in the user's code here; `UnknownBoard` goes back to step 6 above. Done when it exits 0.
+2. Run `doctor.py --ports`. Read `${CLAUDE_PLUGIN_ROOT}/references/serial-ports.md` unless exactly one port has a `<-` marker that fits the board. No port: hand off to the `flashing-and-debugging` skill with what `doctor.py` found. Done when one port is named, or the hand-off is made.
+3. Name the port, the board and what the upload replaces (the application on it); wait for the go-ahead, once per port per session (standing rule 2). Done when the user has said to go ahead.
+4. Run `pio run -e <env> -t upload --upload-port <port>`. Done when it exits 0 and esptool reports the hash verified.
+5. If the upload fails for a reason other than the code (`Failed to connect`, `Wrong boot mode detected`, a port that won't open, a write that stops part way):
+   1. Read `${CLAUDE_PLUGIN_ROOT}/references/serial-ports.md` and `${CLAUDE_PLUGIN_ROOT}/references/download-mode.md`, and apply the case that matches the error.
+   2. Retry the upload exactly once.
+   3. If it fails again, stop and hand off to the `flashing-and-debugging` skill with the `doctor.py` output and the exact error text.
+
+   Done when the retry succeeds, or the hand-off is made.
+6. Ask the user to run `pio device monitor -p <port> -b <monitor_speed>` themselves (it runs until stopped) and report what the screen and serial show. If serial shows nothing on a board whose `facts <board> usb_bridge` reads `native USB`, `Serial` is on UART0: add `-DARDUINO_USB_CDC_ON_BOOT=1` to `build_flags`, then build and upload again. Garbage output, a panic or repeated resets: hand off to the `flashing-and-debugging` skill. The code runs but misbehaves: hand off to the `arduino-m5unified` skill. Done when the user reports the board doing what the code should.
 
 ## Hand-offs
 
