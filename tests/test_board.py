@@ -148,7 +148,7 @@ class Query(unittest.TestCase):
         conn = next(c for c in pm["connectors"] if c["id"] == "port_a")
         code, out = board("pins", "basic")
         self.assertEqual(code, 0)
-        line = next(l for l in out.splitlines() if l.strip().startswith(f"{conn['bus']}:"))
+        line = next(row for row in out.splitlines() if row.strip().startswith(f"{conn['bus']}:"))
         for g in pm["buses"][conn["bus"]]["pins"].values():
             exposed = ", ".join(pm["pins"][g]["exposed_on"])
             self.assertIn("port_a:", exposed)

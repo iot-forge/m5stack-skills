@@ -16,7 +16,7 @@ B11 found that the pin maps record every connector position, but `board.py` prin
 
 1. In `board.py pins` (text and `--json`), print the non-GPIO positions per connector, for example `OTHER CONNECTOR POSITIONS: mbus: 1 GND, 3 GND, 5 GND, 6 RST, 12 3V3, 28 5V, 30 BAT; rs485: …`. Positions whose meaning is not self-evident from the recorded name (`HPWR`, `HVIN`) are printed as recorded, with nothing added from memory.
 2. Test it test-first in `tests/test_board.py`: the expected positions come from `data/`, never from the test.
-3. Rewrite step 3 of **A connector** in `skills/pinout-lookup/SKILL.md` to read those positions from the output, and say the data has nothing on a Grove port's power pins (the Grove connectors record signal positions only).
+3. Rewrite step 3 of **A connector** in `skills/pinout-lookup/SKILL.md` to read those positions from the output, and say the data has nothing on a Grove port's power pins (the Grove connectors record no power positions).
 
 ## Inputs
 
