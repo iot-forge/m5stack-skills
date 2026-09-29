@@ -1,6 +1,6 @@
 # B11 · Author the pinout-lookup skill
 
-Status: open
+Status: in-progress
 Blocked by: [B04](B04-pinmaps-esp32-basic-lineage.md), [B05](B05-pinmaps-cores3-family.md)
 Gate: none
 
