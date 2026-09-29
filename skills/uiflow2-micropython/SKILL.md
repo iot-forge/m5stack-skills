@@ -48,15 +48,35 @@ Copy this checklist and tick it off:
 
 ## Pick and flash the UIFlow2 image
 
-<!-- TODO: authored in the implementation backlog issue for uiflow2-micropython. Until then this skill has no task guidance: follow the standing rules and the hand-offs, and say that this part of the skill is not written yet. -->
+1. Another image (MicroPython from micropython.org, the user's own `.bin`): hand off to the `flashing-and-debugging` skill now. Otherwise read `doctor.py`'s `esptool` line and the "esptool spelling" section of `${CLAUDE_PLUGIN_ROOT}/references/download-mode.md`. Done when esptool is found and you know its spelling, or the user knows how to install it.
+2. Run `board.py targets "<user's words>" --toolchain uiflow2`; pass on its `covers only`, `Recommended` and `Gaps` text as printed. Revisions in play needing different images: run `board.py tell-apart "<user's words>"`, ask for the cheapest observation and re-run `targets` with `--seen`; read `${CLAUDE_PLUGIN_ROOT}/references/identifying-a-revision.md` when only host or probe signals remain. Never pick the likelier image. `Gaps`: tell the user them and wait for the go-ahead, as for Core2 v1.3 on the Core2 image *(untested on hardware: open-question.uiflow2-image-v1.3.core2@v1.3)* and CoreS3-Lite on the CoreS3 image *(untested on hardware: open-question.lite-image.cores3-lite@v1.0)*. Done when one image id remains and the user has accepted its gaps.
+3. Read `${CLAUDE_SKILL_DIR}/references/images.md` and download the file for that id, from a release no older than the output allows ("use 2.5.3 or later"). Done when the file is on disk at the asset's size.
+4. Run `doctor.py --ports` and `board.py facts "<user's words>" usb_bridge`. Read `${CLAUDE_PLUGIN_ROOT}/references/serial-ports.md` unless exactly one port has a `<-` marker that fits that bridge. No port: hand off to the `flashing-and-debugging` skill with what `doctor.py` found. Done when one port is named, or the hand-off is made.
+5. Name the port, the board and what the write destroys: the image, written at `0x0`, replaces the firmware, every file on the device and the saved Wi-Fi settings. It deletes files on the device, so confirm every time (standing rule 2). Done when the user has said to go ahead.
+6. Run `esptool --port <port> write-flash 0x0 <file>` (on esptool v4: `esptool.py --port <port> write_flash 0x0 <file>`). Done when it exits 0 and esptool reports the hash verified.
+7. If the flash fails for a reason other than the file (`Failed to connect`, `Wrong boot mode detected`, a port that won't open, a write that stops part way):
+   1. Read `${CLAUDE_PLUGIN_ROOT}/references/serial-ports.md` and `${CLAUDE_PLUGIN_ROOT}/references/download-mode.md`, and apply the case that matches the error.
+   2. Retry the flash exactly once.
+   3. If it fails again, stop and hand off to the `flashing-and-debugging` skill with the `doctor.py` output and the exact error text.
+
+   Done when the retry succeeds, or the hand-off is made.
+8. Ask the user what the screen shows: after a flash, UIFlow2's boot screen, then the launcher. A blank screen, garbage or repeated resets: hand off to the `flashing-and-debugging` skill. Done when the user reports the launcher.
 
 ## Get a REPL past the launcher
 
-<!-- TODO: authored in the implementation backlog issue for uiflow2-micropython. Until then this skill has no task guidance: follow the standing rules and the hand-offs, and say that this part of the skill is not written yet. -->
+1. Read `doctor.py`'s `mpremote` line. Missing: the user installs it (`pipx install mpremote`). Done when it is found.
+2. Use the flash's port, or find one as in its step 4. Run `mpremote connect <port> resume exec "import sys; print(sys.implementation)"`. Its Ctrl-C stops the launcher, and `resume` stops mpremote soft-resetting the board, which would restart it *(untested on hardware: open-question.mpremote-launcher.core2@v1.3)*. Put `resume` straight after the port in every mpremote command. Done when it prints `(name='micropython', …)`.
+3. If it fails, work through the "mpremote can't reach a REPL" list in `${CLAUDE_SKILL_DIR}/references/boot-option.md`, reading `${CLAUDE_PLUGIN_ROOT}/references/serial-ports.md` at its port step. On a CoreS3-SE (`board.py find` names `cores3-se`), where a third-party report says mpremote fails, give the user the full command and output *(untested on hardware: open-question.mpremote.cores3-se@v1.0)*. Done when step 2's command prints, or the user has the output.
+4. For an interactive prompt, the user runs `mpremote connect <port> repl` in their own terminal; Ctrl-] leaves it. Done when the user reports a `>>>` prompt.
 
 ## Run and deploy scripts with mpremote
 
-<!-- TODO: authored in the implementation backlog issue for uiflow2-micropython. Until then this skill has no task guidance: follow the standing rules and the hand-offs, and say that this part of the skill is not written yet. -->
+1. Work on the project's `main.py` (and `boot.py` only if the user asks). UIFlow2 API code: M5Stack's `uiflow2-coder` skill if installed, else the `m5stack` MCP server, labelled (standing rule 7). A GPIO in the script comes from `board.py pins "<user's words>" --use <features>`. Done when the script is written.
+2. Run it without saving: `mpremote connect <port> resume run main.py`. It prints the script's output until the script ends *(untested on hardware: open-question.stdout-raw-repl.core2@v1.3)*. For a script that never ends, use `run --no-follow main.py` and rely on the screen. A traceback: fix the script here. Done when the output, and the screen as the user reports it, show what the script should.
+3. To keep it on the board, run `mpremote connect <port> resume fs ls :`. Name each file the copy overwrites (a new `boot.py` removes the launcher) and wait for the go-ahead, every time. Then run `mpremote connect <port> resume fs cp main.py :main.py` (`fs cp -r <folder> :` for a folder). Done when `fs ls :` lists each file at its local size.
+4. `main.py` runs at power-up only with boot option `0` or `2`; the default, `1`, shows the launcher. When the user wants it at power-up, follow "Changing the boot option" in `${CLAUDE_SKILL_DIR}/references/boot-option.md`, a write to the board. Done when its check prints the new option.
+5. Run `mpremote connect <port> reset` and ask the user what the board does; with boot option `1`, the launcher's Run app starts `main.py`. A traceback: fix it here. A panic or repeated resets: hand off to the `flashing-and-debugging` skill. Done when the user reports the program running.
+6. If mpremote fails for a reason other than the script (the port won't open, `could not enter raw repl`): read `${CLAUDE_PLUGIN_ROOT}/references/serial-ports.md` and `${CLAUDE_SKILL_DIR}/references/boot-option.md`, apply the case that matches, and retry exactly once. If it fails again, hand off to the `flashing-and-debugging` skill with the `doctor.py` output and the exact error text. Done when the retry succeeds, or the hand-off is made.
 
 ## Hand-offs
 
