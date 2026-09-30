@@ -756,7 +756,7 @@
    "note": "VERIFICATION.md section 7"
   },
   {
-   "id": "open-question.g0-download.cores3@v1.0",
+   "id": "open-question.manual-download.cores3@v1.0",
    "kind": "open-question",
    "skills": [
     "flashing-and-debugging"
@@ -765,7 +765,7 @@
    "note": "VERIFICATION.md section 7; needs a CoreS3-family unit"
   },
   {
-   "id": "open-question.g0-download.cores3-se@v1.0",
+   "id": "open-question.manual-download.cores3-se@v1.0",
    "kind": "open-question",
    "skills": [
     "flashing-and-debugging"
