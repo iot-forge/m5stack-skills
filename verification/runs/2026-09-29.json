@@ -1,0 +1,287 @@
+{
+ "run": {
+  "date": "2026-09-29",
+  "operator": "claude",
+  "host_os": "Windows 11",
+  "plugin_commit": "1c31609",
+  "unit": null,
+  "toolchains": {}
+ },
+ "results": [
+  {
+   "check": "data.validate",
+   "result": "pass",
+   "output": "WARN [data.low-confidence] basic@v1.4.errata[2]: confidence low on a supported revision\nWARN [data.low-confidence] core2-for-aws@v1.0.errata[1]: confidence low on a supported revision\nWARN [data.low-confidence] core2-for-aws@v1.0.recommended_targets.uiflow2: confidence low on a supported revision\nWARN [data.low-confidence] core2-for-aws@v1.0.recommended_targets.esp-bsp: confidence low on a supported revision\nWARN [data.low-confidence] core2-for-aws@v1.3.recommended_targets.uiflow2: confidence low on a supported revision\nWARN [data.low-confidence] core2-for-aws@v1.3.recommended_targets.esp-bsp: confidence low on a supported revision\nWARN [data.low-confidence] core2@v1.3.recommended_targets.uiflow2: confidence low on a supported revision\nWARN [data.low-confidence] cores3-lite@v1.0.recommended_targets.uiflow2: confidence low on a supported revision\nWARN [data.low-confidence] cores3-lite@v1.0.recommended_targets.esp-bsp: confidence low on a supported revision\nWARN [data.low-confidence] cores3-se@v1.0.recommended_targets.uiflow2: confidence low on a supported revision\nWARN [data.low-confidence] cores3-se@v1.0.recommended_targets.esp-bsp: confidence low on a supported revision\nWARN [data.low-confidence] gray@2017.09.recommended_targets.uiflow2: confidence low on a supported revision\nWARN [data.low-confidence] gray@2017.12.recommended_targets.uiflow2: confidence low on a supported revision\nWARN [data.low-confidence] gray@2019.06.recommended_targets.uiflow2: confidence low on a supported revision\nWARN [data.probe-datasheet] signal pmic-probe: reads a register no cited datasheet backs: The expected values come from M5Unified. The AXP192 datasheet does not document register 0x03, and the one AXP2101 datasheet that does (rev 0.1, 2019) gives 0x47 or 0x57, not 0x4A. A hardware run on a Core2 v1.3 settles the AXP192 value; the AXP2101 value needs a Core2 v1.1 or a CoreS3-family unit.\n0 failure(s), 15 warning(s)\n"
+  },
+  {
+   "check": "query.branch-core2",
+   "result": "pass",
+   "output": "test_branch_core2 (tests.test_board.Query.test_branch_core2) ... ok"
+  },
+  {
+   "check": "query.narrow-seen",
+   "result": "pass",
+   "output": "test_narrow_seen (tests.test_board.Query.test_narrow_seen) ... ok"
+  },
+  {
+   "check": "query.bid-coarse",
+   "result": "pass",
+   "output": "test_bid_coarse (tests.test_board.Query.test_bid_coarse) ... ok"
+  },
+  {
+   "check": "query.target-many",
+   "result": "pass",
+   "output": "test_target_many (tests.test_board.Query.test_target_many) ... ok"
+  },
+  {
+   "check": "query.stub-refuses",
+   "result": "pass",
+   "output": "test_stub_refuses (tests.test_board.Query.test_stub_refuses) ... ok"
+  },
+  {
+   "check": "query.pin-conflict",
+   "result": "pass",
+   "output": "test_pin_conflict (tests.test_board.Query.test_pin_conflict) ... ok"
+  },
+  {
+   "check": "query.strict-name",
+   "result": "pass",
+   "output": "test_strict_name (tests.test_board.Query.test_strict_name) ... ok"
+  },
+  {
+   "check": "query.no-self-report",
+   "result": "pass",
+   "output": "test_no_self_report (tests.test_board.Query.test_no_self_report) ... ok"
+  },
+  {
+   "check": "data.planted-file-name",
+   "result": "pass",
+   "output": "test_file_name (tests.test_validate.Planted.test_file_name) ... ok"
+  },
+  {
+   "check": "data.planted-derived-from",
+   "result": "pass",
+   "output": "test_derived_from_other_product (tests.test_validate.Planted.test_derived_from_other_product) ... ok"
+  },
+  {
+   "check": "data.planted-sources",
+   "result": "pass",
+   "output": "test_unknown_source (tests.test_validate.Planted.test_unknown_source) ... ok\ntest_uncited_source (tests.test_validate.Planted.test_uncited_source) ... ok"
+  },
+  {
+   "check": "data.planted-revision-refs",
+   "result": "pass",
+   "output": "test_target_covers_missing_revision (tests.test_validate.Planted.test_target_covers_missing_revision) ... ok"
+  },
+  {
+   "check": "data.planted-refs",
+   "result": "pass",
+   "output": "test_pin_map_missing (tests.test_validate.Planted.test_pin_map_missing) ... ok"
+  },
+  {
+   "check": "data.planted-soc-rules",
+   "result": "pass",
+   "output": "test_use_on_unusable_pin (tests.test_validate.Planted.test_use_on_unusable_pin) ... ok\ntest_output_on_input_only_pin (tests.test_validate.Planted.test_output_on_input_only_pin) ... ok"
+  },
+  {
+   "check": "data.planted-component-bus",
+   "result": "pass",
+   "output": "test_component_bus_missing (tests.test_validate.Planted.test_component_bus_missing) ... ok"
+  },
+  {
+   "check": "data.planted-i2c-duplicate",
+   "result": "pass",
+   "output": "test_duplicate_address (tests.test_validate.Planted.test_duplicate_address) ... ok"
+  },
+  {
+   "check": "data.planted-provenance",
+   "result": "pass",
+   "output": "test_missing_provenance (tests.test_validate.Planted.test_missing_provenance) ... ok"
+  },
+  {
+   "check": "data.planted-v1-fields",
+   "result": "pass",
+   "output": "test_missing_v1_field (tests.test_validate.Planted.test_missing_v1_field) ... ok\ntest_stub_with_facts (tests.test_validate.Planted.test_stub_with_facts) ... ok\ntest_upcoming_stub_passes (tests.test_validate.Planted.test_upcoming_stub_passes) ... ok"
+  },
+  {
+   "check": "data.planted-features",
+   "result": "pass",
+   "output": "test_feature_not_in_list (tests.test_validate.Planted.test_feature_not_in_list) ... ok"
+  },
+  {
+   "check": "data.planted-probe-datasheet",
+   "result": "pass",
+   "output": "test_register_probe_without_datasheet (tests.test_validate.Planted.test_register_probe_without_datasheet) ... ok\ntest_address_only_probe_needs_no_datasheet (tests.test_validate.Planted.test_address_only_probe_needs_no_datasheet) ... ok\ntest_datasheet_gap_downgrades_to_warning (tests.test_validate.Planted.test_datasheet_gap_downgrades_to_warning) ... ok"
+  },
+  {
+   "check": "data.planted-unknown",
+   "result": "pass",
+   "output": "test_unknown_without_note (tests.test_validate.Planted.test_unknown_without_note) ... ok"
+  },
+  {
+   "check": "data.planted-json",
+   "result": "pass",
+   "output": "test_malformed_json (tests.test_validate.Planted.test_malformed_json) ... ok"
+  },
+  {
+   "check": "data.planted-schema",
+   "result": "pass",
+   "output": "test_schema_violation (tests.test_validate.Planted.test_schema_violation) ... ok"
+  },
+  {
+   "check": "data.planted-pinmap-stub",
+   "result": "pass",
+   "output": "test_unpopulated_pin_map_with_pins (tests.test_validate.Planted.test_unpopulated_pin_map_with_pins) ... ok"
+  },
+  {
+   "check": "build.arduino.esp32:esp32:m5stack_core2",
+   "result": "not-run",
+   "output": "skipped (--skip build)"
+  },
+  {
+   "check": "build.arduino.m5stack:esp32:m5stack_core2",
+   "result": "not-run",
+   "output": "skipped (--skip build)"
+  },
+  {
+   "check": "build.platformio.m5stack-core2",
+   "result": "not-run",
+   "output": "skipped (--skip build)"
+  },
+  {
+   "check": "build.esp-idf.esp32",
+   "result": "not-run",
+   "output": "skipped (--skip build)"
+  },
+  {
+   "check": "build.target-from-data",
+   "result": "not-run",
+   "output": "skipped (--skip build)"
+  },
+  {
+   "check": "trigger.row-01",
+   "result": "pass",
+   "output": "run 1: m5core-skills:arduino-m5unified -> pass\nrun 2: m5core-skills:arduino-m5unified -> pass\nrun 3: m5core-skills:arduino-m5unified -> pass"
+  },
+  {
+   "check": "trigger.row-02",
+   "result": "pass",
+   "output": "run 1: m5core-skills:arduino-m5unified -> pass\nrun 2: m5core-skills:arduino-m5unified -> pass\nrun 3: m5core-skills:arduino-m5unified -> pass"
+  },
+  {
+   "check": "trigger.row-03",
+   "result": "pass",
+   "output": "run 1: m5core-skills:arduino-m5unified -> pass\nrun 2: m5core-skills:arduino-m5unified -> pass\nrun 3: m5core-skills:arduino-m5unified -> pass"
+  },
+  {
+   "check": "trigger.row-04",
+   "result": "pass",
+   "output": "run 1: m5core-skills:platformio -> pass\nrun 2: m5core-skills:platformio -> pass\nrun 3: m5core-skills:platformio -> pass"
+  },
+  {
+   "check": "trigger.row-05",
+   "result": "pass",
+   "output": "run 1: m5core-skills:platformio -> pass\nrun 2: m5core-skills:platformio -> pass\nrun 3: m5core-skills:platformio -> pass"
+  },
+  {
+   "check": "trigger.row-06",
+   "result": "pass",
+   "output": "run 1: m5core-skills:platformio -> pass\nrun 2: m5core-skills:platformio -> pass\nrun 3: m5core-skills:platformio -> pass"
+  },
+  {
+   "check": "trigger.row-07",
+   "result": "pass",
+   "output": "run 1: m5core-skills:esp-idf -> pass\nrun 2: m5core-skills:esp-idf, m5core-skills:arduino-m5unified -> pass\nrun 3: m5core-skills:esp-idf -> pass"
+  },
+  {
+   "check": "trigger.row-08",
+   "result": "pass",
+   "output": "run 1: m5core-skills:uiflow2-micropython -> pass\nrun 2: m5core-skills:uiflow2-micropython -> pass\nrun 3: m5core-skills:uiflow2-micropython -> pass"
+  },
+  {
+   "check": "trigger.row-09",
+   "result": "pass",
+   "output": "run 1: m5core-skills:uiflow2-micropython -> pass\nrun 2: m5core-skills:uiflow2-micropython -> pass\nrun 3: m5core-skills:uiflow2-micropython -> pass"
+  },
+  {
+   "check": "trigger.row-10",
+   "result": "pass",
+   "output": "run 1: m5core-skills:board-identification -> pass\nrun 2: m5core-skills:board-identification -> pass\nrun 3: m5core-skills:board-identification -> pass"
+  },
+  {
+   "check": "trigger.row-11",
+   "result": "pass",
+   "output": "run 1: m5core-skills:board-identification -> pass\nrun 2: m5core-skills:board-identification -> pass\nrun 3: m5core-skills:board-identification -> pass\nanswer 1: I couldn't check this against the plugin's board data. Both calls were blocked on permissions: running `board.py find \"Core2 v1.1\"` and reading `identifying-a-revision.md`. This session can't prompt you to approve them, so I haven't confirmed any hardware facts.\n\nWhat I can say without that data:\n\n- **`M5.getBoard()` saying \"Core2\" doesn't contradict \"Core2 v1.1\".** It returns the product family (`board_M5StackCore2`), not the hardware revision. Several Core2 revisions report the same value.\n- **It isn't evidence the other way either.** It's the firmware's own guess, so a revision can only be confirmed by looking at the board itself.\n\nThe cheapest thing to check is the **SKU sticker on the back of the unit**. What does it say? A code like `K010-Vxx` would work.\n\nIf you want this confirmed from the bundled data, allow these two commands and I'll run them:\n\n```\nuv run \"C:/Personal/Projects/iotforge2/m5core-skills/scripts/board.py\" find \"Core2 v1.1\"\nuv run \"C:/Personal/Projects/iotforge2/m5core-skills/scripts/board.py\" tell-apart \"Core2\"\n```\n\nThey would list the Core2 revisions and the checks that tell them apart. With the sticker reading added, I can then name your exact revision and what differs on it, such as the power chip and anything your code needs to handle.\nanswer 2: I couldn't check this yet. The board-data script (`board.py`) and the reference on identifying revisions both need your permission, and neither has been granted. I don't want to answer from memory which chips the Core2 v1.1 has or how it differs from the original Core2, so I'll wait for the data.\n\nWhat I can say now: `M5.getBoard()` saying \"Core2\" doesn't mean the board isn't a v1.1. It also doesn't prove that it is. What a board reports about itself is not reliable evidence of which revision you have, so you can ignore it here. The label on the hardware is better evidence.\n\nTo move forward, please do one of these:\n\n1. **Allow the two blocked commands:** `board.py find \"Core2 v1.1\"` and the read of `identifying-a-revision.md` in the plugin folder. I'll then confirm the revision from the bundled board data and tell you what actually differs on a v1.1.\n2. **Tell me the SKU on the sticker** on the back or bottom of the unit, exactly as printed. It's usually a code like `K010-V…`. That's the cheapest way to pin down the revision.\n\nIt would also help to know what you're trying to do. If your code branches on `getBoard()` (for example, to choose power-management or battery code), the fix depends on how the revisions really differ. I'll look that up once the script can run.\nanswer 3: I couldn't check this against the plugin's board data. Both `board.py` and the M5Stack knowledge server were blocked by permissions in this session. What follows is from general knowledge, not the bundled data, so treat the hardware details as unconfirmed.\n\n**`Core2` is probably the expected result.** As far as I know, M5Unified's `M5.getBoard()` returns a single `board_M5StackCore2` value for every Core2 revision. It has no separate value for v1.1, so getting \"Core2\" doesn't mean it misidentified your board. It also can't confirm which revision you have. A board's report of what it is doesn't count as evidence of the revision, in either direction.\n\n**How to tell which revision you have (unconfirmed):**\n- **The SKU sticker** on the back or the box is the most reliable check. It's worth confirming before you rely on \"v1.1\".\n- **The power-management chip.** I believe v1.0 uses an AXP192 and v1.1 an AXP2101. After `M5.begin()`, `M5.Power.getType()` should report which one M5Unified found. That's a reading from the chip itself, not the board's label for itself.\n\n**Why the revision matters:** power, battery and some peripheral code behaves differently depending on the power chip. If the revision affects what you're building, it's worth pinning down.\n\n**To give you a checked answer**, approve these two:\n1. `uv run \"C:/Personal/Projects/iotforge2/m5core-skills/scripts/board.py\" find \"Core2 v1.1\"`, which looks up the revisions the plugin knows for that name.\n2. Read access to `C:\\Personal\\Projects\\iotforge2\\m5core-skills\\references\\identifying-a-revision.md`, the plugin's guide on this exact question.\n\nWith those, I can list the confirmed differences between Core2 revisions and the cheapest way to tell yours apart.\noperator-read: The answer refuses to trust M5.getBoard() as evidence of the revision.\noperator: yes (the maintainer, 2026-09-29, reading the three answers above): The answer refuses to trust M5.getBoard() as evidence of the revision."
+  },
+  {
+   "check": "trigger.row-12",
+   "result": "pass",
+   "output": "run 1: m5core-skills:board-identification -> pass\nrun 2: m5core-skills:board-identification -> pass\nrun 3: m5core-skills:board-identification -> pass"
+  },
+  {
+   "check": "trigger.row-13",
+   "result": "pass",
+   "output": "run 1: m5core-skills:board-identification -> pass\nrun 2: m5core-skills:board-identification -> pass\nrun 3: m5core-skills:board-identification -> pass"
+  },
+  {
+   "check": "trigger.row-14",
+   "result": "pass",
+   "output": "run 1: m5core-skills:pinout-lookup -> pass\nrun 2: m5core-skills:pinout-lookup -> pass\nrun 3: m5core-skills:pinout-lookup -> pass"
+  },
+  {
+   "check": "trigger.row-15",
+   "result": "pass",
+   "output": "run 1: m5core-skills:pinout-lookup -> pass\nrun 2: m5core-skills:pinout-lookup -> pass\nrun 3: m5core-skills:pinout-lookup -> pass"
+  },
+  {
+   "check": "trigger.row-16",
+   "result": "pass",
+   "output": "run 1: m5core-skills:flashing-and-debugging -> pass\nrun 2: m5core-skills:flashing-and-debugging -> pass\nrun 3: m5core-skills:flashing-and-debugging -> pass"
+  },
+  {
+   "check": "trigger.row-17",
+   "result": "pass",
+   "output": "run 1: m5core-skills:flashing-and-debugging -> pass\nrun 2: m5core-skills:flashing-and-debugging -> pass\nrun 3: m5core-skills:flashing-and-debugging -> pass"
+  },
+  {
+   "check": "trigger.row-18",
+   "result": "pass",
+   "output": "run 1: m5core-skills:flashing-and-debugging -> pass\nrun 2: m5core-skills:flashing-and-debugging -> pass\nrun 3: m5core-skills:flashing-and-debugging -> pass"
+  },
+  {
+   "check": "trigger.neg-01",
+   "result": "pass",
+   "output": "run 1: no skill fired -> pass\nrun 2: no skill fired -> pass\nrun 3: no skill fired -> pass"
+  },
+  {
+   "check": "trigger.neg-02",
+   "result": "pass",
+   "output": "run 1: no skill fired -> pass\nrun 2: no skill fired -> pass\nrun 3: no skill fired -> pass"
+  },
+  {
+   "check": "trigger.neg-03",
+   "result": "pass",
+   "output": "run 1: no skill fired -> pass\nrun 2: no skill fired -> pass\nrun 3: no skill fired -> pass"
+  },
+  {
+   "check": "handoff.arduino-m5unified",
+   "result": "blocked",
+   "output": "operator-read (VERIFICATION.md section 4): blocked until there is a port that exists but fails; handoff.live.<revision> covers it in the hardware session"
+  },
+  {
+   "check": "handoff.platformio",
+   "result": "blocked",
+   "output": "operator-read (VERIFICATION.md section 4): blocked until there is a port that exists but fails; handoff.live.<revision> covers it in the hardware session"
+  },
+  {
+   "check": "handoff.esp-idf",
+   "result": "blocked",
+   "output": "operator-read (VERIFICATION.md section 4): blocked until there is a port that exists but fails; handoff.live.<revision> covers it in the hardware session"
+  },
+  {
+   "check": "handoff.uiflow2-micropython",
+   "result": "blocked",
+   "output": "operator-read (VERIFICATION.md section 4): blocked until there is a port that exists but fails; handoff.live.<revision> covers it in the hardware session"
+  }
+ ]
+}
