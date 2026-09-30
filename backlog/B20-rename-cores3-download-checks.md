@@ -1,6 +1,6 @@
 # B20 · Rename the CoreS3 download-mode checks after M5's procedure
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: none
 
@@ -35,7 +35,7 @@ Change nothing else in `VERIFICATION.md`: B19 also edits it.
 - [x] `grep -rni "G0 long-press" .` finds nothing outside `backlog/`
 - [x] `uv run scripts/validate.py` exits 0
 - [x] `python -m unittest discover tests` passes
-- [ ] `uv run scripts/verify.py run --offline` passes
+- [x] `uv run scripts/verify.py run --offline` passes
 
 ## Stopping rule
 
@@ -45,8 +45,12 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: the four changes, plus the marker in `skills/flashing-and-debugging/SKILL.md` and the Markers line of B12's Checkpoint, which the `g0-download` grep also required (so B12's closed record now names the new ids). Both greps pass; `validate.py` exits 0 (it failed on the three stale markers after the `checks.json` rename, then passed); unittest 118 OK, 1 skipped. Reviewed on both axes; the one finding (split the section 7 bullet into `download-mode.md`'s steps) is applied.
-- **Next**: run `uv run scripts/verify.py run --offline`. The first run was stopped by the host running low on memory, not by a failure. If it passes, tick the last box and close the issue.
+- **Done**: all. Recorded results:
+  - The four changes, plus the marker in `skills/flashing-and-debugging/SKILL.md` and the Markers line of B12's Checkpoint, which the `g0-download` grep also required (so B12's closed record now names the new ids). Both greps pass.
+  - `uv run scripts/validate.py` exits 0 (it failed on the three stale markers after the `checks.json` rename, then passed). `python -m unittest discover tests`: 118 OK (1 skipped).
+  - Reviewed with `/code-review` (standards and spec). The one finding (split the section 7 bullet into `download-mode.md`'s steps) is applied.
+  - `uv run scripts/verify.py run --offline`, 2026-09-30, `claude` 2.1.286, at d86b5ba: exit 0, 55 results, 0 failed. data 17 pass, query 8 pass, build 4 pass and 1 blocked, trigger 20 pass and 1 not-run, handoff 4 blocked. `build.esp-idf.esp32` is blocked because `idf.py` is not on the Bash tool's PATH (it needs the EIM PowerShell profile). `trigger.row-11` routed to board-identification 3/3 and came back not-run (no terminal for the operator prompt), as in B16. The handoffs are blocked until the hardware session, as in 2026-09-29. Run without `--write`, so no file in `verification/runs/`. The first attempt was stopped by the host running low on memory, not by a failure.
+- **Next**: none
 - **Files touched**: `VERIFICATION.md`, `verification/checks.json`, `references/download-mode.md`, `skills/flashing-and-debugging/SKILL.md`, `backlog/B12-skill-flashing-and-recovery.md`
-- **Last commit**: 7068402
+- **Last commit**: see `git log -- backlog/B20-rename-cores3-download-checks.md`
 - **Open questions**: none
