@@ -1,6 +1,6 @@
 # B20 · Rename the CoreS3 download-mode checks after M5's procedure
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: none
 

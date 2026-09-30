@@ -57,7 +57,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B17 · Decide: where and when the checks run](B17-decide-ci.md) | open | B15 |  |
 | [B18 · Decide: publication](B18-decide-publication.md) | open | B01, B02, B03, B04, B05, B06, B07, B08, B09, B10, B11, B12, B13, B14, B15, B16, B17, B19, B20, B21, B23, B24, B25, B26, B27, B28, B29, B30, B31, B32, B33, B34 |  |
 | [B19 · Align VERIFICATION.md with B01](B19-align-verification-with-b01.md) | done | B01 | yes |
-| [B20 · Rename the CoreS3 download-mode checks after M5's procedure](B20-rename-cores3-download-checks.md) | open | — |  |
+| [B20 · Rename the CoreS3 download-mode checks after M5's procedure](B20-rename-cores3-download-checks.md) | in-progress | — |  |
 | [B21 · Cite each expected probe value to its own source](B21-per-value-probe-sources.md) | open | — |  |
 | [B22 · Update ToughC5 once M5 releases it](B22-toughc5-release.md) | open | M5's release of ToughC5 |  |
 | [B23 · Mark a safe default per build target](B23-target-safe-default.md) | open | — |  |
