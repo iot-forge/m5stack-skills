@@ -334,6 +334,12 @@ def cmd_facts(db, a, res):
     return report if a.json else "\n".join(lines)
 
 
+def probe_gaps(p):
+    """(key, gap) for each expected value of probe P that carries a datasheet_gap (ADR 0005)."""
+    return [(k, v["datasheet_gap"]) for rd in p.get("reads") or [p] for k, v in rd.get("expected", {}).items()
+            if isinstance(v, dict) and v.get("datasheet_gap")]
+
+
 def cmd_tell_apart(db, a, res):
     rids = res["revisions"]
     rows = []
@@ -358,15 +364,15 @@ def cmd_tell_apart(db, a, res):
             reads = p.get("reads") or [p]
             for rd in reads:
                 if rd.get("register"):
-                    lines.append(f"      probe: I2C {addr(rd['address'])} register {rd['register']}: " + ", ".join(f"{k}={v}" for k, v in rd["expected"].items()))
+                    lines.append(f"      probe: I2C {addr(rd['address'])} register {rd['register']}: " + ", ".join(f"{k}={v['value']}" for k, v in rd["expected"].items()))
             if p.get("note"):
                 lines.append(f"      probe note: {p['note']}")
-            if p.get("datasheet_gap"):
-                lines.append(f"      probe gap: {p['datasheet_gap']}")
+            for k, gap in probe_gaps(p):
+                lines.append(f"      probe gap ({k}): {gap}")
         lines.append(f"      caveat: {r['caveats']}")
     if not rows:
         lines.append("  none recorded. Say that the data has no way to tell these revisions apart.")
-    if any((r["probe"] or {}).get("datasheet_gap") for r in rows):
+    if any(probe_gaps(r["probe"] or {}) for r in rows):
         lines.append("A probe with a gap expects values no datasheet confirms. Say so before the user flashes it. If it reads a value outside the expected ones, report the raw value, say the data may be wrong rather than the board, and do not narrow on it.")
     lines.append("Offer the cheapest observation first and pass what the user reports back with --seen SIGNAL=VALUE.")
     lines.append("Never use the board's self-report (M5.getBoard(), UIFlow2 BOARD_ID) as evidence: it is cached in NVS across reflashes and made up by a fallback when detection fails.")

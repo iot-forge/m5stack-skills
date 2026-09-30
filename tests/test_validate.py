@@ -18,6 +18,12 @@ def run_validate(root, *args):
     return p.returncode, p.stdout
 
 
+def expected_value(signals, sid, key):
+    """The expected-value object KEY of probe SID in a loaded signals.json, whichever of its reads holds it."""
+    p = next(s for s in signals["signals"] if s["id"] == sid)["probe"]
+    return next(r["expected"][key] for r in p.get("reads") or [p] if key in r["expected"])
+
+
 class Planted(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
@@ -113,10 +119,27 @@ class Planted(unittest.TestCase):
         self.assertFails("data.features")
 
     def test_register_probe_without_datasheet(self):  # data.probe-datasheet
-        def strip(o):
-            imu = next(s for s in o["signals"] if s["id"] == "imu-probe")
-            imu["src"] = ["m5unified"]
-        self.edit("signals.json", strip)
+        self.edit("signals.json", lambda o: expected_value(o, "imu-probe", "MPU6886").update(src=["m5unified"]))
+        self.assertFails("data.probe-datasheet")
+
+    def test_vendor_docs_do_not_back_a_value(self):  # data.probe-datasheet
+        self.edit("signals.json", lambda o: expected_value(o, "imu-probe", "MPU6886").update(src=["idf-gpio-esp32"]))
+        self.assertFails("data.probe-datasheet")
+
+    def test_hardware_test_backs_a_value(self):  # data.probe-datasheet, ADR 0005 scenario 4
+        hw = {"id": "hw-2026-09-30-core2@v1.3", "kind": "hardware-test", "title": "x", "url": None, "ref": "2026-09-30"}
+        self.edit("sources.json", lambda o: o["sources"].append(hw))
+        self.edit("signals.json", lambda o: expected_value(o, "imu-probe", "MPU6886").update(src=[hw["id"]]))
+        _, out = run_validate(self.tmp, "--data")
+        self.assertNotIn("signal imu-probe", out)
+
+    def test_backed_value_keeps_its_gap_in_view(self):  # data.probe-datasheet: ingest never edits a gap; a person does
+        self.edit("signals.json", lambda o: expected_value(o, "imu-probe", "MPU6886").update(datasheet_gap="settled?"))
+        _, out = run_validate(self.tmp, "--data")
+        self.assertIn("WARN [data.probe-datasheet] signal imu-probe value MPU6886: now backed, so narrow or remove its datasheet_gap", out)
+
+    def test_probe_level_gap_fails(self):  # data.probe-datasheet: a gap belongs to one expected value
+        self.edit("signals.json", lambda o: next(s for s in o["signals"] if s["id"] == "pmic-probe")["probe"].update(datasheet_gap="x"))
         self.assertFails("data.probe-datasheet")
 
     def test_address_only_probe_needs_no_datasheet(self):  # data.probe-datasheet
@@ -128,13 +151,10 @@ class Planted(unittest.TestCase):
         self.assertNotIn("signal touch-probe", out)
 
     def test_datasheet_gap_downgrades_to_warning(self):  # data.probe-datasheet
-        def gap(o):
-            imu = next(s for s in o["signals"] if s["id"] == "imu-probe")
-            imu["src"] = ["m5unified"]
-            imu["probe"]["datasheet_gap"] = "no datasheet documents this register"
-        self.edit("signals.json", gap)
+        self.edit("signals.json", lambda o: expected_value(o, "imu-probe", "MPU6886").update(
+            src=["m5unified"], datasheet_gap="no datasheet documents this register"))
         _, out = run_validate(self.tmp, "--data")
-        self.assertIn("WARN [data.probe-datasheet] signal imu-probe", out)
+        self.assertIn("WARN [data.probe-datasheet] signal imu-probe value MPU6886", out)
         self.assertNotIn("FAIL [data.probe-datasheet] signal imu-probe", out)
 
     def test_malformed_json(self):  # data.json

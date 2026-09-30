@@ -58,6 +58,13 @@ def covered_entry(doc, rel, fragment):
     return node
 
 
+def values_read_on(entry, revision):
+    """The expected values of probe signal ENTRY that REVISION's unit reads: those keyed by its outcome (ADR 0005)."""
+    p = entry.get("probe") or {}
+    keys = {k for k, rids in entry.get("outcomes", {}).items() if revision in rids}
+    return [v for r in p.get("reads") or [p] for k, v in r.get("expected", {}).items() if k in keys and isinstance(v, dict)]
+
+
 def ingest(obj, root=ROOT):
     """Section 8: cite a hardware-test source on every entry a passing fact/device/host check covers."""
     run, date = obj["run"], obj["run"]["date"]
@@ -78,6 +85,9 @@ def ingest(obj, root=ROOT):
                 if sid not in e["src"]:
                     e["src"].append(sid)
                 e["last_verified"], e["confidence"] = date, "high"
+                for v in values_read_on(e, c.get("revision")):
+                    if sid not in v.setdefault("src", []):
+                        v["src"].append(sid)
             touched.append(f"{cover} ({c['id']})")
     sources = read_json(root / "data/sources.json")
     if not any(s["id"] == sid for s in sources["sources"]):
@@ -159,8 +169,9 @@ PLANTED = {
     "provenance": ("test_missing_provenance",),
     "v1-fields": ("test_missing_v1_field", "test_stub_with_facts", "test_upcoming_stub_passes"),
     "features": ("test_feature_not_in_list",),
-    "probe-datasheet": ("test_register_probe_without_datasheet", "test_address_only_probe_needs_no_datasheet",
-                        "test_datasheet_gap_downgrades_to_warning"),
+    "probe-datasheet": ("test_register_probe_without_datasheet", "test_vendor_docs_do_not_back_a_value",
+                        "test_hardware_test_backs_a_value", "test_backed_value_keeps_its_gap_in_view", "test_probe_level_gap_fails",
+                        "test_address_only_probe_needs_no_datasheet", "test_datasheet_gap_downgrades_to_warning"),
     "unknown": ("test_unknown_without_note",),
     "json": ("test_malformed_json",),
     "schema": ("test_schema_violation",),

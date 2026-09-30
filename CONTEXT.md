@@ -92,7 +92,7 @@ _Avoid_: peripheral, capability (when the enable-able thing is meant)
 How a pin is taken by a use on the board: `fixed` (always, whatever the firmware does — PSRAM), `feature` (only when that **Feature** is in use — SD card chip-select), or `bus` (a shared bus the user joins rather than repurposes — internal I2C). Which pins are free is computed from claims, never stored.
 
 **Source**:
-A primary reference a fact cites — an M5 docs page, schematic, `boards.txt` at a pinned version, library source, the BID registry, a datasheet, or a hardware test. Every fact names at least one. Third-party skill repos are never sources; they are leads.
+A primary reference a fact cites — an M5 docs page, schematic, `boards.txt` at a pinned version, library source, the BID registry, a datasheet, vendor documentation (an ESP-IDF page: `vendor-docs`, which never backs a probe value the way a datasheet does), or a hardware test. Every fact names at least one. Third-party skill repos are never sources; they are leads.
 _Avoid_: reference, citation (as a record name)
 
 **Drift report**:

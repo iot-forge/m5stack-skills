@@ -33,7 +33,7 @@ SELF-REPORT (not evidence) board=<n> pmic=<n> imu=<n>
 ```
 
 - `I2C <address> <part>`: the register read matched the value `data/signals.json` gives for that part.
-- `raw <value>`: printed when the probe has a `datasheet_gap` (ADR 0005), so the run records the byte the unit returned.
+- `raw <value>`: printed when any value the probe expects has a `datasheet_gap` (ADR 0005), so the run records the byte the unit returned.
 - `present raw <value>`: something answered, but with a value the data doesn't expect. Report the raw value. The data may be wrong rather than the board.
 - `absent`: nothing acknowledged at that address.
 - The `SELF-REPORT` line is recorded and never compared (`VERIFICATION.md` section 2).

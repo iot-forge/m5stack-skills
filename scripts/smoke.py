@@ -118,13 +118,14 @@ def probe_table(revision):
             continue
         if p["bus"] != "i2c_internal":
             raise DataError(f"{s['id']}: bus {p['bus']} is not one the smoke program probes")
-        row = {"id": s["id"], "gap": bool(p.get("datasheet_gap")), "reads": [], "wake_wait_us": 0, "wake_hz": None, "expect_bytes": []}
+        gap = any(isinstance(v, dict) and v.get("datasheet_gap") for r in p.get("reads") or [p] for v in r["expected"].values())
+        row = {"id": s["id"], "gap": gap, "reads": [], "wake_wait_us": 0, "wake_hz": None, "expect_bytes": []}
         presence = lambda: {"addrs": addresses(s["id"], p["address"]), "reg": None, "width": None, "expect": []}
         if p.get("wake"):
             row["kind"], row["reads"] = "wake_read", [presence()]
             row["wake_wait_us"] = 2 * p["wake"]["then_wait_us_min"]  # twice the data's minimum
             row["wake_hz"] = p["wake"]["alt_zero_address_byte_at_hz"]
-            row["expect_bytes"] = [int(b, 16) for b in p["expected"]["present"]]
+            row["expect_bytes"] = [int(b, 16) for b in p["expected"]["present"]["value"]]
             if len(row["expect_bytes"]) != p["read_bytes"] or p["read_bytes"] > MAX_READ_BYTES:
                 raise DataError(f"{s['id']}: read_bytes {p['read_bytes']} must equal the {len(row['expect_bytes'])} expected bytes "
                                 f"and be at most {MAX_READ_BYTES}")
@@ -134,7 +135,7 @@ def probe_table(revision):
                 if r["width"] not in (8, 16):
                     raise DataError(f"{s['id']}: register width {r['width']} is not 8 or 16")
                 row["reads"].append({"addrs": addresses(s["id"], r["address"]), "reg": int(r["register"], 16),
-                                     "width": r["width"], "expect": [(k, int(v, 16)) for k, v in r["expected"].items()]})
+                                     "width": r["width"], "expect": [(k, int(v["value"], 16)) for k, v in r["expected"].items()]})
         else:
             row["kind"], row["reads"] = "ack", [presence()]
         table.append(row)

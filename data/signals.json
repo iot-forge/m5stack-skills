@@ -191,10 +191,21 @@
     "register": "0x03",
     "width": 8,
     "expected": {
-     "AXP192": "0x03",
-     "AXP2101": "0x4A"
-    },
-    "datasheet_gap": "The expected values come from M5Unified. The AXP192 datasheet does not document register 0x03, and the one AXP2101 datasheet that does (rev 0.1, 2019) gives 0x47 or 0x57, not 0x4A. A hardware run on a Core2 v1.3 settles the AXP192 value; the AXP2101 value needs a Core2 v1.1 or a CoreS3-family unit."
+     "AXP192": {
+      "value": "0x03",
+      "src": [
+       "m5unified"
+      ],
+      "datasheet_gap": "The value comes from M5Unified. The AXP192 datasheet (v1.13) does not document register 0x03. A hardware run on a Core2 v1.3 settles it."
+     },
+     "AXP2101": {
+      "value": "0x4A",
+      "src": [
+       "m5unified"
+      ],
+      "datasheet_gap": "The value comes from M5Unified. The one AXP2101 datasheet that documents register 0x03 (rev 0.1, 2019) gives 0x47 or 0x57, not 0x4A. A hardware run on a Core2 v1.1 or a CoreS3-family unit settles it."
+     }
+    }
    },
    "outcomes": {
     "AXP192": [
@@ -235,9 +246,24 @@
       "register": "0x75",
       "width": 8,
       "expected": {
-       "MPU6886": "0x19",
-       "MPU9250": "0x71",
-       "MPU6050": "0x68"
+       "MPU6886": {
+        "value": "0x19",
+        "src": [
+         "ds-mpu6886"
+        ]
+       },
+       "MPU9250": {
+        "value": "0x71",
+        "src": [
+         "ds-mpu9250"
+        ]
+       },
+       "MPU6050": {
+        "value": "0x68",
+        "src": [
+         "ds-mpu6050"
+        ]
+       }
       }
      },
      {
@@ -248,7 +274,12 @@
       "register": "0x00",
       "width": 8,
       "expected": {
-       "BMI270": "0x24"
+       "BMI270": {
+        "value": "0x24",
+        "src": [
+         "ds-bmi270"
+        ]
+       }
       }
      }
     ]
@@ -294,10 +325,6 @@
    "caveats": "Needs flashing, and is inferred from a chip ID. Fire 2019.7 (SH200Q) is not covered. The MPU-9250 register map (RM-MPU-9250A-00 rev 1.4) contradicts itself on register 0x75: its header gives a reset value of 0x68, its text a default of 0x71. The data expects 0x71, as M5Unified does; a reading of 0x68 at 0x75 is ambiguous between an MPU-9250 and an MPU-6050.",
    "src": [
     "m5unified",
-    "ds-mpu6886",
-    "ds-mpu9250",
-    "ds-mpu6050",
-    "ds-bmi270",
     "m5-core2",
     "m5-core2-v1.3",
     "m5-cores3",
@@ -318,7 +345,12 @@
     "register": "0xFF",
     "width": 16,
     "expected": {
-     "present": "0x3220"
+     "present": {
+      "value": "0x3220",
+      "src": [
+       "ds-ina3221"
+      ]
+     }
     }
    },
    "outcomes": {
@@ -337,7 +369,6 @@
    "caveats": "Core2 family only. On CoreS3 an ES7210 audio codec sits at 0x40, so presence at that address means nothing there.",
    "src": [
     "m5unified",
-    "ds-ina3221",
     "m5-core2-v1.1"
    ],
    "confidence": "high",
@@ -359,13 +390,20 @@
     },
     "read_bytes": 4,
     "expected": {
-     "present": [
-      "0x04",
-      "0x11",
-      "0x33",
-      "0x43"
-     ],
-     "absent": "no ACK at 0x35 after the wake"
+     "present": {
+      "value": [
+       "0x04",
+       "0x11",
+       "0x33",
+       "0x43"
+      ],
+      "src": [
+       "ds-atecc608b-tngtls"
+      ]
+     },
+     "absent": {
+      "value": "no ACK at 0x35 after the wake"
+     }
     },
     "note": "Wake by holding SDA low for at least 60 us, or by sending 0x00 as the address byte at 100 kHz (nothing ACKs it), then wait at least 1500 us (SelfTest does not run at wake on the TNGTLS part). A plain read with no word address returns count 0x04, status 0x11 (after wake, before the first command) and a CRC-16. The chip ignores a wake while already awake, and 0x11 is only returned before its first command, so run the probe before anything else talks to it. The CRC bytes 0x33 0x43 are computed with the data sheet's rule (polynomial 0x8005, initial value 0), not quoted from it."
    },
@@ -385,8 +423,7 @@
    "caveats": "Needs flashing. The ATECC608B sleeps; a plain address scan may miss it.",
    "src": [
     "m5-core2-for-aws",
-    "m5-core2-for-aws-v1.3",
-    "ds-atecc608b-tngtls"
+    "m5-core2-for-aws-v1.3"
    ],
    "confidence": "medium",
    "last_verified": "2026-09-26"

@@ -181,17 +181,21 @@ class Query(unittest.TestCase):
         offered = {r["gpio"] for r in out["free"] + out["free_unless"] + out["shared_bus"]}
         self.assertFalse(both & offered, f"fixed pins offered: {both & offered}")
 
-    def test_probe_gap_shown(self):  # ADR 0005
+    def test_probe_gap_shown(self):  # ADR 0005: each expected value carries its own gap
         signals = json.loads((DATA / "signals.json").read_text(encoding="utf-8"))["signals"]
-        gap = next(s for s in signals if s["id"] == "pmic-probe")["probe"].get("datasheet_gap")
-        if not gap:
-            self.skipTest("pmic-probe has no datasheet gap")
+        expected = next(s for s in signals if s["id"] == "pmic-probe")["probe"]["expected"]
+        gaps = {k: v["datasheet_gap"] for k, v in expected.items() if v.get("datasheet_gap")}
+        if not gaps:
+            self.skipTest("no pmic-probe value has a datasheet gap")
         code, out = board("tell-apart", "core2")
-        self.assertIn(f"probe gap: {gap}", out)
+        self.assertIn(", ".join(f"{k}={v['value']}" for k, v in expected.items()), out)
+        for k, gap in gaps.items():
+            self.assertIn(f"probe gap ({k}): {gap}", out)
         self.assertIn("report the raw value", out)
         code, out = board_json("tell-apart", "core2")
         pmic = next(r for r in out["signals"] if r["signal"] == "pmic-probe")
-        self.assertEqual(pmic["probe"]["datasheet_gap"], gap)
+        for k, gap in gaps.items():
+            self.assertEqual(pmic["probe"]["expected"][k]["datasheet_gap"], gap)
 
     def test_directive_when_unverified(self):
         code, out = board("facts", "core2@v1.3", "pmic")

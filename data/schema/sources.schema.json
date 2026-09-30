@@ -35,6 +35,7 @@
        "library-source",
        "registry",
        "datasheet",
+       "vendor-docs",
        "hardware-test"
       ]
      },

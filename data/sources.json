@@ -262,21 +262,21 @@
   },
   {
    "id": "idf-gpio-esp32",
-   "kind": "datasheet",
+   "kind": "vendor-docs",
    "title": "ESP-IDF GPIO reference, ESP32",
    "url": "https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/peripherals/gpio.html",
    "ref": "stable, retrieved 2026-09-26"
   },
   {
    "id": "idf-gpio-esp32s3",
-   "kind": "datasheet",
+   "kind": "vendor-docs",
    "title": "ESP-IDF GPIO reference, ESP32-S3",
    "url": "https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html",
    "ref": "stable, retrieved 2026-09-26"
   },
   {
    "id": "idf-adc-oneshot-esp32s3",
-   "kind": "datasheet",
+   "kind": "vendor-docs",
    "title": "ESP-IDF ADC oneshot mode driver, ESP32-S3 (Hardware Limitations)",
    "url": "https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/adc/adc_oneshot.html",
    "ref": "stable (v6.1), retrieved 2026-09-26"

@@ -170,7 +170,7 @@ The same program exists in all four frameworks, so one flash is a `flash`, a `de
    - **ATECC608B**: present or absent. Presence separates Core2 for AWS v1.3 from Core2 v1.3.
    - **INA3221**: present or absent. Only Core2 v1.1 carries it.
 
-   The addresses, registers and expected values are not written here. They come from the parts' datasheets and are recorded as `probe` signals in `data/signals.json`. The smoke program is generated from them.
+   The addresses, registers and expected values are not written here. They come from the parts' datasheets, or from library source with a `datasheet_gap` (ADR 0005), and are recorded as `probe` signals in `data/signals.json`. The smoke program is generated from them.
 4. Prints the libraries' self-report on one line labelled `SELF-REPORT (not evidence)`. It is recorded and never compared.
 
 **Passes** `device.<framework>.<revision>` when the operator types the nonce they see on the display and it matches, and the serial line shows the same nonce. A wrong or missing nonce **fails**: the board is running something other than what was just built.
@@ -273,6 +273,7 @@ A run writes two files, named by date: `verification/runs/<YYYY-MM-DD>.json` (re
 - For each **passing** `fact`, `device` or `host` check, it:
   - adds one source to `data/sources.json`: kind `hardware-test`, id `hw-<date>-<revision>`, `url` pointing at the run report, `ref` the run date;
   - adds that source to every entry the check covers (`checks.json` lists them per check);
+  - on a covered probe signal, adds it also to the expected values the unit's revision reads (those keyed by the outcome that lists the revision), never to the others, and never edits a value or its `datasheet_gap` (ADR 0005);
   - sets `last_verified` to the run date and `confidence` to `high`.
 - For each skill, it rewrites `metadata.verification` and `metadata.tested-with` (section 10).
 - An `open-question` result never edits `data/`. The observation goes into the report's open-question observations section, and if it contradicts the data, a person edits the data.

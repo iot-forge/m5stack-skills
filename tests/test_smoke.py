@@ -84,12 +84,12 @@ class Generate(Workdir):
         read = table["pmic-probe"]["reads"][0]
         self.assertEqual(read["addrs"], [int(pmic["address"], 16)])
         self.assertEqual(read["reg"], int(pmic["register"], 16))
-        self.assertEqual(dict(read["expect"]), {k: int(v, 16) for k, v in pmic["expected"].items()})
+        self.assertEqual(dict(read["expect"]), {k: int(v["value"], 16) for k, v in pmic["expected"].items()})
         self.assertTrue(table["pmic-probe"]["gap"])
         self.assertFalse(table["imu-probe"]["gap"])
         self.assertEqual(table["ina3221-probe"]["reads"][0]["width"], 16)
         atecc = signal("atecc-probe")["probe"]
-        self.assertEqual(table["atecc-probe"]["expect_bytes"], [int(b, 16) for b in atecc["expected"]["present"]])
+        self.assertEqual(table["atecc-probe"]["expect_bytes"], [int(b, 16) for b in atecc["expected"]["present"]["value"]])
         self.assertGreaterEqual(table["atecc-probe"]["wake_wait_us"], atecc["wake"]["then_wait_us_min"])
 
     def test_bus_pins_come_from_pin_map(self):
@@ -174,8 +174,8 @@ def unit(revision, probes):
     for p in probes:
         label, pr = label_on(p["id"], revision), signal(p["id"])["probe"]
         if p["kind"] == "wake_read":
-            if isinstance(pr["expected"].get(label), list):
-                atecc = [int(b, 16) for b in pr["expected"][label]]
+            if isinstance(pr["expected"].get(label, {}).get("value"), list):
+                atecc = [int(b, 16) for b in pr["expected"][label]["value"]]
         elif p["kind"] == "ack":
             a = int(label.split()[0], 16)  # an ACK-only outcome is named after the address that answers
             regs.setdefault(a, {})
@@ -183,7 +183,7 @@ def unit(revision, probes):
             for r in reads_of(p["id"]):
                 if label in r["expected"]:
                     a = int(as_list(r["address"])[0], 16)
-                    regs.setdefault(a, {})[int(r["register"], 16)] = int(r["expected"][label], 16).to_bytes(r["width"] // 8, "big")
+                    regs.setdefault(a, {})[int(r["register"], 16)] = int(r["expected"][label]["value"], 16).to_bytes(r["width"] // 8, "big")
                     break
     return FakeI2C(regs, atecc)
 
@@ -199,12 +199,12 @@ def expected_lines(revision, probes):
             continue
         hit = None if p["kind"] == "wake_read" else next((r for r in reads_of(p["id"]) if label in r["expected"]), None)
         if p["kind"] == "wake_read":
-            present = isinstance(pr["expected"].get(label), list)
+            present = isinstance(pr["expected"].get(label, {}).get("value"), list)
             out.append(f"I2C 0x{addrs[0]:02X} {'present' if present else 'absent'}")
         elif hit is None:
             out.append(f"I2C {'/'.join(dict.fromkeys(f'0x{a:02X}' for a in addrs))} absent")
         else:
-            raw = f" raw 0x{int(hit['expected'][label], 16):0{hit['width'] // 4}X}" if p["gap"] else ""
+            raw = f" raw 0x{int(hit['expected'][label]['value'], 16):0{hit['width'] // 4}X}" if p["gap"] else ""
             out.append(f"I2C 0x{int(as_list(hit['address'])[0], 16):02X} {label}{raw}")
     return out
 
@@ -245,13 +245,13 @@ class ProbeLogic(Workdir):
     def test_unmatched_value_prints_raw(self):
         r = reads_of("pmic-probe")[0]
         a, reg = int(r["address"], 16), int(r["register"], 16)
-        v = next(x for x in range(256) if x not in {int(e, 16) for e in r["expected"].values()})
+        v = next(x for x in range(256) if x not in {int(e["value"], 16) for e in r["expected"].values()})
         lines, _ = run_main_py(self.main, FakeI2C({a: {reg: bytes([v])}}))
         self.assertIn(f"I2C 0x{a:02X} present raw 0x{v:02X}", lines)
 
     def test_unexpected_wake_reply_prints_raw(self):
         a = addrs_of("atecc-probe")[0]
-        want = [int(b, 16) for b in signal("atecc-probe")["probe"]["expected"]["present"]]
+        want = [int(b, 16) for b in signal("atecc-probe")["probe"]["expected"]["present"]["value"]]
         other = want[:1] + [(b + 1) & 0xFF for b in want[1:]]
         lines, _ = run_main_py(self.main, FakeI2C({}, atecc=other))
         self.assertIn(f"I2C 0x{a:02X} present raw {' '.join(f'{b:02X}' for b in other)}", lines)

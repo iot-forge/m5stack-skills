@@ -64,6 +64,30 @@ class Ingest(unittest.TestCase):
         self.assertEqual(after["part"], before["part"])  # ADR 0004: ingest never changes a value
         self.assertEqual(after["src"][:-1], before["src"])
 
+    def expected(self, sid):
+        """Probe SID's expected values by key, across its reads."""
+        p = self.signal(sid)["probe"]
+        return {k: v for r in p.get("reads") or [p] for k, v in r["expected"].items()}
+
+    def test_every_expected_value_is_an_outcome(self):  # how ingest finds the value a revision reads
+        for s in self.data("signals.json")["signals"]:
+            if "probe" in s:
+                p = s["probe"]
+                self.assertLessEqual({k for r in p.get("reads") or [p] for k in r["expected"]}, set(s["outcomes"]), s["id"])
+
+    def test_probe_fact_cites_only_the_value_its_revision_reads(self):  # ADR 0005, scenario 4
+        before = {sid: self.expected(sid) for sid in ("pmic-probe", "imu-probe", "atecc-probe")}
+        self.ingest(run_file([{"check": c, "result": "pass"} for c in
+                              ("fact.pmic.core2@v1.3", "fact.imu.core2@v1.3", "fact.no-atecc.core2@v1.3")]))
+        for sid, key in (("pmic-probe", "AXP192"), ("imu-probe", "BMI270"), ("atecc-probe", "absent")):
+            after = self.expected(sid)
+            self.assertEqual(after[key]["src"], before[sid][key].get("src", []) + [HW], sid)
+            self.assertEqual(after[key]["value"], before[sid][key]["value"], sid)  # ADR 0004: never a value
+            self.assertEqual(after[key].get("datasheet_gap"), before[sid][key].get("datasheet_gap"), sid)  # nor a gap
+            self.assertNotIn("last_verified", after[key], sid)
+            for other in set(after) - {key}:
+                self.assertEqual(after[other], before[sid][other], f"{sid} {other}: a {REV} run settles only its own value")
+
     def test_ingested_data_still_validates(self):
         self.ingest(run_file([{"check": c, "result": "pass"} for c in
                               ("fact.pmic.core2@v1.3", "fact.bridge.core2@v1.3", "fact.port-a-bus.core2@v1.3", "host.bridge.core2@v1.3")]))

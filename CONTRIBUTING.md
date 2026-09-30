@@ -19,7 +19,7 @@ A skill's own references go in `skills/<name>/references/`. A procedure several 
 - Cite a primary source for every fact: add it to `data/sources.json` if it isn't there, with a pinned commit, a version or a retrieval date. Other skill repos are leads, never sources; credit them in `ACKNOWLEDGEMENTS.md`.
 - Every revision lists every fact in full. Nothing is inherited, and nothing is inferred from a neighbouring revision.
 - Say "unknown" (`"unknown": true` with a note) when the sources are silent; `null` means the sources say the part is absent.
-- A probe that reads a register cites the part's datasheet. When the datasheet lacks the register or disagrees with the value, keep the value, say why in `probe.datasheet_gap`, and raise it with the maintainer (ADR 0005).
+- Each value a probe expects from a register cites the part's datasheet in its own `src`. When the datasheet lacks the register or disagrees with the value, keep the value, say why in that value's `datasheet_gap`, and raise it with the maintainer (ADR 0005).
 - `uv run scripts/refresh.py` reports where upstream has moved; it never edits `data/`. Hardware results reach `data/` only through `verify.py ingest` (ADR 0004).
 
 ## Checks
