@@ -1,6 +1,6 @@
 # B16 · Tune the seven descriptions together, then run every trigger row
 
-Status: open
+Status: in-progress
 Blocked by: [B07](B07-skill-arduino-m5unified.md), [B08](B08-skill-platformio.md), [B09](B09-skill-esp-idf.md), [B10](B10-skill-uiflow2-micropython.md), [B11](B11-skill-pinout-lookup.md), [B12](B12-skill-flashing-and-recovery.md), [B13](B13-skill-crash-decoding.md)
 Gate: none
 
