@@ -232,7 +232,7 @@ Record what happens. Each observation goes into the report verbatim, including e
 
 **Needs a CoreS3-family unit, so `not-run` in the Core2 session:**
 
-- `open-question.manual-download.cores3@v1.0` and `open-question.manual-download.cores3-se@v1.0`: M5's procedure for entering download mode by hand is to hold the **RESET** (RST) button for about 3 seconds, release it when the green LED lights, and the green LED goes out: the board is in download mode. Confirm it on each unit. Also record whether `esptool` reaches download mode over native USB without it.
+- `open-question.manual-download.cores3@v1.0` and `open-question.manual-download.cores3-se@v1.0`: M5's procedure for entering download mode by hand: hold the **RESET** (RST) button for about 3 seconds; when the green LED lights, release the button; the green LED goes out, and the board is in download mode. Confirm it on each unit. Also record whether `esptool` reaches download mode over native USB without it.
 - `open-question.mpremote.cores3-se@…`: a third-party report says `mpremote` fails on CoreS3-SE, with no error output or firmware version given. It contradicts upstream's raw-REPL behaviour. Reproduce it or refute it, with output.
 - `open-question.lite-image.cores3-lite@…`: CoreS3-Lite has no UIFlow2 image of its own. Does the CoreS3 image work on it?
 - `open-question.ghost-touch.cores3-se@…`: a reported phantom-touch fault on one CoreS3-SE unit.
