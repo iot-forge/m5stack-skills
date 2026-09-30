@@ -1,6 +1,6 @@
 # B21 · Cite each expected probe value to its own source
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: none
 
