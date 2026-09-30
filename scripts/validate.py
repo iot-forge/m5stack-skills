@@ -313,7 +313,7 @@ def check_data(root, rep):
             for rid in t["covers"] + list(t["per_revision"]):
                 if rid not in revisions:
                     rep.fail("data.revision-refs", f"targets/{tc} {t['id']}: revision '{rid}' does not exist")
-    backing = {x["id"] for x in (sources or {}).get("sources", []) if x.get("kind") in ("datasheet", "hardware-test")}
+    backing_ids = {x["id"] for x in (sources or {}).get("sources", []) if x.get("kind") in ("datasheet", "hardware-test")}
     for s in (signals or {}).get("signals", []):
         cite(f"signals {s['id']}", s.get("src"))
         probe = s.get("probe") or {}
@@ -328,11 +328,11 @@ def check_data(root, rep):
                     continue
                 if not isinstance(v, dict):
                     rep.fail("data.probe-datasheet", f"{where}: a register value is an object {{value, src}}")
-                elif v.get("datasheet_gap") and backing & set(v.get("src", [])):  # ingest never edits a gap; a person does
+                elif v.get("datasheet_gap") and backing_ids & set(v.get("src", [])):  # ingest never edits a gap; a person does
                     rep.warn("data.probe-datasheet", f"{where}: now backed, so narrow or remove its datasheet_gap: {v['datasheet_gap']}")
                 elif v.get("datasheet_gap"):
                     rep.warn("data.probe-datasheet", f"{where}: no datasheet or hardware test confirms it: {v['datasheet_gap']}")
-                elif not backing & set(v.get("src", [])):
+                elif not backing_ids & set(v.get("src", [])):
                     rep.fail("data.probe-datasheet", f"{where}: cites no datasheet or hardware-test source (or give it a datasheet_gap)")
         for out, rids in s["outcomes"].items():
             for rid in rids:
