@@ -30,11 +30,11 @@ Change nothing else in `VERIFICATION.md`: B19 also edits it.
 
 ## Definition of done
 
-- [ ] The four changes are made
-- [ ] `grep -rn "g0-download" .` finds nothing outside `backlog/B06-shared-procedures.md` and this file
-- [ ] `grep -rni "G0 long-press" .` finds nothing outside `backlog/`
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
+- [x] The four changes are made
+- [x] `grep -rn "g0-download" .` finds nothing outside `backlog/B06-shared-procedures.md` and this file
+- [x] `grep -rni "G0 long-press" .` finds nothing outside `backlog/`
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
 - [ ] `uv run scripts/verify.py run --offline` passes
 
 ## Stopping rule
@@ -45,8 +45,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Rewrite the download-mode bullet in `VERIFICATION.md` section 7
-- **Files touched**: none
-- **Last commit**: none
+- **Done**: the four changes, plus the marker in `skills/flashing-and-debugging/SKILL.md` and the Markers line of B12's Checkpoint, which the `g0-download` grep also required (so B12's closed record now names the new ids). Both greps pass; `validate.py` exits 0 (it failed on the three stale markers after the `checks.json` rename, then passed); unittest 118 OK, 1 skipped. Reviewed on both axes; the one finding (split the section 7 bullet into `download-mode.md`'s steps) is applied.
+- **Next**: run `uv run scripts/verify.py run --offline`. The first run was stopped by the host running low on memory, not by a failure. If it passes, tick the last box and close the issue.
+- **Files touched**: `VERIFICATION.md`, `verification/checks.json`, `references/download-mode.md`, `skills/flashing-and-debugging/SKILL.md`, `backlog/B12-skill-flashing-and-recovery.md`
+- **Last commit**: 7068402
 - **Open questions**: none
