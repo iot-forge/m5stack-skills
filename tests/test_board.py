@@ -74,8 +74,8 @@ class Query(unittest.TestCase):
             code, out = board_json("targets", "basic", "--toolchain", tc)
             row = out["toolchains"][tc]["targets"][0]
             self.assertEqual(row["safe_default"]["options"], want["options"])
-        code, text = board("targets", "basic", "--toolchain", "arduino")
-        self.assertIn(f"safe default when the revision is unknown: {want['options']}", text)
+            code, text = board("targets", "basic", "--toolchain", tc)
+            self.assertIn(f"safe default when the revision is unknown: {want['options']}", text)
         code, out = board_json("targets", "core2", "--toolchain", "esp-bsp")
         self.assertIsNone(out["toolchains"]["esp-bsp"]["targets"][0]["safe_default"])
         code, text = board("targets", "core2", "--toolchain", "esp-bsp")

@@ -24,7 +24,7 @@
    "note": "M5Stack core 1.0.x used hyphenated ids (m5stack-core-esp32, m5stack-core2, ...); from 3.x they match espressif's underscore ids.",
    "safe_default": {
     "options": "FlashSize=4M (the default)",
-    "gives_up": "a 16MB revision (v2.5 to v2.7) runs it, but the build uses only the first 4MB of its flash",
+    "gives_up": "v2.5, v2.6 and v2.7 run it, but the build uses only the first 4MB of their 16MB flash",
     "src": [
      "arduino-m5stack-boards",
      "idf-flash-size-check"

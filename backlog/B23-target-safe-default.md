@@ -28,12 +28,12 @@ A build target's `per_revision` lines in `data/targets/*.json` can set different
 
 ## Definition of done
 
-- [ ] Every target whose covered revisions differ in `per_revision` has a cited `safe_default`, or `null` with a note
-- [ ] `validate.py` enforces it, with a planted fixture that fails
-- [ ] `board.py targets basic --toolchain arduino` prints the safe default; a test covers it
+- [x] Every target whose covered revisions differ in `per_revision` has a cited `safe_default`, or `null` with a note
+- [x] `validate.py` enforces it, with a planted fixture that fails
+- [x] `board.py targets basic --toolchain arduino` prints the safe default; a test covers it
 - [ ] `arduino-m5unified` uses the printed safe default instead of reasoning, and its body stays under 10 kB
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
 
 ## Stopping rule
 
@@ -43,8 +43,16 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: List the targets whose covered revisions differ in `per_revision`, across all five files in `data/targets/`
-- **Files touched**: none
-- **Last commit**: none
-- **Open questions**: none
+- **Done**:
+  - Three targets diverge across all five `data/targets/` files: `esp32:esp32:m5stack_core` and `m5stack:esp32:m5stack_core` (flash size) get `safe_default` `FlashSize=4M (the default)`, cited to their `boards.txt` and to the new source `idf-flash-size-check` (ESP-IDF v5.5 `esp_flash_spi_init.c`: a chip larger than the image header is used at the header's size; a smaller one fails the probe). `espressif/m5stack_core_2` gets `null`; its target `note` (compile-time PMU) says why. Proof: `uv run scripts/validate.py` exits 0.
+  - The `Gaps:` text naming a menu choice (`Choose Flash Size 16MB`, Gray and M5GO) needs no change: every Gray and M5GO revision has 16MB.
+  - `validate.py` rule `data.safe-default` (missing on a diverging target; `null` without a note), planted by `test_diverging_target_without_safe_default` and `test_no_safe_default_without_note`, mapped in `verify.py` `PLANTED` and `checks.json` (`data.planted-safe-default`).
+  - `board.py targets` prints `safe default when the revision is unknown: ...` or `no safe default: ...` only while the covered revisions in play diverge; `test_target_safe_default`.
+  - `arduino-m5unified` step 4, `platformio` step 3 and `esp-idf` step 3 (esp-bsp) use the printed safe default. `python -m unittest discover tests`: 127 run, OK.
+  - Not done: the `arduino-m5unified` body is 10163 bytes (`validate.py`), over 10000; it was 10166 before this issue.
+- **Next**: the maintainer answers the open questions below; then do B33's block-2 move (or fold it in here), re-run `validate.py`, and close.
+- **Files touched**: `data/schema/targets.schema.json`, `data/sources.json`, `data/targets/arduino-esp32.json`, `data/targets/arduino-m5stack.json`, `data/targets/esp-bsp.json`, `scripts/validate.py`, `scripts/verify.py`, `scripts/board.py`, `verification/checks.json`, `tests/test_validate.py`, `tests/test_board.py`, `skills/arduino-m5unified/SKILL.md`, `skills/platformio/SKILL.md`, `skills/esp-idf/SKILL.md`
+- **Last commit**: the commit that writes this Checkpoint
+- **Open questions** (the maintainer decides):
+  - The body-size item can't be met without moving text. Do B33 next and close B23 after it, or fold B33's block-2 move into B23?
+  - A `safe_default` lives on a target, so it can't cover a choice between targets. PlatformIO splits Basic across two ids (`m5stack-core-esp32`, `m5stack-core-esp32-16M`), and esp-idf's flash step goes through `facts ... DIVERGES`. Both skills keep their prose fallback ("for flash size, the smaller"). Should that choice live in data too (a toolchain-level field, a product-level entry), or stay as prose?

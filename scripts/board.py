@@ -560,11 +560,12 @@ def cmd_targets(db, a, res):
                 lines.append(f"    note: {t['note']}")
             for r, v in t["per_revision"].items():
                 lines.append(f"    {short(r, rids)}: {v}")
-            if "safe_default" in t:
-                sd = t["safe_default"]
+            sd = t.get("safe_default")
+            if sd:
                 lines.append(f"    safe default when the revision is unknown: {sd['options']}. Gives up: {sd['gives_up']}"
-                             + ("" if sd["confidence"] == "high" else f"  [{sd['confidence']} confidence]") if sd else
-                             "    no safe default: these options cannot be guessed; identify the revision before building")
+                             + ("" if sd["confidence"] == "high" else f"  [{sd['confidence']} confidence]"))
+            elif "safe_default" in t:
+                lines.append("    no safe default: these options cannot be guessed; identify the revision before building")
         for r, rec in info["no_own_target"].items():
             if rec:
                 lines.append(f"{tc}: {short(r, rids)} has no target of its own. Recommended: {rec['target']}. Gaps: {rec['gaps']}"
