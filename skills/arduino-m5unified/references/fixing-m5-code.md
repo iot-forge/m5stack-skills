@@ -41,11 +41,17 @@ Done when the user reports a press registering.
 
 ## Audio cut short or silent
 
-1. If the sketch also records, run `board.py pins "<user's words>" --use speaker,mic` and apply SKILL.md's `CONFLICTS` rule (Write step 3).
+1. If the sketch also records, run `board.py pins "<user's words>" --use speaker,mic` and apply its `CONFLICTS` line: end one before beginning the other (`M5.Speaker.end()` before `M5.Mic.begin()`, and back).
 2. A single `M5.Speaker.playRaw()` clip larger than about 1 MB may play only in part *(untested on hardware: open-question.playraw-1mb.core2@v1.3)*. Split it and queue the parts on one channel, or stream it from the SD card.
 3. Check that the volume is set (`M5.Speaker.setVolume()`) and that nothing ends the speaker before the clip finishes (`M5.Speaker.isPlaying()`).
 
 Done when the user reports the whole clip playing.
+
+## Serial shows nothing
+
+1. If serial shows nothing on a board whose `facts <board> usb_bridge` reads `native USB`, check the FQBN's USB CDC on boot option (`board details`).
+
+Done when the user reports output in the monitor; if there is still none, the `flashing-and-debugging` skill takes it.
 
 ## Sources
 

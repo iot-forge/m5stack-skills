@@ -83,7 +83,7 @@ Done when the project builds (with arduino-cli below, or through the `platformio
    3. If it fails again, stop and hand off to the `flashing-and-debugging` skill with the `doctor.py` output and the exact error text.
 
    Done when the retry succeeds, or the hand-off is made.
-6. Ask the user to run `arduino-cli monitor -p <port> -c baudrate=<the sketch's rate>` themselves (it runs until stopped) and report the screen and serial output. If serial shows nothing on a board whose `facts <board> usb_bridge` reads `native USB`, check the FQBN's USB CDC on boot option (`board details`). Still nothing, garbage, a panic or repeated resets: hand off to the `flashing-and-debugging` skill. The sketch runs but misbehaves: read `${CLAUDE_SKILL_DIR}/references/fixing-m5-code.md`. Done when the user reports the board doing what the sketch should.
+6. Ask the user to run `arduino-cli monitor -p <port> -c baudrate=<the sketch's rate>` themselves (it runs until stopped) and report the screen and serial output. Read `${CLAUDE_SKILL_DIR}/references/fixing-m5-code.md` when serial shows nothing, or the sketch runs but misbehaves. Still nothing, garbage, a panic or repeated resets: hand off to the `flashing-and-debugging` skill. Done when the user reports the board doing what the sketch should.
 
 ## Hand-offs
 
