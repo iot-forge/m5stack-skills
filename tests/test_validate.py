@@ -173,6 +173,14 @@ class Planted(unittest.TestCase):
         self.edit("products/gray.json", lambda o: o["revisions"]["gray@2019.06"]["psram"].pop("note"))
         self.assertFails("data.unknown")
 
+    def test_diverging_target_without_safe_default(self):  # data.safe-default
+        self.edit("targets/arduino-esp32.json", lambda o: next(t for t in o["targets"] if t["id"] == "esp32:esp32:m5stack_core").pop("safe_default"))
+        self.assertFails("data.safe-default")
+
+    def test_no_safe_default_without_note(self):  # data.safe-default: null says why no choice is safe
+        self.edit("targets/esp-bsp.json", lambda o: next(t for t in o["targets"] if t["id"] == "espressif/m5stack_core_2").pop("note"))
+        self.assertFails("data.safe-default")
+
 
 if __name__ == "__main__":
     unittest.main()

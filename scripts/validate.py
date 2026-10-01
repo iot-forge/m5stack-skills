@@ -313,6 +313,12 @@ def check_data(root, rep):
             for rid in t["covers"] + list(t["per_revision"]):
                 if rid not in revisions:
                     rep.fail("data.revision-refs", f"targets/{tc} {t['id']}: revision '{rid}' does not exist")
+            if len({t["per_revision"].get(r) for r in t["covers"]}) > 1 and "safe_default" not in t:
+                rep.fail("data.safe-default", f"targets/{tc} {t['id']}: its revisions' per_revision options differ, so it needs a safe_default (or null with a note)")
+            elif "safe_default" in t and t["safe_default"] is None and not t.get("note"):
+                rep.fail("data.safe-default", f"targets/{tc} {t['id']}: safe_default null needs a note saying why no option set is safe")
+            elif t.get("safe_default"):
+                cite(f"targets/{tc} {t['id']} safe_default", t["safe_default"].get("src"))
     backing_ids = {x["id"] for x in (sources or {}).get("sources", []) if x.get("kind") in ("datasheet", "hardware-test")}
     for s in (signals or {}).get("signals", []):
         cite(f"signals {s['id']}", s.get("src"))

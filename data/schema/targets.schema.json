@@ -54,6 +54,37 @@
        },
        "note": {
         "type": "string"
+       },
+       "safe_default": {
+        "anyOf": [
+         {
+          "type": "null"
+         },
+         {
+          "allOf": [
+           {
+            "$ref": "#/$defs/provenance"
+           },
+           {
+            "type": "object",
+            "required": [
+             "options",
+             "gives_up"
+            ],
+            "properties": {
+             "options": {
+              "type": "string",
+              "minLength": 1
+             },
+             "gives_up": {
+              "type": "string",
+              "minLength": 10
+             }
+            }
+           }
+          ]
+         }
+        ]
        }
       }
      }

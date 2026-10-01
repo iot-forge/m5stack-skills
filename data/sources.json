@@ -261,6 +261,13 @@
    "ref": "f0ef949"
   },
   {
+   "id": "idf-flash-size-check",
+   "kind": "library-source",
+   "title": "ESP-IDF esp_flash_spi_init.c: a flash larger than the image header's size is used at the header's size; a smaller one fails the probe",
+   "url": "https://github.com/espressif/esp-idf/blob/8c750b088c7cd857d079c0eeb495da199b359461/components/spi_flash/esp_flash_spi_init.c#L413-L420",
+   "ref": "v5.5 (8c750b0)"
+  },
+  {
    "id": "idf-gpio-esp32",
    "kind": "vendor-docs",
    "title": "ESP-IDF GPIO reference, ESP32",

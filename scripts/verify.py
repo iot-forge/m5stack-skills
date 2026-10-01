@@ -176,6 +176,7 @@ PLANTED = {
     "json": ("test_malformed_json",),
     "schema": ("test_schema_violation",),
     "pinmap-stub": ("test_unpopulated_pin_map_with_pins",),
+    "safe-default": ("test_diverging_target_without_safe_default", "test_no_safe_default_without_note"),
 }
 # tests that guard the fixture copy, not a rule: never a data.planted-* result; if one fails, every planted result is blocked
 FIXTURE_GUARDS = {"test_committed_data_passes", "test_fixture_leaves_out_smoke"}

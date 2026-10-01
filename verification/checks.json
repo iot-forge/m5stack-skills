@@ -88,6 +88,11 @@
    "skills": []
   },
   {
+   "id": "data.planted-safe-default",
+   "kind": "data",
+   "skills": []
+  },
+  {
    "id": "query.branch-core2",
    "kind": "query",
    "skills": [

@@ -21,7 +21,17 @@
    ],
    "confidence": "high",
    "last_verified": "2026-08-07",
-   "note": "build.flash_size defaults to 4MB; a FlashSize menu offers 4M and 16M"
+   "note": "build.flash_size defaults to 4MB; a FlashSize menu offers 4M and 16M",
+   "safe_default": {
+    "options": "FlashSize=4M (the default)",
+    "gives_up": "a 16MB revision (v2.5 to v2.7) runs it, but the build uses only the first 4MB of its flash",
+    "src": [
+     "arduino-esp32-boards",
+     "idf-flash-size-check"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-09-30"
+   }
   },
   {
    "id": "esp32:esp32:m5stack_fire",

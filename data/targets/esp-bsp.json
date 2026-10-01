@@ -36,7 +36,8 @@
    ],
    "confidence": "medium",
    "last_verified": "2026-08-07",
-   "note": "the PMU choice is compile-time; the wrong one leaves the backlight dead"
+   "note": "the PMU choice is compile-time; the wrong one leaves the backlight dead",
+   "safe_default": null
   },
   {
    "id": "espressif/m5stack_core_s3",
