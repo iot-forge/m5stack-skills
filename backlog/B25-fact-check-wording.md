@@ -1,6 +1,6 @@
 # B25 · Say what a `fact` check observes and which revisions it rejects
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: none
 
@@ -30,11 +30,11 @@ Change nothing else in `VERIFICATION.md`, and don't change `verification/checks.
 
 ## Definition of done
 
-- [ ] The two changes are made, and nothing else in `VERIFICATION.md` changes
-- [ ] `grep -rn "reads the chip directly" .` finds nothing outside `backlog/`
-- [ ] The sibling-separation sentence names every other revision `board.py facts "Core2"` puts in play, and every Core2 for AWS revision
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
+- [x] The two changes are made, and nothing else in `VERIFICATION.md` changes
+- [x] `grep -rn "reads the chip directly" .` finds nothing outside `backlog/`
+- [x] The sibling-separation sentence names every other revision `board.py facts "Core2"` puts in play, and every Core2 for AWS revision
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
 
 ## Stopping rule
 
@@ -44,8 +44,14 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Reword the "Self-report is not evidence" rule in `VERIFICATION.md` section 2
-- **Files touched**: none
-- **Last commit**: none
+- **Done**: all. Recorded results:
+  - Section 2: "reads the chip directly" became "observes the unit itself: a chip register, the USB bridge's VID/PID, a bus scan, or what a person sees on the unit". The second sentence is unchanged. `grep -rn "reads the chip directly" .` finds only this issue file.
+  - Section 6: the heading is "**`fact` checks.**". The lead-in fails a check on a value `data/` gives for another Core2 or Core2 for AWS revision and not for v1.3. The `pmic`, `imu`, `no-atecc` and `bridge` bullets now name the revisions they reject. `no-atecc` said only "Core2 for AWS v1.3", but the ATECC608B is on both Core2 for AWS revisions.
+  - The sibling-separation sentence, from `board.py facts` for all six revisions: `fact.imu` rejects v1.0 and 2023.02. `fact.pmic`, `fact.imu`, `fact.no-ina3221` and `fact.power-led` reject v1.1. `fact.imu`, `fact.bridge` and `fact.no-atecc` reject Core2 for AWS v1.0. `fact.no-atecc` alone rejects Core2 for AWS v1.3. `fact.imu` for v1.1 and AWS v1.0, and `fact.bridge` for AWS v1.0, go beyond the issue's "Today it is" list, but the data says so. `fact.bridge` is not listed for v1.0 or 2023.02 because those units shipped with either bridge. Port A is G32/G33 on Core2 v1.3 and Core2 for AWS v1.3 (`board.py pins`).
+  - `board.py facts "Core2 for AWS"` (an Input) crashed with a TypeError. Core2 for AWS v1.0's RTC gives `backup_battery` as `[true, false]`, and `fmt_entry` used it as a dict key. It was fixed inside this issue, test-first, in commit b54bfe3: a list now prints "backup cell on some units". `test_backup_cell_on_some_units` covers it.
+  - `verification/checks.json` is unchanged. `uv run scripts/validate.py`: 0 failures. `python -m unittest discover tests`: 128 OK (1 skipped).
+  - Reviewed with `/code-review` (standards and spec). Applied: `fact.bridge` added for Core2 for AWS v1.0, and "shares every other value" narrowed to the values the checks observe (the RTC cell and the LED bar differ). Not applied: the repeated fallback string in `fmt_entry`, because the schema doesn't constrain `backup_battery`, so the `.get` default stays for any other value. Also not applied: "session" in "before the session starts", because section 6 says "hardware session" throughout.
+- **Next**: none
+- **Files touched**: `VERIFICATION.md`, `scripts/board.py`, `tests/test_board.py`
+- **Last commit**: see `git log -- backlog/B25-fact-check-wording.md`
 - **Open questions**: none

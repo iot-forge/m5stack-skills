@@ -62,7 +62,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B22 · Update ToughC5 once M5 releases it](B22-toughc5-release.md) | open | M5's release of ToughC5 |  |
 | [B23 · Mark a safe default per build target](B23-target-safe-default.md) | done | B33 |  |
 | [B24 · Keep the smoke build output out of the planted-error fixtures](B24-planted-fixtures-copy-smoke-output.md) | done | — | yes |
-| [B25 · Say what a `fact` check observes and which revisions it rejects](B25-fact-check-wording.md) | in-progress | — |  |
+| [B25 · Say what a `fact` check observes and which revisions it rejects](B25-fact-check-wording.md) | done | — |  |
 | [B26 · Move the hardware-session steps into checks.json](B26-board-steps-in-checks-json.md) | open | — |  |
 | [B27 · Stop the trigger rows at the first account-limit message](B27-stop-triggers-at-spend-limit.md) | open | — |  |
 | [B28 · Make the skills' `allowed-tools` pre-approve `board.py` and `doctor.py`](B28-skill-allowed-tools-preapproval.md) | open | — |  |
