@@ -48,7 +48,7 @@ Full definitions are in `CONTEXT.md`. The ones this file leans on:
 Two rules apply to every check:
 
 - **Compiling is not working.** A `build` pass never makes a board fact `hardware-verified`, and neither does a successful upload on its own.
-- **Self-report is not evidence.** A `fact` check reads the chip directly. It never compares against `M5.getBoard()`, `M5.Power.getType()`, `M5.Imu.getType()` or `BOARD_ID`.
+- **Self-report is not evidence.** A `fact` check observes the unit itself: a chip register, the USB bridge's VID/PID, a bus scan, or what a person sees on the unit. It never compares against `M5.getBoard()`, `M5.Power.getType()`, `M5.Imu.getType()` or `BOARD_ID`.
 
 Check ids are `<kind>.<subject>`, with `.<revision>` added where a board is needed. For example: `query.branch-core2`, `trigger.row-07`, `device.arduino.core2@v1.3`, `fact.pmic.core2@v1.3`.
 
@@ -204,15 +204,17 @@ Before starting, record in the results file:
 | 8 | `flash.uiflow2.core2@v1.3`, `device.uiflow2.core2@v1.3`, and the UIFlow2 open questions | Flash the UIFlow2 image `board.py targets` recommends, with `esptool write-flash 0x0`, then push the smoke `main.py` with `mpremote` | Reading the nonce; the observations in section 7 |
 | any time | `fact.power-led.core2@v1.3` | Note the power LED's colour | Looking |
 
-**`fact` checks, from step 3's probe output.** Each one compares the observed value with what `board.py facts core2@v1.3` says, and **fails** if the observation matches another Core2 revision's value instead:
+**`fact` checks.** Each one compares the observed value with what `board.py facts core2@v1.3` says, and **fails** when the observation is a value `data/` gives for another Core2 or Core2 for AWS revision and not for v1.3. Where v1.3 shares a value with a sibling, that check cannot reject the sibling, so each bullet names only the revisions it does reject:
 
-- `fact.pmic.core2@v1.3`: the PMIC is an AXP192, not an AXP2101.
-- `fact.imu.core2@v1.3`: the IMU is a BMI270, not an MPU6886.
-- `fact.no-atecc.core2@v1.3`: no ATECC608B. If one answers, the unit is a Core2 for AWS v1.3.
+- `fact.pmic.core2@v1.3`: the PMIC is an AXP192, not an AXP2101; an AXP2101 means the unit is a Core2 v1.1.
+- `fact.imu.core2@v1.3`: the IMU is a BMI270, not an MPU6886; an MPU6886 means the unit is a Core2 v1.0, 2023.02 or v1.1, or a Core2 for AWS v1.0.
+- `fact.no-atecc.core2@v1.3`: no ATECC608B. If one answers, the unit is a Core2 for AWS, v1.0 or v1.3.
 - `fact.no-ina3221.core2@v1.3`: no INA3221, which is on v1.1 only.
-- `fact.bridge.core2@v1.3`: comes from step 1's VID/PID.
+- `fact.bridge.core2@v1.3`: comes from step 1's VID/PID. A CP2104 means the unit is a Core2 for AWS v1.0, or a Core2 v1.0 or 2023.02 that shipped with one.
 - `fact.port-a-bus.core2@v1.3`: with any I2C Grove unit on Port A, a scan on the Port A pins `board.py pins` gives finds the unit, and a scan of the internal bus does not. With no Grove unit to hand, the result is `blocked`.
 - `fact.power-led.core2@v1.3`: comes from the "any time" row. The power LED is green, not blue; a blue LED means the unit is a Core2 v1.1.
+
+Together these checks separate v1.3 from every other Core2 and Core2 for AWS revision: `fact.imu.core2@v1.3` rejects v1.0 and 2023.02; `fact.pmic.core2@v1.3`, `fact.imu.core2@v1.3`, `fact.no-ina3221.core2@v1.3` and `fact.power-led.core2@v1.3` reject v1.1; `fact.imu.core2@v1.3` and `fact.no-atecc.core2@v1.3` reject Core2 for AWS v1.0; and `fact.no-atecc.core2@v1.3` alone rejects Core2 for AWS v1.3, which shares every other value with v1.3. The SKU on the sticker, recorded before the session starts, is a cross-check.
 
 ## 7. Open questions
 
