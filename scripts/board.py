@@ -544,6 +544,8 @@ def cmd_targets(db, a, res):
             if cov:
                 rows.append({"target": t["id"], "covers": cov, "all_in_play": set(cov) == set(rids), "note": t.get("note"),
                              "per_revision": {r: v for r, v in t["per_revision"].items() if r in rids}, "confidence": t["confidence"]})
+                if len({t["per_revision"].get(r) for r in cov}) > 1:  # the revisions in play need different options
+                    rows[-1]["safe_default"] = t.get("safe_default")
         uncovered = [r for r in rids if not any(r in x["covers"] for x in rows)]
         out[tc] = {"targets": rows, "no_own_target": {r: db["revisions"][r].get("recommended_targets", {}).get(tc) for r in uncovered}}
     socs = sorted({db["revisions"][r]["soc"] for r in rids})
@@ -558,6 +560,11 @@ def cmd_targets(db, a, res):
                 lines.append(f"    note: {t['note']}")
             for r, v in t["per_revision"].items():
                 lines.append(f"    {short(r, rids)}: {v}")
+            if "safe_default" in t:
+                sd = t["safe_default"]
+                lines.append(f"    safe default when the revision is unknown: {sd['options']}. Gives up: {sd['gives_up']}"
+                             + ("" if sd["confidence"] == "high" else f"  [{sd['confidence']} confidence]") if sd else
+                             "    no safe default: these options cannot be guessed; identify the revision before building")
         for r, rec in info["no_own_target"].items():
             if rec:
                 lines.append(f"{tc}: {short(r, rids)} has no target of its own. Recommended: {rec['target']}. Gaps: {rec['gaps']}"

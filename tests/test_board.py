@@ -68,6 +68,21 @@ class Query(unittest.TestCase):
         self.assertEqual(sorted(out["revisions_in_play"]), sorted(covers))
         self.assertGreater(len(covers), 1)
 
+    def test_target_safe_default(self):  # B23: one option set for revisions in play whose per-revision lines differ
+        for tc in ("arduino-esp32", "arduino-m5stack"):
+            want = next(t["safe_default"] for t in load(f"targets/{tc}.json")["targets"] if t["id"].endswith(":m5stack_core"))
+            code, out = board_json("targets", "basic", "--toolchain", tc)
+            row = out["toolchains"][tc]["targets"][0]
+            self.assertEqual(row["safe_default"]["options"], want["options"])
+        code, text = board("targets", "basic", "--toolchain", "arduino")
+        self.assertIn(f"safe default when the revision is unknown: {want['options']}", text)
+        code, out = board_json("targets", "core2", "--toolchain", "esp-bsp")
+        self.assertIsNone(out["toolchains"]["esp-bsp"]["targets"][0]["safe_default"])
+        code, text = board("targets", "core2", "--toolchain", "esp-bsp")
+        self.assertIn("no safe default", text)
+        code, out = board_json("targets", "basic@v2.7", "--toolchain", "arduino-esp32")
+        self.assertNotIn("safe_default", out["toolchains"]["arduino-esp32"]["targets"][0], "printed once the revisions agree")
+
     def test_stub_refuses(self):  # query.stub-refuses
         for b in ("CoreMP135", "Tab5"):
             code, out = board("facts", b)
