@@ -1,6 +1,6 @@
 # B33 · Bring the arduino-m5unified body back under 10 kB
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: none
 
