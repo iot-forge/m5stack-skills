@@ -1,6 +1,6 @@
 # B23 · Mark a safe default per build target
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: none
 
