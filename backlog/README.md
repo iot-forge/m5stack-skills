@@ -60,7 +60,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B20 · Rename the CoreS3 download-mode checks after M5's procedure](B20-rename-cores3-download-checks.md) | done | — |  |
 | [B21 · Cite each expected probe value to its own source](B21-per-value-probe-sources.md) | done | — |  |
 | [B22 · Update ToughC5 once M5 releases it](B22-toughc5-release.md) | open | M5's release of ToughC5 |  |
-| [B23 · Mark a safe default per build target](B23-target-safe-default.md) | in-progress | B33 |  |
+| [B23 · Mark a safe default per build target](B23-target-safe-default.md) | done | B33 |  |
 | [B24 · Keep the smoke build output out of the planted-error fixtures](B24-planted-fixtures-copy-smoke-output.md) | done | — | yes |
 | [B25 · Say what a `fact` check observes and which revisions it rejects](B25-fact-check-wording.md) | open | — |  |
 | [B26 · Move the hardware-session steps into checks.json](B26-board-steps-in-checks-json.md) | open | — |  |
@@ -70,7 +70,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B30 · Make doctor.py report the ESP-IDF version on Windows](B30-doctor-idf-version-on-windows.md) | open | — |  |
 | [B31 · Add a hardware check: the esp-bsp Core2 display on an ILI9342E unit](B31-esp-bsp-ili9342e-check.md) | done | — | yes |
 | [B32 · Print each connector's power, ground and control positions](B32-connector-power-positions.md) | open | — |  |
-| [B33 · Bring the arduino-m5unified body back under 10 kB](B33-arduino-body-under-10kb.md) | in-progress | — |  |
+| [B33 · Bring the arduino-m5unified body back under 10 kB](B33-arduino-body-under-10kb.md) | done | — |  |
 | [B34 · Make doctor.py find addr2line in the toolchain folders](B34-doctor-addr2line-toolchain-folders.md) | open | — |  |
 | [B35 · Give the safe choice between targets a home in the data](B35-cross-target-safe-choice.md) | open | — |  |
 

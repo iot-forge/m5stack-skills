@@ -1,6 +1,6 @@
 # B23 · Mark a safe default per build target
 
-Status: in-progress
+Status: done
 Blocked by: [B33](B33-arduino-body-under-10kb.md)
 Gate: none
 
@@ -31,7 +31,7 @@ A build target's `per_revision` lines in `data/targets/*.json` can set different
 - [x] Every target whose covered revisions differ in `per_revision` has a cited `safe_default`, or `null` with a note
 - [x] `validate.py` enforces it, with a planted fixture that fails
 - [x] `board.py targets basic --toolchain arduino` prints the safe default; a test covers it
-- [ ] `arduino-m5unified` uses the printed safe default instead of reasoning, and its body stays under 10 kB
+- [x] `arduino-m5unified` uses the printed safe default instead of reasoning, and its body stays under 10 kB
 - [x] `uv run scripts/validate.py` exits 0
 - [x] `python -m unittest discover tests` passes
 
@@ -43,16 +43,17 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**:
+- **Done**: all. Recorded results:
   - Three targets diverge across all five `data/targets/` files: `esp32:esp32:m5stack_core` and `m5stack:esp32:m5stack_core` (flash size) get `safe_default` `FlashSize=4M (the default)`, cited to their `boards.txt` and to the new source `idf-flash-size-check` (ESP-IDF v5.5 `esp_flash_spi_init.c`: a chip larger than the image header is used at the header's size; a smaller one fails the probe). `espressif/m5stack_core_2` gets `null`; its target `note` (compile-time PMU) says why. Proof: `uv run scripts/validate.py` exits 0.
   - The `Gaps:` text naming a menu choice (`Choose Flash Size 16MB`, Gray and M5GO) needs no change: every Gray and M5GO revision has 16MB.
   - `validate.py` rule `data.safe-default` (missing on a diverging target; `null` without a note), planted by `test_diverging_target_without_safe_default` and `test_no_safe_default_without_note`, mapped in `verify.py` `PLANTED` and `checks.json` (`data.planted-safe-default`).
   - `board.py targets` prints `safe default when the revision is unknown: ...` or `no safe default: ...` only while the covered revisions in play diverge; `test_target_safe_default`.
   - `arduino-m5unified` step 4, `platformio` step 3 and `esp-idf` step 3 (esp-bsp) use the printed safe default. `python -m unittest discover tests`: 127 run, OK.
-  - Not done: the `arduino-m5unified` body is 10163 bytes (`validate.py`), over 10000; it was 10166 before this issue.
-- **Next**: when B33 is done, re-run `uv run scripts/validate.py`; with no `skill.size` warning for `arduino-m5unified`, tick the last box and close.
+  - The `arduino-m5unified` body was 10163 bytes after this issue (10166 before); B33 brought it to 9562, with no `skill.size` warning.
+  - Reviewed with `/code-review` (standards and spec); the findings applied are in 6432f27.
+- **Next**: none
 - **Files touched**: `data/schema/targets.schema.json`, `data/sources.json`, `data/targets/arduino-esp32.json`, `data/targets/arduino-m5stack.json`, `data/targets/esp-bsp.json`, `scripts/validate.py`, `scripts/verify.py`, `scripts/board.py`, `verification/checks.json`, `tests/test_validate.py`, `tests/test_board.py`, `skills/arduino-m5unified/SKILL.md`, `skills/platformio/SKILL.md`, `skills/esp-idf/SKILL.md`, `backlog/B35-cross-target-safe-choice.md` (new)
-- **Last commit**: 6432f27 (review findings), then the commit that records the decisions below
+- **Last commit**: see `git log -- backlog/B23-target-safe-default.md`
 - **Open questions** (settled by the maintainer, 2026-09-30):
   - The body-size item can't be met without moving text. Do B33 next and close B23 after it, or fold B33's block-2 move into B23? Settled: B33 next, unchanged; B23 is blocked by it and closes after.
   - A `safe_default` lives on a target, so it can't cover a choice between targets (PlatformIO's two Basic ids, esp-idf's flash via `facts ... DIVERGES`); both skills keep their prose fallback. Should that choice live in data? Settled: yes, in a new issue, [B35](B35-cross-target-safe-choice.md); its shape is decided there.

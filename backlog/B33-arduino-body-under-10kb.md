@@ -1,6 +1,6 @@
 # B33 · Bring the arduino-m5unified body back under 10 kB
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: none
 
@@ -31,10 +31,10 @@ A reference file never points to another reference file, but `${CLAUDE_PLUGIN_RO
 
 ## Definition of done
 
-- [ ] The two blocks are in `skills/arduino-m5unified/references/`, each reached by a `Read … when …` pointer at its step, and each step still ends on its `Done when` criterion
-- [ ] `uv run scripts/validate.py` exits 0 and prints no `skill.size` warning for `arduino-m5unified`; the body is at most 9,500 bytes as `validate.py` measures it (record the number in the Checkpoint)
-- [ ] `git diff` shows the moved text unchanged apart from the pointer wording
-- [ ] `python -m unittest discover tests` passes
+- [x] The two blocks are in `skills/arduino-m5unified/references/`, each reached by a `Read … when …` pointer at its step, and each step still ends on its `Done when` criterion
+- [x] `uv run scripts/validate.py` exits 0 and prints no `skill.size` warning for `arduino-m5unified`; the body is at most 9,600 bytes (9,500 until the maintainer accepted 9,562, 2026-09-30) as `validate.py` measures it (record the number in the Checkpoint)
+- [x] `git diff` shows the moved text unchanged apart from the pointer wording
+- [x] `python -m unittest discover tests` passes
 
 The description does not change, so no trigger rows need running.
 
@@ -46,8 +46,13 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Move block 1 (the `board.py pins` handling) and re-run `validate.py`
-- **Files touched**: none
-- **Last commit**: none
+- **Done**: all. Recorded results:
+  - Block 1 is in `references/choosing-pins.md`, reached from Write step 3 (`Read ... when the code uses sd, speaker, ...`). Block 2 is in `references/unknown-revision.md`, reached from FQBN step 4 (`Read ... when per-revision lines differ and the revision is unknown`). Both `identifying-a-revision.md` pointers stay in SKILL.md. Each step ends on its `Done when`.
+  - Wording changes, all pointer wording: each file opens with its trigger as a "For ..." line; "(read `identifying-a-revision.md`)" and "Read `identifying-a-revision.md` when ..." became "the shared procedure SKILL.md names at Write step 3 / at its FQBN step 4"; Write step 3's Done reads "comes from `board.py pins`" instead of "from this output".
+  - The two blocks left the body at 9,674 bytes. The maintainer approved a third move (2026-09-30): Build step 6's native-USB sentence went to a new "Serial shows nothing" section of `references/fixing-m5-code.md`, and step 6 points there. That file's Audio step 1 pointed to "SKILL.md's `CONFLICTS` rule (Write step 3)", which had moved, so it states the rule itself. The CDC-on-boot claim now cites arduino-esp32 `boards.txt` and `HardwareSerial.h` at `d8a1bf6`.
+  - Body: 9,562 bytes as `validate.py` measures it. The maintainer accepted it over the 9,500 target (2026-09-30). `uv run scripts/validate.py`: 0 failures, no `skill.size` warning. `python -m unittest discover tests`: 127 OK (1 skipped).
+  - Reviewed with `/code-review` (standards and spec). Applied: the uncited CDC claim, "this step" named, the step 3 pointer in `Read ... when` form. Not applied: a `## Sources` in `choosing-pins.md` (moved text; the same API fact is cited in `fixing-m5-code.md`), and `boundaries.md`'s "pins --use (inline, rule 3)" (it still isn't handed off).
+- **Next**: none
+- **Files touched**: `skills/arduino-m5unified/SKILL.md`, `skills/arduino-m5unified/references/choosing-pins.md` (new), `skills/arduino-m5unified/references/unknown-revision.md` (new), `skills/arduino-m5unified/references/fixing-m5-code.md`
+- **Last commit**: see `git log -- backlog/B33-arduino-body-under-10kb.md`
 - **Open questions**: none
