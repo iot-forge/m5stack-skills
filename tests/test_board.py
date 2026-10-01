@@ -212,6 +212,19 @@ class Query(unittest.TestCase):
         for k, gap in gaps.items():
             self.assertEqual(pmic["probe"]["expected"][k]["datasheet_gap"], gap)
 
+    def test_backup_cell_on_some_units(self):  # B25: a list of backup_battery values crashed fmt_entry
+        rids = [rid for p in (DATA / "products").glob("*.json")
+                for rid, r in load(f"products/{p.name}")["revisions"].items()
+                if isinstance(r.get("rtc", {}).get("backup_battery"), list)]
+        if not rids:
+            self.skipTest("no RTC lists more than one backup_battery value")
+        for rid in rids:
+            code, out = board("facts", rid, "rtc")
+            self.assertEqual(code, 0, rid)
+            self.assertIn("backup cell on some units", out)
+            code, out = board_json("facts", rid, "rtc")
+            self.assertEqual(code, 0, rid)
+
     def test_directive_when_unverified(self):
         code, out = board("facts", "core2@v1.3", "pmic")
         self.assertIn("has not been checked on hardware", out)
