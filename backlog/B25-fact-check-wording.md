@@ -1,6 +1,6 @@
 # B25 · Say what a `fact` check observes and which revisions it rejects
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: none
 
