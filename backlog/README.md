@@ -1,6 +1,6 @@
 # Backlog
 
-The remaining work on this plugin, as issues a session with no other context can pick up. The design is decided: an issue says what to build, never what to decide, except B17 and B18, which are marked as decisions.
+The remaining work on this plugin, as issues a session with no other context can pick up. The design is decided: an issue says what to build, never what to decide, except B17 and B18, which are marked as decisions, and step 1 of B35, which settles a data shape with the maintainer.
 
 ## Start here
 
@@ -55,12 +55,12 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B15 · Finish verify.py and checks.json](B15-verify-py-and-checks.md) | done | B14, B19 | yes |
 | [B16 · Tune the seven descriptions together, then run every trigger row](B16-description-tuning.md) | done | B07, B08, B09, B10, B11, B12, B13 |  |
 | [B17 · Decide: where and when the checks run](B17-decide-ci.md) | open | B15 |  |
-| [B18 · Decide: publication](B18-decide-publication.md) | open | B01, B02, B03, B04, B05, B06, B07, B08, B09, B10, B11, B12, B13, B14, B15, B16, B17, B19, B20, B21, B23, B24, B25, B26, B27, B28, B29, B30, B31, B32, B33, B34 |  |
+| [B18 · Decide: publication](B18-decide-publication.md) | open | B01, B02, B03, B04, B05, B06, B07, B08, B09, B10, B11, B12, B13, B14, B15, B16, B17, B19, B20, B21, B23, B24, B25, B26, B27, B28, B29, B30, B31, B32, B33, B34, B35 |  |
 | [B19 · Align VERIFICATION.md with B01](B19-align-verification-with-b01.md) | done | B01 | yes |
 | [B20 · Rename the CoreS3 download-mode checks after M5's procedure](B20-rename-cores3-download-checks.md) | done | — |  |
 | [B21 · Cite each expected probe value to its own source](B21-per-value-probe-sources.md) | done | — |  |
 | [B22 · Update ToughC5 once M5 releases it](B22-toughc5-release.md) | open | M5's release of ToughC5 |  |
-| [B23 · Mark a safe default per build target](B23-target-safe-default.md) | in-progress | — |  |
+| [B23 · Mark a safe default per build target](B23-target-safe-default.md) | in-progress | B33 |  |
 | [B24 · Keep the smoke build output out of the planted-error fixtures](B24-planted-fixtures-copy-smoke-output.md) | done | — | yes |
 | [B25 · Say what a `fact` check observes and which revisions it rejects](B25-fact-check-wording.md) | open | — |  |
 | [B26 · Move the hardware-session steps into checks.json](B26-board-steps-in-checks-json.md) | open | — |  |
@@ -72,6 +72,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B32 · Print each connector's power, ground and control positions](B32-connector-power-positions.md) | open | — |  |
 | [B33 · Bring the arduino-m5unified body back under 10 kB](B33-arduino-body-under-10kb.md) | open | — |  |
 | [B34 · Make doctor.py find addr2line in the toolchain folders](B34-doctor-addr2line-toolchain-folders.md) | open | — |  |
+| [B35 · Give the safe choice between targets a home in the data](B35-cross-target-safe-choice.md) | open | — |  |
 
 **First issue: B01.** After it, B03 and B06 can run in parallel.
 

@@ -1,7 +1,7 @@
 # B23 · Mark a safe default per build target
 
 Status: in-progress
-Blocked by: none
+Blocked by: [B33](B33-arduino-body-under-10kb.md)
 Gate: none
 
 ## Before you start
@@ -50,9 +50,9 @@ At about 90% of your context, or before ending for any other reason: overwrite t
   - `board.py targets` prints `safe default when the revision is unknown: ...` or `no safe default: ...` only while the covered revisions in play diverge; `test_target_safe_default`.
   - `arduino-m5unified` step 4, `platformio` step 3 and `esp-idf` step 3 (esp-bsp) use the printed safe default. `python -m unittest discover tests`: 127 run, OK.
   - Not done: the `arduino-m5unified` body is 10163 bytes (`validate.py`), over 10000; it was 10166 before this issue.
-- **Next**: the maintainer answers the open questions below; then do B33's block-2 move (or fold it in here), re-run `validate.py`, and close.
-- **Files touched**: `data/schema/targets.schema.json`, `data/sources.json`, `data/targets/arduino-esp32.json`, `data/targets/arduino-m5stack.json`, `data/targets/esp-bsp.json`, `scripts/validate.py`, `scripts/verify.py`, `scripts/board.py`, `verification/checks.json`, `tests/test_validate.py`, `tests/test_board.py`, `skills/arduino-m5unified/SKILL.md`, `skills/platformio/SKILL.md`, `skills/esp-idf/SKILL.md`
-- **Last commit**: the commit that writes this Checkpoint
-- **Open questions** (the maintainer decides):
-  - The body-size item can't be met without moving text. Do B33 next and close B23 after it, or fold B33's block-2 move into B23?
-  - A `safe_default` lives on a target, so it can't cover a choice between targets. PlatformIO splits Basic across two ids (`m5stack-core-esp32`, `m5stack-core-esp32-16M`), and esp-idf's flash step goes through `facts ... DIVERGES`. Both skills keep their prose fallback ("for flash size, the smaller"). Should that choice live in data too (a toolchain-level field, a product-level entry), or stay as prose?
+- **Next**: when B33 is done, re-run `uv run scripts/validate.py`; with no `skill.size` warning for `arduino-m5unified`, tick the last box and close.
+- **Files touched**: `data/schema/targets.schema.json`, `data/sources.json`, `data/targets/arduino-esp32.json`, `data/targets/arduino-m5stack.json`, `data/targets/esp-bsp.json`, `scripts/validate.py`, `scripts/verify.py`, `scripts/board.py`, `verification/checks.json`, `tests/test_validate.py`, `tests/test_board.py`, `skills/arduino-m5unified/SKILL.md`, `skills/platformio/SKILL.md`, `skills/esp-idf/SKILL.md`, `backlog/B35-cross-target-safe-choice.md` (new)
+- **Last commit**: 6432f27 (review findings), then the commit that records the decisions below
+- **Open questions** (settled by the maintainer, 2026-09-30):
+  - The body-size item can't be met without moving text. Do B33 next and close B23 after it, or fold B33's block-2 move into B23? Settled: B33 next, unchanged; B23 is blocked by it and closes after.
+  - A `safe_default` lives on a target, so it can't cover a choice between targets (PlatformIO's two Basic ids, esp-idf's flash via `facts ... DIVERGES`); both skills keep their prose fallback. Should that choice live in data? Settled: yes, in a new issue, [B35](B35-cross-target-safe-choice.md); its shape is decided there.
