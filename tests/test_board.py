@@ -222,7 +222,7 @@ class Query(unittest.TestCase):
             code, out = board("facts", rid, "rtc")
             self.assertEqual(code, 0, rid)
             self.assertIn("backup cell on some units", out)
-            code, out = board_json("facts", rid, "rtc")
+            code, _ = board_json("facts", rid, "rtc")
             self.assertEqual(code, 0, rid)
 
     def test_directive_when_unverified(self):

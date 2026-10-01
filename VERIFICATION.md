@@ -214,7 +214,7 @@ Before starting, record in the results file:
 - `fact.port-a-bus.core2@v1.3`: with any I2C Grove unit on Port A, a scan on the Port A pins `board.py pins` gives finds the unit, and a scan of the internal bus does not. With no Grove unit to hand, the result is `blocked`.
 - `fact.power-led.core2@v1.3`: comes from the "any time" row. The power LED is green, not blue; a blue LED means the unit is a Core2 v1.1.
 
-Together these checks separate v1.3 from every other Core2 and Core2 for AWS revision: `fact.imu.core2@v1.3` rejects v1.0 and 2023.02; `fact.pmic.core2@v1.3`, `fact.imu.core2@v1.3`, `fact.no-ina3221.core2@v1.3` and `fact.power-led.core2@v1.3` reject v1.1; `fact.imu.core2@v1.3` and `fact.no-atecc.core2@v1.3` reject Core2 for AWS v1.0; and `fact.no-atecc.core2@v1.3` alone rejects Core2 for AWS v1.3, which shares every other value with v1.3. The SKU on the sticker, recorded before the session starts, is a cross-check.
+Together these checks separate v1.3 from every other Core2 and Core2 for AWS revision: `fact.imu.core2@v1.3` rejects v1.0 and 2023.02; `fact.pmic.core2@v1.3`, `fact.imu.core2@v1.3`, `fact.no-ina3221.core2@v1.3` and `fact.power-led.core2@v1.3` reject v1.1; `fact.imu.core2@v1.3`, `fact.bridge.core2@v1.3` and `fact.no-atecc.core2@v1.3` reject Core2 for AWS v1.0; and `fact.no-atecc.core2@v1.3` alone rejects Core2 for AWS v1.3, which shares every value the other checks observe. The SKU on the sticker, recorded before the session starts, is a cross-check.
 
 ## 7. Open questions
 
