@@ -68,7 +68,7 @@ Done when the project builds (with arduino-cli below, or through the `platformio
    - Pass on `note:` lines and `[medium confidence]` as printed.
 
    Done when you have one FQBN, with its options, that is right for every revision still in play.
-4. When per-revision lines differ and the revision is unknown, run `board.py tell-apart "<user's words>"` and ask for the cheapest observation, then re-run `targets` with `--seen`. Read `${CLAUDE_PLUGIN_ROOT}/references/identifying-a-revision.md` when only host or probe signals remain. If the user can observe nothing, use the option every revision in play accepts (for flash size, the smaller) and say what the others give up. Done when the lines agree for the revisions left, or the fallback is told.
+4. When per-revision lines differ and the revision is unknown, run `board.py tell-apart "<user's words>"` and ask for the cheapest observation, then re-run `targets` with `--seen`. Read `${CLAUDE_PLUGIN_ROOT}/references/identifying-a-revision.md` when only host or probe signals remain. If the user can observe nothing, use the printed `safe default` and pass on what it gives up; on `no safe default`, identify the revision. Done when the lines agree for the revisions left, or the fallback is told.
 5. Run `arduino-cli board details -b <FQBN>`: it checks the id and options against the installed core, whose ids vary by version (the `note:` line). Done when it exits 0, lists every option you set, and the user has the FQBN and any gaps.
 
 ## Build and upload with arduino-cli
