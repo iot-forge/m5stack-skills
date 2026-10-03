@@ -1,6 +1,6 @@
 # B30 · Make doctor.py report the ESP-IDF version on Windows
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: none
 
@@ -29,11 +29,11 @@ Then remove the `doctor.py` bullet from the Windows list in `skills/esp-idf/refe
 
 ## Definition of done
 
-- [ ] In an ESP-IDF-activated PowerShell on Windows, `uv run scripts/doctor.py` prints `idf.py: ESP-IDF v<version>` (record the output in the Checkpoint)
-- [ ] Output that isn't `ESP-IDF v<version>` is never printed as the version; a unit test plants a stand-in that prints `v1.0.3` and one that prints a Python error
-- [ ] `skills/esp-idf/references/idf-environment.md` no longer describes the old `doctor.py` output
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
+- [x] In an ESP-IDF-activated PowerShell on Windows, `uv run scripts/doctor.py` prints `idf.py: ESP-IDF v<version>` (record the output in the Checkpoint)
+- [x] Output that isn't `ESP-IDF v<version>` is never printed as the version; a unit test plants a stand-in that prints `v1.0.3` and one that prints a Python error
+- [x] `skills/esp-idf/references/idf-environment.md` no longer describes the old `doctor.py` output
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
 
 ## Stopping rule
 
@@ -43,8 +43,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Reproduce `idf.py: No module named 'rich_click'` from `uv run scripts/doctor.py` in an ESP-IDF PowerShell
-- **Files touched**: none
-- **Last commit**: none
+- **Done**: all. In a PowerShell with EIM's profile dot-sourced (ESP-IDF v6.1, Windows 11, 2026-10-02), `uv run scripts/doctor.py` printed `idf.py: No module named 'rich_click'; IDF_PATH=C:\esp\v6.1\esp-idf` before the change and prints `idf.py: ESP-IDF v6.1; IDF_PATH=C:\esp\v6.1\esp-idf` after it. `doctor.py` has its own `find_idf`, the same lookup as `smoke.py`'s. Only a whole line reading `ESP-IDF v<version>` is a version; anything else leaves `version` empty and goes in a new `note` field, which the text line prints in the version's place. With `IDF_PYTHON_ENV_PATH` unset in the same shell, the line reads ``idf.py: found, but `idf.py --version` printed "Please use idf.py only in an ESP-IDF shell environment. ...", not an ESP-IDF version``. `tests/test_doctor.py` plants stand-ins that print `v1.0.3`, a Python import error, a line that only starts like a version, nothing, and one that never answers. `idf-environment.md` no longer has the `doctor.py` bullet or its observation. `uv run scripts/validate.py` exits 0 and `python -m unittest discover tests` passes (155 tests).
+- **Next**: none
+- **Files touched**: scripts/doctor.py, tests/test_doctor.py, skills/esp-idf/references/idf-environment.md, backlog/B34-doctor-addr2line-toolchain-folders.md
+- **Last commit**: acae77f
 - **Open questions**: none

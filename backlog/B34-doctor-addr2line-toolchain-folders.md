@@ -20,7 +20,7 @@ Search, after PATH, the folders that reference file lists:
 - PlatformIO: `~/.platformio/packages/toolchain-xtensa-esp32/bin/` and `toolchain-xtensa-esp32s3/bin/`
 - ESP-IDF: `$IDF_TOOLS_PATH/tools/xtensa-esp-elf/<version>/xtensa-esp-elf/bin/` (`~/.espressif` when `IDF_TOOLS_PATH` is unset), and `C:\Espressif\tools\...` from the EIM installer
 
-Print each decoder found with its full path, in the text and `--json` output. Write it test-first, in a new `tests/test_doctor.py` with a fake home tree. Then update the reference's step 4 to read the path from `doctor.py`, and keep the folder list only as the fallback if the maintainer still wants it. `scripts/*.py` and `tests/*.py` are LF. The reference file is LF.
+Print each decoder found with its full path, in the text and `--json` output. Write it test-first, in `tests/test_doctor.py` (B30 created it) with a fake home tree. Then update the reference's step 4 to read the path from `doctor.py`, and keep the folder list only as the fallback if the maintainer still wants it. `scripts/*.py` and `tests/*.py` are LF. The reference file is LF.
 
 ## Definition of done
 
@@ -40,7 +40,7 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 <!-- Overwrite, never append. The next session starts from here. -->
 
 - **Done**: nothing yet
-- **Next**: Write `tests/test_doctor.py` with a fake Arduino15 tree and watch it fail
+- **Next**: Add a test with a fake Arduino15 tree to `tests/test_doctor.py` and watch it fail
 - **Files touched**: none
 - **Last commit**: none
 - **Open questions**: none
