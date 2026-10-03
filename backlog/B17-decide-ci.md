@@ -1,6 +1,6 @@
 # B17 · Decide: where and when the checks run
 
-Status: open
+Status: in-progress
 Blocked by: [B15](B15-verify-py-and-checks.md)
 Gate: none
 
