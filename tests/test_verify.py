@@ -465,6 +465,33 @@ class Board(unittest.TestCase):
         self.assertEqual(res[f"flash.esp-idf.{REV}"]["result"], "blocked")
         self.assertEqual(res[f"device.esp-idf.{REV}"]["blocked_by"], [f"flash.esp-idf.{REV}"])
 
+    def test_the_core2_session_asks_in_this_order_and_blocks_on_these(self):  # pins section 6 for core2@v1.3 (B26)
+        obj, _ = self.board()
+        self.assertEqual([r["check"].removesuffix(f".{REV}") for r in obj["results"]], [
+            "host.port", "host.bridge", "host.driver", "fact.bridge",
+            "flash.arduino", "device.arduino", "open-question.auto-download", "open-question.lcd-driver", "fact.pmic",
+            "fact.imu", "fact.no-atecc", "fact.no-ina3221", "fact.port-a-bus",
+            "flash.platformio", "device.platformio", "flash.esp-idf", "device.esp-idf", "open-question.esp-bsp-ili9342e",
+            "handoff.live", "flash.uiflow2", "device.uiflow2", "open-question.mpremote-launcher",
+            "open-question.uiflow2-image-v1.3", "open-question.stdout-raw-repl",
+            "fact.power-led", "open-question.speaker-mic", "open-question.touch-below-240", "open-question.playraw-1mb"])
+        _, res = self.board({f"host.port.{REV}": "f"})
+        on_arduino = ("open-question.lcd-driver", "fact.pmic", "fact.imu", "fact.no-atecc", "fact.no-ina3221", "fact.port-a-bus")
+        self.assertEqual({c.removesuffix(f".{REV}"): r["blocked_by"][0].removesuffix(f".{REV}") for c, r in res.items()
+                          if r.get("blocked_by")}, {
+            "host.bridge": "host.port", "host.driver": "host.port", "fact.bridge": "host.bridge",
+            "flash.arduino": "host.port", "device.arduino": "flash.arduino", "open-question.auto-download": "host.port",
+            **{c: "device.arduino" for c in on_arduino},
+            "flash.platformio": "host.port", "device.platformio": "flash.platformio",
+            "flash.esp-idf": "host.port", "device.esp-idf": "flash.esp-idf",
+            "open-question.esp-bsp-ili9342e": "host.port", "handoff.live": "host.port",
+            "flash.uiflow2": "host.port", "device.uiflow2": "flash.uiflow2",
+            **{c: "flash.uiflow2" for c in ("open-question.mpremote-launcher", "open-question.uiflow2-image-v1.3",
+                                            "open-question.stdout-raw-repl")},
+            **{c: "host.port" for c in ("open-question.speaker-mic", "open-question.touch-below-240",
+                                        "open-question.playraw-1mb")}})
+        self.assertEqual(sum(p.startswith("Step ") for p in self.op.prompts), 1)  # only the erase step asks "done?"
+
     def test_the_run_validates_against_the_results_schema(self):
         obj, _ = self.board({f"flash.arduino.{REV}": "f"})
         schema = verify.read_json(REPO / "verification/results.schema.json")
