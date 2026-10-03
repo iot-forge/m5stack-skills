@@ -477,8 +477,11 @@ def cmd_pins(db, a, res):
         else:
             res_["not_brought_out"].append(g)
     buses = {b: {"kind": v["kind"], "pins": v["pins"], "members": bus_members(db, rids, b)} for b, v in pm["buses"].items()}
+    other = {c["id"]: [p for p in c.get("positions", []) if "gpio" not in p] for c in pm["connectors"]}
+    other = {c: ps for c, ps in other.items() if ps}
     if a.json:
-        return {"revisions_in_play": rids, "pin_map": pm["id"], "using": use, "no_pins_for": absent, **res_, "buses": buses}
+        return {"revisions_in_play": rids, "pin_map": pm["id"], "using": use, "no_pins_for": absent, **res_, "buses": buses,
+                "other_connector_positions": other}
 
     def cell(r):
         s = r["gpio"]
@@ -515,6 +518,9 @@ def cmd_pins(db, a, res):
     dedicated = [b for b in pm["buses"] if not any(r["bus"] == b for r in res_["shared_bus"]) and pm["buses"][b].get("pins")]
     if dedicated:
         lines.append("Buses on connectors that are yours alone: " + "; ".join(f"{b} {pm['buses'][b]['pins']}" for b in dedicated))
+    if other:
+        lines.append("OTHER CONNECTOR POSITIONS (not GPIOs; names as recorded): "
+                     + "; ".join(f"{c}: " + ", ".join(f"{p['n']} {p['pin']}" for p in ps) for c, ps in other.items()))
     cautions = sorted({c for r in res_["free"] + res_["free_unless"] for c in r["cautions"]})
     if cautions:
         lines.append("Cautions: " + "; ".join(f"!{r['id']}: {r['text']}" for r in soc["rules"] if r["id"] in cautions))

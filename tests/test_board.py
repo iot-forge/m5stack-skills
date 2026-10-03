@@ -169,6 +169,27 @@ class Query(unittest.TestCase):
             self.assertIn("port_a:", exposed)
             self.assertIn(f"{g} ({exposed})", line)
 
+    def test_non_gpio_connector_positions_shown(self):
+        for product in ("core2", "tough", "basic", "cores3"):
+            pm = pin_map_of(product)
+            recorded = {c["id"]: [p for p in c.get("positions", []) if "gpio" not in p] for c in pm["connectors"]}
+            recorded = {c: ps for c, ps in recorded.items() if ps}
+            self.assertIn("mbus", recorded, f"{product}'s pin map records no non-GPIO M-Bus position")
+            code, out = board_json("pins", product)
+            self.assertEqual(code, 0)
+            self.assertEqual(out["other_connector_positions"], recorded, product)
+            code, text = board("pins", product)
+            self.assertEqual(code, 0)
+            line = next(row for row in text.splitlines() if row.startswith("OTHER CONNECTOR POSITIONS"))
+            for conn, positions in recorded.items():
+                self.assertIn(f"{conn}: " + ", ".join(f"{p['n']} {p['pin']}" for p in positions), line, product)
+
+    def test_tough_terminal_positions_recorded(self):
+        pm = pin_map_of("tough")
+        for conn in ("rs485", "reset_port"):
+            positions = next(c["positions"] for c in pm["connectors"] if c["id"] == conn)
+            self.assertTrue([p for p in positions if "gpio" not in p], f"Tough's {conn} records no non-GPIO position")
+
     def test_cores3_camera_and_sd_pins_taken(self):
         pm = pin_map_of("cores3")
         self.assertTrue(pins_claimed_by(pm, "camera"), "CoreS3's pin map claims no camera pins")
