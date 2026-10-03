@@ -55,8 +55,17 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Reproduce the denial with one headless run and read the stream's `permission_denied` event
-- **Files touched**: none
-- **Last commit**: none
-- **Open questions**: none
+- **Done**:
+  - Reproduced (claude 2.1.288, 2026-10-02): section 4's command, request "I have an M5Stack Core2 and its power LED is green. Which revision is it?", `--plugin-dir` given with forward slashes. `board-identification` loaded and ran `uv run "C:/Personal/Projects/iotforge2/m5core-skills/scripts/board.py" find "Core2" --seen power-led=green`; the stream has `permission_denied`, `decision_reason: "This command requires approval"`. The skill body's `${CLAUDE_PLUGIN_ROOT}` had expanded to that same forward-slash path, so the command was the one the body told the model to run.
+  - Cause found: in `claude -p`, a skill's `allowed-tools` grant applies only when the skill is invoked as a slash command. When the model invokes it through the Skill tool, nothing is granted. The rule's form, `${CLAUDE_PLUGIN_ROOT}` and path slashes are not the cause. The documentation says the opposite: <https://code.claude.com/docs/en/skills> ("Pre-approve tools for a skill", and "Restrict Claude's skill access": "Skills that define `allowed-tools` grant Claude access to those tools without per-use approval during the turn that invokes the skill"). Experiments, all with a scratch plugin or project skill whose body says to run `uv run "<root>/scripts/echo.py" <name>` (haiku, Git Bash, `< /dev/null`):
+    - The rule text matches: `--allowedTools 'Bash(uv run "C:/…/scripts/board.py" *)'` on the CLI allowed `uv run "C:/…/board.py" find "Core2"`; the same rule without the quotes did not.
+    - Model-invoked, `--allowedTools Skill`: denied for a plugin skill with `Bash(uv run "${CLAUDE_PLUGIN_ROOT}/scripts/echo.py" *)`, with the literal path, without quotes, and with `Bash(uv run *)`; denied for a project skill (`.claude/skills/`) with `Bash(uv run *)` as a YAML list and as a string, and with a bare `Bash`.
+    - Model-invoked, `Skill` allowed through `--settings` instead of the flag: denied.
+    - Slash-invoked (`claude -p "/p-str"`, with `MSYS_NO_PATHCONV=1` so Git Bash leaves the `/` alone), with and without `--allowedTools Skill`: allowed, output `ECHO-OK ['p-str']`.
+    - A `hooks: PreToolUse` in the skill's frontmatter returning `permissionDecision: allow` (with `if:` the exact rule) was not honored either when model-invoked: no hook ran, the call was denied. So nothing in a skill's frontmatter can grant the call.
+- **Next**: The maintainer picks the route (Open question 1), then act on it.
+- **Files touched**: none in the repo yet (experiments live outside it)
+- **Last commit**: the claim, 50d6e9b
+- **Open questions**:
+  1. (maintainer) The Definition of done's second and third boxes need a model-invoked run to be allowed, and no change to `allowed-tools`, the Paths command or the template can do that. Routes: a plugin-level `hooks/hooks.json` PreToolUse hook that allows exactly the two script commands (untested; also a design change, since it lives outside the skills); or park B28 as blocked on Claude Code, report the gap upstream, and keep the skills as they are.
+  2. (maintainer) Whether the gap is `-p`-only: in a fresh interactive `claude --plugin-dir <repo>` session, ask the request above and see whether `board.py` runs without a prompt.
