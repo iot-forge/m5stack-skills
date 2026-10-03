@@ -34,15 +34,19 @@ GET = {
 }
 
 
+class NoAnswer(str):
+    """What run() returns in place of output when the tool printed nothing because it never ran to the end."""
+
+
 def run(cmd):
-    """(ok, first useful line of output). Never raises."""
+    """(found, output): stdout, or stderr when stdout is empty. Never raises."""
     exe = shutil.which(cmd[0])
     if not exe:
         return False, None
     try:
         p = subprocess.run([exe, *cmd[1:]], capture_output=True, text=True, timeout=TIMEOUT, encoding="utf-8", errors="replace")
     except (OSError, subprocess.TimeoutExpired) as e:
-        return True, f"found at {exe}, but it did not answer: {e.__class__.__name__}"
+        return True, NoAnswer(f"found at {exe}, but it did not answer: {e.__class__.__name__}")
     out = (p.stdout or p.stderr).strip()
     return True, out
 
@@ -69,16 +73,21 @@ def find_idf(which=shutil.which):
 
 
 def idf_version(cmd):
-    """The idf.py entry for CMD, the command find_idf gave. `version` only when the output has a line reading
-    `ESP-IDF v<version>`; otherwise `output` holds the last line it did print: EIM's idf.py.exe launcher answers
-    with its own version under Git Bash, and an idf.py started under the wrong Python answers with an import error."""
-    ok, out = run([*cmd, "--version"]) if cmd else (False, None)
-    if not ok:
-        return {"found": False, "version": None}
-    m = re.search(r"(?m)^ESP-IDF v\S+", out or "")
-    if m:
-        return {"found": True, "version": m.group(0)}
-    return {"found": True, "version": None, "output": (out or "").splitlines()[-1].strip() if out else ""}
+    """The idf.py entry for CMD, the command find_idf gave. `version` only when a whole line of the output reads
+    `ESP-IDF v<version>`; otherwise `note` says what happened, quoting the last line it did print: EIM's idf.py.exe
+    launcher answers with its own version under Git Bash, and an idf.py started under the wrong Python answers
+    with an import error."""
+    found, out = run([*cmd, "--version"]) if cmd else (False, None)
+    m = re.search(r"(?m)^(ESP-IDF v\S+)\s*$", out or "")
+    if not found or m:
+        note = None
+    elif isinstance(out, NoAnswer):
+        note = str(out)
+    elif not out:
+        note = "found, but `idf.py --version` printed nothing"
+    else:
+        note = f'found, but `idf.py --version` printed "{out.splitlines()[-1].strip()}", not an ESP-IDF version'
+    return {"found": found, "version": m.group(1) if m else None, "note": note}
 
 
 def idf_py():
@@ -89,14 +98,12 @@ def tool_line(name, t):
     """One tool's line of the text report."""
     if not t["found"]:
         return f"  {name}: MISSING (get it: {GET[name]})"
-    version, extra = t["version"] or "found", ""
+    extra = ""
     if name == "arduino-cli":
         extra = "; cores: " + ", ".join(f"{c} {v or 'NOT INSTALLED'}" for c, v in t["cores"].items())
     if name == "idf.py":
-        if not t["version"]:
-            version = f'found, but `idf.py --version` printed "{t["output"]}", not an ESP-IDF version'
         extra = f"; IDF_PATH={t['IDF_PATH'] or 'NOT SET'}"
-    return f"  {name}: {version}{extra}"
+    return f"  {name}: {t['version'] or t.get('note') or 'found'}{extra}"
 
 
 def toolchains():
