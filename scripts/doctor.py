@@ -17,6 +17,8 @@ from pathlib import Path
 
 TIMEOUT = 20  # seconds; `pio --version` can take ~10 s on its first run while it bootstraps
 VENV_BIN, EXE = ("Scripts", ".exe") if os.name == "nt" else ("bin", "")
+DECODERS = ("xtensa-esp32-elf-addr2line", "xtensa-esp32s3-elf-addr2line")  # ESP32, ESP32-S3
+EIM_TOOLS = Path("C:/Espressif/tools")  # where EIM, ESP-IDF's installer, puts the tools on Windows
 BRIDGES = {  # USB vendor ID -> what it means on an M5Stack Core (vendor IDs from the Linux usb.ids registry)
     "10C4": "Silicon Labs CP210x bridge (CP2104)",
     "1A86": "WCH bridge (CH9102)",
@@ -28,7 +30,7 @@ GET = {
     "idf.py": "https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html",
     "esptool": "https://docs.espressif.com/projects/esptool/en/latest/esp32/installation.html",
     "mpremote": "https://docs.micropython.org/en/latest/reference/mpremote.html",
-    "addr2line": "ships with each toolchain (Arduino esp32 core, PlatformIO, ESP-IDF); PlatformIO's esp32_exception_decoder monitor filter needs no separate install",
+    "addr2line": "ships with each toolchain (Arduino esp32 core, PlatformIO, ESP-IDF), and none was on PATH or in their default folders; PlatformIO's esp32_exception_decoder monitor filter needs no separate install",
     "10C4": "Silicon Labs CP210x VCP driver: https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers",
     "1A86": "WCH CH9102 driver: linked from the board's page on docs.m5stack.com (USB Driver section)",
 }
@@ -94,10 +96,42 @@ def idf_py():
     return {**idf_version(find_idf()), "IDF_PATH": os.environ.get("IDF_PATH")}
 
 
+def decoder_dirs(home, env, system):
+    """(source, folder) for each folder a toolchain keeps its addr2line in; the toolchains leave them off PATH."""
+    arduino = {"Windows": Path(env.get("LOCALAPPDATA") or home / "AppData/Local") / "Arduino15",
+               "Darwin": home / "Library/Arduino15"}.get(system, home / ".arduino15")
+    dirs = [("arduino", d) for d in sorted(arduino.glob("packages/*/tools/esp-x32/*/bin"))]
+    dirs += [("platformio", home / ".platformio/packages" / t / "bin") for t in ("toolchain-xtensa-esp32", "toolchain-xtensa-esp32s3")]
+    idf = [Path(env["IDF_TOOLS_PATH"]) / "tools" if env.get("IDF_TOOLS_PATH") else home / ".espressif/tools"]
+    if system == "Windows":
+        idf.append(EIM_TOOLS)
+    return dirs + [("esp-idf", d) for tools in idf for d in sorted(tools.glob("xtensa-esp-elf/*/xtensa-esp-elf/bin"))]
+
+
+def find_decoders(which=shutil.which, home=None, env=None, system=None):
+    """Every addr2line found, as {name, path, source}: on PATH first, then in each toolchain's own folder."""
+    home, env, system = home or Path.home(), os.environ if env is None else env, system or platform.system()
+    found = [{"name": n, "path": p, "source": "PATH"} for n in DECODERS if (p := which(n))]
+    seen = {os.path.normcase(d["path"]) for d in found}
+    for source, folder in decoder_dirs(home, env, system):
+        for n in DECODERS:
+            f = folder / f"{n}{EXE}"
+            if f.is_file() and os.path.normcase(str(f)) not in seen:
+                found.append({"name": n, "path": str(f), "source": source})
+    return found
+
+
+def addr2line():
+    decoders = find_decoders()
+    return {"found": bool(decoders), "version": ", ".join(n for n in DECODERS if any(d["name"] == n for d in decoders)) or None, "decoders": decoders}
+
+
 def tool_line(name, t):
-    """One tool's line of the text report."""
+    """One tool's line of the text report; addr2line adds a line per decoder."""
     if not t["found"]:
         return f"  {name}: MISSING (get it: {GET[name]})"
+    if name == "addr2line":
+        return "\n".join([f"  {name}:"] + [f"    {d['name']} ({d['source']}): {d['path']}" for d in t["decoders"]])
     extra = ""
     if name == "arduino-cli":
         extra = "; cores: " + ", ".join(f"{c} {v or 'NOT INSTALLED'}" for c, v in t["cores"].items())
@@ -123,8 +157,7 @@ def toolchains():
     found["esptool"] = {"found": ok, "version": (re.search(r"v?\d+\.\d+(\.\d+)?\S*", out or "") or [None])[0] if ok else None}
     ok, out = run(["mpremote", "version"])
     found["mpremote"] = {"found": ok, "version": first_line(out) if ok else None}
-    decoders = [d for d in ("xtensa-esp32-elf-addr2line", "xtensa-esp32s3-elf-addr2line") if shutil.which(d)]
-    found["addr2line"] = {"found": bool(decoders), "version": ", ".join(decoders) or None}
+    found["addr2line"] = addr2line()
     return found
 
 

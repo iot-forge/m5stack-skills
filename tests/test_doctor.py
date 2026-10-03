@@ -86,5 +86,88 @@ class IdfPy(unittest.TestCase):
         self.assertIn("MISSING", doctor.tool_line("idf.py", item))
 
 
+class Addr2line(unittest.TestCase):
+    """Each test plants a toolchain's folders under a stand-in home; nothing is on the stand-in PATH unless said."""
+
+    def setUp(self):
+        self.home = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.home, ignore_errors=True)
+
+    def plant(self, folder, names=doctor.DECODERS):
+        """The decoders NAMES in FOLDER, as the paths doctor.py should report."""
+        folder.mkdir(parents=True)
+        paths = [folder / f"{n}{doctor.EXE}" for n in names]
+        for p in paths:
+            p.write_text("")
+        return [str(p) for p in paths]
+
+    def find(self, system="Linux", env=None, which=lambda name: None):
+        with mock.patch.object(doctor, "EIM_TOOLS", self.home / "no-eim"):
+            return doctor.find_decoders(which=which, home=self.home, env=env or {}, system=system)
+
+    def test_no_toolchain_is_missing(self):
+        self.assertEqual(self.find(), [])
+        with mock.patch.object(doctor, "find_decoders", return_value=[]):
+            item = doctor.addr2line()
+        self.assertFalse(item["found"])
+        self.assertIn("MISSING", doctor.tool_line("addr2line", item))
+
+    def test_arduino_layout_per_host(self):
+        local = self.home / "AppData/Local"
+        for system, data in (("Windows", local / "Arduino15"), ("Darwin", self.home / "Library/Arduino15"), ("Linux", self.home / ".arduino15")):
+            planted = [p for vendor in ("esp32", "m5stack") for p in self.plant(data / f"packages/{vendor}/tools/esp-x32/2601/bin")]
+            found = self.find(system, env={"LOCALAPPDATA": str(local)})
+            self.assertEqual([d["path"] for d in found], planted, system)
+            self.assertEqual({d["source"] for d in found}, {"arduino"}, system)
+            shutil.rmtree(data)
+
+    def test_platformio_layout(self):
+        packages = self.home / ".platformio/packages"
+        planted = (self.plant(packages / "toolchain-xtensa-esp32/bin", doctor.DECODERS[:1])
+                   + self.plant(packages / "toolchain-xtensa-esp32s3/bin", doctor.DECODERS[1:]))
+        found = self.find()
+        self.assertEqual([(d["name"], d["path"], d["source"]) for d in found],
+                         [(n, p, "platformio") for n, p in zip(doctor.DECODERS, planted)])
+
+    def test_esp_idf_layout_under_the_default_tools_folder(self):
+        planted = self.plant(self.home / ".espressif/tools/xtensa-esp-elf/esp-15.2.0_20251204/xtensa-esp-elf/bin")
+        found = self.find()
+        self.assertEqual([d["path"] for d in found], planted)
+        self.assertEqual({d["source"] for d in found}, {"esp-idf"})
+
+    def test_esp_idf_layout_under_idf_tools_path(self):
+        self.plant(self.home / ".espressif/tools/xtensa-esp-elf/esp-14/xtensa-esp-elf/bin")
+        planted = self.plant(self.home / "idf-tools/tools/xtensa-esp-elf/esp-15/xtensa-esp-elf/bin")
+        found = self.find(env={"IDF_TOOLS_PATH": str(self.home / "idf-tools")})
+        self.assertEqual([d["path"] for d in found], planted)
+
+    def test_esp_idf_layout_from_the_eim_installer(self):
+        eim = self.home / "Espressif/tools"
+        planted = self.plant(eim / "xtensa-esp-elf/esp-15/xtensa-esp-elf/bin")
+        with mock.patch.object(doctor, "EIM_TOOLS", eim):
+            windows = doctor.find_decoders(which=lambda name: None, home=self.home, env={}, system="Windows")
+            linux = doctor.find_decoders(which=lambda name: None, home=self.home, env={}, system="Linux")
+        self.assertEqual([d["path"] for d in windows], planted)
+        self.assertEqual(linux, [])
+
+    def test_path_comes_first_and_is_listed_once(self):
+        planted = self.plant(self.home / ".espressif/tools/xtensa-esp-elf/esp-15/xtensa-esp-elf/bin")
+        on_path = dict(zip(doctor.DECODERS, planted))
+        self.plant(self.home / ".platformio/packages/toolchain-xtensa-esp32/bin", doctor.DECODERS[:1])
+        found = self.find(which=on_path.get)
+        self.assertEqual([(d["path"], d["source"]) for d in found[:2]], [(p, "PATH") for p in planted])
+        self.assertEqual([d["source"] for d in found[2:]], ["platformio"])
+
+    def test_the_report_prints_each_decoder_with_its_path(self):
+        planted = self.plant(self.home / ".platformio/packages/toolchain-xtensa-esp32/bin", doctor.DECODERS[:1])
+        with mock.patch.object(doctor, "find_decoders", return_value=self.find()):
+            item = doctor.addr2line()
+        self.assertTrue(item["found"])
+        self.assertEqual([d["path"] for d in item["decoders"]], planted)
+        report = doctor.tool_line("addr2line", item)
+        self.assertNotIn("MISSING", report)
+        self.assertIn(f"{doctor.DECODERS[0]} (platformio): {planted[0]}", report)
+
+
 if __name__ == "__main__":
     unittest.main()
