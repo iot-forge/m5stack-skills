@@ -73,6 +73,10 @@ _Avoid_: default revision, assumed board
 **Distinguishing signal**:
 An observation that splits a set of revisions — possibly across products — mapped from each observed value to the revisions it implies, with its reliability and source. Three kinds, cheapest first: `physical` (power LED colour, SKU sticker), `host` (USB bridge VID/PID), `probe` (a chip ID or I2C address read by a flashed sketch; always inferential). A signal may only rule revisions out rather than pin one down.
 
+**Safe choice**:
+What to build with when the **Revisions in play** differ and the user can observe no **Distinguishing signal**: one option set, **Build target** or value that every one of them runs, with what the others give up, or an explicit "none" with the reason. Recorded where the split is: on a build target whose options differ per revision (`safe_default`), in a toolchain's targets file where a product's revisions are split across targets (`safe_choices`), or on a **Product** whose revisions differ in flash size (`safe_choices`). A cited decision over the revisions' facts, not a hardware fact, so the one on a product leaves "facts do not attach to it" intact. A fallback, never a guess at the likeliest revision.
+_Avoid_: default revision, best guess
+
 **Self-report**:
 What a board's firmware claims it is — `M5.getBoard()`, UIFlow2's `BOARD_ID`. Never a **Distinguishing signal**: it is NVS-cached across reflashes and fabricated by a fallback on failure, so a confident wrong answer looks identical to a right one.
 

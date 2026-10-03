@@ -346,15 +346,16 @@ def check_data(root, rep):
             for rid in t["covers"]:
                 if rid in revisions:
                     own.setdefault(revisions[rid][0], {}).setdefault(rid, set()).add(t["id"])
-        for pid, ids in own.items():
-            if not set.intersection(*ids.values()) and not any(set(ids) <= set(sc["covers"]) for sc in target_choices[tc]):
+        for pid, covered_by in own.items():
+            if not set.intersection(*covered_by.values()) and not any(set(covered_by) <= set(sc.get("covers", [])) for sc in target_choices[tc]):
                 rep.fail("data.safe-choice", f"targets/{tc}: no one target covers every {pid} revision, so they need a safe_choices entry (use null with a note when none is safe)")
         for sc in target_choices[tc]:
-            where = f"targets/{tc} safe_choices[{', '.join(sc['covers'])}]"
-            for rid in sc["covers"]:
+            covers = sc.get("covers", [])  # the schema check reports a missing one
+            where = f"targets/{tc} safe_choices[{', '.join(covers)}]"
+            for rid in covers:
                 if rid not in revisions:
                     rep.fail("data.revision-refs", f"{where}: revision '{rid}' does not exist")
-            check_choice(where, sc, {t["id"] for t in ts})
+            check_choice(where, sc, {t["id"] for t in ts if set(t["covers"]) & set(covers)})
     backing_ids = {x["id"] for x in (sources or {}).get("sources", []) if x.get("kind") in ("datasheet", "hardware-test")}
     for s in (signals or {}).get("signals", []):
         cite(f"signals {s['id']}", s.get("src"))

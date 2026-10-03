@@ -177,7 +177,7 @@ PLANTED = {
     "schema": ("test_schema_violation",),
     "pinmap-stub": ("test_unpopulated_pin_map_with_pins",),
     "safe-default": ("test_diverging_target_without_safe_default", "test_no_safe_default_without_note"),
-    "safe-choice": ("test_split_targets_without_safe_choice", "test_safe_choice_names_unknown_target", "test_no_safe_choice_without_note",
+    "safe-choice": ("test_split_targets_without_safe_choice", "test_safe_choice_names_another_products_target", "test_no_safe_choice_without_note",
                     "test_diverging_flash_without_safe_choice", "test_safe_choice_names_no_revisions_value"),
 }
 # tests that guard the fixture copy, not a rule: never a data.planted-* result; if one fails, every planted result is blocked

@@ -567,11 +567,9 @@ def cmd_targets(db, a, res):
                 if len({t["per_revision"].get(r) for r in cov}) > 1:  # the revisions in play need different options
                     rows[-1]["safe_default"] = t.get("safe_default")
         uncovered = [r for r in rids if not any(r in x["covers"] for x in rows)]
-        choices = []
-        for sc in db["target_choices"][tc]:
-            cov = [r for r in sc["covers"] if r in rids]
-            if cov and not any(set(cov) <= set(x["covers"]) for x in rows):  # the revisions in play need different targets
-                choices.append({**sc, "covers": cov})
+        # a choice covers one product's revisions; it applies while every revision in play is one of them and they need different targets
+        choices = [sc for sc in db["target_choices"][tc]
+                   if set(rids) <= set(sc["covers"]) and not any(set(rids) <= set(x["covers"]) for x in rows)]
         out[tc] = {"targets": rows, "no_own_target": {r: db["revisions"][r].get("recommended_targets", {}).get(tc) for r in uncovered},
                    "safe_choices": choices}
     socs = sorted({db["revisions"][r]["soc"] for r in rids})
@@ -593,8 +591,7 @@ def cmd_targets(db, a, res):
             elif "safe_default" in t:
                 lines.append("    no safe default: these options cannot be guessed; identify the revision before building")
         for sc in info["safe_choices"]:
-            scope = "" if set(sc["covers"]) == set(rids) else f"for {', '.join(short(r, rids) for r in sc['covers'])}: "
-            lines.append(f"{tc}: {scope}{choice_line(sc)}")
+            lines.append(f"{tc}: {choice_line(sc)}")
         for r, rec in info["no_own_target"].items():
             if rec:
                 lines.append(f"{tc}: {short(r, rids)} has no target of its own. Recommended: {rec['target']}. Gaps: {rec['gaps']}"

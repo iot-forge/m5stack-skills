@@ -191,8 +191,8 @@ class Planted(unittest.TestCase):
         self.edit("targets/platformio.json", lambda o: o.pop("safe_choices"))
         self.assertFails("data.safe-choice")
 
-    def test_safe_choice_names_unknown_target(self):  # data.safe-choice
-        self.edit("targets/platformio.json", lambda o: o["safe_choices"][0].update(use="m5stack-nope"))
+    def test_safe_choice_names_another_products_target(self):  # data.safe-choice: use is a target of the revisions it covers
+        self.edit("targets/platformio.json", lambda o: o["safe_choices"][0].update(use="m5stack-fire"))
         self.assertFails("data.safe-choice")
 
     def test_no_safe_choice_without_note(self):  # data.safe-choice: null says why no choice is safe

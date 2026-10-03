@@ -96,6 +96,8 @@ class Query(unittest.TestCase):
         self.assertIsNone(load("targets/uiflow2.json")["safe_choices"][0]["use"])
         code, out = board_json("targets", "basic", "--toolchain", "platformio", "--seen", "flash-size=16MB")
         self.assertEqual(out["toolchains"]["platformio"]["safe_choices"], [], "printed only while the ids in play split")
+        code, out = board_json("targets", "bid:1", "--toolchain", "platformio")
+        self.assertEqual(out["toolchains"]["platformio"]["safe_choices"], [], "a product's choice does not cover another product's revisions")
 
     def test_safe_choice_for_a_fact(self):  # B35: one flash size for revisions in play whose flash DIVERGES
         want = load("products/basic.json")["safe_choices"]["flash"]
