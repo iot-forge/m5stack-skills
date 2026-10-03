@@ -33,7 +33,7 @@
     "src": [
      "m5-cores3"
     ],
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-02"
    },
    "market_status": "listed",
    "derived_from": null,
@@ -44,7 +44,7 @@
      "m5-cores3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-02"
    },
    "flash": {
     "value": "16MB",
@@ -52,7 +52,7 @@
      "m5-cores3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-02"
    },
    "psram": {
     "value": "8MB quad",
@@ -60,7 +60,7 @@
      "m5-cores3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-02"
    },
    "display": {
     "part": [
@@ -74,7 +74,7 @@
      "m5-cores3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-02"
    },
    "touch": {
     "part": "FT6336U",
@@ -84,7 +84,7 @@
      "m5-cores3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-02"
    },
    "imu": {
     "part": "BMI270",
@@ -94,7 +94,7 @@
      "m5-cores3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-02"
    },
    "magnetometer": {
     "part": "BMM150",
@@ -105,7 +105,7 @@
      "m5-cores3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-02"
    },
    "pmic": {
     "part": "AXP2101",
@@ -115,7 +115,7 @@
      "m5-cores3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-02"
    },
    "rtc": {
     "part": "BM8563",
@@ -125,7 +125,7 @@
      "m5-cores3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-02"
    },
    "audio": {
     "amp": "AW88298 (I2S)",
@@ -146,7 +146,7 @@
      "m5-cores3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-02"
    },
    "usb_bridge": {
     "part": "native USB (ESP32-S3 USB Serial/JTAG)",
@@ -154,7 +154,7 @@
      "m5-cores3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-02"
    },
    "sd": {
     "value": "microSD (SPI)",
@@ -162,7 +162,7 @@
      "m5-cores3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-02"
    },
    "battery": {
     "capacity_mah": 500,
@@ -171,7 +171,7 @@
      "m5-cores3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-02"
    },
    "dimensions": {
     "w": 54.0,
@@ -183,7 +183,7 @@
      "m5-cores3"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-02"
    },
    "extra_components": [
     {
@@ -195,7 +195,7 @@
       "m5-cores3"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-02"
     },
     {
      "role": "camera",
@@ -206,7 +206,7 @@
       "m5-cores3"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-02"
     },
     {
      "role": "proximity-light-sensor",
@@ -217,7 +217,7 @@
       "m5-cores3"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-02"
     }
    ],
    "errata": [
@@ -228,7 +228,7 @@
       "m5-cores3"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-02"
     },
     {
      "id": "m5-pio-devkitc",
@@ -238,7 +238,7 @@
       "pio-esp32",
       "pio-esp32-cores3"
      ],
-     "confidence": "medium",
+     "confidence": "high",
      "last_verified": "2026-10-02"
     }
    ]

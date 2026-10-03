@@ -100,7 +100,7 @@
     "pio-esp32-cores3",
     "m5-cores3"
    ],
-   "confidence": "medium",
+   "confidence": "high",
    "last_verified": "2026-10-02",
    "note": "first shipped in platform-espressif32 6.4.0; an older platform reports it as an unknown board. M5's own page uses esp32-s3-devkitc-1 on espressif32@6.7.0 instead"
   }
