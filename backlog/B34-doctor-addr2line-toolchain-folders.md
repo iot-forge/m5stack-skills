@@ -1,6 +1,6 @@
 # B34 · Make doctor.py find addr2line in the toolchain folders
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: none
 
@@ -24,10 +24,10 @@ Print each decoder found with its full path, in the text and `--json` output. Wr
 
 ## Definition of done
 
-- [ ] `doctor.py` finds the decoder in each of the three toolchain layouts and prints its path; a test covers each layout and the not-found case
-- [ ] `decoding-crashes.md` step 4 uses the new output
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
+- [x] `doctor.py` finds the decoder in each of the three toolchain layouts and prints its path; a test covers each layout and the not-found case
+- [x] `decoding-crashes.md` step 4 uses the new output
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
 
 The descriptions do not change, so no trigger rows need running.
 
@@ -39,8 +39,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Add a test with a fake Arduino15 tree to `tests/test_doctor.py` and watch it fail
-- **Files touched**: none
-- **Last commit**: none
+- **Done**: all. `doctor.py` lists every decoder it finds, one line each under `addr2line:`, as `<decoder> (<where>): <path>`, where `<where>` is `PATH`, `arduino`, `platformio` or `esp-idf`; `--json` carries the same under `decoders` (`name`, `path`, `where`), and `version` is now always null for `addr2line`. It looks on PATH first, then in the Arduino data folder (`ARDUINO_DIRECTORIES_DATA`, else `%LOCALAPPDATA%/Arduino15`, `~/Library/Arduino15` or `~/.arduino15`, any core's `tools/esp-x32/<version>/bin`), PlatformIO's `packages/toolchain-xtensa-esp32*/bin` (under `PLATFORMIO_CORE_DIR`, else `~/.platformio`), and ESP-IDF's `xtensa-esp-elf/<version>/xtensa-esp-elf/bin` under `$IDF_TOOLS_PATH/tools` and `$IDF_TOOLS_PATH` itself (EIM's profile sets the variable to the tools folder), else `~/.espressif/tools`, plus `C:\Espressif\tools` on Windows. A file reached two ways is listed once, and a folder that cannot be read is skipped. On the maintainer's machine (Windows 11, 2026-10-02) it lists eight lines: both decoders from the `esp32` and `m5stack` Arduino cores, PlatformIO and ESP-IDF v6.1. `tests/test_doctor.py` (class `Addr2line`, 12 tests) plants each layout under a stand-in home and covers the not-found case. Step 4 of "Decode the backtrace" takes a `PATH` line first, then the project's toolchain, then any other line; the maintainer chose to drop the folder list from it (2026-10-02). `uv run scripts/validate.py` exits 0 and `python -m unittest discover tests` passes (168 tests).
+- **Next**: none
+- **Files touched**: scripts/doctor.py, tests/test_doctor.py, skills/flashing-and-debugging/references/decoding-crashes.md
+- **Last commit**: 2a8ff6f
 - **Open questions**: none
