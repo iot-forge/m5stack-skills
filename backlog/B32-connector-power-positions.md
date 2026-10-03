@@ -1,6 +1,6 @@
 # B32 · Print each connector's power, ground and control positions
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: none
 
