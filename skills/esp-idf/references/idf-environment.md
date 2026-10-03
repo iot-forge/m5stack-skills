@@ -14,7 +14,6 @@ Done when `idf.py --version` prints `ESP-IDF v<version>`.
 On Windows:
 
 - Run `idf.py` through PowerShell, not Git Bash. Under Git Bash, ESP-IDF prints `MSys/Mingw is no longer supported` and continues at your own risk, and EIM's `idf.py.exe` launcher answers `--version` with its own version (`v1.0.3`), not ESP-IDF's.
-- `doctor.py` may print `idf.py: No module named 'rich_click'` in place of a version: it started `idf.py` under its own Python. Take the version from `idf.py --version` in an activated PowerShell instead.
 - After the first `idf.py reconfigure`, `dependencies.lock` also records the ESP-IDF version, as the `version` under `idf:`.
 
 ## A component download that fails
@@ -32,6 +31,6 @@ This file also cites the `idf.py` behaviour SKILL.md relies on.
 - Observed with ESP-IDF v6.1 (installed by EIM, `idf.py.exe` launcher 1.0.3) on Windows 11, 2026-09-28:
   - `idf.py create-project --cpp`, then an `sdkconfig.defaults` holding flash-size and PSRAM lines, `idf.py set-target esp32s3`, `idf.py add-dependency "m5stack/m5unified"` and an `m5stack/m5gfx` dependency with a lower bound: `idf.py build` exits 0, with no change to `main/CMakeLists.txt`, and `sdkconfig` has each line from `sdkconfig.defaults`.
   - `idf.py add-dependency` for `m5stack/m5gfx` on a manifest that already lists it prints `ERROR: Dependency "m5stack/m5gfx" already exists` and leaves the manifest as it was.
-  - In a PowerShell with EIM's profile dot-sourced, `idf.py --version` prints `ESP-IDF v6.1`. Under Git Bash with the same environment, `idf.py` prints `MSys/Mingw is no longer supported. ... or continue at your own risk.`, and `idf.py --version` prints `v1.0.3`. `uv run scripts/doctor.py` prints `idf.py: No module named 'rich_click'`.
+  - In a PowerShell with EIM's profile dot-sourced, `idf.py --version` prints `ESP-IDF v6.1`. Under Git Bash with the same environment, `idf.py` prints `MSys/Mingw is no longer supported. ... or continue at your own risk.`, and `idf.py --version` prints `v1.0.3`.
   - After `idf.py set-target`, `dependencies.lock` has `idf:` with `version: 6.1.0`.
   - `espressif/m5stack_core_2` (3.0.3) in a project under a 136-character path, with Windows long paths off (`LongPathsEnabled` 0): `idf.py reconfigure` fails on `lvgl/lvgl` (9.6.0~1) with the `.component_hash or CHECKSUMS.json` error. The same project under `C:\Users\<user>\AppData\Local\Temp\e1` configures.

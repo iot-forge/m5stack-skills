@@ -16,6 +16,7 @@ import argparse, json, os, platform, re, shutil, subprocess, sys
 from pathlib import Path
 
 TIMEOUT = 20  # seconds; `pio --version` can take ~10 s on its first run while it bootstraps
+VENV_BIN, EXE = ("Scripts", ".exe") if os.name == "nt" else ("bin", "")
 BRIDGES = {  # USB vendor ID -> what it means on an M5Stack Core (vendor IDs from the Linux usb.ids registry)
     "10C4": "Silicon Labs CP210x bridge (CP2104)",
     "1A86": "WCH bridge (CH9102)",
@@ -50,6 +51,54 @@ def first_line(s):
     return s.splitlines()[0].strip() if s else ""
 
 
+def find_idf(which=shutil.which):
+    """idf.py, run by the Python of the ESP-IDF environment the shell activated: IDF_PATH and IDF_PYTHON_ENV_PATH,
+    set by EIM's IDF_PowerShell or ESP-IDF's export script. On Windows idf.py is a script that cannot be started
+    on its own, and under `uv run` a bare `python` is uv's, which lacks ESP-IDF's packages. The same lookup as
+    scripts/smoke.py's; the scripts import nothing from each other."""
+    if which is shutil.which:  # a test's stand-in PATH sees no environment either
+        idf, env = os.environ.get("IDF_PATH"), os.environ.get("IDF_PYTHON_ENV_PATH")
+        if idf and env:
+            script, py = Path(idf) / "tools/idf.py", Path(env) / VENV_BIN / f"python{EXE}"
+            if script.exists() and py.exists():
+                return [str(py), str(script)]
+    p = which("idf.py")
+    if p and (os.name != "nt" or not p.lower().endswith(".py")):  # a Unix script with a shebang, or idf.py.exe
+        return [p]
+    return None
+
+
+def idf_version(cmd):
+    """The idf.py entry for CMD, the command find_idf gave. `version` only when the output has a line reading
+    `ESP-IDF v<version>`; otherwise `output` holds the last line it did print: EIM's idf.py.exe launcher answers
+    with its own version under Git Bash, and an idf.py started under the wrong Python answers with an import error."""
+    ok, out = run([*cmd, "--version"]) if cmd else (False, None)
+    if not ok:
+        return {"found": False, "version": None}
+    m = re.search(r"(?m)^ESP-IDF v\S+", out or "")
+    if m:
+        return {"found": True, "version": m.group(0)}
+    return {"found": True, "version": None, "output": (out or "").splitlines()[-1].strip() if out else ""}
+
+
+def idf_py():
+    return {**idf_version(find_idf()), "IDF_PATH": os.environ.get("IDF_PATH")}
+
+
+def tool_line(name, t):
+    """One tool's line of the text report."""
+    if not t["found"]:
+        return f"  {name}: MISSING (get it: {GET[name]})"
+    version, extra = t["version"] or "found", ""
+    if name == "arduino-cli":
+        extra = "; cores: " + ", ".join(f"{c} {v or 'NOT INSTALLED'}" for c, v in t["cores"].items())
+    if name == "idf.py":
+        if not t["version"]:
+            version = f'found, but `idf.py --version` printed "{t["output"]}", not an ESP-IDF version'
+        extra = f"; IDF_PATH={t['IDF_PATH'] or 'NOT SET'}"
+    return f"  {name}: {version}{extra}"
+
+
 def toolchains():
     found = {}
     ok, out = run(["arduino-cli", "version"])
@@ -60,8 +109,7 @@ def toolchains():
     found["arduino-cli"] = item
     ok, out = run(["pio", "--version"])
     found["pio"] = {"found": ok, "version": first_line(out) if ok else None}
-    ok, out = run(["idf.py", "--version"])
-    found["idf.py"] = {"found": ok, "version": first_line(out) if ok else None, "IDF_PATH": os.environ.get("IDF_PATH")}
+    found["idf.py"] = idf_py()
     ok, out = run(["esptool", "version"])
     if not ok:
         ok, out = run(["esptool.py", "version"])
@@ -158,16 +206,7 @@ def main():
     lines = [f"Host: {platform.system()} {platform.release()}"]
     if tools:
         lines.append("Toolchains:")
-        for name, t in tools.items():
-            if t["found"]:
-                extra = ""
-                if name == "arduino-cli":
-                    extra = "; cores: " + ", ".join(f"{c} {v or 'NOT INSTALLED'}" for c, v in t["cores"].items())
-                if name == "idf.py":
-                    extra = f"; IDF_PATH={t['IDF_PATH'] or 'NOT SET'}"
-                lines.append(f"  {name}: {t['version'] or 'found'}{extra}")
-            else:
-                lines.append(f"  {name}: MISSING (get it: {GET[name]})")
+        lines += [tool_line(name, t) for name, t in tools.items()]
     lines.append("Serial ports (M5 bridges marked):")
     if not prts:
         lines.append("  none found. Check the cable carries data (not charge-only) and try another USB port. A board that needs download mode is covered by the flashing-and-debugging skill.")
