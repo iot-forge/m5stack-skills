@@ -1,6 +1,6 @@
 # B26 · Move the hardware-session steps into checks.json
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: none
 
