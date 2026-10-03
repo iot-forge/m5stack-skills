@@ -1,7 +1,7 @@
 # B28 · Make the skills' `allowed-tools` pre-approve `board.py` and `doctor.py`
 
-Status: in-progress
-Blocked by: none
+Status: open
+Blocked by: Claude Code applying a model-invoked skill's `allowed-tools` (external; see the Checkpoint)
 Gate: none
 
 ## Before you start
@@ -63,9 +63,9 @@ At about 90% of your context, or before ending for any other reason: overwrite t
     - Model-invoked, `Skill` allowed through `--settings` instead of the flag: denied.
     - Slash-invoked (`claude -p "/p-str"`, with `MSYS_NO_PATHCONV=1` so Git Bash leaves the `/` alone), with and without `--allowedTools Skill`: allowed, output `ECHO-OK ['p-str']`.
     - A `hooks: PreToolUse` in the skill's frontmatter returning `permissionDecision: allow` (with `if:` the exact rule) was not honored either when model-invoked: no hook ran, the call was denied. So nothing in a skill's frontmatter can grant the call.
-- **Next**: The maintainer picks the route (Open question 1), then act on it.
-- **Files touched**: none in the repo yet (experiments live outside it)
-- **Last commit**: the claim, 50d6e9b
+  - Route settled by the maintainer (2026-10-02): park B28, blocked on Claude Code, and report the gap upstream. The skills stay as they are. A plugin-level `hooks/hooks.json` allow hook was considered and not chosen.
+- **Next**: Once a Claude Code release notes a fix, or on any new version, rerun the reproduction above (section 4's command, `board-identification` request). If `board.py find` is allowed, tick the second box, do the same for `doctor.py`, and close B28. If the rule form then turns out to matter, fix it in every skill, the template and `SCRIPT_RULE_RE`.
+- **Files touched**: none in the repo besides this issue and the README's table (experiments live outside it)
+- **Last commit**: 0c6e31e (cause recorded)
 - **Open questions**:
-  1. (maintainer) The Definition of done's second and third boxes need a model-invoked run to be allowed, and no change to `allowed-tools`, the Paths command or the template can do that. Routes: a plugin-level `hooks/hooks.json` PreToolUse hook that allows exactly the two script commands (untested; also a design change, since it lives outside the skills); or park B28 as blocked on Claude Code, report the gap upstream, and keep the skills as they are.
-  2. (maintainer) Whether the gap is `-p`-only: in a fresh interactive `claude --plugin-dir <repo>` session, ask the request above and see whether `board.py` runs without a prompt.
+  1. (maintainer) Whether the gap is `-p`-only: in a fresh interactive `claude --plugin-dir <repo>` session, ask the request above and see whether `board.py` runs without a prompt.
