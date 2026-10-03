@@ -71,7 +71,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B31 · Add a hardware check: the esp-bsp Core2 display on an ILI9342E unit](B31-esp-bsp-ili9342e-check.md) | done | — | yes |
 | [B32 · Print each connector's power, ground and control positions](B32-connector-power-positions.md) | done | — |  |
 | [B33 · Bring the arduino-m5unified body back under 10 kB](B33-arduino-body-under-10kb.md) | done | — |  |
-| [B34 · Make doctor.py find addr2line in the toolchain folders](B34-doctor-addr2line-toolchain-folders.md) | open | — |  |
+| [B34 · Make doctor.py find addr2line in the toolchain folders](B34-doctor-addr2line-toolchain-folders.md) | in-progress | — |  |
 | [B35 · Give the safe choice between targets a home in the data](B35-cross-target-safe-choice.md) | open | — |  |
 | [B36 · Give a CoreS3-family revision its hardware run once a unit is at hand](B36-cores3-family-board-steps.md) | open | a CoreS3-family unit to run on |  |
 

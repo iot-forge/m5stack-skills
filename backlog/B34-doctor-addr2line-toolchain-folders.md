@@ -1,6 +1,6 @@
 # B34 · Make doctor.py find addr2line in the toolchain folders
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: none
 
