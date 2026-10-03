@@ -105,10 +105,52 @@ class VersionGuard(unittest.TestCase):
         self.assertTrue(ok)
         self.assertIn("no release tag yet", message)
 
+    def test_the_highest_release_tag_is_the_base_even_from_another_branch(self):
+        self.git("checkout", "-q", "-b", "release")
+        self.git("commit", "-q", "--allow-empty", "-m", "release")
+        self.git("tag", "v0.9.0")
+        self.git("tag", "v0.10.0")
+        self.git("checkout", "-q", "-")
+        self.write("skills/a/SKILL.md", "two\n")
+        self.commit("change a skill")
+        ok, message = check.version_guard(self.root)
+        self.assertFalse(ok)
+        self.assertIn("v0.10.0", message)
+
+    def test_a_folder_that_is_not_a_git_repo_fails(self):
+        bare = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, bare, ignore_errors=True)
+        ok, message = check.version_guard(bare)
+        self.assertFalse(ok)
+        self.assertIn("git", message)
+
+    def test_a_shallow_clone_fails_rather_than_passing_for_lack_of_tags(self):
+        self.git("tag", "v0.1.0")
+        self.write("skills/a/SKILL.md", "two\n")
+        self.commit("change a skill")
+        clone = Path(tempfile.mkdtemp()) / "clone"
+        self.addCleanup(shutil.rmtree, clone.parent, ignore_errors=True)
+        subprocess.run(["git", "clone", "-q", "--depth", "1", "--no-tags", self.root.as_uri(), str(clone)],
+                       check=True, capture_output=True)
+        ok, message = check.version_guard(clone)
+        self.assertFalse(ok)
+        self.assertIn("shallow", message)
+
+    def test_a_tag_without_the_manifest_fails_with_a_message(self):
+        self.git("rm", "-q", ".claude-plugin/plugin.json")
+        self.commit("no manifest")
+        self.git("tag", "v0.0.1")
+        self.bump("0.1.0")
+        self.commit("manifest back")
+        ok, message = check.version_guard(self.root)
+        self.assertFalse(ok)
+        self.assertIn("v0.0.1", message)
+        self.assertIn(".claude-plugin/plugin.json", message)
+
 
 class Gate(unittest.TestCase):
-    def step(self, code):
-        return [sys.executable, "-c", f"import sys; sys.exit({code})"]
+    def step(self, code, say=""):
+        return [sys.executable, "-c", f"import sys; print({say!r}); sys.exit({code})"]
 
     def test_every_step_passing_is_a_pass(self):
         self.assertEqual(check.run_gate([("one", self.step(0)), ("two", lambda: (True, "fine"))], out=[].append), [])
@@ -121,9 +163,30 @@ class Gate(unittest.TestCase):
         self.assertTrue(any(line.startswith("PASS two") for line in lines))
         self.assertTrue(any("why" in line for line in lines))
 
+    def test_a_step_that_raises_fails_and_the_later_steps_still_run(self):
+        def broken():
+            raise ValueError("no manifest")
+        lines = []
+        failed = check.run_gate([("one", broken), ("two", self.step(0))], out=lines.append)
+        self.assertEqual(failed, ["one"])
+        self.assertTrue(any("ValueError: no manifest" in line for line in lines))
+        self.assertTrue(any(line.startswith("PASS two") for line in lines))
+
+    def test_a_step_that_prints_outside_the_console_code_page_still_passes(self):
+        self.assertEqual(check.run_gate([("one", self.step(0, "→ 漢"))], out=[].append), [])
+
+    def test_a_failed_steps_output_is_shown_as_it_was_printed(self):
+        lines = []
+        check.run_gate([("one", self.step(1, "pass 3 · fail 1"))], out=lines.append)
+        self.assertTrue(any("pass 3 · fail 1" in line for line in lines))
+
     def test_the_gate_is_what_was_decided(self):
-        names = [name for name, _ in check.steps(REPO)]
-        self.assertEqual(names, ["validate", "unit tests", "data and query checks", "version guard"])
+        gate = check.steps()
+        self.assertEqual([name for name, _ in gate], ["validate", "unit tests", "data and query checks", "version guard"])
+        tail = lambda step: [Path(step[1]).name, *step[2:]]
+        self.assertEqual(tail(gate[0][1]), ["validate.py"])
+        self.assertEqual(gate[1][1][1:], ["-m", "unittest", "discover", "tests"])
+        self.assertEqual(tail(gate[2][1]), ["verify.py", "run", "--offline", "--skip", "build", "--skip", "trigger"])
 
 
 if __name__ == "__main__":

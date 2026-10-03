@@ -30,7 +30,7 @@ Run the gate before every commit. It must exit 0:
 uv run scripts/check.py
 ```
 
-It runs four steps, and each can be run alone:
+It runs four steps. The first three can be run alone:
 
 ```
 uv run scripts/validate.py          # data rules and skill rules
@@ -40,8 +40,8 @@ uv run scripts/verify.py run --offline --skip build --skip trigger   # the data 
 
 The fourth is the version guard. Once a `v*` tag exists, a change under `skills/`, `data/`, `references/`, `scripts/` or `.claude-plugin/` since the latest tag needs a new `version` in `.claude-plugin/plugin.json`.
 
-These checks are not in the gate. Run them by hand:
+These are not in the gate. Run them by hand:
 
-- **The trigger rows**: before a release, and in any change that touches a skill's `description`. `uv run scripts/verify.py run --offline --skip build` runs each row 3 times through `claude -p`, one at a time (VERIFICATION.md section 4), and takes about 35 minutes.
+- **The trigger rows**: before a release, and in any change that touches a skill's `description`. They run locally and never in CI, because they need a logged-in `claude`. `uv run scripts/verify.py run --offline --skip build` runs each row 3 times through `claude -p`, one at a time (VERIFICATION.md section 4), and takes about 35 minutes.
 - **The build checks**: before a hardware session and before a release. The full `uv run scripts/verify.py run --offline` builds the smoke program in every toolchain and runs the trigger rows too. It takes about an hour.
 - **`uv run scripts/refresh.py`**: once a month, and before a release.

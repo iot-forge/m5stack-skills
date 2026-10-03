@@ -16,11 +16,11 @@ Gate: none
 
 - **Name**: `m5core-skills` is a working name. It must not collide with iot-forge's plugins (`core`, `cardputer`, `esp32-chips`). A rename changes only the skill prefix and the MCP tool ids.
 - **Marketplace listing**: where, and under whose account.
-- **Versioning and changelog policy.**
+- **Versioning and changelog policy.** The version guard in `scripts/check.py` only requires a version that differs from the latest `v*` tag's, so a lower one passes; tighten it here if the policy needs that.
 - `repository` and `homepage` in `.claude-plugin/plugin.json`.
 - **Test the README's install route** (`/plugin marketplace add <path>`), which has never been run. `--plugin-dir` has been.
 - **What happens to `backlog/`**: GitHub issues, or removal.
-- **Wire the checks into GitHub Actions**, once the repo has a remote there. This part is decided (B17, 2026-10-02) and only needs building: `uv run scripts/check.py` gates every pull request; `uv run scripts/refresh.py --strict` runs monthly and, on drift, opens or updates one "Upstream drift" issue holding the report, committing nothing; a pull-request template carries the trigger-row rule from `CONTRIBUTING.md`. GitHub Actions is free on standard runners for a public repository; re-check that if the repo stays private. If the host is not GitHub, ask the maintainer how the same three run there.
+- **Wire the checks into GitHub Actions**, once the repo has a remote there. This part is decided (B17, 2026-10-02) and only needs building: `uv run scripts/check.py` gates every pull request, on a checkout with full history and tags (its version guard fails in a shallow clone, and a clone without tags looks like a repo with no release); `uv run scripts/refresh.py --strict` runs monthly and, on drift, opens or updates one "Upstream drift" issue holding the report, committing nothing; a pull-request template carries the trigger-row rule from `CONTRIBUTING.md`. GitHub Actions is free on standard runners for a public repository; re-check that if the repo stays private. If the host is not GitHub, ask the maintainer how the same three run there.
 - **Re-check the M5Stack skill landscape** before publishing, and update the README's Alternatives. The count doubled in six weeks before 2026-09-21.
 
 ## Inputs
