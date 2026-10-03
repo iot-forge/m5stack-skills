@@ -1,6 +1,6 @@
 # B30 · Make doctor.py report the ESP-IDF version on Windows
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: none
 

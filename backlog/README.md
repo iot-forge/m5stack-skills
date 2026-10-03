@@ -67,7 +67,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B27 · Stop the trigger rows at the first account-limit message](B27-stop-triggers-at-spend-limit.md) | done | — |  |
 | [B28 · Make the skills' `allowed-tools` pre-approve `board.py` and `doctor.py`](B28-skill-allowed-tools-preapproval.md) | open | Claude Code applying a model-invoked skill's `allowed-tools` |  |
 | [B29 · Record the CoreS3 PlatformIO release and M5's whole example](B29-cores3-platformio-release-and-example.md) | done | — |  |
-| [B30 · Make doctor.py report the ESP-IDF version on Windows](B30-doctor-idf-version-on-windows.md) | open | — |  |
+| [B30 · Make doctor.py report the ESP-IDF version on Windows](B30-doctor-idf-version-on-windows.md) | in-progress | — |  |
 | [B31 · Add a hardware check: the esp-bsp Core2 display on an ILI9342E unit](B31-esp-bsp-ili9342e-check.md) | done | — | yes |
 | [B32 · Print each connector's power, ground and control positions](B32-connector-power-positions.md) | open | — |  |
 | [B33 · Bring the arduino-m5unified body back under 10 kB](B33-arduino-body-under-10kb.md) | done | — |  |
