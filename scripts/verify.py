@@ -344,74 +344,41 @@ def run_offline(operator, runner=sh, skip=(), ask=None, only=None):
 
 
 FRAMEWORKS = ("arduino", "platformio", "esp-idf", "uiflow2")
-# Section 6, in order: UIFlow2 replaces the firmware, so it goes last. Check ids here drop the .<revision> suffix.
-BOARD_STEPS = [
-    ("Plug the unit in. doctor.py should list exactly one new port; compare its VID/PID with the USB bridge "
-     "`board.py facts <revision>` gives, and check the bridge driver is present.",
-     ["host.port", "host.bridge", "host.driver", "fact.bridge"]),
-    ("Run `esptool erase-flash` on that port, once, after confirming the erase. It clears M5's cached board identity in NVS.", []),
-    ("Build and upload the Arduino smoke program (`smoke.py generate arduino`, then arduino-cli). Type the nonce you "
-     "read off the display, and record the serial probe lines.",
-     ["flash.arduino", "device.arduino", "open-question.auto-download", "open-question.lcd-driver", "fact.pmic",
-      "fact.imu", "fact.no-atecc", "fact.no-ina3221", "fact.port-a-bus"]),
-    ("Same, through PlatformIO.", ["flash.platformio", "device.platformio"]),
-    ("Same, through idf.py.", ["flash.esp-idf", "device.esp-idf"]),
-    ("Build esp-bsp's examples/display from a clone at the pinned esp-bsp commit, with idf.py -D SDKCONFIG_DEFAULTS= "
-     "the board's sdkconfig.bsp file plus the PMU setting `board.py targets <revision> --toolchain esp-idf` prints "
-     "(the bsp file's own PMU choice may be wrong for this revision), and flash it. Record the component and ESP-IDF "
-     "versions and what the display shows (section 7).", ["open-question.esp-bsp-ili9342e"]),
-    ("Ask a framework skill to upload while you hold the unit in reset. Pass: one attempt, the serial-port and "
-     "download-mode procedures, exactly one retry, then a hand-off to flashing-and-debugging.", ["handoff.live"]),
-    ("Flash the UIFlow2 image `board.py targets` recommends with `esptool write-flash 0x0`, then push the smoke "
-     "main.py with mpremote. Record the UIFlow2 observations in section 7.",
-     ["flash.uiflow2", "device.uiflow2", "open-question.mpremote-launcher", "open-question.uiflow2-image-v1.3",
-      "open-question.stdout-raw-repl"]),
-]
-ANY_TIME = "Any time: the remaining checks for this revision (VERIFICATION.md sections 6 and 7)."
-# a check is blocked when the check it depends on did not pass; dependencies chain (host.port -> flash -> device)
-DEPENDS = {"host.bridge": "host.port", "host.driver": "host.port", "fact.bridge": "host.bridge", "handoff.live": "host.port",
-           **{f"flash.{fw}": "host.port" for fw in FRAMEWORKS},
-           **{f"device.{fw}": f"flash.{fw}" for fw in FRAMEWORKS},
-           # the probe lines count only once the nonce on the display shows the smoke program is what runs (section 5)
-           **{c: "device.arduino" for c in ("fact.pmic", "fact.imu", "fact.no-atecc", "fact.no-ina3221", "fact.port-a-bus",
-                                            "open-question.lcd-driver")},
-           "open-question.auto-download": "host.port",  # observed during the upload itself
-           **{c: "flash.uiflow2" for c in ("open-question.mpremote-launcher", "open-question.uiflow2-image-v1.3",
-                                           "open-question.stdout-raw-repl")},
-           # these need a sketch of their own, not the smoke program
-           **{c: "host.port" for c in ("open-question.playraw-1mb", "open-question.touch-below-240", "open-question.speaker-mic",
-                                       "open-question.esp-bsp-ili9342e")}}
 TOOLCHAINS = ("arduino-cli", "esp32 core", "M5Unified", "platformio", "esp-idf", "esptool", "mpremote", "uiflow2 image", "claude-code")
 ANSWERS = {"p": "pass", "f": "fail", "b": "blocked", "n": "not-run", "o": "observed"}
 
 
-def run_board(revision, operator, ask=input):
-    """Walk the operator through section 6 for REVISION and record every result. ASK(prompt) -> the operator's answer."""
-    checks = [c for c in read_json(ROOT / "verification/checks.json")["checks"] if c.get("revision") == revision]
+def run_board(revision, operator, ask=input, root=ROOT):
+    """Walk the operator through section 6 for REVISION and record every result. ASK(prompt) -> the operator's answer.
+    The steps, which check goes in each and what each check depends on come from checks.json (board_steps, step,
+    depends_on). A step no check names, like the erase, is done for every revision."""
+    doc = read_json(root / "verification/checks.json")
+    checks = [c for c in doc["checks"] if c.get("revision") == revision]
     if not checks:
         raise SystemExit(f"verification/checks.json has no checks for {revision}; derive them from data/ first (section 3)")
-    by_base = {c["id"].removesuffix(f".{revision}"): c for c in checks}
-    placed = {b for _, bases in BOARD_STEPS for b in bases}
-    steps = [(text, [b for b in bases if b in by_base]) for text, bases in BOARD_STEPS]
-    steps.append((ANY_TIME, [b for b in by_base if b not in placed]))
+    if stepless := [c["id"] for c in checks if "step" not in c]:
+        raise SystemExit(f"verification/checks.json gives no section 6 step for: {', '.join(stepless)}; "
+                         "give each a step from board_steps, and a depends_on where it needs an earlier check to pass")
+    named = {c["step"] for c in doc["checks"] if "step" in c}
+    steps = [(s["text"].replace("<revision>", revision), mine) for s in doc["board_steps"]
+             if (mine := [c for c in checks if c["step"] == s["id"]]) or s["id"] not in named]
     unit = {"revision": revision, "sku_sticker": ask("SKU on the unit's sticker: ").strip()}
     toolchains = {t: v for t in TOOLCHAINS if (v := ask(f"{t} version (blank if not used): ").strip())}
     results, outcome = [], {}
-    for n, (text, bases) in enumerate(steps, 1):
+    for n, (text, mine) in enumerate(steps, 1):
         print(f"\nStep {n}: {text}", file=sys.stderr)
-        if not bases:
+        if not mine:
             if not ask(f"Step {n} done? [y/n] ").strip().lower().startswith("y"):
                 print("  Not done: record why in the report; later answers may come from an earlier firmware.", file=sys.stderr)
             continue
-        for base in bases:
-            cid, dep = by_base[base]["id"], DEPENDS.get(base)
+        for check in mine:
+            cid, dep = check["id"], check.get("depends_on")
             if dep in outcome and outcome[dep] != "pass":
-                outcome[base] = "blocked"
-                results.append({"check": cid, "result": "blocked", "blocked_by": [f"{dep}.{revision}"]})
-                print(f"  {cid}: blocked by {dep}.{revision}", file=sys.stderr)
+                outcome[cid] = "blocked"
+                results.append({"check": cid, "result": "blocked", "blocked_by": [dep]})
+                print(f"  {cid}: blocked by {dep}", file=sys.stderr)
                 continue
-            kind = by_base[base]["kind"]
-            choices = "o/b/n" if kind == "open-question" else "p/f/b/n"
+            choices = "o/b/n" if check["kind"] == "open-question" else "p/f/b/n"
             while (a := ask(f"{cid} result [{choices}]: ").strip().lower()[:1]) not in choices.split("/"):
                 print(f"  answer one of {choices}", file=sys.stderr)
             r = {"check": cid, "result": ANSWERS[a]}
@@ -419,7 +386,7 @@ def run_board(revision, operator, ask=input):
                 r["observed"] = ask(f"{cid} observed: ").strip()
                 if out := ask(f"{cid} output (verbatim, or a path under verification/runs/; blank for none): ").strip():
                     r["output"] = out
-            outcome[base] = r["result"]
+            outcome[cid] = r["result"]
             results.append(r)
     return {"run": {"date": datetime.date.today().isoformat(), "operator": operator,
                     "host_os": f"{platform.system()} {platform.release()}", "plugin_commit": git_head(),

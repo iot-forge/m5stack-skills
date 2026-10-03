@@ -501,6 +501,67 @@ class Board(unittest.TestCase):
         self.assertEqual(list(validate.schema_errors(obj, schema, schema)), [])
 
 
+class MadeUpBoard(unittest.TestCase):
+    """run --board reads a revision's steps and dependencies from checks.json, so any revision can run section 6 (B26)."""
+    FAKE = "fake@v0"
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, ignore_errors=True)
+        (self.tmp / "verification").mkdir()
+
+    def board(self, checks, results=None):
+        obj = verify.read_json(REPO / "verification/checks.json")
+        obj["checks"] += [{"kind": c.split(".", 1)[0], "skills": [], "revision": self.FAKE, **extra, "id": f"{c}.{self.FAKE}"}
+                          for c, extra in checks]
+        (self.tmp / "verification/checks.json").write_text(json.dumps(obj), encoding="utf-8")
+        self.op, err = Operator(results), io.StringIO()
+        with contextlib.redirect_stderr(err):
+            run = verify.run_board(self.FAKE, "test", self.op, root=self.tmp)
+        return run, {r["check"].removesuffix(f".{self.FAKE}"): r for r in run["results"]}, err.getvalue()
+
+    def checks(self):
+        on = lambda c: f"{c}.{self.FAKE}"
+        return [("host.port", {"step": "plug-in"}),
+                ("open-question.quirk", {"step": "any-time", "depends_on": on("host.port")}),
+                ("flash.arduino", {"step": "arduino", "depends_on": on("host.port")}),
+                ("device.arduino", {"step": "arduino", "depends_on": on("flash.arduino")}),
+                ("fact.pmic", {"step": "arduino", "depends_on": on("device.arduino")})]
+
+    def test_its_checks_are_asked_in_step_order(self):  # the any-time check is listed second but asked last
+        _, res, _ = self.board(self.checks())
+        self.assertEqual(list(res), ["host.port", "flash.arduino", "device.arduino", "fact.pmic", "open-question.quirk"])
+        self.assertEqual(res["open-question.quirk"]["result"], "observed")
+
+    def test_only_its_own_steps_and_the_check_free_ones_are_shown(self):
+        _, _, err = self.board(self.checks())
+        shown = re.findall(r"^Step (\d+): (.*)$", err, re.M)
+        self.assertEqual([n for n, _ in shown], ["1", "2", "3", "4"])
+        self.assertIn("doctor.py", shown[0][1])
+        self.assertIn("erase-flash", shown[1][1])  # no check names the erase step, so every revision does it
+        self.assertIn("Arduino", shown[2][1])
+        self.assertTrue(shown[3][1].startswith("Any time"))
+        self.assertNotIn("PlatformIO", err)
+        self.assertIn(f"board.py facts {self.FAKE}", shown[0][1])
+        self.assertNotIn("<revision>", err)
+
+    def test_a_failure_blocks_its_dependants_transitively(self):
+        _, res, _ = self.board(self.checks(), {f"flash.arduino.{self.FAKE}": "f"})
+        self.assertEqual(res["device.arduino"]["blocked_by"], [f"flash.arduino.{self.FAKE}"])
+        self.assertEqual(res["fact.pmic"]["blocked_by"], [f"device.arduino.{self.FAKE}"])
+        self.assertFalse(any(p.startswith(f"fact.pmic.{self.FAKE} result") for p in self.op.prompts))
+        self.assertEqual(res["open-question.quirk"]["result"], "observed")
+
+    def test_a_check_with_no_step_is_refused_by_name(self):
+        checks = self.checks() + [("fact.imu", {}), ("fact.bridge", {"depends_on": f"host.port.{self.FAKE}"})]
+        with self.assertRaises(SystemExit) as e:
+            self.board(checks)
+        self.assertIn(f"fact.imu.{self.FAKE}", str(e.exception.code))
+        self.assertIn(f"fact.bridge.{self.FAKE}", str(e.exception.code))
+        self.assertNotIn(f"host.port.{self.FAKE}", str(e.exception.code))
+        self.assertEqual(self.op.prompts, [])  # refused before the operator is asked anything
+
+
 class WriteRun(unittest.TestCase):
     """--write merges into the date's results file: one file per sitting (section 8)."""
     def setUp(self):

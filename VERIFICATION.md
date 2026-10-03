@@ -65,7 +65,7 @@ The plugin is release-ready when:
 | `core2@v1.3` | mandatory | mandatory | mandatory | mandatory | run and record |
 | every other `supported` revision | `not-run` | `not-run` | `not-run` | `not-run` | `not-run` |
 
-The only unit planned for is a Core2 v1.3. Any other unit someone owns can run the same hardware session (section 6). The fact checks for that revision are the ones `data/` lets you derive: every component it lists, checked the same way.
+The only unit planned for is a Core2 v1.3. Any other unit someone owns can run the same hardware session (section 6). The fact checks for that revision are the ones `data/` lets you derive: every component it lists, checked the same way. Add them to `checks.json`, each with the section 6 step it belongs to (`step`, an id from `board_steps`) and the check that must pass before it is asked (`depends_on`). `verify.py run --board` refuses a revision with a check that has no step.
 
 ## 4. Hardware-free checks
 
@@ -184,7 +184,7 @@ The same program exists in all four frameworks, so one flash is a `flash`, a `de
 
 ## 6. The hardware session
 
-For `core2@v1.3`. Do the steps in this order: UIFlow2 replaces whatever firmware is on the unit, so it goes last. When a step fails, the checks that depend on it become `blocked`, not `fail`. Every write to the board is confirmed first, as the skills' standing rules require.
+For `core2@v1.3`. Do the steps in this order: UIFlow2 replaces whatever firmware is on the unit, so it goes last. When a step fails, the checks that depend on it become `blocked`, not `fail`. `verify.py run --board <revision>` walks the operator through these steps. It reads them from `checks.json` (`board_steps`, and each check's `step` and `depends_on`), so another revision's session is data too. Every write to the board is confirmed first, as the skills' standing rules require.
 
 Before starting, record in the results file:
 - the SKU on the unit's sticker (`K010-V13` expected);

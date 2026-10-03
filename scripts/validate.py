@@ -502,10 +502,20 @@ def check_verification(root, rep, revisions):
                 rep.fail("verification.runs", f"{run.name}: {err}")
     cj = root / "verification/checks.json"
     obj = load_json(cj, rep, "verification.checks") if cj.exists() else None
-    for c in (obj or {}).get("checks", []):
+    steps = [s["id"] for s in (obj or {}).get("board_steps", [])]
+    checks = (obj or {}).get("checks", [])
+    # run --board asks a revision's checks step by step, in file order within a step
+    asked = {c["id"]: (steps.index(c["step"]), n) for n, c in enumerate(checks) if c.get("step") in steps}
+    for c in checks:
         rev = c.get("revision")
         if rev and revisions and rev not in revisions:
             rep.fail("verification.checks", f"check {c['id']}: revision '{rev}' does not exist")
+        if "step" in c and c["step"] not in steps:
+            rep.fail("verification.checks", f"check {c['id']}: step '{c['step']}' is not in board_steps")
+        dep = c.get("depends_on")
+        if dep and not (dep.endswith(f".{rev}") and dep in asked and c["id"] in asked and asked[dep] < asked[c["id"]]):
+            rep.fail("verification.checks", f"check {c['id']}: depends_on '{dep}' must be a check of the same revision "
+                                            "that run --board asks earlier")
 
 
 def main():

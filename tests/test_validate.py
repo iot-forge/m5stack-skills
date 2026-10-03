@@ -24,15 +24,21 @@ def expected_value(signals, sid, key):
     return next(r["expected"][key] for r in p.get("reads") or [p] if key in r["expected"])
 
 
+def copy_repo(paths):
+    """A temporary repo holding PATHS copied from this one."""
+    tmp = Path(tempfile.mkdtemp())
+    (tmp / "verification").mkdir()
+    for p in paths:
+        if (REPO / p).is_dir():
+            shutil.copytree(REPO / p, tmp / p)
+        elif (REPO / p).exists():
+            shutil.copy2(REPO / p, tmp / p)
+    return tmp
+
+
 class Planted(unittest.TestCase):
     def setUp(self):
-        self.tmp = Path(tempfile.mkdtemp())
-        (self.tmp / "verification").mkdir()
-        for p in ("data", "docs", "skills", "references", *VERIFICATION_READS):
-            if (REPO / p).is_dir():
-                shutil.copytree(REPO / p, self.tmp / p)
-            elif (REPO / p).exists():
-                shutil.copy2(REPO / p, self.tmp / p)
+        self.tmp = copy_repo(("data", "docs", "skills", "references", *VERIFICATION_READS))
 
     def tearDown(self):
         shutil.rmtree(self.tmp, ignore_errors=True)
@@ -180,6 +186,42 @@ class Planted(unittest.TestCase):
     def test_no_safe_default_without_note(self):  # data.safe-default: null says why no choice is safe
         self.edit("targets/esp-bsp.json", lambda o: next(t for t in o["targets"] if t["id"] == "espressif/m5stack_core_2").pop("note"))
         self.assertFails("data.safe-default")
+
+
+class PlantedChecks(unittest.TestCase):
+    """verification.checks: run --board reads each hardware check's step and depends_on from checks.json (B26)."""
+    def setUp(self):  # the skill checks also resolve the scripts each SKILL.md names
+        self.tmp = copy_repo(("data", "docs", "skills", "references", "scripts", *VERIFICATION_READS))
+        self.addCleanup(shutil.rmtree, self.tmp, ignore_errors=True)
+
+    def edit_check(self, cid, **fields):
+        p = self.tmp / "verification/checks.json"
+        obj = json.loads(p.read_text(encoding="utf-8"))
+        next(c for c in obj["checks"] if c["id"] == cid).update(fields)
+        p.write_text(json.dumps(obj, indent=1), encoding="utf-8")
+
+    def assertChecksFail(self, *names):
+        code, out = run_validate(self.tmp)
+        self.assertEqual(code, 1, out)
+        fails = [line for line in out.splitlines() if line.startswith("FAIL [verification.checks]")]
+        for name in names:
+            self.assertTrue(any(name in line for line in fails), out)
+
+    def test_committed_checks_pass(self):
+        code, out = run_validate(self.tmp)
+        self.assertEqual(code, 0, out)
+
+    def test_step_not_in_board_steps(self):
+        self.edit_check("host.driver.core2@v1.3", step="nowhere")
+        self.assertChecksFail("host.driver.core2@v1.3", "nowhere")
+
+    def test_depends_on_a_check_asked_later(self):  # run --board would ask it before its dependency, so never block it
+        self.edit_check("flash.arduino.core2@v1.3", depends_on="device.arduino.core2@v1.3")
+        self.assertChecksFail("flash.arduino.core2@v1.3")
+
+    def test_depends_on_another_revision(self):
+        self.edit_check("open-question.ghost-touch.cores3-se@v1.0", step="any-time", depends_on="host.port.core2@v1.3")
+        self.assertChecksFail("open-question.ghost-touch.cores3-se@v1.0")
 
 
 if __name__ == "__main__":

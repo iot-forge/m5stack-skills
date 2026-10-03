@@ -1,6 +1,44 @@
 {
  "schema_version": 1,
- "note": "Every check in VERIFICATION.md, with its kind, the skills whose status it counts toward, its revision, and the data entries a pass cites (covers, used by verify.py ingest). A trigger check carries its request, the fixture project it runs from (verification/triggers/<fixture>, or an empty directory when null) and its owner skills (any of them may fire first). A blocked check with satisfied_by counts toward a skill's status when <satisfied_by>.<revision> passed.",
+ "note": "Every check in VERIFICATION.md, with its kind, the skills whose status it counts toward, its revision, and the data entries a pass cites (covers, used by verify.py ingest). A trigger check carries its request, the fixture project it runs from (verification/triggers/<fixture>, or an empty directory when null) and its owner skills (any of them may fire first). A blocked check with satisfied_by counts toward a skill's status when <satisfied_by>.<revision> passed. board_steps lists the steps of VERIFICATION.md section 6 in session order, each with what the operator does (<revision> stands for the unit's revision). A hardware check names its step and, in depends_on, the check that must pass before it is asked; within a step, checks are asked in the order they appear here.",
+ "board_steps": [
+  {
+   "id": "plug-in",
+   "text": "Plug the unit in. doctor.py should list exactly one new port; compare its VID/PID with the USB bridge `board.py facts <revision>` gives, and check the bridge driver is present."
+  },
+  {
+   "id": "erase",
+   "text": "Run `esptool erase-flash` on that port, once, after confirming the erase. It clears M5's cached board identity in NVS."
+  },
+  {
+   "id": "arduino",
+   "text": "Build and upload the Arduino smoke program (`smoke.py generate arduino`, then arduino-cli). Type the nonce you read off the display, and record the serial probe lines."
+  },
+  {
+   "id": "platformio",
+   "text": "Same, through PlatformIO."
+  },
+  {
+   "id": "esp-idf",
+   "text": "Same, through idf.py."
+  },
+  {
+   "id": "esp-bsp-display",
+   "text": "Build esp-bsp's examples/display from a clone at the pinned esp-bsp commit, with idf.py -D SDKCONFIG_DEFAULTS= the board's sdkconfig.bsp file plus the PMU setting `board.py targets <revision> --toolchain esp-idf` prints (the bsp file's own PMU choice may be wrong for this revision), and flash it. Record the component and ESP-IDF versions and what the display shows (section 7)."
+  },
+  {
+   "id": "live-handoff",
+   "text": "Ask a framework skill to upload while you hold the unit in reset. Pass: one attempt, the serial-port and download-mode procedures, exactly one retry, then a hand-off to flashing-and-debugging."
+  },
+  {
+   "id": "uiflow2",
+   "text": "Flash the UIFlow2 image `board.py targets` recommends with `esptool write-flash 0x0`, then push the smoke main.py with mpremote. Record the UIFlow2 observations in section 7."
+  },
+  {
+   "id": "any-time",
+   "text": "Any time: the remaining checks for this revision (VERIFICATION.md sections 6 and 7)."
+  }
+ ],
  "checks": [
   {
    "id": "data.validate",
@@ -500,7 +538,8 @@
    "skills": [
     "flashing-and-debugging"
    ],
-   "revision": "core2@v1.3"
+   "revision": "core2@v1.3",
+   "step": "plug-in"
   },
   {
    "id": "host.bridge.core2@v1.3",
@@ -509,6 +548,8 @@
     "flashing-and-debugging"
    ],
    "revision": "core2@v1.3",
+   "step": "plug-in",
+   "depends_on": "host.port.core2@v1.3",
    "covers": [
     "products/core2.json#core2@v1.3.usb_bridge"
    ]
@@ -519,7 +560,9 @@
    "skills": [
     "flashing-and-debugging"
    ],
-   "revision": "core2@v1.3"
+   "revision": "core2@v1.3",
+   "step": "plug-in",
+   "depends_on": "host.port.core2@v1.3"
   },
   {
    "id": "flash.arduino.core2@v1.3",
@@ -527,7 +570,9 @@
    "skills": [
     "arduino-m5unified"
    ],
-   "revision": "core2@v1.3"
+   "revision": "core2@v1.3",
+   "step": "arduino",
+   "depends_on": "host.port.core2@v1.3"
   },
   {
    "id": "device.arduino.core2@v1.3",
@@ -535,7 +580,9 @@
    "skills": [
     "arduino-m5unified"
    ],
-   "revision": "core2@v1.3"
+   "revision": "core2@v1.3",
+   "step": "arduino",
+   "depends_on": "flash.arduino.core2@v1.3"
   },
   {
    "id": "flash.platformio.core2@v1.3",
@@ -543,7 +590,9 @@
    "skills": [
     "platformio"
    ],
-   "revision": "core2@v1.3"
+   "revision": "core2@v1.3",
+   "step": "platformio",
+   "depends_on": "host.port.core2@v1.3"
   },
   {
    "id": "device.platformio.core2@v1.3",
@@ -551,7 +600,9 @@
    "skills": [
     "platformio"
    ],
-   "revision": "core2@v1.3"
+   "revision": "core2@v1.3",
+   "step": "platformio",
+   "depends_on": "flash.platformio.core2@v1.3"
   },
   {
    "id": "flash.esp-idf.core2@v1.3",
@@ -559,7 +610,9 @@
    "skills": [
     "esp-idf"
    ],
-   "revision": "core2@v1.3"
+   "revision": "core2@v1.3",
+   "step": "esp-idf",
+   "depends_on": "host.port.core2@v1.3"
   },
   {
    "id": "device.esp-idf.core2@v1.3",
@@ -567,7 +620,9 @@
    "skills": [
     "esp-idf"
    ],
-   "revision": "core2@v1.3"
+   "revision": "core2@v1.3",
+   "step": "esp-idf",
+   "depends_on": "flash.esp-idf.core2@v1.3"
   },
   {
    "id": "flash.uiflow2.core2@v1.3",
@@ -575,7 +630,9 @@
    "skills": [
     "uiflow2-micropython"
    ],
-   "revision": "core2@v1.3"
+   "revision": "core2@v1.3",
+   "step": "uiflow2",
+   "depends_on": "host.port.core2@v1.3"
   },
   {
    "id": "device.uiflow2.core2@v1.3",
@@ -583,7 +640,31 @@
    "skills": [
     "uiflow2-micropython"
    ],
-   "revision": "core2@v1.3"
+   "revision": "core2@v1.3",
+   "step": "uiflow2",
+   "depends_on": "flash.uiflow2.core2@v1.3"
+  },
+  {
+   "id": "open-question.auto-download.core2@v1.3",
+   "kind": "open-question",
+   "skills": [
+    "flashing-and-debugging"
+   ],
+   "revision": "core2@v1.3",
+   "step": "arduino",
+   "depends_on": "host.port.core2@v1.3",
+   "note": "VERIFICATION.md section 7"
+  },
+  {
+   "id": "open-question.lcd-driver.core2@v1.3",
+   "kind": "open-question",
+   "skills": [
+    "arduino-m5unified"
+   ],
+   "revision": "core2@v1.3",
+   "step": "arduino",
+   "depends_on": "device.arduino.core2@v1.3",
+   "note": "VERIFICATION.md section 7"
   },
   {
    "id": "fact.pmic.core2@v1.3",
@@ -592,6 +673,8 @@
     "board-identification"
    ],
    "revision": "core2@v1.3",
+   "step": "arduino",
+   "depends_on": "device.arduino.core2@v1.3",
    "covers": [
     "products/core2.json#core2@v1.3.pmic",
     "signals.json#pmic-probe"
@@ -604,6 +687,8 @@
     "board-identification"
    ],
    "revision": "core2@v1.3",
+   "step": "arduino",
+   "depends_on": "device.arduino.core2@v1.3",
    "covers": [
     "products/core2.json#core2@v1.3.imu",
     "signals.json#imu-probe"
@@ -616,6 +701,8 @@
     "board-identification"
    ],
    "revision": "core2@v1.3",
+   "step": "arduino",
+   "depends_on": "device.arduino.core2@v1.3",
    "covers": [
     "signals.json#atecc-probe"
    ]
@@ -627,6 +714,8 @@
     "board-identification"
    ],
    "revision": "core2@v1.3",
+   "step": "arduino",
+   "depends_on": "device.arduino.core2@v1.3",
    "covers": [
     "products/core2.json#core2@v1.3.extra_components",
     "signals.json#ina3221-probe"
@@ -639,6 +728,8 @@
     "board-identification"
    ],
    "revision": "core2@v1.3",
+   "step": "plug-in",
+   "depends_on": "host.bridge.core2@v1.3",
    "covers": [
     "products/core2.json#core2@v1.3.usb_bridge",
     "signals.json#usb-vid"
@@ -651,6 +742,8 @@
     "pinout-lookup"
    ],
    "revision": "core2@v1.3",
+   "step": "arduino",
+   "depends_on": "device.arduino.core2@v1.3",
    "covers": [
     "pinmaps/core2-a.json#buses.i2c_port_a"
    ]
@@ -662,6 +755,7 @@
     "board-identification"
    ],
    "revision": "core2@v1.3",
+   "step": "any-time",
    "covers": [
     "products/core2.json#core2@v1.3.power_led",
     "signals.json#power-led"
@@ -677,7 +771,9 @@
     "uiflow2-micropython",
     "flashing-and-debugging"
    ],
-   "revision": "core2@v1.3"
+   "revision": "core2@v1.3",
+   "step": "live-handoff",
+   "depends_on": "host.port.core2@v1.3"
   },
   {
    "id": "open-question.mpremote-launcher.core2@v1.3",
@@ -686,6 +782,8 @@
     "uiflow2-micropython"
    ],
    "revision": "core2@v1.3",
+   "step": "uiflow2",
+   "depends_on": "flash.uiflow2.core2@v1.3",
    "note": "VERIFICATION.md section 7"
   },
   {
@@ -695,15 +793,8 @@
     "uiflow2-micropython"
    ],
    "revision": "core2@v1.3",
-   "note": "VERIFICATION.md section 7"
-  },
-  {
-   "id": "open-question.auto-download.core2@v1.3",
-   "kind": "open-question",
-   "skills": [
-    "flashing-and-debugging"
-   ],
-   "revision": "core2@v1.3",
+   "step": "uiflow2",
+   "depends_on": "flash.uiflow2.core2@v1.3",
    "note": "VERIFICATION.md section 7"
   },
   {
@@ -713,6 +804,8 @@
     "pinout-lookup"
    ],
    "revision": "core2@v1.3",
+   "step": "any-time",
+   "depends_on": "host.port.core2@v1.3",
    "note": "VERIFICATION.md section 7"
   },
   {
@@ -722,6 +815,8 @@
     "uiflow2-micropython"
    ],
    "revision": "core2@v1.3",
+   "step": "uiflow2",
+   "depends_on": "flash.uiflow2.core2@v1.3",
    "note": "VERIFICATION.md section 7"
   },
   {
@@ -731,6 +826,8 @@
     "arduino-m5unified"
    ],
    "revision": "core2@v1.3",
+   "step": "any-time",
+   "depends_on": "host.port.core2@v1.3",
    "note": "VERIFICATION.md section 7"
   },
   {
@@ -740,15 +837,8 @@
     "arduino-m5unified"
    ],
    "revision": "core2@v1.3",
-   "note": "VERIFICATION.md section 7"
-  },
-  {
-   "id": "open-question.lcd-driver.core2@v1.3",
-   "kind": "open-question",
-   "skills": [
-    "arduino-m5unified"
-   ],
-   "revision": "core2@v1.3",
+   "step": "any-time",
+   "depends_on": "host.port.core2@v1.3",
    "note": "VERIFICATION.md section 7"
   },
   {
@@ -758,6 +848,8 @@
     "esp-idf"
    ],
    "revision": "core2@v1.3",
+   "step": "esp-bsp-display",
+   "depends_on": "host.port.core2@v1.3",
    "note": "VERIFICATION.md section 7"
   },
   {
