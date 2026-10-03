@@ -1,6 +1,6 @@
 # B29 · Record the CoreS3 PlatformIO release and M5's whole example
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: none
 
@@ -27,11 +27,11 @@ Two data gaps B08 found while writing the `platformio` skill's "Unknown board ID
 
 ## Definition of done
 
-- [ ] `board.py targets cores3 --toolchain platformio` and `board.py facts cores3` name the first `platform-espressif32` release that ships `m5stack-cores3`, cited to a source in `data/sources.json`
-- [ ] The `m5-pio-devkitc` erratum and the CoreS3-SE and CoreS3-Lite gaps texts carry M5's example's platform pin, board id and every board-configuring build flag, from a re-retrieved `m5-cores3`
-- [ ] `skills/platformio/references/board-ids.md` reads correctly with a named version (changed only if needed)
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
+- [x] `board.py targets cores3 --toolchain platformio` and `board.py facts cores3` name the first `platform-espressif32` release that ships `m5stack-cores3`, cited to a source in `data/sources.json`
+- [x] The `m5-pio-devkitc` erratum and the CoreS3-SE and CoreS3-Lite gaps texts carry M5's example's platform pin, board id and every board-configuring build flag, from a re-retrieved `m5-cores3`
+- [x] `skills/platformio/references/board-ids.md` reads correctly with a named version (changed only if needed)
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
 
 ## Stopping rule
 
@@ -41,8 +41,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Clone `platform-espressif32` and find the first tag containing `boards/m5stack-cores3.json`
-- **Files touched**: none
-- **Last commit**: none
+- **Done**: all. `m5stack-cores3` first ships in `platform-espressif32` 6.4.0: `boards/m5stack-cores3.json` was added in 91bdde3 (2023-08-02), `v6.4.0` (516520f) is the first tag that contains it (`git tag --contains`), and `v6.3.2` lacks the file. It is cited as the new source `pio-esp32-cores3`. The target's `note`, the `m5-pio-devkitc` erratum and the CoreS3-SE and CoreS3-Lite gaps texts name 6.4.0. `m5-cores3` was retrieved again on 2026-10-02; the erratum and both gaps texts carry M5's example's `platform = espressif32@6.7.0`, `board = esp32-s3-devkitc-1` and its five board-configuring build flags, and say the debug level and upload speed are left out. Test: `test_cores3_platformio_release_and_example` in `tests/test_board.py`. `skills/platformio/references/board-ids.md` needed no change: its "Unknown board ID" section passes on what the `board.py` output prints, which now names the release. `python -m unittest discover tests` passes; `uv run scripts/validate.py` exits 0.
+- **Next**: none
+- **Files touched**: data/sources.json, data/targets/platformio.json, data/products/cores3.json, data/products/cores3-se.json, data/products/cores3-lite.json, tests/test_board.py
+- **Last commit**: a32d539
 - **Open questions**: none
