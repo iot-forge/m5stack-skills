@@ -184,7 +184,7 @@ The same program exists in all four frameworks, so one flash is a `flash`, a `de
 
 ## 6. The hardware session
 
-For `core2@v1.3`. Do the steps in this order: UIFlow2 replaces whatever firmware is on the unit, so it goes last. When a step fails, the checks that depend on it become `blocked`, not `fail`. `verify.py run --board <revision>` walks the operator through these steps. It reads them from `checks.json` (`board_steps`, and each check's `step` and `depends_on`), so another revision's session is data too. Every write to the board is confirmed first, as the skills' standing rules require.
+For `core2@v1.3`. Do the steps in this order: UIFlow2 replaces whatever firmware is on the unit, so it goes last. When a step fails, the checks that depend on it become `blocked`, not `fail`. `verify.py run --board <revision>` walks the operator through these steps. It reads them from `checks.json` (`board_steps`, and each check's `step` and `depends_on`), so another revision's steps are data too. Every write to the board is confirmed first, as the skills' standing rules require.
 
 Before starting, record in the results file:
 - the SKU on the unit's sticker (`K010-V13` expected);

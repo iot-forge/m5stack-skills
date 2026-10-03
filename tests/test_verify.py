@@ -465,7 +465,7 @@ class Board(unittest.TestCase):
         self.assertEqual(res[f"flash.esp-idf.{REV}"]["result"], "blocked")
         self.assertEqual(res[f"device.esp-idf.{REV}"]["blocked_by"], [f"flash.esp-idf.{REV}"])
 
-    def test_the_core2_session_asks_in_this_order_and_blocks_on_these(self):  # pins section 6 for core2@v1.3 (B26)
+    def test_the_core2_run_asks_in_this_order_and_blocks_on_these(self):  # pins section 6 for core2@v1.3 (B26)
         obj, _ = self.board()
         self.assertEqual([r["check"].removesuffix(f".{REV}") for r in obj["results"]], [
             "host.port", "host.bridge", "host.driver", "fact.bridge",
@@ -507,8 +507,10 @@ class MadeUpBoard(unittest.TestCase):
 
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
-        self.addCleanup(shutil.rmtree, self.tmp, ignore_errors=True)
         (self.tmp / "verification").mkdir()
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
 
     def board(self, checks, results=None):
         obj = verify.read_json(REPO / "verification/checks.json")
@@ -521,12 +523,11 @@ class MadeUpBoard(unittest.TestCase):
         return run, {r["check"].removesuffix(f".{self.FAKE}"): r for r in run["results"]}, err.getvalue()
 
     def checks(self):
-        on = lambda c: f"{c}.{self.FAKE}"
         return [("host.port", {"step": "plug-in"}),
-                ("open-question.quirk", {"step": "any-time", "depends_on": on("host.port")}),
-                ("flash.arduino", {"step": "arduino", "depends_on": on("host.port")}),
-                ("device.arduino", {"step": "arduino", "depends_on": on("flash.arduino")}),
-                ("fact.pmic", {"step": "arduino", "depends_on": on("device.arduino")})]
+                ("open-question.quirk", {"step": "any-time", "depends_on": f"host.port.{self.FAKE}"}),
+                ("flash.arduino", {"step": "arduino", "depends_on": f"host.port.{self.FAKE}"}),
+                ("device.arduino", {"step": "arduino", "depends_on": f"flash.arduino.{self.FAKE}"}),
+                ("fact.pmic", {"step": "arduino", "depends_on": f"device.arduino.{self.FAKE}"})]
 
     def test_its_checks_are_asked_in_step_order(self):  # the any-time check is listed second but asked last
         _, res, _ = self.board(self.checks())
@@ -560,6 +561,11 @@ class MadeUpBoard(unittest.TestCase):
         self.assertIn(f"fact.bridge.{self.FAKE}", str(e.exception.code))
         self.assertNotIn(f"host.port.{self.FAKE}", str(e.exception.code))
         self.assertEqual(self.op.prompts, [])  # refused before the operator is asked anything
+
+    def test_a_check_whose_step_is_not_in_board_steps_is_refused_by_name(self):
+        with self.assertRaises(SystemExit) as e:
+            self.board(self.checks() + [("fact.imu", {"step": "nowhere"})])
+        self.assertIn(f"fact.imu.{self.FAKE}", str(e.exception.code))
 
 
 class WriteRun(unittest.TestCase):

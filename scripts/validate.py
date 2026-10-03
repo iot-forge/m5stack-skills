@@ -504,8 +504,8 @@ def check_verification(root, rep, revisions):
     obj = load_json(cj, rep, "verification.checks") if cj.exists() else None
     steps = [s["id"] for s in (obj or {}).get("board_steps", [])]
     checks = (obj or {}).get("checks", [])
-    # run --board asks a revision's checks step by step, in file order within a step
-    asked = {c["id"]: (steps.index(c["step"]), n) for n, c in enumerate(checks) if c.get("step") in steps}
+    # the order verify.py run_board asks a revision's checks in: step by step, in file order within a step
+    ask_order = {c["id"]: (steps.index(c["step"]), n) for n, c in enumerate(checks) if c.get("step") in steps}
     for c in checks:
         rev = c.get("revision")
         if rev and revisions and rev not in revisions:
@@ -513,7 +513,10 @@ def check_verification(root, rep, revisions):
         if "step" in c and c["step"] not in steps:
             rep.fail("verification.checks", f"check {c['id']}: step '{c['step']}' is not in board_steps")
         dep = c.get("depends_on")
-        if dep and not (dep.endswith(f".{rev}") and dep in asked and c["id"] in asked and asked[dep] < asked[c["id"]]):
+        if dep and "step" not in c:
+            rep.fail("verification.checks", f"check {c['id']}: has a depends_on but no step")
+        elif dep and c["id"] in ask_order and not (dep.endswith(f".{rev}") and dep in ask_order
+                                                   and ask_order[dep] < ask_order[c["id"]]):
             rep.fail("verification.checks", f"check {c['id']}: depends_on '{dep}' must be a check of the same revision "
                                             "that run --board asks earlier")
 

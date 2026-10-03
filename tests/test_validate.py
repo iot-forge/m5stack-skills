@@ -192,7 +192,9 @@ class PlantedChecks(unittest.TestCase):
     """verification.checks: run --board reads each hardware check's step and depends_on from checks.json (B26)."""
     def setUp(self):  # the skill checks also resolve the scripts each SKILL.md names
         self.tmp = copy_repo(("data", "docs", "skills", "references", "scripts", *VERIFICATION_READS))
-        self.addCleanup(shutil.rmtree, self.tmp, ignore_errors=True)
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
 
     def edit_check(self, cid, **fields):
         p = self.tmp / "verification/checks.json"
@@ -218,6 +220,10 @@ class PlantedChecks(unittest.TestCase):
     def test_depends_on_a_check_asked_later(self):  # run --board would ask it before its dependency, so never block it
         self.edit_check("flash.arduino.core2@v1.3", depends_on="device.arduino.core2@v1.3")
         self.assertChecksFail("flash.arduino.core2@v1.3")
+
+    def test_depends_on_without_a_step(self):
+        self.edit_check("open-question.ghost-touch.cores3-se@v1.0", depends_on="open-question.mpremote.cores3-se@v1.0")
+        self.assertChecksFail("open-question.ghost-touch.cores3-se@v1.0: has a depends_on but no step")
 
     def test_depends_on_another_revision(self):
         self.edit_check("open-question.ghost-touch.cores3-se@v1.0", step="any-time", depends_on="host.port.core2@v1.3")

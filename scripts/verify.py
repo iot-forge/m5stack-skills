@@ -356,22 +356,24 @@ def run_board(revision, operator, ask=input, root=ROOT):
     checks = [c for c in doc["checks"] if c.get("revision") == revision]
     if not checks:
         raise SystemExit(f"verification/checks.json has no checks for {revision}; derive them from data/ first (section 3)")
-    if stepless := [c["id"] for c in checks if "step" not in c]:
+    step_ids = [s["id"] for s in doc["board_steps"]]
+    if stepless := [c["id"] for c in checks if c.get("step") not in step_ids]:
         raise SystemExit(f"verification/checks.json gives no section 6 step for: {', '.join(stepless)}; "
                          "give each a step from board_steps, and a depends_on where it needs an earlier check to pass")
-    named = {c["step"] for c in doc["checks"] if "step" in c}
-    steps = [(s["text"].replace("<revision>", revision), mine) for s in doc["board_steps"]
-             if (mine := [c for c in checks if c["step"] == s["id"]]) or s["id"] not in named]
+    # the order of questions: step by step, in file order within a step (validate.py's ask_order checks depends_on against it)
+    steps_in_use = {c["step"] for c in doc["checks"] if "step" in c}
+    steps = [(s["text"].replace("<revision>", revision), in_step) for s in doc["board_steps"]
+             if (in_step := [c for c in checks if c["step"] == s["id"]]) or s["id"] not in steps_in_use]
     unit = {"revision": revision, "sku_sticker": ask("SKU on the unit's sticker: ").strip()}
     toolchains = {t: v for t in TOOLCHAINS if (v := ask(f"{t} version (blank if not used): ").strip())}
     results, outcome = [], {}
-    for n, (text, mine) in enumerate(steps, 1):
+    for n, (text, in_step) in enumerate(steps, 1):
         print(f"\nStep {n}: {text}", file=sys.stderr)
-        if not mine:
+        if not in_step:
             if not ask(f"Step {n} done? [y/n] ").strip().lower().startswith("y"):
                 print("  Not done: record why in the report; later answers may come from an earlier firmware.", file=sys.stderr)
             continue
-        for check in mine:
+        for check in in_step:
             cid, dep = check["id"], check.get("depends_on")
             if dep in outcome and outcome[dep] != "pass":
                 outcome[cid] = "blocked"
