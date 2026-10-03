@@ -1,6 +1,6 @@
 # B28 · Make the skills' `allowed-tools` pre-approve `board.py` and `doctor.py`
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: none
 
