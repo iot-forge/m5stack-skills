@@ -1,6 +1,6 @@
 # B27 · Stop the trigger rows at the first account-limit message
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: none
 
@@ -32,11 +32,11 @@ Detect the limit from the run's own output (the `result` event's text, together 
 
 ## Definition of done
 
-- [ ] A test with a fake `claude` that hits the limit on some row shows that row `blocked` with the message, every later row `blocked` with no further `claude` call, and every earlier row keeping its result
-- [ ] The stderr summary gives the reset time and the `--only` options for the rows left
-- [ ] A test shows an ordinary `claude` failure (non-zero exit, no limit message) still blocks only its own row
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
+- [x] A test with a fake `claude` that hits the limit on some row shows that row `blocked` with the message, every later row `blocked` with no further `claude` call, and every earlier row keeping its result
+- [x] The stderr summary gives the reset time and the `--only` options for the rows left
+- [x] A test shows an ordinary `claude` failure (non-zero exit, no limit message) still blocks only its own row
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
 
 ## Stopping rule
 
@@ -46,8 +46,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Write the failing test with a fake `claude` that hits the limit on the third row
-- **Files touched**: none
-- **Last commit**: none
+- **Done**: all. `run --offline` stops calling `claude` at the first run that exits non-zero with an account-limit message (`LIMIT_RE` in `scripts/verify.py`: a spend, usage, session, weekly, monthly or N-hour limit; a rate limit is an ordinary failure). That row is `blocked` with the message, every later trigger row is `blocked` with no call, and stderr gives the reset time and the `--only` options for the rows left. Tests in `tests/test_verify.py` (`Triggers`): `test_account_limit_stops_the_trigger_rows`, `test_account_limit_summary_gives_the_reset_and_the_rows_left`, `test_other_limit_wordings_stop_the_rows_too`, `test_account_limit_on_row_11_asks_nobody`, `test_ordinary_claude_failure_blocks_only_its_own_row`. `python -m unittest discover tests` passes; `uv run scripts/validate.py` exits 0. `VERIFICATION.md` section 4 says what a limit does to the run.
+- **Next**: none
+- **Files touched**: scripts/verify.py, tests/test_verify.py, VERIFICATION.md
+- **Last commit**: 6451d4a
 - **Open questions**: none
