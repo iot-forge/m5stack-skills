@@ -1,6 +1,6 @@
 # B27 · Stop the trigger rows at the first account-limit message
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: none
 
