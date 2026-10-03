@@ -1,6 +1,6 @@
 # B29 · Record the CoreS3 PlatformIO release and M5's whole example
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: none
 
