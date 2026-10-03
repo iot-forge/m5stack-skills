@@ -375,8 +375,8 @@ class Triggers(unittest.TestCase):
         self.assertTrue(all(c[0] == "claude" for c in runner.calls))  # no validate, unittest or build run
         self.assertEqual(len(runner.calls), 2 * 3)
 
-    def offline_until(self, call, only, fail=LIMIT):
-        """run_offline over ONLY with a claude whose CALL-th call (1-based) exits 1 with FAIL as its result; every
+    def offline_until(self, call, only, answer=LIMIT, ask=None):
+        """run_offline over ONLY with a claude whose CALL-th call (1-based) exits 1 with ANSWER as its result; every
         other call fires the row's first owner. Returns ({check: result}, claude calls, stderr)."""
         owners = {c["request"]: c["owner"] for c in verify.read_json(REPO / "verification/checks.json")["checks"]
                   if c["kind"] == "trigger"}
@@ -384,10 +384,10 @@ class Triggers(unittest.TestCase):
 
         def claude(request, cwd):
             n[0] += 1
-            return (1, stream(answer=fail)) if n[0] == call else stream(*owners[request][:1])
+            return (1, stream(answer=answer)) if n[0] == call else stream(*owners[request][:1])
         runner, err = FakeRunner(claude=claude), io.StringIO()
         with contextlib.redirect_stderr(err):
-            res = verify.run_offline("test", runner=runner, only=only)["results"]
+            res = verify.run_offline("test", runner=runner, only=only, ask=ask)["results"]
         return {r["check"]: r for r in res}, sum(1 for c in runner.calls if c[0] == "claude"), err.getvalue()
 
     def test_account_limit_stops_the_trigger_rows(self):
@@ -410,15 +410,31 @@ class Triggers(unittest.TestCase):
         self.assertIn("--only trigger.row-05 --only trigger.row-09\n", err)  # just the rows left, in checks.json order
         self.assertNotIn("--only trigger.row-02", err)
 
+    def test_other_limit_wordings_stop_the_rows_too(self):
+        for answer in ("Claude AI usage limit reached|1790640708", "5-hour limit reached · resets 3pm",
+                       "You have reached your weekly limit"):
+            _, calls, err = self.offline_until(1, {"trigger.row-01", "trigger.row-02"}, answer=answer)
+            self.assertEqual(calls, 1, answer)
+            self.assertIn("--only trigger.row-01 --only trigger.row-02\n", err, answer)
+        self.assertIn("It resets at a time the message does not give.", err)  # the weekly one gives none
+
+    def test_account_limit_on_row_11_asks_nobody(self):  # no answers to judge, and nobody to judge them
+        def ask(prompt):
+            raise AssertionError("the operator was asked")
+        res, calls, _ = self.offline_until(4, {"trigger.row-10", "trigger.row-11", "trigger.row-12"}, ask=ask)
+        self.assertEqual(calls, 4)
+        self.assertEqual([res[r]["result"] for r in ("trigger.row-10", "trigger.row-11", "trigger.row-12")],
+                         ["pass", "blocked", "blocked"])
+
     def test_ordinary_claude_failure_blocks_only_its_own_row(self):
-        rows = {"trigger.row-01", "trigger.row-02", "trigger.row-03"}
-        res, calls, err = self.offline_until(4, rows, fail="API Error: 500 Internal server error")
-        self.assertEqual(calls, 9)
-        self.assertEqual(res["trigger.row-02"]["result"], "blocked")
-        self.assertIn("claude exited 1", res["trigger.row-02"]["output"])
-        self.assertEqual(res["trigger.row-01"]["result"], "pass")
-        self.assertEqual(res["trigger.row-03"]["result"], "pass")
-        self.assertNotIn("limit", err)
+        for answer in ("API Error: 500 Internal server error", "API Error: 429 You've hit your rate limit, try again"):
+            res, calls, err = self.offline_until(4, {"trigger.row-01", "trigger.row-02", "trigger.row-03"}, answer=answer)
+            self.assertEqual(calls, 9, answer)
+            self.assertEqual(res["trigger.row-02"]["result"], "blocked")
+            self.assertIn("claude exited 1", res["trigger.row-02"]["output"])
+            self.assertEqual(res["trigger.row-01"]["result"], "pass")
+            self.assertEqual(res["trigger.row-03"]["result"], "pass")
+            self.assertNotIn("account limit", err)
 
     def test_run_offline_runs_every_trigger_row(self):
         runner = FakeRunner(validate_tests={**GUARDS_OK, **ALL_PLANTED_OK}, claude=lambda request, cwd: stream())

@@ -250,7 +250,9 @@ def final_answer(stream):
     return next((ev.get("result", "") for ev in stream_events(stream) if ev.get("type") == "result"), "")
 
 
-LIMIT_RE = re.compile(r"\bhit your [^·\n]*limit\b", re.I)  # "You've hit your monthly spend limit · … resets 2:10pm (…)"
+# "You've hit your monthly spend limit · … resets 2:10pm (…)"; a rate limit is transient, so it is not one
+LIMIT_RE = re.compile(r"\b(?:spend|usage|session|weekly|monthly|\d+-hour) limit\b", re.I)
+RESET_RE = re.compile(r"\bresets ([^·\n]+)")
 
 
 class AccountLimit(Exception):
@@ -258,10 +260,8 @@ class AccountLimit(Exception):
     def __init__(self, result, message):
         super().__init__(message)
         self.result, self.message = result, message
-
-    def reset(self):
-        return next((p.strip().split("resets ", 1)[1] for p in self.message.split("·") if "resets " in p),
-                    "at a time the message does not give")
+        m = RESET_RE.search(message)
+        self.reset = m.group(1).strip() if m else "at a time the message does not give"
 
 
 def run_verdict(check, skills, prefix):
@@ -351,23 +351,25 @@ def run_offline(operator, runner=sh, skip=(), ask=None, only=None):
             results += smoke_results(runner, ["check-targets"], ["build.target-from-data"])
     limit, left = None, []
     for c in (c for c in checks if wanted(c["id"])):
-        if c["kind"] == "trigger" and limit:
-            left.append(c["id"])
-            results.append({"check": c["id"], "result": "blocked", "output": f"not run: the account limit stopped the run "
-                            f"at {left[0]} (resets {limit.reset()})"})
-        elif c["kind"] == "trigger":
-            try:
-                results.append({"check": c["id"], "result": "not-run", "output": "skipped (--skip trigger)"} if "trigger" in skip
-                               else trigger_result(c, runner, ask))
-            except AccountLimit as e:
-                limit, left = e, [c["id"]]
-                results.append(e.result)
+        if c["kind"] == "trigger":
+            if "trigger" in skip:
+                results.append({"check": c["id"], "result": "not-run", "output": "skipped (--skip trigger)"})
+            elif limit:
+                left.append(c["id"])
+                results.append({"check": c["id"], "result": "blocked", "output": "claude not called: the account limit "
+                                f"stopped the run at {left[0]} (resets {limit.reset})"})
+            else:
+                try:
+                    results.append(trigger_result(c, runner, ask))
+                except AccountLimit as e:
+                    limit, left = e, [c["id"]]
+                    results.append(e.result)
         elif c["kind"] == "handoff" and "revision" not in c:
             results.append({"check": c["id"], "result": "blocked", "output": "operator-read (VERIFICATION.md section 4): blocked "
                             "until there is a port that exists but fails; handoff.live.<revision> covers it in the hardware session"})
     if limit:
         print(f"The account limit stopped the trigger rows at {left[0]}: {limit.message}\n"
-              f"It resets {limit.reset()}. Then rerun the {len(left)} rows left "
+              f"It resets {limit.reset}. Then rerun the {len(left)} rows left "
               f"(with --write, their results replace these):\n  uv run scripts/verify.py run --offline "
               + " ".join(f"--only {i}" for i in left), file=sys.stderr)
     date = datetime.date.today().isoformat()
