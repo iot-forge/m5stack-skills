@@ -1,6 +1,6 @@
 # B35 · Give the safe choice between targets a home in the data
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: none
 
@@ -35,13 +35,13 @@ The maintainer settled it (2026-09-30, closing B23's Open questions): the choice
 
 ## Definition of done
 
-- [ ] The shape is settled with the maintainer and recorded
-- [ ] Every split the skills fall back on in prose has a cited choice in the data, or `null` with a note
-- [ ] `validate.py` enforces it, with a planted fixture that fails
-- [ ] `board.py` prints it; a test covers it
-- [ ] `platformio` and `esp-idf` use the printed choice instead of reasoning, and neither body goes over 10 kB
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
+- [x] The shape is settled with the maintainer and recorded
+- [x] Every split the skills fall back on in prose has a cited choice in the data, or `null` with a note
+- [x] `validate.py` enforces it, with a planted fixture that fails
+- [x] `board.py` prints it; a test covers it
+- [x] `platformio` and `esp-idf` use the printed choice instead of reasoning, and neither body goes over 10 kB
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
 
 The descriptions do not change, so no trigger rows need running.
 
@@ -53,8 +53,20 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Propose the shape (Job step 1) to the maintainer
-- **Files touched**: none
-- **Last commit**: none
-- **Open questions**: none
+- **Done**: all. Recorded results:
+  - Shape, settled by the maintainer (2026-10-02), see Open questions. Three splits had a prose or missing fallback: PlatformIO Basic (two ids), UIFlow2 Basic (two images), and Basic's flash size as `facts` prints it.
+  - `data/targets/platformio.json` `safe_choices`: Basic uses `m5stack-core-esp32`, cited to `pio-esp32` (its `flash_size` is 4MB, the 16M id's 16MB) and `idf-flash-size-check`. `data/targets/uiflow2.json` `safe_choices`: Basic has `use: null` with a note. `data/products/basic.json` `safe_choices.flash`: `4MB`, cited to `m5-basic-v2.7` and `idf-flash-size-check`. Proof: `uv run scripts/validate.py` exits 0.
+  - `validate.py` rule `data.safe-choice`: a product whose revisions no one target covers needs a `safe_choices` entry in that targets file; a product whose revisions differ in `flash` needs `safe_choices.flash`; `use` is a target (or value) of the revisions covered, with `gives_up`, or `null` with a `note`. Five planted tests (`test_split_targets_without_safe_choice`, `test_safe_choice_names_another_products_target`, `test_no_safe_choice_without_note`, `test_diverging_flash_without_safe_choice`, `test_safe_choice_names_no_revisions_value`), mapped in `verify.py` `PLANTED` and `checks.json` (`data.planted-safe-choice`).
+  - `board.py targets` prints `safe choice when the revision is unknown: <id>. Gives up: ...` or `no safe choice when the revision is unknown: <note>; identify the revision first` after the id lines; `facts` prints the same under `flash: DIVERGES`. Both print only while the revisions in play split and all belong to the product the choice covers (`bid:1` prints none). Tests: `test_safe_choice_between_targets`, `test_safe_choice_for_a_fact`.
+  - `platformio` step 3 and the `flash` bullet of `esp-idf` step 4 use the printed safe choice. Bodies by `validate.py`'s measure: platformio 9557 bytes, esp-idf 9998, no `skill.size` warning. To fit, two phrases in esp-idf's esp-bsp step lost words ("first", "of them"); its meaning is unchanged. The next edit to the esp-idf body needs material moved to `references/`.
+  - `CONTEXT.md` defines **Safe choice** (covers `safe_default` and `safe_choices`).
+  - `python -m unittest discover tests`: 175 run, OK.
+  - Reviewed with `/code-review` (standards and spec). Applied: a choice no longer prints for a mix of products; `use` must be a target of the revisions covered; a `safe_choices` entry without `covers` fails the schema instead of crashing. Left: `validate.py` cannot tell the safe side from the unsafe one, and accepts a `safe_choices` entry where nothing splits (never printed, as with `safe_default`); `gives_up` is fixed text, so it names v2.5 to v2.7 even when fewer are in play.
+- **Next**: none
+- **Files touched**: `data/schema/targets.schema.json`, `data/schema/product.schema.json`, `data/targets/platformio.json`, `data/targets/uiflow2.json`, `data/products/basic.json`, `scripts/validate.py`, `scripts/board.py`, `scripts/verify.py`, `verification/checks.json`, `tests/test_validate.py`, `tests/test_board.py`, `skills/platformio/SKILL.md`, `skills/esp-idf/SKILL.md`, `CONTEXT.md`
+- **Last commit**: see `git log -- backlog/B35-cross-target-safe-choice.md`
+- **Open questions** (settled by the maintainer, 2026-10-02):
+  - Where does the choice between target ids live? Settled: a top-level `safe_choices` list beside `targets` in `data/targets/<toolchain>.json`; each entry has `covers`, `use` (a target id or `null`), `gives_up` or `note`, and provenance.
+  - How does esp-idf's flash case fit, since it reads `facts`? Settled: a product-level `safe_choices.flash` in the product file, printed by `facts`; `validate.py` requires it for `flash` only (Fire's PSRAM also differs, but no skill falls back on it).
+  - UIFlow2 has the same Basic split, which this issue did not name. Settled: the rule covers every toolchain; UIFlow2 records `use: null` with a note, and the `uiflow2-micropython` text does not change.
+  - `CONTEXT.md` says facts do not attach to a Product (ADR 0003). Settled: add a **Safe choice** glossary term saying it is a decision over the revisions' facts, not a hardware fact.
