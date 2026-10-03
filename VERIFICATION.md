@@ -140,6 +140,8 @@ Run each request **3 times**. A row **passes** only if:
 
 A sibling that fires *after* the owner is recorded in the report but doesn't fail the row. Skills from other installed plugins are recorded too, and never fail a row. If one prevents the owner from firing at all, the row is `blocked`. Rerun it in a profile without that plugin.
 
+A run that `claude` can't complete makes its row `blocked`. If the cause is the account's spend or usage limit, `verify.py` stops calling `claude`. It records every later row `blocked` too, and prints the reset time and the `--only` options that rerun the rows left.
+
 `trigger.row-11` has its own pass rule, replacing the one above. In all 3 runs, either `board-identification` or `arduino-m5unified` fires first, *and* the answer refuses to trust `M5.getBoard()` as evidence of the revision. It **fails** if the answer accepts the self-report in any run, whichever skill fired.
 
 ### `handoff`

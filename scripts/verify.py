@@ -250,6 +250,20 @@ def final_answer(stream):
     return next((ev.get("result", "") for ev in stream_events(stream) if ev.get("type") == "result"), "")
 
 
+LIMIT_RE = re.compile(r"\bhit your [^·\n]*limit\b", re.I)  # "You've hit your monthly spend limit · … resets 2:10pm (…)"
+
+
+class AccountLimit(Exception):
+    """claude -p met the account's spend or usage limit: every later call fails too. Carries the row's result."""
+    def __init__(self, result, message):
+        super().__init__(message)
+        self.result, self.message = result, message
+
+    def reset(self):
+        return next((p.strip().split("resets ", 1)[1] for p in self.message.split("·") if "resets " in p),
+                    "at a time the message does not give")
+
+
 def run_verdict(check, skills, prefix):
     """One run of a trigger row. Other plugins' skills never fail a row, but one that keeps the owner from firing blocks it."""
     mine = [s for s in skills if s.startswith(prefix)]
@@ -262,7 +276,8 @@ def run_verdict(check, skills, prefix):
 
 def trigger_result(check, runner=sh, ask=None):
     """A trigger.* check (section 4): the request run TRIGGER_RUNS times from a copy of its fixture. A check with
-    `judge` (trigger.row-11) also needs the operator to read the answers: ASK(prompt) -> 'y' or 'n', or None for not-run."""
+    `judge` (trigger.row-11) also needs the operator to read the answers: ASK(prompt) -> 'y' or 'n', or None for not-run.
+    A run that meets the account limit raises AccountLimit with the row blocked: the later runs could not succeed."""
     prefix = read_json(ROOT / ".claude-plugin/plugin.json")["name"] + ":"
     cmd = ["claude", "-p", check["request"], "--plugin-dir", str(ROOT), "--allowedTools", "Skill",
            "--output-format", "stream-json", "--verbose"]
@@ -277,11 +292,15 @@ def trigger_result(check, runner=sh, ask=None):
                 return {"check": check["id"], "result": "blocked", "output": "Claude Code (claude) not found on PATH"}
             except subprocess.TimeoutExpired:
                 code, out, err = None, "", "timed out"
+        answer = final_answer(out)
+        if code not in (0, None) and LIMIT_RE.search(answer):
+            lines.append(f"run {n}: claude exited {code} at the account limit: {answer}")
+            raise AccountLimit({"check": check["id"], "result": "blocked", "output": "\n".join(lines)}, answer)
         skills = fired_skills(out)
         v = run_verdict(check, skills, prefix) if code == 0 else "blocked"  # claude could not run: no verdict on the skill
         verdicts.append(v)
         lines.append(f"run {n}: {', '.join(skills) or 'no skill fired'} -> {v}" + ("" if code == 0 else f" (claude exited {code}: {err[-500:]})"))
-        answers.append(final_answer(out))
+        answers.append(answer)
     result = "fail" if "fail" in verdicts else ("blocked" if "blocked" in verdicts else "pass")
     if "judge" in check:
         lines += [f"answer {n}: {a}" for n, a in enumerate(answers, 1)]
@@ -330,13 +349,27 @@ def run_offline(operator, runner=sh, skip=(), ask=None, only=None):
             results += smoke_results(runner, ["build"], builds)
         if wanted("build.target-from-data"):
             results += smoke_results(runner, ["check-targets"], ["build.target-from-data"])
+    limit, left = None, []
     for c in (c for c in checks if wanted(c["id"])):
-        if c["kind"] == "trigger":
-            results.append({"check": c["id"], "result": "not-run", "output": "skipped (--skip trigger)"} if "trigger" in skip
-                           else trigger_result(c, runner, ask))
+        if c["kind"] == "trigger" and limit:
+            left.append(c["id"])
+            results.append({"check": c["id"], "result": "blocked", "output": f"not run: the account limit stopped the run "
+                            f"at {left[0]} (resets {limit.reset()})"})
+        elif c["kind"] == "trigger":
+            try:
+                results.append({"check": c["id"], "result": "not-run", "output": "skipped (--skip trigger)"} if "trigger" in skip
+                               else trigger_result(c, runner, ask))
+            except AccountLimit as e:
+                limit, left = e, [c["id"]]
+                results.append(e.result)
         elif c["kind"] == "handoff" and "revision" not in c:
             results.append({"check": c["id"], "result": "blocked", "output": "operator-read (VERIFICATION.md section 4): blocked "
                             "until there is a port that exists but fails; handoff.live.<revision> covers it in the hardware session"})
+    if limit:
+        print(f"The account limit stopped the trigger rows at {left[0]}: {limit.message}\n"
+              f"It resets {limit.reset()}. Then rerun the {len(left)} rows left "
+              f"(with --write, their results replace these):\n  uv run scripts/verify.py run --offline "
+              + " ".join(f"--only {i}" for i in left), file=sys.stderr)
     date = datetime.date.today().isoformat()
     return {"run": {"date": date, "operator": operator, "host_os": f"{platform.system()} {platform.release()}",
                     "plugin_commit": git_head(), "unit": None, "toolchains": {}},
@@ -515,6 +548,7 @@ def write_run(obj, runs=ROOT / "verification/runs"):
 def main():
     try:
         sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")  # the account-limit message carries a "·"
     except AttributeError:
         pass
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)

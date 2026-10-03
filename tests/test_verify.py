@@ -219,8 +219,10 @@ class FakeRunner:
             return 0, json.dumps([self.targets]), ""
         if "smoke.py" in text:
             return 0, json.dumps(self.build), ""
-        if cmd[0] == "claude":
-            return 0, self.claude(cmd[cmd.index("-p") + 1], cwd), ""
+        if cmd[0] == "claude":  # CLAUDE returns the stream, or (exit code, stream)
+            got = self.claude(cmd[cmd.index("-p") + 1], cwd)
+            code, out = got if isinstance(got, tuple) else (0, got)
+            return code, out, ""
         raise AssertionError(f"unexpected command {cmd}")
 
 
@@ -270,6 +272,11 @@ def stream(*skills, answer="done"):
         {"type": "tool_use", "name": "Skill", "input": {"skill": s if ":" in s else f"m5core-skills:{s}"}}]}} for s in skills]
     lines.append({"type": "result", "subtype": "success", "is_error": False, "result": answer})
     return "\n".join(json.dumps(l) for l in lines) + "\n"
+
+
+# The result event's text when claude -p hit the account limit, exit code 1 (2026-09-28)
+LIMIT = ("You've hit your monthly spend limit · raise it at claude.ai/settings/usage?from=cc_cli_limit_message · "
+         "your session limit resets 2:10pm (America/Los_Angeles)")
 
 
 class Triggers(unittest.TestCase):
@@ -367,6 +374,51 @@ class Triggers(unittest.TestCase):
         self.assertEqual(sorted(r["check"] for r in res), ["trigger.neg-02", "trigger.row-17"])
         self.assertTrue(all(c[0] == "claude" for c in runner.calls))  # no validate, unittest or build run
         self.assertEqual(len(runner.calls), 2 * 3)
+
+    def offline_until(self, call, only, fail=LIMIT):
+        """run_offline over ONLY with a claude whose CALL-th call (1-based) exits 1 with FAIL as its result; every
+        other call fires the row's first owner. Returns ({check: result}, claude calls, stderr)."""
+        owners = {c["request"]: c["owner"] for c in verify.read_json(REPO / "verification/checks.json")["checks"]
+                  if c["kind"] == "trigger"}
+        n = [0]
+
+        def claude(request, cwd):
+            n[0] += 1
+            return (1, stream(answer=fail)) if n[0] == call else stream(*owners[request][:1])
+        runner, err = FakeRunner(claude=claude), io.StringIO()
+        with contextlib.redirect_stderr(err):
+            res = verify.run_offline("test", runner=runner, only=only)["results"]
+        return {r["check"]: r for r in res}, sum(1 for c in runner.calls if c[0] == "claude"), err.getvalue()
+
+    def test_account_limit_stops_the_trigger_rows(self):
+        rows = [c["id"] for c in verify.read_json(REPO / "verification/checks.json")["checks"] if c["kind"] == "trigger"]
+        res, calls, _ = self.offline_until(8, set(rows) | {"handoff.platformio"})  # run 2 of trigger.row-03
+        self.assertEqual(calls, 8)  # no claude call after the limit
+        self.assertEqual([res[r]["result"] for r in rows[:2]], ["pass", "pass"])  # rows before it keep their results
+        self.assertEqual(res["trigger.row-03"]["result"], "blocked")
+        self.assertIn("run 1: m5core-skills:arduino-m5unified -> pass", res["trigger.row-03"]["output"])
+        self.assertIn(LIMIT, res["trigger.row-03"]["output"])
+        for r in rows[3:]:
+            self.assertEqual(res[r]["result"], "blocked", r)
+            self.assertIn("account limit stopped the run at trigger.row-03", res[r]["output"])
+        self.assertEqual(res["handoff.platformio"]["result"], "blocked")  # the handoff entries are still recorded
+
+    def test_account_limit_summary_gives_the_reset_and_the_rows_left(self):
+        _, calls, err = self.offline_until(4, {"trigger.row-02", "trigger.row-05", "trigger.row-09"})
+        self.assertEqual(calls, 4)
+        self.assertIn("resets 2:10pm (America/Los_Angeles)", err)
+        self.assertIn("--only trigger.row-05 --only trigger.row-09\n", err)  # just the rows left, in checks.json order
+        self.assertNotIn("--only trigger.row-02", err)
+
+    def test_ordinary_claude_failure_blocks_only_its_own_row(self):
+        rows = {"trigger.row-01", "trigger.row-02", "trigger.row-03"}
+        res, calls, err = self.offline_until(4, rows, fail="API Error: 500 Internal server error")
+        self.assertEqual(calls, 9)
+        self.assertEqual(res["trigger.row-02"]["result"], "blocked")
+        self.assertIn("claude exited 1", res["trigger.row-02"]["output"])
+        self.assertEqual(res["trigger.row-01"]["result"], "pass")
+        self.assertEqual(res["trigger.row-03"]["result"], "pass")
+        self.assertNotIn("limit", err)
 
     def test_run_offline_runs_every_trigger_row(self):
         runner = FakeRunner(validate_tests={**GUARDS_OK, **ALL_PLANTED_OK}, claude=lambda request, cwd: stream())
