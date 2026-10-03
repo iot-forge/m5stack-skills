@@ -88,9 +88,9 @@ Done when the answer gives, for this pin: what uses it, where it is exposed, eve
 
 1. Run `board.py pins "<user's words>"`, with `--use` for the user's features when known. Collect every pin whose exposure names the connector (`port_a:sda`, `port_b:in`, `mbus:24`) on every line, `SHARED BUS` and `TAKEN` included. None: say the data records no such connector here.
 2. For each pin give its role from the exposure, its status from the line it sits on, and its cautions. A connector whose pins sit on a `SHARED BUS` line shares that bus with the chips in `occupied:`; one under `Buses on connectors that are yours alone` does not.
-3. Give the connector's power, ground and reset positions from the `OTHER CONNECTOR POSITIONS` line as printed, adding no meaning to a name (`HPWR`, `NC`). A connector missing from that line, as every Grove port is, has none recorded: say the data has nothing on its power pins. A specific Grove or M-Bus unit belongs to the hand-off below.
+3. Give the connector's non-GPIO positions (power, ground, reset) from the `OTHER CONNECTOR POSITIONS` line as printed, adding no meaning to a name (`HPWR`, `NC`). When the line omits the connector (a Grove port's power, say), the data has none: say so. A specific Grove or M-Bus unit goes to the hand-off below.
 
-Done when every pin of the connector in the output is listed with its role, status and cautions, and the answer names the revisions in play.
+Done when every pin of the connector in the output is listed with its role, status and cautions, its non-GPIO positions as printed, and the answer names the revisions in play.
 
 **The I2C bus**
 
