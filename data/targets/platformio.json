@@ -96,11 +96,13 @@
    ],
    "per_revision": {},
    "src": [
-    "pio-esp32"
+    "pio-esp32",
+    "pio-esp32-cores3",
+    "m5-cores3"
    ],
    "confidence": "medium",
-   "last_verified": "2026-08-07",
-   "note": "present in platform-espressif32 develop (87cbed0); M5's own page uses esp32-s3-devkitc-1 instead"
+   "last_verified": "2026-10-02",
+   "note": "first shipped in platform-espressif32 6.4.0; an older platform reports it as an unknown board. M5's own page uses esp32-s3-devkitc-1 on espressif32@6.7.0 instead"
   }
  ]
 }

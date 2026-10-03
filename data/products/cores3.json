@@ -232,13 +232,14 @@
     },
     {
      "id": "m5-pio-devkitc",
-     "text": "M5's own PlatformIO example for CoreS3 uses board = esp32-s3-devkitc-1 with -DBOARD_HAS_PSRAM, not the m5stack-cores3 board id. Which platform-espressif32 release first shipped m5stack-cores3 is not recorded; an older platform reports it as an unknown board.",
+     "text": "M5's own PlatformIO example for CoreS3 does not use the m5stack-cores3 board id. It sets platform = espressif32@6.7.0, board = esp32-s3-devkitc-1 and the build flags -DESP32S3, -DBOARD_HAS_PSRAM, -mfix-esp32-psram-cache-issue, -DARDUINO_USB_CDC_ON_BOOT=1 and -DARDUINO_USB_MODE=1 (its debug level and upload speed are left out here). platform-espressif32 first shipped m5stack-cores3 in 6.4.0, so the 6.7.0 that M5 pins carries it; a platform older than 6.4.0 reports it as an unknown board.",
      "src": [
       "m5-cores3",
-      "pio-esp32"
+      "pio-esp32",
+      "pio-esp32-cores3"
      ],
      "confidence": "medium",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-02"
     }
    ]
   }

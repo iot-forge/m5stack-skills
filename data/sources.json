@@ -90,7 +90,7 @@
    "kind": "m5-docs",
    "title": "CoreS3",
    "url": "https://docs.m5stack.com/en/core/CoreS3",
-   "ref": "retrieved 2026-09-26"
+   "ref": "retrieved 2026-10-02"
   },
   {
    "id": "m5-cores3-se",
@@ -217,6 +217,13 @@
    "title": "platformio/platform-espressif32 boards/",
    "url": "https://github.com/platformio/platform-espressif32/tree/87cbed0ab9e66a78e99a5ddfa19c6bf900a79bc7/boards",
    "ref": "87cbed0 (develop, v7.0.1)"
+  },
+  {
+   "id": "pio-esp32-cores3",
+   "kind": "boards.txt",
+   "title": "platformio/platform-espressif32 boards/m5stack-cores3.json, in the first release that ships it",
+   "url": "https://github.com/platformio/platform-espressif32/blob/v6.4.0/boards/m5stack-cores3.json",
+   "ref": "v6.4.0 (516520f, 2023-08-31): the first tag that holds the file, added in 91bdde3; v6.3.2 lacks it"
   },
   {
    "id": "uiflow2-boards",
