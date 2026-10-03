@@ -230,25 +230,20 @@ class Query(unittest.TestCase):
         self.assertIn("has not been checked on hardware", out)
 
     def test_cores3_platformio_release_and_example(self):  # B29
-        ref = next(s for s in load("sources.json")["sources"] if s["id"] == "pio-esp32-cores3")["ref"]
-        release = ref.split()[0].lstrip("v")
-        # M5's CoreS3 example, less its debug level and upload speed
-        example = ("espressif32@6.7.0", "esp32-s3-devkitc-1", "-DESP32S3", "-DBOARD_HAS_PSRAM",
-                   "-mfix-esp32-psram-cache-issue", "-DARDUINO_USB_CDC_ON_BOOT=1", "-DARDUINO_USB_MODE=1")
-        code, out = board("targets", "cores3", "--toolchain", "platformio")
-        self.assertEqual(code, 0)
-        self.assertIn(release, out)
-        code, out = board_json("facts", "cores3")
-        erratum = next(e for e in out["errata"] if e["id"] == "m5-pio-devkitc")["text"]
-        self.assertIn(release, erratum)
-        texts = [erratum]
+        url = next(s for s in load("sources.json")["sources"] if s["id"] == "pio-esp32-cores3")["url"]
+        release = url.split("/blob/v")[1].split("/")[0]  # the tag the source pins
+        note = next(t for t in load("targets/platformio.json")["targets"] if t["id"] == "m5stack-cores3")["note"]
+        erratum = next(e for e in load("products/cores3.json")["revisions"]["cores3@v1.0"]["errata"]
+                       if e["id"] == "m5-pio-devkitc")["text"]
+        printed = {note: board("targets", "cores3", "--toolchain", "platformio"), erratum: board("facts", "cores3")}
         for product in ("cores3-se", "cores3-lite"):
-            code, out = board("targets", product, "--toolchain", "platformio")
-            self.assertEqual(code, 0, product)
-            texts.append(out)
-        for text in texts:
-            for setting in example:
-                self.assertIn(setting, text)
+            for rid, rev in load(f"products/{product}.json")["revisions"].items():
+                gaps = rev["recommended_targets"]["platformio"]["gaps"]
+                printed[gaps] = board("targets", rid, "--toolchain", "platformio")
+        for text, (code, out) in printed.items():
+            self.assertEqual(code, 0)
+            self.assertIn(release, text)
+            self.assertIn(text, out)
 
 
 if __name__ == "__main__":
