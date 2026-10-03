@@ -101,8 +101,8 @@ class Addr2line(unittest.TestCase):
             p.write_text("")
         return [str(p) for p in paths]
 
-    def find(self, system="Linux", env=None, which=lambda name: None):
-        with mock.patch.object(doctor, "EIM_TOOLS", self.home / "no-eim"):
+    def find(self, system="Linux", env=None, which=lambda name: None, eim=None):
+        with mock.patch.object(doctor, "EIM_TOOLS", eim or self.home / "no-eim"):
             return doctor.find_decoders(which=which, home=self.home, env=env or {}, system=system)
 
     def test_no_toolchain_is_missing(self):
@@ -118,22 +118,26 @@ class Addr2line(unittest.TestCase):
             planted = [p for vendor in ("esp32", "m5stack") for p in self.plant(data / f"packages/{vendor}/tools/esp-x32/2601/bin")]
             found = self.find(system, env={"LOCALAPPDATA": str(local)})
             self.assertEqual([d["path"] for d in found], planted, system)
-            self.assertEqual({d["source"] for d in found}, {"arduino"}, system)
+            self.assertEqual({d["where"] for d in found}, {"arduino"}, system)
             shutil.rmtree(data)
+
+    def test_arduino_layout_on_windows_without_localappdata(self):
+        planted = self.plant(self.home / "AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/bin")
+        self.assertEqual([d["path"] for d in self.find("Windows")], planted)
 
     def test_platformio_layout(self):
         packages = self.home / ".platformio/packages"
         planted = (self.plant(packages / "toolchain-xtensa-esp32/bin", doctor.DECODERS[:1])
                    + self.plant(packages / "toolchain-xtensa-esp32s3/bin", doctor.DECODERS[1:]))
         found = self.find()
-        self.assertEqual([(d["name"], d["path"], d["source"]) for d in found],
+        self.assertEqual([(d["name"], d["path"], d["where"]) for d in found],
                          [(n, p, "platformio") for n, p in zip(doctor.DECODERS, planted)])
 
     def test_esp_idf_layout_under_the_default_tools_folder(self):
         planted = self.plant(self.home / ".espressif/tools/xtensa-esp-elf/esp-15.2.0_20251204/xtensa-esp-elf/bin")
         found = self.find()
         self.assertEqual([d["path"] for d in found], planted)
-        self.assertEqual({d["source"] for d in found}, {"esp-idf"})
+        self.assertEqual({d["where"] for d in found}, {"esp-idf"})
 
     def test_esp_idf_layout_under_idf_tools_path(self):
         self.plant(self.home / ".espressif/tools/xtensa-esp-elf/esp-14/xtensa-esp-elf/bin")
@@ -144,19 +148,41 @@ class Addr2line(unittest.TestCase):
     def test_esp_idf_layout_from_the_eim_installer(self):
         eim = self.home / "Espressif/tools"
         planted = self.plant(eim / "xtensa-esp-elf/esp-15/xtensa-esp-elf/bin")
-        with mock.patch.object(doctor, "EIM_TOOLS", eim):
-            windows = doctor.find_decoders(which=lambda name: None, home=self.home, env={}, system="Windows")
-            linux = doctor.find_decoders(which=lambda name: None, home=self.home, env={}, system="Linux")
-        self.assertEqual([d["path"] for d in windows], planted)
-        self.assertEqual(linux, [])
+        self.assertEqual([d["path"] for d in self.find("Windows", eim=eim)], planted)
+        self.assertEqual(self.find("Linux", eim=eim), [])
+
+    def test_eim_sets_idf_tools_path_to_the_tools_folder_itself(self):
+        eim = self.home / "Espressif/tools"
+        planted = self.plant(eim / "xtensa-esp-elf/esp-15/xtensa-esp-elf/bin")
+        self.assertEqual([d["path"] for d in self.find("Linux", env={"IDF_TOOLS_PATH": str(eim)})], planted)
+        found = self.find("Windows", env={"IDF_TOOLS_PATH": str(eim)}, eim=eim)
+        self.assertEqual([d["path"] for d in found], planted, "one folder reached two ways is listed once")
+
+    def test_folders_named_by_the_toolchains_own_variables(self):
+        arduino = self.plant(self.home / "arduino-data/packages/esp32/tools/esp-x32/2601/bin")
+        pio = self.plant(self.home / "pio-core/packages/toolchain-xtensa-esp32@8.4.0/bin", doctor.DECODERS[:1])
+        found = self.find(env={"ARDUINO_DIRECTORIES_DATA": str(self.home / "arduino-data"), "PLATFORMIO_CORE_DIR": str(self.home / "pio-core")})
+        self.assertEqual([d["path"] for d in found], arduino + pio)
+
+    def test_a_folder_that_cannot_be_read_is_not_an_error(self):
+        self.plant(self.home / ".platformio/packages/toolchain-xtensa-esp32/bin")
+        planted = self.plant(self.home / ".espressif/tools/xtensa-esp-elf/esp-15/xtensa-esp-elf/bin")
+        is_file = Path.is_file
+
+        def denied_in_platformio(path):
+            if ".platformio" in path.parts:
+                raise PermissionError("denied")
+            return is_file(path)
+        with mock.patch.object(Path, "is_file", denied_in_platformio):
+            self.assertEqual([d["path"] for d in self.find()], planted)
 
     def test_path_comes_first_and_is_listed_once(self):
         planted = self.plant(self.home / ".espressif/tools/xtensa-esp-elf/esp-15/xtensa-esp-elf/bin")
         on_path = dict(zip(doctor.DECODERS, planted))
         self.plant(self.home / ".platformio/packages/toolchain-xtensa-esp32/bin", doctor.DECODERS[:1])
         found = self.find(which=on_path.get)
-        self.assertEqual([(d["path"], d["source"]) for d in found[:2]], [(p, "PATH") for p in planted])
-        self.assertEqual([d["source"] for d in found[2:]], ["platformio"])
+        self.assertEqual([(d["path"], d["where"]) for d in found[:2]], [(p, "PATH") for p in planted])
+        self.assertEqual([d["where"] for d in found[2:]], ["platformio"])
 
     def test_the_report_prints_each_decoder_with_its_path(self):
         planted = self.plant(self.home / ".platformio/packages/toolchain-xtensa-esp32/bin", doctor.DECODERS[:1])
@@ -166,6 +192,7 @@ class Addr2line(unittest.TestCase):
         self.assertEqual([d["path"] for d in item["decoders"]], planted)
         report = doctor.tool_line("addr2line", item)
         self.assertNotIn("MISSING", report)
+        self.assertEqual(report.splitlines()[0], "  addr2line:")
         self.assertIn(f"{doctor.DECODERS[0]} (platformio): {planted[0]}", report)
 
 

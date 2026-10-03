@@ -30,7 +30,7 @@ GET = {
     "idf.py": "https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html",
     "esptool": "https://docs.espressif.com/projects/esptool/en/latest/esp32/installation.html",
     "mpremote": "https://docs.micropython.org/en/latest/reference/mpremote.html",
-    "addr2line": "ships with each toolchain (Arduino esp32 core, PlatformIO, ESP-IDF), and none was on PATH or in their default folders; PlatformIO's esp32_exception_decoder monitor filter needs no separate install",
+    "addr2line": "it ships with each toolchain (Arduino esp32 core, PlatformIO, ESP-IDF), but PATH and the toolchains' default folders have no decoder; PlatformIO's esp32_exception_decoder monitor filter needs no separate install",
     "10C4": "Silicon Labs CP210x VCP driver: https://www.silabs.com/developer-tools/usb-to-uart-bridge-vcp-drivers",
     "1A86": "WCH CH9102 driver: linked from the board's page on docs.m5stack.com (USB Driver section)",
 }
@@ -97,33 +97,54 @@ def idf_py():
 
 
 def decoder_dirs(home, env, system):
-    """(source, folder) for each folder a toolchain keeps its addr2line in; the toolchains leave them off PATH."""
-    arduino = {"Windows": Path(env.get("LOCALAPPDATA") or home / "AppData/Local") / "Arduino15",
-               "Darwin": home / "Library/Arduino15"}.get(system, home / ".arduino15")
+    """(toolchain, folder) for each folder a toolchain keeps its addr2line in; the toolchains leave them off PATH."""
+    # Arduino: arduino-cli's data folder, then the core's toolchain package (the esp32 and m5stack cores each carry one)
+    arduino = Path(env.get("ARDUINO_DIRECTORIES_DATA") or {
+        "Windows": Path(env.get("LOCALAPPDATA") or home / "AppData/Local") / "Arduino15",
+        "Darwin": home / "Library/Arduino15"}.get(system, home / ".arduino15"))
     dirs = [("arduino", d) for d in sorted(arduino.glob("packages/*/tools/esp-x32/*/bin"))]
-    dirs += [("platformio", home / ".platformio/packages" / t / "bin") for t in ("toolchain-xtensa-esp32", "toolchain-xtensa-esp32s3")]
-    idf = [Path(env["IDF_TOOLS_PATH"]) / "tools" if env.get("IDF_TOOLS_PATH") else home / ".espressif/tools"]
+    # PlatformIO: one package per chip (toolchain-xtensa-esp32, -esp32s3), with `@<version>` on an extra copy
+    pio = Path(env.get("PLATFORMIO_CORE_DIR") or home / ".platformio")
+    dirs += [("platformio", d) for d in sorted(pio.glob("packages/toolchain-xtensa-esp32*/bin"))]
+    # ESP-IDF: install.sh puts the tools in $IDF_TOOLS_PATH/tools (~/.espressif by default); EIM sets IDF_TOOLS_PATH to the tools folder itself
+    set_ = env.get("IDF_TOOLS_PATH")
+    roots = [Path(set_) / "tools", Path(set_)] if set_ else [home / ".espressif/tools"]
     if system == "Windows":
-        idf.append(EIM_TOOLS)
-    return dirs + [("esp-idf", d) for tools in idf for d in sorted(tools.glob("xtensa-esp-elf/*/xtensa-esp-elf/bin"))]
+        roots.append(EIM_TOOLS)
+    return dirs + [("esp-idf", d) for root in roots for d in sorted(root.glob("xtensa-esp-elf/*/xtensa-esp-elf/bin"))]
 
 
 def find_decoders(which=shutil.which, home=None, env=None, system=None):
-    """Every addr2line found, as {name, path, source}: on PATH first, then in each toolchain's own folder."""
-    home, env, system = home or Path.home(), os.environ if env is None else env, system or platform.system()
-    found = [{"name": n, "path": p, "source": "PATH"} for n in DECODERS if (p := which(n))]
-    seen = {os.path.normcase(d["path"]) for d in found}
-    for source, folder in decoder_dirs(home, env, system):
+    """Every addr2line found, as {name, path, where}: on PATH first, then in each toolchain's own folder. Each file
+    is listed once, under the first place it was found. Never raises: a folder that cannot be read holds nothing."""
+    env, system = os.environ if env is None else env, system or platform.system()
+    found, seen = [], set()
+
+    def add(name, path, where):
+        real = os.path.normcase(os.path.realpath(path))
+        if real not in seen:
+            seen.add(real)
+            found.append({"name": name, "path": str(path), "where": where})
+    for n in DECODERS:
+        if p := which(n):
+            add(n, p, "PATH")
+    try:
+        dirs = decoder_dirs(home or Path.home(), env, system)
+    except (OSError, RuntimeError):  # RuntimeError: no home folder could be worked out
+        dirs = []
+    for toolchain, folder in dirs:
         for n in DECODERS:
-            f = folder / f"{n}{EXE}"
-            if f.is_file() and os.path.normcase(str(f)) not in seen:
-                found.append({"name": n, "path": str(f), "source": source})
+            try:
+                if (f := folder / f"{n}{EXE}").is_file():
+                    add(n, f, toolchain)
+            except OSError:
+                pass
     return found
 
 
 def addr2line():
     decoders = find_decoders()
-    return {"found": bool(decoders), "version": ", ".join(n for n in DECODERS if any(d["name"] == n for d in decoders)) or None, "decoders": decoders}
+    return {"found": bool(decoders), "version": None, "decoders": decoders}
 
 
 def tool_line(name, t):
@@ -131,7 +152,7 @@ def tool_line(name, t):
     if not t["found"]:
         return f"  {name}: MISSING (get it: {GET[name]})"
     if name == "addr2line":
-        return "\n".join([f"  {name}:"] + [f"    {d['name']} ({d['source']}): {d['path']}" for d in t["decoders"]])
+        return "\n".join([f"  {name}:"] + [f"    {d['name']} ({d['where']}): {d['path']}" for d in t["decoders"]])
     extra = ""
     if name == "arduino-cli":
         extra = "; cores: " + ", ".join(f"{c} {v or 'NOT INSTALLED'}" for c, v in t["cores"].items())
