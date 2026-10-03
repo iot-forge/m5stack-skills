@@ -63,7 +63,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B23 · Mark a safe default per build target](B23-target-safe-default.md) | done | B33 |  |
 | [B24 · Keep the smoke build output out of the planted-error fixtures](B24-planted-fixtures-copy-smoke-output.md) | done | — | yes |
 | [B25 · Say what a `fact` check observes and which revisions it rejects](B25-fact-check-wording.md) | done | — |  |
-| [B26 · Move the hardware-session steps into checks.json](B26-board-steps-in-checks-json.md) | in-progress | — |  |
+| [B26 · Move the hardware-session steps into checks.json](B26-board-steps-in-checks-json.md) | done | — |  |
 | [B27 · Stop the trigger rows at the first account-limit message](B27-stop-triggers-at-spend-limit.md) | open | — |  |
 | [B28 · Make the skills' `allowed-tools` pre-approve `board.py` and `doctor.py`](B28-skill-allowed-tools-preapproval.md) | open | — |  |
 | [B29 · Record the CoreS3 PlatformIO release and M5's whole example](B29-cores3-platformio-release-and-example.md) | open | — |  |
