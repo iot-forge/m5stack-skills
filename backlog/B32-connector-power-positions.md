@@ -1,6 +1,6 @@
 # B32 · Print each connector's power, ground and control positions
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: none
 
@@ -27,11 +27,11 @@ B11 found that the pin maps record every connector position, but `board.py` prin
 
 ## Definition of done
 
-- [ ] `board.py pins core2` and `board.py pins tough` print every non-GPIO connector position the pin map records
-- [ ] A unit test checks the printed positions against `data/`
-- [ ] `skills/pinout-lookup/SKILL.md` answers power, ground and reset positions from `board.py` output
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
+- [x] `board.py pins core2` and `board.py pins tough` print every non-GPIO connector position the pin map records
+- [x] A unit test checks the printed positions against `data/`
+- [x] `skills/pinout-lookup/SKILL.md` answers power, ground and reset positions from `board.py` output
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
 
 ## Stopping rule
 
@@ -41,8 +41,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Write the failing test for the M-Bus positions in `tests/test_board.py`
-- **Files touched**: none
-- **Last commit**: none
+- **Done**: all. `board.py pins` prints an `OTHER CONNECTOR POSITIONS (not GPIOs; names as recorded)` line in the full listing, and `--json` carries the same under `other_connector_positions`, keyed by connector, in the pin map's order; the `--gpio` output is unchanged. `NC` positions are printed too: `pins core2` gives `mbus: 1 GND, 3 GND, 5 GND, 6 RST, 12 3V3, 25 NC, 27 NC, 28 5V, 29 NC, 30 BAT`, and `pins tough` adds `rs485: vin 6-24V, gnd GND; reset_port: en EN, vcc 5V, gnd GND`. `test_non_gpio_connector_positions_shown` in `tests/test_board.py` checks Core2, Tough, Basic and CoreS3 against `data/pinmaps/`, and that every recorded position shows either as a pin's exposure or on this line. Step 3 of **A connector** and its Done line in `skills/pinout-lookup/SKILL.md` read the positions from that line. To keep the body under 10 kB, the second sentence of the skill's opening paragraph, which repeated the description, was removed. `uv run scripts/validate.py` exits 0 and `python -m unittest discover tests` passes (156 tests).
+- **Next**: none
+- **Files touched**: scripts/board.py, tests/test_board.py, skills/pinout-lookup/SKILL.md
+- **Last commit**: a7a1dc3
 - **Open questions**: none
