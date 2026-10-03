@@ -24,10 +24,24 @@ A skill's own references go in `skills/<name>/references/`. A procedure several 
 
 ## Checks
 
+Run the gate before every commit. It must exit 0:
+
 ```
-uv run scripts/validate.py          # data rules and skill rules; must exit 0
-python -m unittest discover tests  # the query checks and a planted fixture per data rule
-uv run scripts/verify.py run --offline --skip build --skip trigger   # quick: data and query only
+uv run scripts/check.py
 ```
 
-The full `uv run scripts/verify.py run --offline` also builds the smoke program in every toolchain and runs each trigger row 3 times through `claude -p`, one at a time (VERIFICATION.md section 4). It takes about an hour. Run it before a hardware session and before a release.
+It runs four steps, and each can be run alone:
+
+```
+uv run scripts/validate.py          # data rules and skill rules
+python -m unittest discover tests  # the query checks and a planted fixture per data rule
+uv run scripts/verify.py run --offline --skip build --skip trigger   # the data and query checks
+```
+
+The fourth is the version guard. Once a `v*` tag exists, a change under `skills/`, `data/`, `references/`, `scripts/` or `.claude-plugin/` since the latest tag needs a new `version` in `.claude-plugin/plugin.json`.
+
+These checks are not in the gate. Run them by hand:
+
+- **The trigger rows**: before a release, and in any change that touches a skill's `description`. `uv run scripts/verify.py run --offline --skip build` runs each row 3 times through `claude -p`, one at a time (VERIFICATION.md section 4), and takes about 35 minutes.
+- **The build checks**: before a hardware session and before a release. The full `uv run scripts/verify.py run --offline` builds the smoke program in every toolchain and runs the trigger rows too. It takes about an hour.
+- **`uv run scripts/refresh.py`**: once a month, and before a release.
