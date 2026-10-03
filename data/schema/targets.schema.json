@@ -90,6 +90,31 @@
      }
     ]
    }
+  },
+  "safe_choices": {
+   "type": "array",
+   "items": {
+    "allOf": [
+     {
+      "$ref": "#/$defs/safe_choice"
+     },
+     {
+      "type": "object",
+      "required": [
+       "covers"
+      ],
+      "properties": {
+       "covers": {
+        "type": "array",
+        "minItems": 2,
+        "items": {
+         "$ref": "#/$defs/revision_id"
+        }
+       }
+      }
+     }
+    ]
+   }
   }
  },
  "$defs": {
@@ -165,6 +190,36 @@
      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
     }
    }
+  },
+  "safe_choice": {
+   "allOf": [
+    {
+     "$ref": "#/$defs/provenance"
+    },
+    {
+     "type": "object",
+     "required": [
+      "use"
+     ],
+     "properties": {
+      "use": {
+       "type": [
+        "string",
+        "null"
+       ],
+       "minLength": 1
+      },
+      "gives_up": {
+       "type": "string",
+       "minLength": 10
+      },
+      "note": {
+       "type": "string",
+       "minLength": 10
+      }
+     }
+    }
+   ]
   }
  }
 }

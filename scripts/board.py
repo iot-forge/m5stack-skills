@@ -51,10 +51,11 @@ class Stop(Exception):
 
 def load():
     rd = lambda p: json.loads(p.read_text(encoding="utf-8"))
-    db = {"revisions": {}, "products": {}, "pinmaps": {}, "socs": {}, "targets": {}}
+    db = {"revisions": {}, "products": {}, "pinmaps": {}, "socs": {}, "targets": {}, "fact_choices": {}, "target_choices": {}}
     for f in sorted((DATA / "products").glob("*.json")):
         d = rd(f)
         db["products"][d["product"]["id"]] = d["product"]
+        db["fact_choices"][d["product"]["id"]] = d.get("safe_choices", {})
         for rid, r in d["revisions"].items():
             db["revisions"][rid] = {**r, "id": rid, "product": d["product"]["id"]}
     for kind in ("pinmaps", "socs"):
@@ -64,6 +65,7 @@ def load():
     for f in sorted((DATA / "targets").glob("*.json")):
         d = rd(f)
         db["targets"][d["toolchain"]] = d["targets"]
+        db["target_choices"][d["toolchain"]] = d.get("safe_choices", [])
     db["signals"] = rd(DATA / "signals.json")["signals"]
     db["sources"] = {s["id"]: s for s in rd(DATA / "sources.json")["sources"]}
     db["features"] = {f["id"]: f["text"] for f in rd(DATA / "features.json")["features"]}
@@ -213,6 +215,14 @@ def short(rid, rids):
     return rid.split("@")[1] if len({x.split("@")[0] for x in rids}) == 1 else rid
 
 
+def choice_line(sc):
+    """The line for a safe choice SC: what to use while the revision is unknown, or why nothing is safe."""
+    if sc["use"] is None:
+        return f"no safe choice when the revision is unknown: {sc['note']}; identify the revision first"
+    return (f"safe choice when the revision is unknown: {sc['use']}. Gives up: {sc['gives_up']}"
+            + ("" if sc["confidence"] == "high" else f"  [{sc['confidence']} confidence]"))
+
+
 def split_signal(db, groups, rids):
     """Cheapest signal whose outcomes separate the value groups exactly; else the cheapest partial one."""
     best = None
@@ -313,6 +323,11 @@ def cmd_facts(db, a, res):
                 entry["tell_apart"] = {"signal": sig["id"], "kind": sig["kind"], "exact": exact}
             else:
                 lines.append("    tell apart: no recorded signal splits these; say so")
+            pids = {db["revisions"][r]["product"] for r in rids}
+            sc = db["fact_choices"][pids.pop()].get(f) if len(pids) == 1 else None  # a choice covers one product's revisions
+            if sc:
+                lines.append(f"    {choice_line(sc)}")
+                entry["safe_choice"] = sc
         if a.sources:
             srcs = sorted({s for r in rids for e in entries_of(db["revisions"][r], f) for s in e.get("src", [])})
             entry["sources"] = srcs
@@ -552,7 +567,13 @@ def cmd_targets(db, a, res):
                 if len({t["per_revision"].get(r) for r in cov}) > 1:  # the revisions in play need different options
                     rows[-1]["safe_default"] = t.get("safe_default")
         uncovered = [r for r in rids if not any(r in x["covers"] for x in rows)]
-        out[tc] = {"targets": rows, "no_own_target": {r: db["revisions"][r].get("recommended_targets", {}).get(tc) for r in uncovered}}
+        choices = []
+        for sc in db["target_choices"][tc]:
+            cov = [r for r in sc["covers"] if r in rids]
+            if cov and not any(set(cov) <= set(x["covers"]) for x in rows):  # the revisions in play need different targets
+                choices.append({**sc, "covers": cov})
+        out[tc] = {"targets": rows, "no_own_target": {r: db["revisions"][r].get("recommended_targets", {}).get(tc) for r in uncovered},
+                   "safe_choices": choices}
     socs = sorted({db["revisions"][r]["soc"] for r in rids})
     if a.json:
         return {"revisions_in_play": rids, "toolchains": out, "bare_esp_idf_set_target": [s.replace("-", "") for s in socs]}
@@ -571,6 +592,9 @@ def cmd_targets(db, a, res):
                              + ("" if sd["confidence"] == "high" else f"  [{sd['confidence']} confidence]"))
             elif "safe_default" in t:
                 lines.append("    no safe default: these options cannot be guessed; identify the revision before building")
+        for sc in info["safe_choices"]:
+            scope = "" if set(sc["covers"]) == set(rids) else f"for {', '.join(short(r, rids) for r in sc['covers'])}: "
+            lines.append(f"{tc}: {scope}{choice_line(sc)}")
         for r, rec in info["no_own_target"].items():
             if rec:
                 lines.append(f"{tc}: {short(r, rids)} has no target of its own. Recommended: {rec['target']}. Gaps: {rec['gaps']}"

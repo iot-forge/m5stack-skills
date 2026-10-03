@@ -54,6 +54,15 @@
    "additionalProperties": {
     "$ref": "#/$defs/revision"
    }
+  },
+  "safe_choices": {
+   "type": "object",
+   "additionalProperties": false,
+   "properties": {
+    "flash": {
+     "$ref": "#/$defs/safe_choice"
+    }
+   }
   }
  },
  "additionalProperties": false,
@@ -287,6 +296,36 @@
     }
    },
    "additionalProperties": false
+  },
+  "safe_choice": {
+   "allOf": [
+    {
+     "$ref": "#/$defs/provenance"
+    },
+    {
+     "type": "object",
+     "required": [
+      "use"
+     ],
+     "properties": {
+      "use": {
+       "type": [
+        "string",
+        "null"
+       ],
+       "minLength": 1
+      },
+      "gives_up": {
+       "type": "string",
+       "minLength": 10
+      },
+      "note": {
+       "type": "string",
+       "minLength": 10
+      }
+     }
+    }
+   ]
   }
  }
 }

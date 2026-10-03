@@ -131,6 +131,11 @@
    "skills": []
   },
   {
+   "id": "data.planted-safe-choice",
+   "kind": "data",
+   "skills": []
+  },
+  {
    "id": "query.branch-core2",
    "kind": "query",
    "skills": [

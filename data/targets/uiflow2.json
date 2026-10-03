@@ -99,5 +99,22 @@
    "last_verified": "2026-09-26",
    "note": "ILI9342E units need M5GFX 0.2.27 or later; the 2.5.3 image bundles 0.2.28, so use 2.5.3 or later"
   }
+ ],
+ "safe_choices": [
+  {
+   "covers": [
+    "basic@v1.4",
+    "basic@v2.5",
+    "basic@v2.6",
+    "basic@v2.7"
+   ],
+   "use": null,
+   "note": "M5 builds one image per flash size and documents the 4MB image for no 16MB unit, so the image is never guessed",
+   "src": [
+    "uiflow2-boards"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-10-02"
+  }
  ]
 }

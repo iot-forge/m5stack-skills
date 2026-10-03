@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 V1_FIELDS = ["bid", "pin_map", "soc_part", "flash", "psram", "display", "touch", "imu", "magnetometer", "pmic",
              "rtc", "audio", "usb_bridge", "sd", "battery", "dimensions", "extra_components", "errata", "derived_from"]
+SAFE_CHOICE_FIELDS = ("flash",)  # the facts a skill falls back on when the revision is unknown
 STUB_KEYS = {"label", "sku", "soc", "platform", "market_status", "support"}
 FRONTMATTER_KEYS = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
 SECTIONS = ["Standing rules", "Paths (substituted at invocation, use verbatim)", "Start here"]
@@ -196,7 +197,7 @@ def check_data(root, rep):
             if p.stem != obj.get("id"):
                 rep.fail("data.file-name", f"pinmaps/{p.name}: file name must be the pin map id")
             pinmaps[obj["id"]] = obj
-    targets = {}
+    targets, target_choices = {}, {}
     for p in sorted((d / "targets").glob("*.json")):
         obj = load_json(p, rep)
         if obj:
@@ -204,6 +205,18 @@ def check_data(root, rep):
             if p.stem != obj.get("toolchain"):
                 rep.fail("data.file-name", f"targets/{p.name}: file name must be the toolchain '{obj.get('toolchain')}'")
             targets[obj["toolchain"]] = obj.get("targets", [])
+            target_choices[obj["toolchain"]] = obj.get("safe_choices", [])
+
+    def check_choice(where, sc, allowed):
+        """A safe choice names one of ALLOWED and what it gives up, or null with a note."""
+        cite(where, sc.get("src"))
+        if sc.get("use") is None:
+            if not sc.get("note"):
+                rep.fail("data.safe-choice", f"{where}: use null needs a note saying why no choice is safe")
+        elif sc["use"] not in allowed:
+            rep.fail("data.safe-choice", f"{where}: use '{sc['use']}' is not one of {sorted(allowed)}")
+        elif not sc.get("gives_up"):
+            rep.fail("data.safe-choice", f"{where}: needs gives_up, what the other revisions lose on '{sc['use']}'")
 
     today = datetime.date.today()
     used_pinmaps = set()
@@ -270,6 +283,15 @@ def check_data(root, rep):
                     rep.fail("data.i2c-duplicate", f"{where}: {part} and {seen[(bus, a.lower())]} both at {a} on {bus}")
                 seen.setdefault((bus, a.lower()), part)
 
+    for pid, obj in products.items():
+        choices = obj.get("safe_choices") or {}
+        for f in SAFE_CHOICE_FIELDS:
+            vals = {r[f].get("value") for r in obj.get("revisions", {}).values() if isinstance(r.get(f), dict)}
+            if len(vals) > 1 and f not in choices:
+                rep.fail("data.safe-choice", f"{pid}: its revisions differ in {f}, so it needs safe_choices.{f} (use null with a note when none is safe)")
+            elif f in choices:
+                check_choice(f"{pid}.safe_choices.{f}", choices[f], {v for v in vals if v})
+
     for pm_id, pm in pinmaps.items():
         cite(f"pinmaps/{pm_id}", pm.get("src"))
         if pm_id not in used_pinmaps:  # rule 5
@@ -319,6 +341,20 @@ def check_data(root, rep):
                 rep.fail("data.safe-default", f"targets/{tc} {t['id']}: safe_default null needs a note saying why no option set is safe")
             elif t.get("safe_default"):
                 cite(f"targets/{tc} {t['id']} safe_default", t["safe_default"].get("src"))
+        own = {}  # product -> revision -> the target ids that cover it
+        for t in ts:
+            for rid in t["covers"]:
+                if rid in revisions:
+                    own.setdefault(revisions[rid][0], {}).setdefault(rid, set()).add(t["id"])
+        for pid, ids in own.items():
+            if not set.intersection(*ids.values()) and not any(set(ids) <= set(sc["covers"]) for sc in target_choices[tc]):
+                rep.fail("data.safe-choice", f"targets/{tc}: no one target covers every {pid} revision, so they need a safe_choices entry (use null with a note when none is safe)")
+        for sc in target_choices[tc]:
+            where = f"targets/{tc} safe_choices[{', '.join(sc['covers'])}]"
+            for rid in sc["covers"]:
+                if rid not in revisions:
+                    rep.fail("data.revision-refs", f"{where}: revision '{rid}' does not exist")
+            check_choice(where, sc, {t["id"] for t in ts})
     backing_ids = {x["id"] for x in (sources or {}).get("sources", []) if x.get("kind") in ("datasheet", "hardware-test")}
     for s in (signals or {}).get("signals", []):
         cite(f"signals {s['id']}", s.get("src"))

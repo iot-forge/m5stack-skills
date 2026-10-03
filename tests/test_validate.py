@@ -187,6 +187,26 @@ class Planted(unittest.TestCase):
         self.edit("targets/esp-bsp.json", lambda o: next(t for t in o["targets"] if t["id"] == "espressif/m5stack_core_2").pop("note"))
         self.assertFails("data.safe-default")
 
+    def test_split_targets_without_safe_choice(self):  # data.safe-choice: a product split across target ids
+        self.edit("targets/platformio.json", lambda o: o.pop("safe_choices"))
+        self.assertFails("data.safe-choice")
+
+    def test_safe_choice_names_unknown_target(self):  # data.safe-choice
+        self.edit("targets/platformio.json", lambda o: o["safe_choices"][0].update(use="m5stack-nope"))
+        self.assertFails("data.safe-choice")
+
+    def test_no_safe_choice_without_note(self):  # data.safe-choice: null says why no choice is safe
+        self.edit("targets/uiflow2.json", lambda o: o["safe_choices"][0].pop("note"))
+        self.assertFails("data.safe-choice")
+
+    def test_diverging_flash_without_safe_choice(self):  # data.safe-choice: a product whose revisions differ in flash size
+        self.edit("products/basic.json", lambda o: o.pop("safe_choices"))
+        self.assertFails("data.safe-choice")
+
+    def test_safe_choice_names_no_revisions_value(self):  # data.safe-choice
+        self.edit("products/basic.json", lambda o: o["safe_choices"]["flash"].update(use="8MB"))
+        self.assertFails("data.safe-choice")
+
 
 class PlantedChecks(unittest.TestCase):
     """verification.checks: run --board reads each hardware check's step and depends_on from checks.json (B26)."""

@@ -9,6 +9,18 @@
    "basic core"
   ]
  },
+ "safe_choices": {
+  "flash": {
+   "use": "4MB",
+   "gives_up": "v2.5, v2.6 and v2.7 run an image built for 4MB, but it uses only the first 4MB of their 16MB flash",
+   "src": [
+    "m5-basic-v2.7",
+    "idf-flash-size-check"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-10-02"
+  }
+ },
  "revisions": {
   "basic@v1.4": {
    "label": "v1.4 (first release, 2017.7)",

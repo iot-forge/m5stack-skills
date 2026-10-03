@@ -83,6 +83,33 @@ class Query(unittest.TestCase):
         code, out = board_json("targets", "basic@v2.7", "--toolchain", "arduino-esp32")
         self.assertNotIn("safe_default", out["toolchains"]["arduino-esp32"]["targets"][0], "printed once the revisions agree")
 
+    def test_safe_choice_between_targets(self):  # B35: one id for revisions in play that are split across target ids
+        for tc in ("platformio", "uiflow2"):
+            want = load(f"targets/{tc}.json")["safe_choices"][0]
+            code, out = board_json("targets", "basic", "--toolchain", tc)
+            self.assertEqual([c["use"] for c in out["toolchains"][tc]["safe_choices"]], [want["use"]])
+            code, text = board("targets", "basic", "--toolchain", tc)
+            line = (f"safe choice when the revision is unknown: {want['use']}. Gives up: {want['gives_up']}" if want["use"]
+                    else f"no safe choice when the revision is unknown: {want['note']}")
+            self.assertIn(line, text)
+        self.assertIsNotNone(load("targets/platformio.json")["safe_choices"][0]["use"])
+        self.assertIsNone(load("targets/uiflow2.json")["safe_choices"][0]["use"])
+        code, out = board_json("targets", "basic", "--toolchain", "platformio", "--seen", "flash-size=16MB")
+        self.assertEqual(out["toolchains"]["platformio"]["safe_choices"], [], "printed only while the ids in play split")
+
+    def test_safe_choice_for_a_fact(self):  # B35: one flash size for revisions in play whose flash DIVERGES
+        want = load("products/basic.json")["safe_choices"]["flash"]
+        code, out = board_json("facts", "basic", "flash")
+        self.assertFalse(out["facts"]["flash"]["agree"])
+        self.assertEqual(out["facts"]["flash"]["safe_choice"]["use"], want["use"])
+        code, text = board("facts", "basic", "flash")
+        self.assertIn(f"safe choice when the revision is unknown: {want['use']}. Gives up: {want['gives_up']}", text)
+        code, out = board_json("facts", "basic", "flash", "--seen", "flash-size=16MB")
+        self.assertNotIn("safe_choice", out["facts"]["flash"], "printed only while the fact diverges")
+        code, out = board_json("facts", "bid:1", "flash")
+        self.assertFalse(out["facts"]["flash"]["agree"])
+        self.assertNotIn("safe_choice", out["facts"]["flash"], "a product's choice does not cover another product's revisions")
+
     def test_stub_refuses(self):  # query.stub-refuses
         for b in ("CoreMP135", "Tab5"):
             code, out = board("facts", b)
