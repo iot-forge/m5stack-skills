@@ -99,10 +99,10 @@ Each check runs `board.py` and compares its output with what `data/` says. The e
 Each request is run through Claude Code headless, with this plugin loaded, from a fixture directory holding the project files the request implies (a `platformio.ini`, a UIFlow2 `boot.py`, a plain-Python `main.py`, …). The fixtures are in `verification/triggers/`, and `checks.json` names each row's fixture, request and owner:
 
 ```
-claude -p "<request>" --plugin-dir <this repo> --allowedTools Skill --output-format stream-json --verbose
+claude -p "<request>" --plugin-dir <this repo> --allowedTools Skill 'Bash(uv run "<this repo>/scripts/board.py" *)' 'Bash(uv run "<this repo>/scripts/doctor.py" *)' 'Read(<this repo>/references/**)' 'Read(<this repo>/skills/*/references/**)' --output-format stream-json --verbose
 ```
 
-Without `--allowedTools Skill`, `claude -p` denies the Skill tool: the owner's Skill call still shows in the stream, but the skill never loads. On Windows, `claude -p` also needs stdin closed: run it from Git Bash and append `< /dev/null`. Run the requests one at a time, never in parallel: concurrent `claude -p` processes race on the user's `~/.claude.json` (on 2026-09-27, 12 parallel runs left several reporting it corrupted).
+Without `Skill` in `--allowedTools`, `claude -p` denies the Skill tool: the owner's Skill call still shows in the stream, but the skill never loads. The four rules after it are what the skills pre-approve in their own `allowed-tools`: the two read-only scripts and the reference files. An interactive session applies a skill's `allowed-tools` when the model loads the skill; `claude -p` does not (B28, claude 2.1.289), so without them every `board.py` call is denied and the answer is not grounded in the data. Write `<this repo>` with forward slashes, as the skills print it: a `Bash(...)` rule is matched against the command text. On Windows, `claude -p` also needs stdin closed: run it from Git Bash and append `< /dev/null`. Run the requests one at a time, never in parallel: concurrent `claude -p` processes race on the user's `~/.claude.json` (on 2026-09-27, 12 parallel runs left several reporting it corrupted).
 
 Read the stream for Skill tool calls. This plugin's skills appear as `<plugin>:<skill>`.
 

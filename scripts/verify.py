@@ -282,7 +282,10 @@ def trigger_result(check, runner=sh, ask=None):
     `judge` (trigger.row-11) also needs the operator to read the answers: ASK(prompt) -> 'y' or 'n', or None for not-run.
     A run that meets the account limit raises AccountLimit with the row blocked: the later runs could not succeed."""
     prefix = read_json(ROOT / ".claude-plugin/plugin.json")["name"] + ":"
-    cmd = ["claude", "-p", check["request"], "--plugin-dir", str(ROOT), "--allowedTools", "Skill",
+    root = ROOT.as_posix()  # forward slashes, as the skills print the path: a rule is matched against the command text
+    grants = ["Skill", f'Bash(uv run "{root}/scripts/board.py" *)', f'Bash(uv run "{root}/scripts/doctor.py" *)',
+              f"Read({root}/references/**)", f"Read({root}/skills/*/references/**)"]
+    cmd = ["claude", "-p", check["request"], "--plugin-dir", str(ROOT), "--allowedTools", *grants,
            "--output-format", "stream-json", "--verbose"]
     verdicts, lines, answers = [], [], []
     for n in range(1, TRIGGER_RUNS + 1):

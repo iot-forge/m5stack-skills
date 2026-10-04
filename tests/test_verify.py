@@ -302,6 +302,18 @@ class Triggers(unittest.TestCase):
         self.assertEqual(r["result"], "blocked")
         self.assertIn("Not logged in", r["output"])
 
+    def test_the_command_grants_what_the_skills_pre_approve(self):  # claude -p applies no skill's allowed-tools (B28)
+        runner = FakeRunner(claude=lambda request, cwd: stream("board-identification"))
+        verify.trigger_result(self.check("trigger.row-10"), runner)
+        cmd, root = runner.calls[0], REPO.as_posix()
+        grants = cmd[cmd.index("--allowedTools") + 1:cmd.index("--output-format")]
+        self.assertEqual(grants, ["Skill",
+                                  f'Bash(uv run "{root}/scripts/board.py" *)',
+                                  f'Bash(uv run "{root}/scripts/doctor.py" *)',
+                                  f"Read({root}/references/**)",
+                                  f"Read({root}/skills/*/references/**)"])
+        self.assertEqual(cmd[:3], ["claude", "-p", self.check("trigger.row-10")["request"]])
+
     def test_owner_in_every_run_passes(self):
         r = self.row("trigger.row-10", *[stream("board-identification")] * 3)
         self.assertEqual(r["result"], "pass", r["output"])
