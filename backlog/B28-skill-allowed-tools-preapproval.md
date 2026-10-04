@@ -1,7 +1,7 @@
 # B28 · Make the skills' `allowed-tools` pre-approve `board.py` and `doctor.py`
 
-Status: open
-Blocked by: Claude Code applying a model-invoked skill's `allowed-tools` (external; see the Checkpoint)
+Status: done
+Blocked by: none
 Gate: none
 
 ## Before you start
@@ -22,7 +22,9 @@ allowed-tools:
 
 Each skill's Paths section then tells the model that "the skill pre-approves exactly these commands". In B15's trigger runs this did not hold. The run used section 4's headless command (`claude -p … --plugin-dir <repo> --allowedTools Skill`) on Windows. `board-identification` loaded and ran `uv run "C:/Personal/Projects/iotforge2/m5core-skills/scripts/board.py" find "Core2" --seen power-led=green`, and the call was denied with `decision_reason: "This command requires approval"`. Two of `trigger.row-11`'s three answers on 2026-09-28 say the same: the skill could not run `board.py`, so it could not ground its answer in the data.
 
-The cause is not confirmed. The leading guess is that the rule does not match the command the model actually runs. `${CLAUDE_PLUGIN_ROOT}` may expand to a backslash path on Windows while the model writes forward slashes, or it may not be expanded inside `allowed-tools` at all. Find the cause, then fix it in the skills so the pre-approval works in normal use, interactive and headless, on Windows at least.
+The cause is not confirmed. The leading guess is that the rule does not match the command the model actually runs. `${CLAUDE_PLUGIN_ROOT}` may expand to a backslash path on Windows while the model writes forward slashes, or it may not be expanded inside `allowed-tools` at all. Find the cause, then fix it in the skills so the pre-approval works in an interactive session, on Windows at least.
+
+**Scope, amended by the maintainer (2026-10-03).** The pre-approval is for a user in an interactive session. `claude -p` is only how this project's own trigger runs call the skills, so the Definition of done checks an interactive session, not a headless run. What `claude -p` does with a skill's `allowed-tools` is in the Checkpoint; it is a matter for the trigger runs, not for the skills.
 
 - Reproduce first: one headless run with section 4's command whose request makes a skill call `board.py`, and read the stream for `permission_denied`.
 - Check Claude Code's documentation for how `allowed-tools` in a plugin skill is matched, and whether `${CLAUDE_PLUGIN_ROOT}` is substituted there. Cite what you rely on.
@@ -40,12 +42,12 @@ The cause is not confirmed. The leading guess is that the rule does not match th
 
 ## Definition of done
 
-- [ ] The cause is found and written in the Checkpoint, with the documentation or experiment that shows it
-- [ ] A headless run with section 4's command, from a request that makes `board-identification` run `board.py find`, shows the call allowed and its output in the answer
-- [ ] The same holds for `doctor.py`, from a request that makes a skill run it
-- [ ] Every skill's frontmatter and Paths section match the fix, and the template does too
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
+- [x] The cause is found and written in the Checkpoint, with the documentation or experiment that shows it
+- [x] An interactive session in default permission mode (`claude --plugin-dir <repo> --permission-mode default`), from a request that makes `board-identification` run `board.py`, runs the call with no permission prompt and answers from its output
+- [x] The same holds for `doctor.py`, from a request that makes a skill run it
+- [x] Every skill's frontmatter and Paths section match the fix, and the template does too (no fix was needed; they are unchanged)
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
 
 ## Stopping rule
 
@@ -55,17 +57,19 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**:
-  - Reproduced (claude 2.1.288, 2026-10-02): section 4's command, request "I have an M5Stack Core2 and its power LED is green. Which revision is it?", `--plugin-dir` given with forward slashes. `board-identification` loaded and ran `uv run "C:/Personal/Projects/iotforge2/m5core-skills/scripts/board.py" find "Core2" --seen power-led=green`; the stream has `permission_denied`, `decision_reason: "This command requires approval"`. The skill body's `${CLAUDE_PLUGIN_ROOT}` had expanded to that same forward-slash path, so the command was the one the body told the model to run.
-  - Cause found: in `claude -p`, a skill's `allowed-tools` grant applies only when the skill is invoked as a slash command. When the model invokes it through the Skill tool, nothing is granted. The rule's form, `${CLAUDE_PLUGIN_ROOT}` and path slashes are not the cause. The documentation says the opposite: <https://code.claude.com/docs/en/skills> ("Pre-approve tools for a skill", and "Restrict Claude's skill access": "Skills that define `allowed-tools` grant Claude access to those tools without per-use approval during the turn that invokes the skill"). Experiments, all with a scratch plugin or project skill whose body says to run `uv run "<root>/scripts/echo.py" <name>` (haiku, Git Bash, `< /dev/null`):
+- **Done**: all. No file in the skills changed: the frontmatter rule was right all along. What the work found:
+  - Interactive, the pre-approval works (claude 2.1.289, 2026-10-03, Windows). `claude --plugin-dir C:/Personal/Projects/iotforge2/m5core-skills --permission-mode default`, started in an empty folder outside the repo and driven through a pseudo-terminal (pywinpty; the driver lives outside the repo). The only keys sent after the request were Enter on Claude Code's own "Use skill?" prompt and, in the second run, Enter on one "Read file" prompt.
+    - Request "I have an M5Stack Core2 and its power LED is green. Which revision is it?": `board-identification` loaded ("1 tool allowed"), ran two `board.py` commands (`tell-apart "Core2"` was one) with no permission prompt, and answered from the data (v1.1 ruled out; v1.0, 2023.02 and v1.3 left; SKU next).
+    - Request "My M5Stack Core2 is plugged in over USB on Windows but I can't find its serial port. Can you check my setup?": `flashing-and-debugging` loaded ("2 tools allowed") and ran `uv run "C:/…/scripts/doctor.py"` and `board.py facts "M5Stack Core2" usb_bridge` with no permission prompt. So a bare `doctor.py`, with no argument, matches the rule that ends in ` *`.
+    - The maintainer's own sessions start in auto mode, where the classifier would allow these commands anyway; that is why the runs force `--permission-mode default`.
+  - Headless, it does not (2.1.288 on 2026-10-02, the same on 2.1.289 on 2026-10-03): in `claude -p`, a skill's `allowed-tools` grant applies only when the skill is invoked as a slash command. When the model invokes it through the Skill tool, nothing is granted, and `board.py find` is denied with `decision_reason: "This command requires approval"`. The rule's form, `${CLAUDE_PLUGIN_ROOT}` and path slashes are not the cause. Experiments with a scratch plugin or project skill (haiku, Git Bash, `< /dev/null`):
     - The rule text matches: `--allowedTools 'Bash(uv run "C:/…/scripts/board.py" *)'` on the CLI allowed `uv run "C:/…/board.py" find "Core2"`; the same rule without the quotes did not.
-    - Model-invoked, `--allowedTools Skill`: denied for a plugin skill with `Bash(uv run "${CLAUDE_PLUGIN_ROOT}/scripts/echo.py" *)`, with the literal path, without quotes, and with `Bash(uv run *)`; denied for a project skill (`.claude/skills/`) with `Bash(uv run *)` as a YAML list and as a string, and with a bare `Bash`.
-    - Model-invoked, `Skill` allowed through `--settings` instead of the flag: denied.
-    - Slash-invoked (`claude -p "/p-str"`, with `MSYS_NO_PATHCONV=1` so Git Bash leaves the `/` alone), with and without `--allowedTools Skill`: allowed, output `ECHO-OK ['p-str']`.
-    - A `hooks: PreToolUse` in the skill's frontmatter returning `permissionDecision: allow` (with `if:` the exact rule) was not honored either when model-invoked: no hook ran, the call was denied. So nothing in a skill's frontmatter can grant the call.
-  - Route settled by the maintainer (2026-10-02): park B28, blocked on Claude Code, and report the gap upstream. The skills stay as they are. A plugin-level `hooks/hooks.json` allow hook was considered and not chosen.
-- **Next**: Once a Claude Code release notes a fix, or on any new version, rerun the reproduction above (section 4's command, `board-identification` request). If `board.py find` is allowed, tick the second box, do the same for `doctor.py`, and close B28. If the rule form then turns out to matter, fix it in every skill, the template and `SCRIPT_RULE_RE`.
-- **Files touched**: none in the repo besides this issue and the README's table (experiments live outside it)
-- **Last commit**: 0c6e31e (cause recorded)
+    - Model-invoked, `--allowedTools Skill`: denied for a plugin skill with the `${CLAUDE_PLUGIN_ROOT}` rule, with the literal path, without quotes, and with `Bash(uv run *)`; denied for a project skill with `Bash(uv run *)` as a list and as a string, and with a bare `Bash`. `Skill` allowed through `--settings` instead of the flag: denied.
+    - Slash-invoked (`claude -p "/p-str"`, with `MSYS_NO_PATHCONV=1`): allowed.
+    - A `hooks: PreToolUse` in the skill's frontmatter returning `permissionDecision: allow` never ran when model-invoked. So nothing in a skill's frontmatter can grant the call in `claude -p`.
+- **Next**: nothing
+- **Files touched**: this issue, `backlog/README.md`
+- **Last commit**: Close B28: the pre-approval works in an interactive session
 - **Open questions**:
-  1. (maintainer) Whether the gap is `-p`-only: in a fresh interactive `claude --plugin-dir <repo>` session, ask the request above and see whether `board.py` runs without a prompt.
+  1. (maintainer) The trigger runs still see the denial, so `trigger.row-11`'s answers cannot be grounded in `board.py`. Should section 4's command grant the two scripts itself (`--allowedTools Skill 'Bash(uv run "<repo>/scripts/board.py" *)' …`)? The reason to keep it as `--allowedTools Skill` was to test the skills' own pre-approval, which `claude -p` can never apply.
+  2. (maintainer) In the interactive run, reading the shared reference `references/serial-ports.md` raised a "Read file" prompt, because the plugin folder is outside the user's project. `allowed-tools` covers only the two scripts. Accept the prompt, say so in the README, or pre-approve the reads?
