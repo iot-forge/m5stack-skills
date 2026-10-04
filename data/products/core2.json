@@ -128,7 +128,7 @@
    },
    "audio": {
     "amp": "NS4168 (I2S)",
-    "speaker": "1W-0928",
+    "speaker": "present, part not named",
     "mic": "SPM1423 (PDM)",
     "src": [
      "m5-core2"
@@ -198,7 +198,7 @@
    "errata": [
     {
      "id": "lcd-ili9342e",
-     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units; older builds may show a blank or wrong display.",
+     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units.",
      "src": [
       "m5-core2"
      ],
@@ -324,7 +324,7 @@
    },
    "audio": {
     "amp": "NS4168 (I2S)",
-    "speaker": "1W-0928",
+    "speaker": "present, part not named",
     "mic": "SPM1423 (PDM)",
     "src": [
      "m5-core2"
@@ -398,7 +398,7 @@
    "errata": [
     {
      "id": "lcd-ili9342e",
-     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units; older builds may show a blank or wrong display.",
+     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units.",
      "src": [
       "m5-core2"
      ],
@@ -600,7 +600,7 @@
    "errata": [
     {
      "id": "lcd-ili9342e",
-     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units; older builds may show a blank or wrong display.",
+     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units.",
      "src": [
       "m5-core2-v1.1"
      ],
@@ -616,6 +616,16 @@
      ],
      "confidence": "high",
      "last_verified": "2026-08-09"
+    },
+    {
+     "id": "m5-pio-snippet-basic-board",
+     "text": "M5's Core2 v1.1 page gives two PlatformIO examples. The first uses board = m5stack-core2 with board_build.partitions = default_16MB.csv. The second uses board = m5stack-core-esp32, the 4 MB Basic board id, and sets no partition table. Use the first.",
+     "src": [
+      "m5-core2-v1.1",
+      "pio-esp32"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-03"
     }
    ]
   },
@@ -738,7 +748,7 @@
    },
    "audio": {
     "amp": "NS4168 (I2S)",
-    "speaker": "1W-0928",
+    "speaker": "present, part not named",
     "mic": "SPM1423 (PDM)",
     "src": [
      "m5-core2-v1.3"
@@ -804,7 +814,7 @@
    "errata": [
     {
      "id": "lcd-ili9342e",
-     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units; older builds may show a blank or wrong display.",
+     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units.",
      "src": [
       "m5-core2-v1.3"
      ],

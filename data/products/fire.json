@@ -84,8 +84,10 @@
     "part": "MPU9250",
     "bus": "i2c_internal",
     "address": "0x68",
+    "note": "address from M5Unified's MPU-family probe",
     "src": [
-     "m5-fire"
+     "m5-fire",
+     "m5unified"
     ],
     "confidence": "medium",
     "last_verified": "2026-10-03"
@@ -128,12 +130,12 @@
     "last_verified": "2026-10-03"
    },
    "usb_bridge": {
-    "part": "CP2104",
-    "note": "the legacy page lists CP2104 drivers only",
+    "unknown": true,
+    "note": "the legacy Fire spec table has no USB chip row; its driver section lists both CP2104 and CH9102 drivers",
     "src": [
      "m5-fire"
     ],
-    "confidence": "medium",
+    "confidence": "low",
     "last_verified": "2026-10-03"
    },
    "sd": {
@@ -179,6 +181,15 @@
     {
      "id": "tn-panel",
      "text": "Units made before 2019.7 have a TN panel; later ones an IPS panel on the same ILI9342C controller. The old M5Stack library before 0.2.8 shows inverted colours on IPS units.",
+     "src": [
+      "m5-fire"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-03"
+    },
+    {
+     "id": "pcb-2018.2a",
+     "text": "Units with PCB version 2018.2A do not support USB-C-to-C cables or USB PD power supplies.",
      "src": [
       "m5-fire"
      ],
@@ -306,11 +317,12 @@
     "last_verified": "2026-10-03"
    },
    "usb_bridge": {
-    "part": "CP2104",
+    "unknown": true,
+    "note": "the legacy Fire spec table has no USB chip row; its driver section lists both CP2104 and CH9102 drivers",
     "src": [
      "m5-fire"
     ],
-    "confidence": "medium",
+    "confidence": "low",
     "last_verified": "2026-10-03"
    },
    "sd": {
@@ -473,11 +485,12 @@
     "last_verified": "2026-10-03"
    },
    "usb_bridge": {
-    "part": "CP2104",
+    "unknown": true,
+    "note": "the legacy Fire spec table has no USB chip row; its driver section lists both CP2104 and CH9102 drivers",
     "src": [
      "m5-fire"
     ],
-    "confidence": "medium",
+    "confidence": "low",
     "last_verified": "2026-10-03"
    },
    "sd": {
@@ -644,11 +657,12 @@
     "last_verified": "2026-10-03"
    },
    "usb_bridge": {
-    "part": "CP2104",
+    "unknown": true,
+    "note": "the legacy Fire spec table has no USB chip row; its driver section lists both CP2104 and CH9102 drivers",
     "src": [
      "m5-fire"
     ],
-    "confidence": "medium",
+    "confidence": "low",
     "last_verified": "2026-10-03"
    },
    "sd": {

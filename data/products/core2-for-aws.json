@@ -142,11 +142,16 @@
     "last_verified": "2026-10-03"
    },
    "usb_bridge": {
-    "part": "CP2104",
-    "src": [
-     "m5-core2-for-aws"
+    "part": [
+     "CP2104",
+     "CH9102"
     ],
-    "confidence": "high",
+    "note": "the product page lists CP2104 only; the comparison table on the Core2 for AWS v1.3 page gives CP2104/CH9102 for this product, with no date for the change",
+    "src": [
+     "m5-core2-for-aws",
+     "m5-core2-for-aws-v1.3"
+    ],
+    "confidence": "medium",
     "last_verified": "2026-10-03"
    },
    "sd": {
@@ -219,7 +224,7 @@
    "errata": [
     {
      "id": "lcd-ili9342e",
-     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units; older builds may show a blank or wrong display.",
+     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units.",
      "src": [
       "m5-core2-for-aws"
      ],
@@ -488,7 +493,7 @@
    "errata": [
     {
      "id": "lcd-ili9342e",
-     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units; older builds may show a blank or wrong display.",
+     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units.",
      "src": [
       "m5-core2-for-aws-v1.3"
      ],

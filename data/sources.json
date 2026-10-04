@@ -347,6 +347,13 @@
    "ref": "BST-BMI270-DS000-08 rev 1.6, retrieved 2026-09-26"
   },
   {
+   "id": "ds-bmm150",
+   "kind": "datasheet",
+   "title": "Bosch BMM150 geomagnetic sensor data sheet",
+   "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/BMM150_datasheet_en.pdf",
+   "ref": "BST-BMM150-DS001-01 rev 1.0, retrieved 2026-10-03"
+  },
+  {
    "id": "ds-ina3221",
    "kind": "datasheet",
    "title": "TI INA3221 datasheet (register 0xFF, Die ID)",

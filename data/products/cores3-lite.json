@@ -222,7 +222,7 @@
    "errata": [
     {
      "id": "lcd-ili9342e",
-     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units; older builds may show a blank or wrong display.",
+     "text": "Units made from 2026.8.7 carry an ILI9342E LCD driver instead of the ILI9342C. Programs that use M5GFX need M5GFX 0.2.27 or later on those units.",
      "src": [
       "m5-cores3-lite"
      ],

@@ -172,7 +172,7 @@
    "errata": [
     {
      "id": "tn-panel",
-     "text": "Units made before 2019.7 have a TN panel; later ones an IPS panel on the same ILI9342C controller. The old M5Stack library before 0.2.8 shows inverted colours on IPS units.",
+     "text": "Units made before 2019.7 have a TN panel; later ones an IPS panel on the same ILI9342C controller.",
      "src": [
       "m5-gray"
      ],
@@ -185,6 +185,15 @@
      "src": [
       "m5-gray",
       "m5unified"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-03"
+    },
+    {
+     "id": "pcb-2018.2a",
+     "text": "Units with PCB version 2018.2A do not support USB-C-to-C cables or USB PD power supplies.",
+     "src": [
+      "m5-gray"
      ],
      "confidence": "high",
      "last_verified": "2026-10-03"
@@ -381,7 +390,7 @@
    "errata": [
     {
      "id": "tn-panel",
-     "text": "Units made before 2019.7 have a TN panel; later ones an IPS panel on the same ILI9342C controller. The old M5Stack library before 0.2.8 shows inverted colours on IPS units.",
+     "text": "Units made before 2019.7 have a TN panel; later ones an IPS panel on the same ILI9342C controller.",
      "src": [
       "m5-gray"
      ],
@@ -583,7 +592,7 @@
    "errata": [
     {
      "id": "tn-panel",
-     "text": "Units made before 2019.7 have a TN panel; later ones an IPS panel on the same ILI9342C controller. The old M5Stack library before 0.2.8 shows inverted colours on IPS units.",
+     "text": "Units made before 2019.7 have a TN panel; later ones an IPS panel on the same ILI9342C controller.",
      "src": [
       "m5-gray"
      ],

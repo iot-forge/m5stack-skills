@@ -84,7 +84,8 @@
    },
    "src": [
     "pio-esp32",
-    "m5-core2"
+    "m5-core2",
+    "m5-core2-v1.1"
    ],
    "confidence": "high",
    "last_verified": "2026-10-03"

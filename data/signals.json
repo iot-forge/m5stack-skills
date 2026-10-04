@@ -118,10 +118,6 @@
     "10C4 (Silicon Labs CP210x)": [
      "basic@v1.4",
      "basic@v2.5",
-     "fire@2018.06",
-     "fire@2019.07",
-     "fire@2019.08",
-     "fire@2020.04",
      "m5go@2018.04",
      "m5go@2019.06",
      "core2@v1.0",
@@ -138,6 +134,7 @@
      "core2@2023.02",
      "core2@v1.1",
      "core2@v1.3",
+     "core2-for-aws@v1.0",
      "core2-for-aws@v1.3",
      "tough@v1.0"
     ],
@@ -148,14 +145,16 @@
     ]
    },
    "reliability": "medium",
-   "caveats": "Core2 v1.0 shipped with either bridge, so CH9102 never proves a later Core2. Only CP2104 rules revisions in. Gray's bridge is undocumented.",
+   "caveats": "Core2 v1.0 and Core2 for AWS v1.0 shipped with either bridge, so CH9102 never proves a later revision of either. Only CP2104 rules revisions in. The bridge on Gray and on Fire before v2.7 is undocumented.",
    "src": [
     "usb-ids",
     "arduino-m5stack-boards",
     "m5-core2",
     "m5-basic-v2.7",
     "m5-m5go-v2.7",
-    "m5-fire-v2.7"
+    "m5-fire-v2.7",
+    "m5-core2-for-aws",
+    "m5-core2-for-aws-v1.3"
    ],
    "confidence": "medium",
    "last_verified": "2026-10-03"
