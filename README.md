@@ -50,7 +50,7 @@ uv run scripts/board.py targets "K010-V13" --toolchain platformio
 
 ## Permissions
 
-Each skill pre-approves its two read-only scripts, `board.py` and `doctor.py`, for the turn the skill is invoked, so the first lookup runs without a prompt. On later turns Claude Code asks as usual. Approve them there: both only read.
+Each skill pre-approves its two read-only scripts, `board.py` and `doctor.py`, and reading the plugin's own reference files, for the turn the skill is invoked, so the first lookup runs without a prompt. On later turns Claude Code asks as usual. Approve them there: they only read.
 
 Anything that writes to a board (flashing, erasing) always runs with the normal permission prompt, and the skills name the port, the board and what will be overwritten before asking.
 

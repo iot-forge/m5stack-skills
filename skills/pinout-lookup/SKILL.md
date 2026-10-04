@@ -4,6 +4,7 @@ description: M5Stack Core GPIO and connector lookup — reports which pins a boa
 license: MIT
 allowed-tools:
   - Bash(uv run "${CLAUDE_PLUGIN_ROOT}/scripts/board.py" *)
+  - Read(${CLAUDE_PLUGIN_ROOT}/references/**)
 metadata:
   tested-with: "none"
   verification: "unverified"

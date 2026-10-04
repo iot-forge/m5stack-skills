@@ -5,6 +5,8 @@ license: MIT
 allowed-tools:
   - Bash(uv run "${CLAUDE_PLUGIN_ROOT}/scripts/board.py" *)
   - Bash(uv run "${CLAUDE_PLUGIN_ROOT}/scripts/doctor.py" *)
+  - Read(${CLAUDE_PLUGIN_ROOT}/references/**)
+  - Read(${CLAUDE_SKILL_DIR}/references/**)
 metadata:
   tested-with: "none"
   verification: "unverified"

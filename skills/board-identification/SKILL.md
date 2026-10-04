@@ -4,6 +4,7 @@ description: M5Stack Core board identification and facts — works out which pro
 license: MIT
 allowed-tools:
   - Bash(uv run "${CLAUDE_PLUGIN_ROOT}/scripts/board.py" *)
+  - Read(${CLAUDE_PLUGIN_ROOT}/references/**)
 metadata:
   tested-with: "none"
   verification: "unverified"

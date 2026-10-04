@@ -31,6 +31,8 @@ BODY_WARN, BODY_FAIL = 10_000, 16_000
 VERIFICATION_RE = re.compile(r"^(unverified|(partial|verified) \d{4}-\d{2}-\d{2}: [a-z0-9-]+@[a-z0-9.-]+(, [a-z0-9-]+@[a-z0-9.-]+)*)$")
 MARKER_RE = re.compile(r"\(untested on hardware: ([^)]+)\)")
 SCRIPT_RULE_RE = re.compile(r'^Bash\(uv run "\$\{CLAUDE_PLUGIN_ROOT\}/scripts/(board|doctor)\.py" \*\)$')
+# a references folder a skill body names -> the rule that pre-approves reading it
+READ_RULES = {v + "/references/": f"Read({v}/references/**)" for v in ("${CLAUDE_PLUGIN_ROOT}", "${CLAUDE_SKILL_DIR}")}
 
 
 class Report:
@@ -454,8 +456,15 @@ def check_skills(root, rep, fix=False):
         if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", name) or len(name) > 64 or name.startswith("m5"):
             rep.fail("skill.frontmatter", f"{where}: name must be lowercase kebab-case, at most 64 characters, with no m5 prefix")
         tools = fm.get("allowed-tools")
-        if not isinstance(tools, list) or not tools or not all(SCRIPT_RULE_RE.match(t or "") for t in tools):
-            rep.fail("skill.allowed-tools", f"{where}: allowed-tools must be a YAML list of board.py and/or doctor.py rules and nothing else")
+        if not isinstance(tools, list) or not any(SCRIPT_RULE_RE.match(t or "") for t in tools) \
+                or not all(SCRIPT_RULE_RE.match(t or "") or t in READ_RULES.values() for t in tools):
+            rep.fail("skill.allowed-tools", f"{where}: allowed-tools must be a YAML list of board.py and/or doctor.py rules, "
+                     f"the references Read rules, and nothing else")
+        else:
+            missing = [rule for folder, rule in READ_RULES.items() if folder in body and rule not in tools]
+            if missing:
+                rep.fail("skill.allowed-tools", f"{where}: the body reads a references folder that allowed-tools "
+                         f"does not pre-approve; add {' and '.join(missing)}")
         meta = fm.get("metadata") or {}
         if not isinstance(meta, dict) or not isinstance(meta.get("tested-with"), str) or not isinstance(meta.get("verification"), str):
             rep.fail("skill.metadata", f"{where}: metadata needs string tested-with and verification")

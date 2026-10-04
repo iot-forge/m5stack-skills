@@ -25,6 +25,8 @@ license: MIT
 allowed-tools:
   - Bash(uv run "${CLAUDE_PLUGIN_ROOT}/scripts/board.py" *)
   - Bash(uv run "${CLAUDE_PLUGIN_ROOT}/scripts/doctor.py" *)
+  - Read(${CLAUDE_PLUGIN_ROOT}/references/**)
+  - Read(${CLAUDE_SKILL_DIR}/references/**)
 metadata:
   tested-with: "none"      # or "<tool> <version>, …" from the run that set verification
   verification: "unverified"  # or "partial|verified <YYYY-MM-DD>: <revision>, …"
@@ -71,7 +73,7 @@ Pointers sit at the branch that needs them: "Read `${CLAUDE_PLUGIN_ROOT}/referen
 
 - **Keys**: only the six portable keys — `name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`. Any other key is a hard error outside Claude Code. **(CI)**
 - **`name`**: equals the folder name; lowercase kebab-case, at most 64 characters; no `m5` prefix, since the plugin namespace (`m5core-skills:<name>`) already carries it. Framework skills are named after the toolchain (`esp-idf`), capability skills after the job (`pinout-lookup`). **(CI)**
-- **`allowed-tools`**: a YAML list, because each rule contains spaces. It pre-approves the read-only scripts only: `board.py` and `doctor.py`, or just the one of them the skill runs. Anything that writes to a board runs with the normal permission prompt. **(CI)**
+- **`allowed-tools`**: a YAML list, because each rule contains spaces. It pre-approves the read-only scripts, `board.py` and `doctor.py` or just the one of them the skill runs, and reading each references folder the body names: `Read(${CLAUDE_PLUGIN_ROOT}/references/**)` for the shared one, `Read(${CLAUDE_SKILL_DIR}/references/**)` for the skill's own. Without the Read rule, a user whose project is outside the plugin folder gets a prompt for every reference file. Nothing else is pre-approved. Anything that writes to a board runs with the normal permission prompt. **(CI)**
 - **`metadata`**: string values only. `tested-with` and `verification` are always present. **(CI)**
   - `verification` is `unverified`, or `<partial|verified> <YYYY-MM-DD>: <revision>[, <revision>…]` (`partial 2026-10-20: core2@v1.3`). `partial` means the skill's checks passed on the listed revisions but not on every supported one. **(CI: format)**
   - `tested-with` is `none`, or comma-separated `<tool> <version>` pairs for the tools this skill uses, from the same run.
@@ -142,7 +144,7 @@ Material only one skill uses lives in that skill's own `references/` or `scripts
 `scripts/validate.py` fails on any of these; `--fix` repairs standing-rules drift only.
 
 - [ ] Frontmatter keys within the six; `name` matches folder and naming rule
-- [ ] `allowed-tools` lists `board.py`, `doctor.py`, or both, and nothing else
+- [ ] `allowed-tools` lists `board.py`, `doctor.py`, or both, the Read rule for each references folder the body names, and nothing else
 - [ ] `metadata` has string `tested-with` and `verification`; `verification` matches its format
 - [ ] Every *(untested on hardware: …)* marker names an existing `open-question` check
 - [ ] Description: ≤600 chars, opens `M5Stack Core`, has `Use when`, ends with a deferral clause naming an existing skill

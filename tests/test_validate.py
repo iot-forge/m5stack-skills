@@ -254,5 +254,50 @@ class PlantedChecks(unittest.TestCase):
         self.assertChecksFail("open-question.ghost-touch.cores3-se@v1.0")
 
 
+SHARED_READ = b"  - Read(${CLAUDE_PLUGIN_ROOT}/references/**)\r\n"
+OWN_READ = b"  - Read(${CLAUDE_SKILL_DIR}/references/**)\r\n"
+
+
+class PlantedAllowedTools(unittest.TestCase):
+    """skill.allowed-tools: the two read-only scripts and the references folders a skill reads, nothing else (B41)."""
+    def setUp(self):
+        self.tmp = copy_repo(("data", "docs", "skills", "references", "scripts", *VERIFICATION_READS))
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def edit_skill(self, name, old, new):
+        p = self.tmp / "skills" / name / "SKILL.md"
+        data = p.read_bytes()
+        self.assertEqual(data.count(old), 1, name)
+        p.write_bytes(data.replace(old, new))
+
+    def assertRuleFails(self, *names):
+        code, out = run_validate(self.tmp)
+        self.assertEqual(code, 1, out)
+        fails = [line for line in out.splitlines() if line.startswith("FAIL [skill.allowed-tools]")]
+        self.assertEqual(len(fails), 1, out)
+        for name in names:
+            self.assertIn(name, fails[0])
+
+    def test_committed_skills_pass(self):  # every skill reads the shared references, and five read their own
+        code, out = run_validate(self.tmp)
+        self.assertEqual(code, 0, out)
+        self.assertIn(SHARED_READ, (self.tmp / "skills/board-identification/SKILL.md").read_bytes())
+        self.assertIn(OWN_READ, (self.tmp / "skills/platformio/SKILL.md").read_bytes())
+
+    def test_any_other_rule(self):
+        self.edit_skill("platformio", SHARED_READ, SHARED_READ + b"  - Read(${CLAUDE_PLUGIN_ROOT}/**)\r\n")
+        self.assertRuleFails("skills/platformio")
+
+    def test_shared_references_without_the_rule(self):
+        self.edit_skill("pinout-lookup", SHARED_READ, b"")
+        self.assertRuleFails("skills/pinout-lookup", "Read(${CLAUDE_PLUGIN_ROOT}/references/**)")
+
+    def test_own_references_without_the_rule(self):
+        self.edit_skill("esp-idf", OWN_READ, b"")
+        self.assertRuleFails("skills/esp-idf", "Read(${CLAUDE_SKILL_DIR}/references/**)")
+
+
 if __name__ == "__main__":
     unittest.main()
