@@ -77,7 +77,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B37 · Make refresh.py report M5 docs pages that changed](B37-docs-page-content-hash.md) | done | — |  |
 | [B38 · Re-read the M5 docs pages that supported revisions cite](B38-reread-cited-docs-pages.md) | done | — |  |
 | [B39 · Apply the maintainer's answers to B38's open questions](B39-apply-b38-answers.md) | done | — |  |
-| [B40 · Settle the four follow-ups from the B38 re-read](B40-b38-follow-ups.md) | in-progress | — |  |
+| [B40 · Settle the four follow-ups from the B38 re-read](B40-b38-follow-ups.md) | done | — |  |
 
 **First issue: B01.** After it, B03 and B06 can run in parallel.
 

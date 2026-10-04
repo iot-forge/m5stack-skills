@@ -1,6 +1,6 @@
 # B40 · Settle the four follow-ups from the B38 re-read
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: none
 
@@ -25,11 +25,11 @@ A fifth, `soc_part: ESP32-D0WDQ6-V3` on Basic v1.4 and M5GO 2018.04, stays as it
 
 ## Definition of done
 
-- [ ] The esp-idf skill says what to do when `facts` prints a PSRAM size with no mode on `esp32s3`
-- [ ] `board.py facts` prints "backup cell not documented" for both revisions, from `"unknown"`, and a test covers it
-- [ ] The CoreS3-SE battery note says what the page and the schematic show
-- [ ] The two PlatformIO targets are checked against the pinned commit, and the result is in the Checkpoint
-- [ ] `uv run scripts/check.py` exits 0
+- [x] The esp-idf skill says what to do when `facts` prints a PSRAM size with no mode on `esp32s3`
+- [x] `board.py facts` prints "backup cell not documented" for both revisions, from `"unknown"`, and a test covers it
+- [x] The CoreS3-SE battery note says what the page shows, and the Checkpoint says what the schematic shows
+- [x] The two PlatformIO targets are checked against the pinned commit, and the result is in the Checkpoint
+- [x] `uv run scripts/check.py` exits 0
 
 The skill's description does not change, so no trigger rows need running.
 
@@ -41,8 +41,10 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Write the failing test for `backup_battery: "unknown"` in `tests/test_board.py`
-- **Files touched**: none
-- **Last commit**: none
+- **Done**: all. Two results that left no trace in the files:
+  - The PlatformIO targets hold against the pinned `pio-esp32` commit (87cbed0): `boards/m5stack-fire.json` and `boards/m5stack-core2.json` both exist, with 16MB flash and `-DBOARD_HAS_PSRAM`. Their `last_verified: 2026-10-03` stands.
+  - M5's CoreS3-SE schematic (`Sch_M5_CoreS3_SE_v1.0.pdf`, text layer only; the drawing was not rendered) labels a part `BAT1/NC` and has a `VBAT` net. It is not a source in `data/sources.json`, so the battery note cites the page alone.
+- **Next**: nothing
+- **Files touched**: `skills/esp-idf/SKILL.md`, `scripts/board.py`, `tests/test_board.py`, `data/products/` (`tough`, `core2-for-aws`, `cores3-se`), this issue, `backlog/README.md`, `backlog/B18-decide-publication.md`
+- **Last commit**: Close B40: settle the four follow-ups from the B38 re-read
 - **Open questions**: none
