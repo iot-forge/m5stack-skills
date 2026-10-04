@@ -1,6 +1,6 @@
 # B39 · Apply the maintainer's answers to B38's open questions
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: none
 
@@ -27,9 +27,9 @@ B38 re-read the 15 M5 docs pages that supported revisions cite and left eight di
 
 ## Definition of done
 
-- [ ] Each of the eight answers is in `data/`, and each changed entry has today's `last_verified`
-- [ ] `board.py tell-apart` on Fire and on Core2 for AWS reflects the changed `usb-vid` outcomes
-- [ ] `uv run scripts/check.py` exits 0
+- [x] Each of the eight answers is in `data/`, and each changed entry has today's `last_verified`
+- [x] `board.py tell-apart` on Fire and on Core2 for AWS reflects the changed `usb-vid` outcomes
+- [x] `uv run scripts/check.py` exits 0
 
 The descriptions do not change, so no trigger rows need running. Answer 7 changes what the platformio skill tells a Core2 v1.1 user: the new erratum reaches them through `board.py`.
 
@@ -41,8 +41,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Apply answer 1 in `data/products/core2.json`
-- **Files touched**: none
-- **Last commit**: none
+- **Done**: all
+- **Next**: nothing
+- **Files touched**: `data/products/` (`core2`, `core2-for-aws`, `cores3`, `cores3-lite`, `fire`, `gray`, `m5go`), `data/signals.json`, `data/sources.json`, `data/targets/platformio.json`, this issue, `backlog/README.md`, `backlog/B18-decide-publication.md`, `backlog/B38-reread-cited-docs-pages.md`
+- **Last commit**: Close B39: apply the maintainer's answers to B38's open questions
 - **Open questions**: none
