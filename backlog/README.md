@@ -78,7 +78,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B38 · Re-read the M5 docs pages that supported revisions cite](B38-reread-cited-docs-pages.md) | done | — |  |
 | [B39 · Apply the maintainer's answers to B38's open questions](B39-apply-b38-answers.md) | done | — |  |
 | [B40 · Settle the four follow-ups from the B38 re-read](B40-b38-follow-ups.md) | done | — |  |
-| [B41 · Pre-approve the reference reads, and grant the pre-approvals in the trigger runs](B41-preapprove-reference-reads.md) | in-progress | — |  |
+| [B41 · Pre-approve the reference reads, and grant the pre-approvals in the trigger runs](B41-preapprove-reference-reads.md) | done | — |  |
 
 **First issue: B01.** After it, B03 and B06 can run in parallel.
 

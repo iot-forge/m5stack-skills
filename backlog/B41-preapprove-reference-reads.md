@@ -1,6 +1,6 @@
 # B41 · Pre-approve the reference reads, and grant the pre-approvals in the trigger runs
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: none
 
@@ -42,14 +42,14 @@ claude -p "<request>" --plugin-dir <this repo> --allowedTools Skill 'Bash(uv run
 
 ## Definition of done
 
-- [ ] Every skill carries the Read rule for each references folder its body names, and the template does too
-- [ ] `skill.allowed-tools` accepts the two Read rules, rejects any other rule, and fails a skill that names a references folder without its rule; a test covers each
-- [ ] An interactive session in default permission mode reads a shared reference and a skill's own reference with no prompt, from this repo's skills
-- [ ] `trigger_result` passes the grants; a test covers the command
-- [ ] A headless run with section 4's new command shows `board.py` allowed and its output in the answer
-- [ ] `VERIFICATION.md` section 4, the template and the README say what is pre-approved
-- [ ] `uv run scripts/validate.py` exits 0
-- [ ] `python -m unittest discover tests` passes
+- [x] Every skill carries the Read rule for each references folder its body names, and the template does too
+- [x] `skill.allowed-tools` accepts the two Read rules, rejects any other rule, and fails a skill that names a references folder without its rule; a test covers each
+- [x] An interactive session in default permission mode reads a shared reference and a skill's own reference with no prompt, from this repo's skills
+- [x] `trigger_result` passes the grants; a test covers the command
+- [x] A headless run with section 4's new command shows `board.py` allowed and its output in the answer
+- [x] `VERIFICATION.md` section 4, the template and the README say what is pre-approved
+- [x] `uv run scripts/validate.py` exits 0
+- [x] `python -m unittest discover tests` passes
 
 The descriptions do not change, so no trigger rows need running.
 
@@ -61,8 +61,12 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Part 1: the failing tests for `skill.allowed-tools` in `tests/test_validate.py`
-- **Files touched**: none
-- **Last commit**: none
+- **Done**: all. Results that left no trace in the files (claude 2.1.289, 2026-10-03, Windows):
+  - Interactive, default permission mode, started in an empty folder outside the repo, the only key sent being Enter on "Use skill?": `flashing-and-debugging` loaded ("4 tools allowed") and read `references/serial-ports.md` with no prompt; `uiflow2-micropython` loaded ("4 tools allowed") and read its own `references/images.md` with no prompt. Before the rules, each raised a "Read file" prompt. `${CLAUDE_SKILL_DIR}` is expanded in `allowed-tools`, as `${CLAUDE_PLUGIN_ROOT}` is.
+  - Headless with section 4's new command: the request "I have an M5Stack Core2 and its power LED is green. Which revision is it?" ran `board.py find "Core2" --seen power-led=green` and `tell-apart "Core2"` with no denial and answered from them (v1.1 ruled out, three revisions left, SKU next). A second request ("…I can't find its serial port. Can you check my setup?") ran `doctor.py`, `doctor.py --ports`, `board.py facts … usb_bridge` and read `references/serial-ports.md`, all allowed.
+  - Still denied in a trigger run, and left that way: commands the model makes up itself, such as PowerShell device queries.
+  - No full trigger run was made with the new command. The grants change what a skill can do after it loads, not which skill loads, so the routing verdicts should not move; `trigger.row-11`'s answers should now be grounded.
+- **Next**: nothing
+- **Files touched**: `skills/*/SKILL.md` (frontmatter), `docs/authoring/skill-template.md`, `README.md`, `scripts/validate.py`, `tests/test_validate.py`, `scripts/verify.py`, `tests/test_verify.py`, `VERIFICATION.md`, this issue, `backlog/README.md`, `backlog/B18-decide-publication.md`, `backlog/B28-skill-allowed-tools-preapproval.md`
+- **Last commit**: Close B41: pre-approve the reference reads, and grant the pre-approvals in the trigger runs
 - **Open questions**: none

@@ -70,6 +70,4 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 - **Next**: nothing
 - **Files touched**: this issue, `backlog/README.md`
 - **Last commit**: Close B28: the pre-approval works in an interactive session
-- **Open questions**:
-  1. (maintainer) The trigger runs still see the denial, so `trigger.row-11`'s answers cannot be grounded in `board.py`. Should section 4's command grant the two scripts itself (`--allowedTools Skill 'Bash(uv run "<repo>/scripts/board.py" *)' …`)? The reason to keep it as `--allowedTools Skill` was to test the skills' own pre-approval, which `claude -p` can never apply.
-  2. (maintainer) In the interactive run, reading the shared reference `references/serial-ports.md` raised a "Read file" prompt, because the plugin folder is outside the user's project. `allowed-tools` covers only the two scripts. Accept the prompt, say so in the README, or pre-approve the reads?
+- **Open questions**: none. The two this issue closed with (grant the scripts in section 4's command; the "Read file" prompt on a reference file) were answered by the maintainer on 2026-10-03 and built in [B41](B41-preapprove-reference-reads.md).
