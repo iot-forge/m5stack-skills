@@ -146,6 +146,20 @@ class DocsPages(unittest.TestCase):
         self.assertIn("## M5 docs pages\n- 1 of 1 pages unchanged", out)
         self.assertEqual(code, 0)
 
+    def test_strict_exits_1_when_a_fetched_page_holds_no_content(self):  # the site's shape changed: the check is off until fixed
+        pages = site(CORE2)
+        pages[URL] = "<html><body>Core2</body></html>"
+        self.serve(pages)
+        code, out = self.run_main("--strict")
+        self.assertIn("- COULD NOT CHECK page m5-core2", out)
+        self.assertEqual(code, 1)
+
+    def test_strict_exits_0_when_a_page_is_unreachable(self):  # an outage is not drift, as for every other upstream
+        self.serve({})
+        code, out = self.run_main("--strict")
+        self.assertIn("- COULD NOT CHECK page m5-core2", out)
+        self.assertEqual(code, 0)
+
     def test_refresh_never_writes_data(self):  # ADR 0003: a person records the new hash
         before = (self.data / "sources.json").read_bytes()
         self.serve(site(CORE2_EDITED))

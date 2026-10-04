@@ -17,7 +17,8 @@ Checks:
   - M5Stack's Arduino package index: the newest m5stack:esp32 version vs the pinned one
   - M5 docs pages: each m5-docs source's content vs the content_sha256 recorded in data/sources.json
 A new upstream item is flagged for a person; it never becomes a record automatically.
-Exit 0 whether or not there is drift; exit 1 only when --strict and drift was found.
+Exit 0 whether or not there is drift; exit 1 only when --strict and drift was found. An unreachable
+upstream is not drift; a docs page that was fetched but holds no content where the script looks is.
 """
 import argparse, csv, hashlib, http.client, io, json, re, sys, urllib.error, urllib.request
 from pathlib import Path
@@ -132,8 +133,11 @@ def check_m5_docs(rep):
     for s in pages:
         try:
             current = page_sha256(s["url"])
-        except (OSError, http.client.HTTPException, ValueError) as e:  # one page down must not hide the others
+        except (OSError, http.client.HTTPException) as e:  # one page down must not hide the others
             rep.append(f"- COULD NOT CHECK page {s['id']}: {s['url']}: {e.__class__.__name__}: {e}")
+            continue
+        except ValueError as e:  # fetched, but the content is not where page_sha256 looks: the check is off until that is fixed
+            rep.append(f"- COULD NOT CHECK page {s['id']}: {s['url']}: {e} — DRIFT: M5's site changed shape; fix page_sha256")
             continue
         if current == s.get("content_sha256"):
             same += 1
