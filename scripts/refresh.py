@@ -19,7 +19,7 @@ Checks:
 A new upstream item is flagged for a person; it never becomes a record automatically.
 Exit 0 whether or not there is drift; exit 1 only when --strict and drift was found.
 """
-import argparse, csv, hashlib, io, json, re, sys, urllib.error, urllib.request
+import argparse, csv, hashlib, http.client, io, json, re, sys, urllib.error, urllib.request
 from pathlib import Path
 
 DATA = Path(__file__).resolve().parent.parent / "data"
@@ -131,15 +131,15 @@ def check_m5_docs(rep):
     same = 0
     for s in pages:
         try:
-            now = page_sha256(s["url"])
-        except (urllib.error.URLError, TimeoutError, ValueError) as e:  # one page down must not hide the others
+            current = page_sha256(s["url"])
+        except (OSError, http.client.HTTPException, ValueError) as e:  # one page down must not hide the others
             rep.append(f"- COULD NOT CHECK page {s['id']}: {s['url']}: {e.__class__.__name__}: {e}")
             continue
-        if now == s.get("content_sha256"):
+        if current == s.get("content_sha256"):
             same += 1
         else:
             rep.append(f"- CHANGED page {s['id']}: {s['url']} — re-read it and correct the facts that cite it, "
-                       f"then record content_sha256 {now} and the retrieval date by hand (recorded: {s.get('content_sha256', 'none')})")
+                       f"then record content_sha256 {current} and the retrieval date by hand (recorded: {s.get('content_sha256', 'none')})")
     rep.append(f"- {same} of {len(pages)} pages unchanged since their recorded hash")
 
 

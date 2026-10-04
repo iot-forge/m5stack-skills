@@ -4,7 +4,7 @@ The pages are served from the strings below through a stand-in for refresh.get, 
 temporary data/. No test touches the network.
 Run: python -m unittest discover tests
 """
-import contextlib, importlib.util, io, json, shutil, tempfile, unittest, urllib.error
+import contextlib, http.client, importlib.util, io, json, shutil, tempfile, unittest, urllib.error
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -25,10 +25,19 @@ CORE2_EDITED = "# Core2\n\nFlash: 16MB\n"
 CORE2_EDITED_SHA = "e5b06eb8d3f0f8bf92b499edd4cebbbbc8af2afc3e2e14f3fbbea8755cc06b77"
 
 
-def site(markdown, build="111", skus='"A176"'):
-    """{url: text} for one docs page whose Markdown is MARKDOWN, as M5's build BUILD serves it."""
+# the same, for a page with markup, quotes, a backslash and Chinese text, in the escapes M5's payload.js uses
+ESCAPED_RAW = '"| \\u003Cbr\\u002F\\u003E | \\"16MB\\" 描述 C:\\\\x\\n"'  # | <br/> | "16MB" 描述 C:\x
+ESCAPED_SHA = "e9f15f4cd513972eeab433f7104e740ed0d7831d94d6d7ea0d86e17afb0459ff"
+
+
+def site(markdown, build="111", skus='"A176"', raw=None):
+    """{url: text} for one docs page whose Markdown is MARKDOWN (or the JavaScript string RAW), as M5's build BUILD serves it."""
     return {URL: SHELL.format(build=build),
-            "https://docs.m5stack.com" + PAYLOAD_PATH.format(build=build): PAYLOAD.format(skus=skus, raw=json.dumps(markdown))}
+            "https://docs.m5stack.com" + PAYLOAD_PATH.format(build=build): PAYLOAD.format(skus=skus, raw=raw or json.dumps(markdown))}
+
+
+def docs_source(sid="m5-core2", url=URL, **fields):
+    return {"id": sid, "kind": "m5-docs", "title": sid, "url": url, "ref": "retrieved 2026-09-26", "content_sha256": CORE2_SHA, **fields}
 
 
 class DocsPages(unittest.TestCase):
@@ -38,10 +47,9 @@ class DocsPages(unittest.TestCase):
         self.addCleanup(setattr, refresh, "DATA", refresh.DATA)
         self.addCleanup(setattr, refresh, "get", refresh.get)
         refresh.DATA = self.data
-        self.sources([{"id": "m5-core2", "kind": "m5-docs", "title": "Core2", "url": URL, "ref": "retrieved 2026-09-26",
-                       "content_sha256": CORE2_SHA}])
+        self.write_sources([docs_source()])
 
-    def sources(self, sources):
+    def write_sources(self, sources):
         (self.data / "sources.json").write_text(json.dumps({"schema_version": 1, "sources": sources}), encoding="utf-8")
 
     def serve(self, pages):
@@ -79,14 +87,32 @@ class DocsPages(unittest.TestCase):
         self.assertEqual(self.section()[1:], ["- 1 of 1 pages unchanged since their recorded hash"])
 
     def test_unreachable_page_is_reported_and_never_unchanged(self):
-        self.sources([{"id": "m5-gone", "kind": "m5-docs", "title": "Gone", "url": "https://docs.m5stack.com/en/core/gone",
-                       "ref": "retrieved 2026-09-26", "content_sha256": CORE2_SHA},
-                      {"id": "m5-core2", "kind": "m5-docs", "title": "Core2", "url": URL, "ref": "retrieved 2026-09-26",
-                       "content_sha256": CORE2_SHA}])
+        self.write_sources([docs_source("m5-gone", "https://docs.m5stack.com/en/core/gone"), docs_source()])
         self.serve(site(CORE2))
         rep = self.section()
         self.assertTrue(any(l.startswith("- COULD NOT CHECK page m5-gone") for l in rep), rep)
         self.assertEqual(rep[-1], "- 1 of 2 pages unchanged since their recorded hash")  # the page after it is still checked
+
+    def test_dropped_connection_is_reported(self):  # a read cut short is not a URLError
+        def get(url):
+            raise http.client.IncompleteRead(b"<html>")
+        refresh.get = get
+        rep = self.section()
+        self.assertTrue(any(l.startswith("- COULD NOT CHECK page m5-core2") for l in rep), rep)
+        self.assertEqual(rep[-1], "- 0 of 1 pages unchanged since their recorded hash")
+
+    def test_escaped_content_is_hashed_as_the_text_it_stands_for(self):
+        self.write_sources([docs_source(content_sha256=ESCAPED_SHA)])
+        self.serve(site(None, raw=ESCAPED_RAW))
+        self.assertEqual(self.section()[1:], ["- 1 of 1 pages unchanged since their recorded hash"])
+
+    def test_source_with_no_recorded_hash_is_listed_with_its_hash(self):  # how a new page's hash is first read
+        source = docs_source()
+        del source["content_sha256"]
+        self.write_sources([source])
+        self.serve(site(CORE2))
+        rep = self.section()
+        self.assertTrue(any(l.startswith("- CHANGED page m5-core2") and CORE2_SHA in l and "recorded: none" in l for l in rep), rep)
 
     def test_page_without_its_content_is_reported(self):  # M5 changed the site's shape: say so, never guess
         pages = site(CORE2)
@@ -97,7 +123,7 @@ class DocsPages(unittest.TestCase):
         self.assertEqual(rep[-1], "- 0 of 1 pages unchanged since their recorded hash")
 
     def test_only_docs_sources_are_fetched(self):
-        self.sources([{"id": "esp32-datasheet", "kind": "datasheet", "title": "ESP32", "url": "https://example.com/esp32.pdf", "ref": "v4.9"}])
+        self.write_sources([{"id": "esp32-datasheet", "kind": "datasheet", "title": "ESP32", "url": "https://example.com/esp32.pdf", "ref": "v4.9"}])
         self.serve({})
         self.assertEqual(self.section()[1:], ["- 0 of 0 pages unchanged since their recorded hash"])
 
