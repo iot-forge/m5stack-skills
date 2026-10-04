@@ -21,6 +21,7 @@ A skill's own references go in `skills/<name>/references/`. A procedure several 
 - Say "unknown" (`"unknown": true` with a note) when the sources are silent; `null` means the sources say the part is absent.
 - Each value a probe expects from a register cites the part's datasheet in its own `src`. When the datasheet lacks the register or disagrees with the value, keep the value, say why in that value's `datasheet_gap`, and raise it with the maintainer (ADR 0005).
 - `uv run scripts/refresh.py` reports where upstream has moved; it never edits `data/`. Hardware results reach `data/` only through `verify.py ingest` (ADR 0004).
+- An M5 docs page (`kind: m5-docs`) carries `content_sha256`, the hash of the page's Markdown, and `validate.py` requires it. When `refresh.py` lists a page as `CHANGED`, re-read the page and correct the facts that cite it. Then, by hand, set `content_sha256` to the hash the report prints and `ref` to today's retrieval date. For a new page, add the source without the hash, run `refresh.py` and record the hash it prints.
 
 ## Checks
 

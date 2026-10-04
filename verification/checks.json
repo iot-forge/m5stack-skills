@@ -136,6 +136,11 @@
    "skills": []
   },
   {
+   "id": "data.planted-content-hash",
+   "kind": "data",
+   "skills": []
+  },
+  {
    "id": "query.branch-core2",
    "kind": "query",
    "skills": [

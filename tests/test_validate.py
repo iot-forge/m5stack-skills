@@ -207,6 +207,10 @@ class Planted(unittest.TestCase):
         self.edit("products/basic.json", lambda o: o["safe_choices"]["flash"].update(use="8MB"))
         self.assertFails("data.safe-choice")
 
+    def test_m5_docs_source_without_content_hash(self):  # data.content-hash: refresh.py compares each page with it (B37)
+        self.edit("sources.json", lambda o: next(s for s in o["sources"] if s["id"] == "m5-core2").pop("content_sha256"))
+        self.assertFails("data.content-hash")
+
 
 class PlantedChecks(unittest.TestCase):
     """verification.checks: run --board reads each hardware check's step and depends_on from checks.json (B26)."""

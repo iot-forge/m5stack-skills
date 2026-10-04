@@ -179,6 +179,7 @@ PLANTED = {
     "safe-default": ("test_diverging_target_without_safe_default", "test_no_safe_default_without_note"),
     "safe-choice": ("test_split_targets_without_safe_choice", "test_safe_choice_names_another_products_target", "test_no_safe_choice_without_note",
                     "test_diverging_flash_without_safe_choice", "test_safe_choice_names_no_revisions_value"),
+    "content-hash": ("test_m5_docs_source_without_content_hash",),
 }
 # tests that guard the fixture copy, not a rule: never a data.planted-* result; if one fails, every planted result is blocked
 FIXTURE_GUARDS = {"test_committed_data_passes", "test_fixture_leaves_out_smoke"}

@@ -157,6 +157,9 @@ def check_data(root, rep):
         if obj is not None:
             conform(obj, kind, name)
     source_ids = {s["id"] for s in (sources or {}).get("sources", [])}
+    for s in (sources or {}).get("sources", []):  # refresh.py compares each docs page with its recorded hash
+        if s.get("kind") == "m5-docs" and not s.get("content_sha256"):
+            rep.fail("data.content-hash", f"source '{s['id']}': an m5-docs source needs content_sha256, the hash refresh.py prints for the page")
     feature_ids = {f["id"] for f in (features or {}).get("features", [])}
     cited = set()
 
