@@ -1,6 +1,6 @@
 # B37 · Make refresh.py report M5 docs pages that changed
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: none
 
