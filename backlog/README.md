@@ -74,7 +74,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B34 · Make doctor.py find addr2line in the toolchain folders](B34-doctor-addr2line-toolchain-folders.md) | done | — |  |
 | [B35 · Give the safe choice between targets a home in the data](B35-cross-target-safe-choice.md) | done | — |  |
 | [B36 · Give a CoreS3-family revision its hardware run once a unit is at hand](B36-cores3-family-board-steps.md) | open | a CoreS3-family unit to run on |  |
-| [B37 · Make refresh.py report M5 docs pages that changed](B37-docs-page-content-hash.md) | in-progress | — |  |
+| [B37 · Make refresh.py report M5 docs pages that changed](B37-docs-page-content-hash.md) | done | — |  |
 
 **First issue: B01.** After it, B03 and B06 can run in parallel.
 
