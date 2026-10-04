@@ -93,7 +93,7 @@
     "src": [
      "m5-cores3-lite"
     ],
-    "confidence": "medium",
+    "confidence": "high",
     "last_verified": "2026-10-03"
    },
    "magnetometer": {
@@ -104,7 +104,7 @@
     "src": [
      "m5-cores3-lite"
     ],
-    "confidence": "medium",
+    "confidence": "high",
     "last_verified": "2026-10-03"
    },
    "pmic": {

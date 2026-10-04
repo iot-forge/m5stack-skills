@@ -802,7 +802,7 @@
    },
    "audio": {
     "speaker": "1W-0928",
-    "mic": "BSE3729 (analog MEMS)",
+    "mic": "BSE3729 (analog)",
     "src": [
      "m5-fire-v2.7"
     ],
