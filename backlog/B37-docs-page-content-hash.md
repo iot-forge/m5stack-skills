@@ -42,4 +42,4 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 - **Next**: nothing
 - **Files touched**: `scripts/refresh.py`, `scripts/validate.py`, `scripts/verify.py`, `tests/test_refresh.py`, `tests/test_validate.py`, `data/sources.json`, `data/schema/sources.schema.json`, `verification/checks.json`, `CONTRIBUTING.md`
 - **Last commit**: the commit that closes this issue
-- **Open questions**: for the maintainer. (1) The hashes were recorded on 2026-10-03, but each `ref` keeps its older retrieval date, because nobody re-read the pages that day; an M5 edit between the two dates is inside the recorded hash. (2) A page that cannot be checked does not make `--strict` exit 1, as for the script's other checks; if M5 changes the site's shape, every page reads `COULD NOT CHECK` and `--strict` still exits 0.
+- **Open questions**: none. The maintainer settled both on 2026-10-03: the pages that supported revisions cite are re-read in [B38](B38-reread-cited-docs-pages.md), and a page that was fetched but holds no content where `refresh.py` looks now fails `--strict`, while an unreachable page still does not.
