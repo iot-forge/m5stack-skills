@@ -1,6 +1,6 @@
 # B38 · Re-read the M5 docs pages that supported revisions cite
 
-Status: open
+Status: in-progress
 Blocked by: none
 Gate: none
 
