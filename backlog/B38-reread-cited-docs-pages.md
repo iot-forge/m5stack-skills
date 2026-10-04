@@ -1,6 +1,6 @@
 # B38 · Re-read the M5 docs pages that supported revisions cite
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: none
 
@@ -40,23 +40,16 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**:
-  - All 15 pages read on 2026-10-03 and every entry that cites one checked against it: 549 entries in `products/`, `pinmaps/`, `targets/` and `signals.json` (check: each page's Markdown hashed to its recorded `content_sha256` before it was read)
-  - Each of the 15 pages has `ref: retrieved 2026-10-03`; no hash changed, so `content_sha256` stays as recorded (check: `uv run scripts/refresh.py` reports "23 of 23 pages unchanged")
-  - Corrected, where the page is the entry's only source:
-    - `psram` is `8MB`, not `8MB quad`, on `core2@v1.1`, `core2@v1.3`, `core2-for-aws@v1.0` and `core2-for-aws@v1.3`: those four pages say "8MB" with no mode (the Core2 page says "8MB Quad", so `core2@v1.0` and `core2@2023.02` keep it)
-    - `cores3-lite@v1.0` `imu` and `magnetometer` cite `m5-cores3-lite` alone and the `imu` note is gone: the Lite page's I2C Address Map gives BMI270 0x69 and BMM150 0x10
-    - `sku-sticker` cites `m5-basic` too: K001 is on that page only
-  - `uv run scripts/check.py` exits 0
+- **Done**: all
 - **Next**: nothing in this issue. The maintainer answers the Open questions; each answer that changes data is new work.
-- **Files touched**: `data/sources.json`, `data/signals.json`, `data/products/` (all 10 supported products), `data/pinmaps/` (all 11), `data/targets/platformio.json`, `data/targets/uiflow2.json`
-- **Last commit**: B38: re-read the 15 cited M5 docs pages
-- **Open questions** (the maintainer decides each; none was changed in the data):
+- **Files touched**: `data/sources.json`, `data/signals.json`, `data/products/` (all 10 supported products), `data/pinmaps/` (all 11), `data/targets/platformio.json`, `data/targets/uiflow2.json`, this issue, `backlog/README.md`
+- **Last commit**: Close B38: re-read the M5 docs pages that supported revisions cite
+- **Open questions** (the maintainer decides each; none was changed in the data, and each entry named here still carries `last_verified: 2026-10-03`, which records that it was read against the page, not that the page confirms it):
   1. **Core2 speaker part.** `audio.speaker` is `1W-0928` on `core2@v1.0`, `core2@2023.02` and `core2@v1.3`, citing their own pages. The Core2 page names no speaker part, and the v1.3 page says only "Built-in Speaker". The v1.1 page ("1W (Size: 0928)") and both AWS pages ("1W-0928") do name it. Keep it and cite those pages, or say the part is not named?
   2. **Legacy Fire USB bridge.** `usb_bridge` is `CP2104` on `fire@2018.06`, `fire@2019.07`, `fire@2019.08` and `fire@2020.04`, citing `m5-fire`. That page has no USB chip row and its driver table lists both CP2104 and CH9102, so the note on `fire@2018.06` ("the legacy page lists CP2104 drivers only") is wrong. Gray, in the same position, is `unknown`. The `usb-vid` signal puts these four revisions under 10C4 only, so the answer changes that signal.
   3. **Core2 for AWS USB bridge.** `core2-for-aws@v1.0` is `CP2104`, as its own page says. The comparison table on the AWS v1.3 page gives "CP2104/CH9102" for it. The `usb-vid` signal lists it under 10C4 only, so a CH9102 reading is taken as proof of v1.3.
   4. **Gray TN-panel erratum.** `tn-panel` on the three Gray revisions says the M5Stack library before 0.2.8 shows inverted colours, citing `m5-gray`. The Gray changelog has no Note column; that sentence is on the Basic, Fire and M5GO pages only.
-  5. **2018.2A PCB note.** "Devices with 2018.2A PCB version do not support C2C connection or PD power supply" is on the Gray, Fire, Fire v2.7 and M5GO v2.7 pages too. Only `basic@v1.4` carries the `pcb-2018.2a` erratum. Which revisions should?
+  5. **2018.2A PCB note.** "Devices with 2018.2A PCB version do not support C2C connection or PD power supply" is on the Basic, Basic v2.7, Gray, Fire, Fire v2.7 and M5GO v2.7 pages. Only `basic@v1.4` carries the `pcb-2018.2a` erratum. Which revisions should?
   6. **Addresses the cited page does not give.** `imu` MPU9250 at 0x68 on `fire@2018.06` and `m5go@2018.04` cites the product page alone, which gives 0x68 for the MPU6886 only (`gray@2017.12` cites `m5unified` for the same fact, with a note). `magnetometer` BMM150 at 0x10 on `m5go@2019.06` cites `m5-m5go-v2.7`, which never gives the BMM150's address (the Gray and Fire pages do).
-  7. **Core2 v1.1 PlatformIO example.** `targets/platformio.json` gives `core2@v1.1` "default_16MB.csv, -DBOARD_HAS_PSRAM (M5's own example)", citing `m5-core2`. The v1.1 page's own example is different: `board = m5stack-core-esp32` on `espressif32@6.7.0`, no partition line. `basic@v2.7` has the erratum `m5-pio-snippet-4mb` for the same kind of mismatch. Add one here? This one changes what the platformio skill tells a v1.1 user.
+  7. **Core2 v1.1 PlatformIO example.** The v1.1 page has two PlatformIO blocks that contradict each other. The first (`espressif32@6.12.0`, `board = m5stack-core2`, `default_16MB.csv`, `-DBOARD_HAS_PSRAM`) agrees with what `targets/platformio.json` gives `core2@v1.1` as "M5's own example". The second sets `board = m5stack-core-esp32` on `espressif32@6.7.0` with no partition line, which is the 4 MB Basic board. The entry cites `m5-core2`, not `m5-core2-v1.1`. `basic@v2.7` has the erratum `m5-pio-snippet-4mb` for the same kind of wrong example. Add one here, and cite the v1.1 page? An erratum would change what the platformio skill tells a v1.1 user.
   8. **ILI9342E erratum wording.** `lcd-ili9342e` says "older builds may show a blank or wrong display". The pages say only that M5GFX 0.2.27 or later is required.
