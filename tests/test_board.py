@@ -275,6 +275,14 @@ class Query(unittest.TestCase):
             code, _ = board_json("facts", rid, "rtc")
             self.assertEqual(code, 0, rid)
 
+    def test_backup_cell_not_documented(self):  # B40: null means absent, so a silent page is "unknown"
+        for rid in ("tough@v1.0", "core2-for-aws@v1.3"):
+            product = "tough" if rid.startswith("tough") else "core2-for-aws"
+            self.assertEqual(load(f"products/{product}.json")["revisions"][rid]["rtc"]["backup_battery"], "unknown", rid)
+            code, out = board("facts", rid, "rtc")
+            self.assertEqual(code, 0, rid)
+            self.assertIn("backup cell not documented", out)
+
     def test_directive_when_unverified(self):
         code, out = board("facts", "core2@v1.3", "pmic")
         self.assertIn("has not been checked on hardware", out)

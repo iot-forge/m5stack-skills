@@ -171,7 +171,7 @@ def fmt_entry(db, v, marks=True, notes=True):
             s += " (" + ", ".join(f"{x['part']} @{x['address']}" for x in v["i2c"]) + ")"
         if "backup_battery" in v:
             bb = v["backup_battery"]
-            s += ", backup cell on some units" if isinstance(bb, list) else {True: ", backup cell fitted", False: ", no backup cell", None: ", backup cell not documented"}.get(bb, ", backup cell on some units")
+            s += ", backup cell on some units" if isinstance(bb, list) else {True: ", backup cell fitted", False: ", no backup cell", None: ", no backup cell", "unknown": ", backup cell not documented"}.get(bb, ", backup cell on some units")
     elif "capacity_mah" in v:
         c = v["capacity_mah"]
         s = (" or ".join(f"{x} mAh" for x in c) if isinstance(c, list) else f"{c} mAh")

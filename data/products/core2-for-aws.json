@@ -397,7 +397,7 @@
     "part": "BM8563",
     "bus": "i2c_internal",
     "address": "0x51",
-    "backup_battery": null,
+    "backup_battery": "unknown",
     "note": "the page does not say whether an RTC backup cell is fitted",
     "src": [
      "m5-core2-for-aws-v1.3"

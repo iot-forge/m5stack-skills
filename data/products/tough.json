@@ -112,7 +112,7 @@
     "part": "BM8563",
     "bus": "i2c_internal",
     "address": "0x51",
-    "backup_battery": null,
+    "backup_battery": "unknown",
     "src": [
      "m5-tough"
     ],

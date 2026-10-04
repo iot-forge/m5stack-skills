@@ -164,7 +164,7 @@
     ],
     "confidence": "high",
     "last_verified": "2026-10-03",
-    "note": "no battery per M5's comparison table"
+    "note": "no battery fitted, per M5's comparison table. The spec table gives a lithium battery charging current (5V@198mA) and battery-powered current figures, and the M-Bus carries BAT, so the board charges and runs from a battery the user adds"
    },
    "dimensions": {
     "w": 54.0,
