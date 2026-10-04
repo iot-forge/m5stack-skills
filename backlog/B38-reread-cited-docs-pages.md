@@ -41,7 +41,7 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 <!-- Overwrite, never append. The next session starts from here. -->
 
 - **Done**: all
-- **Next**: nothing in this issue. The maintainer answers the Open questions; each answer that changes data is new work.
+- **Next**: nothing in this issue. The maintainer answered the Open questions on 2026-10-03; B39 applies the answers.
 - **Files touched**: `data/sources.json`, `data/signals.json`, `data/products/` (all 10 supported products), `data/pinmaps/` (all 11), `data/targets/platformio.json`, `data/targets/uiflow2.json`, this issue, `backlog/README.md`
 - **Last commit**: Close B38: re-read the M5 docs pages that supported revisions cite
 - **Open questions** (the maintainer decides each; none was changed in the data, and each entry named here still carries `last_verified: 2026-10-03`, which records that it was read against the page, not that the page confirms it):
