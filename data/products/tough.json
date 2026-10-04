@@ -31,7 +31,7 @@
     "src": [
      "m5-tough"
     ],
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "market_status": "listed",
    "derived_from": null,
@@ -42,7 +42,7 @@
      "m5-tough"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "flash": {
     "value": "16MB",
@@ -50,7 +50,7 @@
      "m5-tough"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "psram": {
     "value": "8MB quad",
@@ -58,7 +58,7 @@
      "m5-tough"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "display": {
     "part": "ILI9342C",
@@ -68,7 +68,7 @@
      "m5-tough"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "touch": {
     "part": "CHSC6540",
@@ -78,7 +78,7 @@
      "m5-tough"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "imu": {
     "part": null,
@@ -86,7 +86,7 @@
      "m5-tough"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "the spec table and pin map list no IMU"
    },
    "magnetometer": {
@@ -95,7 +95,7 @@
      "m5-tough"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "pmic": {
     "part": "AXP192",
@@ -106,7 +106,7 @@
      "m5-tough"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "rtc": {
     "part": "BM8563",
@@ -117,7 +117,7 @@
      "m5-tough"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "audio": {
     "amp": "NS4168 (I2S)",
@@ -127,7 +127,7 @@
      "m5-tough"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "usb_bridge": {
     "part": "CH9102",
@@ -135,7 +135,7 @@
      "m5-tough"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "sd": {
     "value": "microSD (SPI), up to 16 GB",
@@ -143,7 +143,7 @@
      "m5-tough"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "battery": {
     "unknown": true,
@@ -152,7 +152,7 @@
      "m5-tough"
     ],
     "confidence": "low",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "dimensions": {
     "w": 76.0,
@@ -164,7 +164,7 @@
      "m5-tough"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "extra_components": [
     {
@@ -174,7 +174,7 @@
       "m5-tough"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "errata": [],

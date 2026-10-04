@@ -6,7 +6,7 @@
    "kind": "m5-docs",
    "title": "Basic (legacy page, covers v1.4 to v2.6)",
    "url": "https://docs.m5stack.com/en/core/basic",
-   "ref": "retrieved 2026-09-26",
+   "ref": "retrieved 2026-10-03",
    "content_sha256": "422454db2d8ac59bd4ae493de225bcfe9246e0fec06b2644c6be181043d00362"
   },
   {
@@ -14,7 +14,7 @@
    "kind": "m5-docs",
    "title": "Basic v2.7",
    "url": "https://docs.m5stack.com/en/core/basic_v2.7",
-   "ref": "retrieved 2026-09-26",
+   "ref": "retrieved 2026-10-03",
    "content_sha256": "d84c95555a3749c21db5ac24fcdfce3335dde07c02f5a048bcfa83051a04d394"
   },
   {
@@ -22,7 +22,7 @@
    "kind": "m5-docs",
    "title": "Gray",
    "url": "https://docs.m5stack.com/en/core/gray",
-   "ref": "retrieved 2026-09-26",
+   "ref": "retrieved 2026-10-03",
    "content_sha256": "7d6111c1f85291284d4c198c1ad2790ad022a0d0b9fee232305a335b1072796c"
   },
   {
@@ -30,7 +30,7 @@
    "kind": "m5-docs",
    "title": "Fire (legacy page)",
    "url": "https://docs.m5stack.com/en/core/fire",
-   "ref": "retrieved 2026-09-26",
+   "ref": "retrieved 2026-10-03",
    "content_sha256": "dfb5d94c83a04c9e18a5b06a2a2156f47dc9fc0b31d9a63dac5191cc276ef445"
   },
   {
@@ -38,7 +38,7 @@
    "kind": "m5-docs",
    "title": "Fire v2.7",
    "url": "https://docs.m5stack.com/en/core/fire_v2.7",
-   "ref": "retrieved 2026-09-26",
+   "ref": "retrieved 2026-10-03",
    "content_sha256": "bb1849ea23121e8142e6e18c4fd24add4566535df395ae2a373220b4dcaf65a7"
   },
   {
@@ -46,7 +46,7 @@
    "kind": "m5-docs",
    "title": "M5GO IoT Kit v2.7",
    "url": "https://docs.m5stack.com/en/core/m5go_v2.7",
-   "ref": "retrieved 2026-09-26",
+   "ref": "retrieved 2026-10-03",
    "content_sha256": "d6b995fe049560b5294d1e309653261093a2224000cb62d6c69b944b4aa48987"
   },
   {
@@ -54,7 +54,7 @@
    "kind": "m5-docs",
    "title": "Core2",
    "url": "https://docs.m5stack.com/en/core/core2",
-   "ref": "retrieved 2026-09-26",
+   "ref": "retrieved 2026-10-03",
    "content_sha256": "cadd2735e74a9d94645fa9e38724a55ca49516564a4e2fcf23350bc69b9655ac"
   },
   {
@@ -62,7 +62,7 @@
    "kind": "m5-docs",
    "title": "Core2 v1.1",
    "url": "https://docs.m5stack.com/en/core/Core2%20v1.1",
-   "ref": "retrieved 2026-09-26",
+   "ref": "retrieved 2026-10-03",
    "content_sha256": "97b82494aa8a280baa2b8e039dc54737672db1bd66c157b476f1df516e78bf39"
   },
   {
@@ -70,7 +70,7 @@
    "kind": "m5-docs",
    "title": "Core2 v1.3",
    "url": "https://docs.m5stack.com/en/core/Core2_v1.3",
-   "ref": "retrieved 2026-09-26",
+   "ref": "retrieved 2026-10-03",
    "content_sha256": "d1545889d5940653cb2ad004457c1d0efce16d51d1efa8b2a8ab6870e56cb0cf"
   },
   {
@@ -78,7 +78,7 @@
    "kind": "m5-docs",
    "title": "Core2 for AWS",
    "url": "https://docs.m5stack.com/en/core/core2_for_aws",
-   "ref": "retrieved 2026-09-26",
+   "ref": "retrieved 2026-10-03",
    "content_sha256": "0d35932d5d4c090d653697a3db75d0fee268816f41420a1e8a129ae2c2c19e21"
   },
   {
@@ -86,7 +86,7 @@
    "kind": "m5-docs",
    "title": "Core2 for AWS v1.3",
    "url": "https://docs.m5stack.com/en/core/Core2_For_AWS_v1.3",
-   "ref": "retrieved 2026-09-26",
+   "ref": "retrieved 2026-10-03",
    "content_sha256": "67e1f187082fbafd31bf4f0ea98ff61c4f6f762307515ab3afbf46fa3e794b22"
   },
   {
@@ -94,7 +94,7 @@
    "kind": "m5-docs",
    "title": "Tough",
    "url": "https://docs.m5stack.com/en/core/tough",
-   "ref": "retrieved 2026-09-26",
+   "ref": "retrieved 2026-10-03",
    "content_sha256": "8c688c7a9ed69a72a9e982fd9f903ac5e3b6694d8de8ad4cf6fb92241255cb4a"
   },
   {
@@ -102,7 +102,7 @@
    "kind": "m5-docs",
    "title": "CoreS3",
    "url": "https://docs.m5stack.com/en/core/CoreS3",
-   "ref": "retrieved 2026-10-02",
+   "ref": "retrieved 2026-10-03",
    "content_sha256": "b9a786a1785783e346c46002f543da4185747d8f533f5bc951cbe6de7f4825e6"
   },
   {
@@ -110,7 +110,7 @@
    "kind": "m5-docs",
    "title": "CoreS3-SE",
    "url": "https://docs.m5stack.com/en/core/M5CoreS3%20SE",
-   "ref": "retrieved 2026-09-26",
+   "ref": "retrieved 2026-10-03",
    "content_sha256": "b96b9bc66870916b276b61704dcff5b4c25d74c60c32cf0901e367702f11ad6f"
   },
   {
@@ -118,7 +118,7 @@
    "kind": "m5-docs",
    "title": "CoreS3-Lite",
    "url": "https://docs.m5stack.com/en/core/CoreS3-Lite",
-   "ref": "retrieved 2026-09-26",
+   "ref": "retrieved 2026-10-03",
    "content_sha256": "f9b1ee0411a20393fc1d61aab2fcd6b3e7de1acb9917a27a7287faafcdfc5e33"
   },
   {

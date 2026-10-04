@@ -33,7 +33,7 @@
     "src": [
      "m5-gray"
     ],
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "market_status": "delisted",
    "derived_from": null,
@@ -45,7 +45,7 @@
      "m5-gray"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "flash": {
     "value": "16MB",
@@ -53,7 +53,7 @@
      "m5-gray"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "psram": {
     "unknown": true,
@@ -62,7 +62,7 @@
      "m5-gray"
     ],
     "confidence": "low",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "display": {
     "part": "ILI9342C",
@@ -72,7 +72,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "touch": {
     "part": null,
@@ -80,7 +80,7 @@
      "m5-gray"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "three physical buttons, no touch panel"
    },
    "imu": {
@@ -93,7 +93,7 @@
      "m5unified"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "magnetometer": {
     "part": "MAG3110",
@@ -102,7 +102,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "pmic": {
     "part": "IP5306",
@@ -111,7 +111,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "rtc": {
     "part": null,
@@ -119,7 +119,7 @@
      "m5-gray"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "spec table lists no RTC"
    },
    "audio": {
@@ -129,7 +129,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "usb_bridge": {
     "unknown": true,
@@ -138,7 +138,7 @@
      "m5-gray"
     ],
     "confidence": "low",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "sd": {
     "value": "microSD (SPI)",
@@ -146,7 +146,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "battery": {
     "capacity_mah": 150,
@@ -154,7 +154,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "dimensions": {
     "w": 54.0,
@@ -166,7 +166,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "extra_components": [],
    "errata": [
@@ -177,7 +177,7 @@
       "m5-gray"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     },
     {
      "id": "ip5306-no-i2c",
@@ -187,7 +187,7 @@
       "m5unified"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "recommended_targets": {
@@ -241,7 +241,7 @@
     "src": [
      "m5-gray"
     ],
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "market_status": "delisted",
    "derived_from": "gray@2017.09",
@@ -253,7 +253,7 @@
      "m5-gray"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "flash": {
     "value": "16MB",
@@ -261,7 +261,7 @@
      "m5-gray"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "psram": {
     "unknown": true,
@@ -270,7 +270,7 @@
      "m5-gray"
     ],
     "confidence": "low",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "display": {
     "part": "ILI9342C",
@@ -280,7 +280,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "touch": {
     "part": null,
@@ -288,7 +288,7 @@
      "m5-gray"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "three physical buttons, no touch panel"
    },
    "imu": {
@@ -301,7 +301,7 @@
      "m5unified"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "magnetometer": {
     "part": "MPU9250",
@@ -310,7 +310,7 @@
      "m5-gray"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "pmic": {
     "part": "IP5306",
@@ -320,7 +320,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "rtc": {
     "part": null,
@@ -328,7 +328,7 @@
      "m5-gray"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "spec table lists no RTC"
    },
    "audio": {
@@ -338,7 +338,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "usb_bridge": {
     "unknown": true,
@@ -347,7 +347,7 @@
      "m5-gray"
     ],
     "confidence": "low",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "sd": {
     "value": "microSD (SPI)",
@@ -355,7 +355,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "battery": {
     "capacity_mah": 150,
@@ -363,7 +363,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "dimensions": {
     "w": 54.0,
@@ -375,7 +375,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "extra_components": [],
    "errata": [
@@ -386,7 +386,7 @@
       "m5-gray"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "recommended_targets": {
@@ -440,7 +440,7 @@
     "src": [
      "m5-gray"
     ],
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "market_status": "delisted",
    "derived_from": "gray@2017.12",
@@ -452,7 +452,7 @@
      "m5-gray"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "flash": {
     "value": "16MB",
@@ -460,7 +460,7 @@
      "m5-gray"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "psram": {
     "unknown": true,
@@ -469,7 +469,7 @@
      "m5-gray"
     ],
     "confidence": "low",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "display": {
     "part": "ILI9342C",
@@ -479,7 +479,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "touch": {
     "part": null,
@@ -487,7 +487,7 @@
      "m5-gray"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "three physical buttons, no touch panel"
    },
    "imu": {
@@ -498,7 +498,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "magnetometer": {
     "part": "BMM150",
@@ -508,7 +508,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "pmic": {
     "part": "IP5306",
@@ -518,7 +518,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "rtc": {
     "part": null,
@@ -526,7 +526,7 @@
      "m5-gray"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "spec table lists no RTC"
    },
    "audio": {
@@ -536,7 +536,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "usb_bridge": {
     "unknown": true,
@@ -545,7 +545,7 @@
      "m5-gray"
     ],
     "confidence": "low",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "sd": {
     "value": "microSD (SPI)",
@@ -553,7 +553,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "battery": {
     "capacity_mah": [
@@ -565,7 +565,7 @@
      "m5-gray"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "dimensions": {
     "w": 54.0,
@@ -577,7 +577,7 @@
      "m5-gray"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "extra_components": [],
    "errata": [
@@ -588,7 +588,7 @@
       "m5-gray"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "recommended_targets": {

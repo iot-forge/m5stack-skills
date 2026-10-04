@@ -34,7 +34,7 @@
     "src": [
      "m5-core2-for-aws"
     ],
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "market_status": "listed",
    "derived_from": null,
@@ -45,7 +45,7 @@
      "m5-core2-for-aws"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "flash": {
     "value": "16MB",
@@ -53,15 +53,15 @@
      "m5-core2-for-aws"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "psram": {
-    "value": "8MB quad",
+    "value": "8MB",
     "src": [
      "m5-core2-for-aws"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "display": {
     "part": [
@@ -75,7 +75,7 @@
      "m5-core2-for-aws"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "touch": {
     "part": "FT6336U",
@@ -85,7 +85,7 @@
      "m5-core2-for-aws"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "imu": {
     "part": "MPU6886",
@@ -95,7 +95,7 @@
      "m5-core2-for-aws"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "magnetometer": {
     "part": null,
@@ -103,7 +103,7 @@
      "m5-core2-for-aws"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "6-axis IMU only"
    },
    "pmic": {
@@ -114,7 +114,7 @@
      "m5-core2-for-aws"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "rtc": {
     "part": "BM8563",
@@ -129,7 +129,7 @@
      "m5-core2-for-aws"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "audio": {
     "amp": "NS4168 (I2S)",
@@ -139,7 +139,7 @@
      "m5-core2-for-aws"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "usb_bridge": {
     "part": "CP2104",
@@ -147,7 +147,7 @@
      "m5-core2-for-aws"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "sd": {
     "value": "microSD (SPI)",
@@ -155,7 +155,7 @@
      "m5-core2-for-aws"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "battery": {
     "capacity_mah": 500,
@@ -163,7 +163,7 @@
      "m5-core2-for-aws"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "dimensions": {
     "w": 54.0,
@@ -175,7 +175,7 @@
      "m5-core2-for-aws"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "power_led": {
     "value": "green",
@@ -183,7 +183,7 @@
      "m5-core2-for-aws"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "extra_components": [
     {
@@ -193,7 +193,7 @@
       "m5-core2-for-aws"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     },
     {
      "role": "crypto",
@@ -204,7 +204,7 @@
       "m5-core2-for-aws"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     },
     {
      "role": "rgb-led-bar",
@@ -213,7 +213,7 @@
       "m5-core2-for-aws"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "errata": [
@@ -224,7 +224,7 @@
       "m5-core2-for-aws"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     },
     {
      "id": "rtc-cell-date",
@@ -233,7 +233,7 @@
       "m5-core2-for-aws"
      ],
      "confidence": "low",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "recommended_targets": {
@@ -263,7 +263,7 @@
       "pio-esp32"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     },
     "uiflow2": {
      "target": "M5STACK_Core2",
@@ -306,7 +306,7 @@
     "src": [
      "m5-core2-for-aws-v1.3"
     ],
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "market_status": "listed",
    "derived_from": "core2-for-aws@v1.0",
@@ -317,7 +317,7 @@
      "m5-core2-for-aws-v1.3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "flash": {
     "value": "16MB",
@@ -325,15 +325,15 @@
      "m5-core2-for-aws-v1.3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "psram": {
-    "value": "8MB quad",
+    "value": "8MB",
     "src": [
      "m5-core2-for-aws-v1.3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "display": {
     "part": [
@@ -347,7 +347,7 @@
      "m5-core2-for-aws-v1.3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "touch": {
     "part": "FT6336U",
@@ -357,7 +357,7 @@
      "m5-core2-for-aws-v1.3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "imu": {
     "part": "BMI270",
@@ -367,7 +367,7 @@
      "m5-core2-for-aws-v1.3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "magnetometer": {
     "part": null,
@@ -375,7 +375,7 @@
      "m5-core2-for-aws-v1.3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "6-axis IMU only"
    },
    "pmic": {
@@ -386,7 +386,7 @@
      "m5-core2-for-aws-v1.3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "rtc": {
     "part": "BM8563",
@@ -398,7 +398,7 @@
      "m5-core2-for-aws-v1.3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "audio": {
     "amp": "NS4168 (I2S)",
@@ -408,7 +408,7 @@
      "m5-core2-for-aws-v1.3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "usb_bridge": {
     "part": "CH9102F",
@@ -416,7 +416,7 @@
      "m5-core2-for-aws-v1.3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "sd": {
     "value": "microSD (SPI)",
@@ -424,7 +424,7 @@
      "m5-core2-for-aws-v1.3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "battery": {
     "capacity_mah": 500,
@@ -432,7 +432,7 @@
      "m5-core2-for-aws-v1.3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "dimensions": {
     "w": 54.0,
@@ -444,7 +444,7 @@
      "m5-core2-for-aws-v1.3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "power_led": {
     "value": "green",
@@ -452,7 +452,7 @@
      "m5-core2-for-aws-v1.3"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "extra_components": [
     {
@@ -462,7 +462,7 @@
       "m5-core2-for-aws-v1.3"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     },
     {
      "role": "crypto",
@@ -473,7 +473,7 @@
       "m5-core2-for-aws-v1.3"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     },
     {
      "role": "rgb-led-bar",
@@ -482,7 +482,7 @@
       "m5-core2-for-aws-v1.3"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "errata": [
@@ -493,7 +493,7 @@
       "m5-core2-for-aws-v1.3"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "recommended_targets": {
@@ -523,7 +523,7 @@
       "pio-esp32"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     },
     "uiflow2": {
      "target": "M5STACK_Core2",
@@ -537,7 +537,7 @@
       "m5-core2-for-aws-v1.3"
      ],
      "confidence": "low",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     },
     "esp-bsp": {
      "target": "espressif/m5stack_core_2",

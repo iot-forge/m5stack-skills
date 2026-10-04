@@ -33,7 +33,7 @@
     "src": [
      "m5-cores3-se"
     ],
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "market_status": "listed",
    "derived_from": null,
@@ -44,7 +44,7 @@
      "m5-cores3-se"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "flash": {
     "value": "16MB",
@@ -52,7 +52,7 @@
      "m5-cores3-se"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "psram": {
     "value": "8MB quad",
@@ -60,7 +60,7 @@
      "m5-cores3-se"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "display": {
     "part": "ILI9342C",
@@ -70,7 +70,7 @@
      "m5-cores3-se"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "touch": {
     "part": "FT6336U",
@@ -80,7 +80,7 @@
      "m5-cores3-se"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "imu": {
     "part": null,
@@ -88,7 +88,7 @@
      "m5-cores3-se"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "absent per M5's comparison table"
    },
    "magnetometer": {
@@ -97,7 +97,7 @@
      "m5-cores3-se"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "absent per M5's comparison table"
    },
    "pmic": {
@@ -108,7 +108,7 @@
      "m5-cores3-se"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "rtc": {
     "part": "BM8563",
@@ -118,7 +118,7 @@
      "m5-cores3-se"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "audio": {
     "amp": "AW88298 (I2S)",
@@ -139,7 +139,7 @@
      "m5-cores3-se"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "usb_bridge": {
     "part": "native USB (ESP32-S3 USB Serial/JTAG)",
@@ -147,7 +147,7 @@
      "m5-cores3-se"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "sd": {
     "value": "microSD (SPI)",
@@ -155,7 +155,7 @@
      "m5-cores3-se"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "battery": {
     "part": null,
@@ -163,7 +163,7 @@
      "m5-cores3-se"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "no battery per M5's comparison table"
    },
    "dimensions": {
@@ -176,7 +176,7 @@
      "m5-cores3-se"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "extra_components": [
     {
@@ -188,7 +188,7 @@
       "m5-cores3-se"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "errata": [],
@@ -220,7 +220,7 @@
       "pio-esp32-cores3"
      ],
      "confidence": "high",
-     "last_verified": "2026-10-02"
+     "last_verified": "2026-10-03"
     },
     "uiflow2": {
      "target": "M5STACK_CoreS3",
@@ -239,7 +239,7 @@
       "m5-cores3-se"
      ],
      "confidence": "low",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    }
   }

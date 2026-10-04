@@ -15,7 +15,7 @@
     "m5-gray"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   },
   "i2c_internal": {
    "kind": "i2c",
@@ -27,7 +27,7 @@
     "m5-gray"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   }
  },
  "connectors": [
@@ -39,7 +39,7 @@
     "m5-gray"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "mbus",
@@ -170,7 +170,7 @@
     "m5-gray"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   }
  ],
  "pins": {
@@ -454,5 +454,5 @@
   "m5-gray"
  ],
  "confidence": "high",
- "last_verified": "2026-09-28"
+ "last_verified": "2026-10-03"
 }

@@ -33,7 +33,7 @@
     "src": [
      "m5-cores3-lite"
     ],
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "market_status": "listed",
    "derived_from": null,
@@ -44,7 +44,7 @@
      "m5-cores3-lite"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "flash": {
     "value": "16MB",
@@ -52,7 +52,7 @@
      "m5-cores3-lite"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "psram": {
     "value": "8MB",
@@ -60,7 +60,7 @@
      "m5-cores3-lite"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "display": {
     "part": [
@@ -74,7 +74,7 @@
      "m5-cores3-lite"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "touch": {
     "part": "FT6336U",
@@ -84,19 +84,17 @@
      "m5-cores3-lite"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "imu": {
     "part": "BMI270",
     "bus": "i2c_internal",
     "address": "0x69",
-    "note": "address from the CoreS3 pin map; the Lite page does not give it",
     "src": [
-     "m5-cores3-lite",
-     "m5-cores3"
+     "m5-cores3-lite"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "magnetometer": {
     "part": "BMM150",
@@ -104,11 +102,10 @@
     "address": "0x10",
     "note": "behind the BMI270's auxiliary interface",
     "src": [
-     "m5-cores3-lite",
-     "m5-cores3"
+     "m5-cores3-lite"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "pmic": {
     "part": "AXP2101",
@@ -118,7 +115,7 @@
      "m5-cores3-lite"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "rtc": {
     "part": "BM8563",
@@ -128,7 +125,7 @@
      "m5-cores3-lite"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "audio": {
     "amp": "AW88298 (I2S)",
@@ -149,7 +146,7 @@
      "m5-cores3-lite"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "usb_bridge": {
     "part": "native USB (ESP32-S3 USB Serial/JTAG)",
@@ -157,7 +154,7 @@
      "m5-cores3-lite"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "sd": {
     "value": "microSD (SPI)",
@@ -165,7 +162,7 @@
      "m5-cores3-lite"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "battery": {
     "capacity_mah": 200,
@@ -173,7 +170,7 @@
      "m5-cores3-lite"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "dimensions": {
     "w": 54.0,
@@ -185,7 +182,7 @@
      "m5-cores3-lite"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "extra_components": [
     {
@@ -197,7 +194,7 @@
       "m5-cores3-lite"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     },
     {
      "role": "camera",
@@ -208,7 +205,7 @@
       "m5-cores3-lite"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     },
     {
      "role": "proximity-light-sensor",
@@ -219,7 +216,7 @@
       "m5-cores3-lite"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "errata": [
@@ -230,7 +227,7 @@
       "m5-cores3-lite"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "recommended_targets": {
@@ -261,7 +258,7 @@
       "pio-esp32-cores3"
      ],
      "confidence": "high",
-     "last_verified": "2026-10-02"
+     "last_verified": "2026-10-03"
     },
     "uiflow2": {
      "target": "M5STACK_CoreS3",
@@ -280,7 +277,7 @@
       "m5-cores3-lite"
      ],
      "confidence": "low",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    }
   }

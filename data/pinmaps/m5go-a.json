@@ -15,7 +15,7 @@
     "m5-m5go-v2.7"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   },
   "i2c_internal": {
    "kind": "i2c",
@@ -27,7 +27,7 @@
     "m5-m5go-v2.7"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   }
  },
  "connectors": [
@@ -39,7 +39,7 @@
     "m5-m5go-v2.7"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "port_b",
@@ -58,7 +58,7 @@
     "m5-m5go-v2.7"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "port_c",
@@ -77,7 +77,7 @@
     "m5-m5go-v2.7"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "mbus",
@@ -208,7 +208,7 @@
     "m5-m5go-v2.7"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   }
  ],
  "pins": {
@@ -509,5 +509,5 @@
   "m5-m5go-v2.7"
  ],
  "confidence": "high",
- "last_verified": "2026-09-28"
+ "last_verified": "2026-10-03"
 }

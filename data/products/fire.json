@@ -31,7 +31,7 @@
     "src": [
      "m5-fire"
     ],
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "market_status": "delisted",
    "derived_from": null,
@@ -43,7 +43,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "flash": {
     "value": "16MB",
@@ -51,7 +51,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "psram": {
     "value": "4MB",
@@ -59,7 +59,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "display": {
     "part": "ILI9342C",
@@ -69,7 +69,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "touch": {
     "part": null,
@@ -77,7 +77,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "three physical buttons, no touch panel"
    },
    "imu": {
@@ -88,7 +88,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "magnetometer": {
     "part": "MPU9250",
@@ -97,7 +97,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "pmic": {
     "part": "IP5306",
@@ -107,7 +107,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "rtc": {
     "part": null,
@@ -115,7 +115,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "spec table lists no RTC"
    },
    "audio": {
@@ -125,7 +125,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "usb_bridge": {
     "part": "CP2104",
@@ -134,7 +134,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "sd": {
     "value": "microSD (SPI)",
@@ -142,7 +142,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "battery": {
     "capacity_mah": 600,
@@ -150,7 +150,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "dimensions": {
     "w": 54.0,
@@ -162,7 +162,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "extra_components": [
     {
@@ -172,7 +172,7 @@
       "m5-fire"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "errata": [
@@ -183,7 +183,7 @@
       "m5-fire"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ]
   },
@@ -208,7 +208,7 @@
     "src": [
      "m5-fire"
     ],
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "market_status": "delisted",
    "derived_from": "fire@2018.06",
@@ -220,7 +220,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "flash": {
     "value": "16MB",
@@ -228,7 +228,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "psram": {
     "value": "4MB",
@@ -236,7 +236,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "display": {
     "part": "ILI9342C",
@@ -246,7 +246,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "touch": {
     "part": null,
@@ -254,7 +254,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "three physical buttons, no touch panel"
    },
    "imu": {
@@ -265,7 +265,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "magnetometer": {
     "part": "BMM150",
@@ -275,7 +275,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "pmic": {
     "part": "IP5306",
@@ -285,7 +285,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "rtc": {
     "part": null,
@@ -293,7 +293,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "spec table lists no RTC"
    },
    "audio": {
@@ -303,7 +303,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "usb_bridge": {
     "part": "CP2104",
@@ -311,7 +311,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "sd": {
     "value": "microSD (SPI)",
@@ -319,7 +319,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "battery": {
     "capacity_mah": 600,
@@ -327,7 +327,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "dimensions": {
     "w": 54.0,
@@ -339,7 +339,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "extra_components": [
     {
@@ -349,7 +349,7 @@
       "m5-fire"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "errata": []
@@ -375,7 +375,7 @@
     "src": [
      "m5-fire"
     ],
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "market_status": "delisted",
    "derived_from": "fire@2019.07",
@@ -387,7 +387,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "flash": {
     "value": "16MB",
@@ -395,7 +395,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "psram": {
     "value": "4MB",
@@ -403,7 +403,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "display": {
     "part": "ILI9342C",
@@ -413,7 +413,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "touch": {
     "part": null,
@@ -421,7 +421,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "three physical buttons, no touch panel"
    },
    "imu": {
@@ -432,7 +432,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "magnetometer": {
     "part": "BMM150",
@@ -442,7 +442,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "pmic": {
     "part": "IP5306",
@@ -452,7 +452,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "rtc": {
     "part": null,
@@ -460,7 +460,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "spec table lists no RTC"
    },
    "audio": {
@@ -470,7 +470,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "usb_bridge": {
     "part": "CP2104",
@@ -478,7 +478,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "sd": {
     "value": "microSD (SPI)",
@@ -486,7 +486,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "battery": {
     "capacity_mah": [
@@ -498,7 +498,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "dimensions": {
     "w": 54.0,
@@ -510,7 +510,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "extra_components": [
     {
@@ -520,7 +520,7 @@
       "m5-fire"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "errata": []
@@ -546,7 +546,7 @@
     "src": [
      "m5-fire"
     ],
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "market_status": "delisted",
    "derived_from": "fire@2019.08",
@@ -558,7 +558,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "flash": {
     "value": "16MB",
@@ -566,7 +566,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "psram": {
     "value": "8MB quad",
@@ -574,7 +574,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "display": {
     "part": "ILI9342C",
@@ -584,7 +584,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "touch": {
     "part": null,
@@ -592,7 +592,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "three physical buttons, no touch panel"
    },
    "imu": {
@@ -603,7 +603,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "magnetometer": {
     "part": "BMM150",
@@ -613,7 +613,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "pmic": {
     "part": "IP5306",
@@ -623,7 +623,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "rtc": {
     "part": null,
@@ -631,7 +631,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "spec table lists no RTC"
    },
    "audio": {
@@ -641,7 +641,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "usb_bridge": {
     "part": "CP2104",
@@ -649,7 +649,7 @@
      "m5-fire"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "sd": {
     "value": "microSD (SPI)",
@@ -657,7 +657,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "battery": {
     "capacity_mah": 500,
@@ -665,7 +665,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "dimensions": {
     "w": 54.0,
@@ -677,7 +677,7 @@
      "m5-fire"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "extra_components": [
     {
@@ -687,7 +687,7 @@
       "m5-fire"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "errata": []
@@ -713,7 +713,7 @@
     "src": [
      "m5-fire-v2.7"
     ],
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "market_status": "listed",
    "derived_from": "fire@2020.04",
@@ -725,7 +725,7 @@
      "m5-fire-v2.7"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "flash": {
     "value": "16MB",
@@ -733,7 +733,7 @@
      "m5-fire-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "psram": {
     "value": "8MB quad",
@@ -741,7 +741,7 @@
      "m5-fire-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "display": {
     "part": "ILI9342C",
@@ -751,7 +751,7 @@
      "m5-fire-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "touch": {
     "part": null,
@@ -759,7 +759,7 @@
      "m5-fire-v2.7"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "three physical buttons, no touch panel"
    },
    "imu": {
@@ -770,7 +770,7 @@
      "m5-fire-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "magnetometer": {
     "unknown": true,
@@ -779,7 +779,7 @@
      "m5-fire-v2.7"
     ],
     "confidence": "low",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "pmic": {
     "part": "IP5306",
@@ -789,7 +789,7 @@
      "m5-fire-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "rtc": {
     "part": null,
@@ -797,7 +797,7 @@
      "m5-fire-v2.7"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "spec table lists no RTC"
    },
    "audio": {
@@ -807,7 +807,7 @@
      "m5-fire-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "usb_bridge": {
     "part": "CH9102F",
@@ -815,7 +815,7 @@
      "m5-fire-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "sd": {
     "value": "microSD (SPI)",
@@ -823,7 +823,7 @@
      "m5-fire-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "battery": {
     "capacity_mah": 500,
@@ -831,7 +831,7 @@
      "m5-fire-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "dimensions": {
     "w": 54.0,
@@ -843,7 +843,7 @@
      "m5-fire-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "extra_components": [
     {
@@ -853,7 +853,7 @@
       "m5-fire-v2.7"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "errata": []

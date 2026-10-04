@@ -15,7 +15,7 @@
     "m5-cores3-se"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   },
   "i2c_internal": {
    "kind": "i2c",
@@ -27,7 +27,7 @@
     "m5-cores3-se"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   },
   "i2c_port_a": {
    "kind": "i2c",
@@ -39,7 +39,7 @@
     "m5-cores3-se"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   }
  },
  "connectors": [
@@ -51,7 +51,7 @@
     "m5-cores3-se"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "port_b",
@@ -70,7 +70,7 @@
     "m5-cores3-se"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "port_c",
@@ -89,7 +89,7 @@
     "m5-cores3-se"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "mbus",
@@ -220,7 +220,7 @@
     "m5-cores3-se"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   }
  ],
  "pins": {
@@ -504,5 +504,5 @@
   "m5unified"
  ],
  "confidence": "high",
- "last_verified": "2026-09-28"
+ "last_verified": "2026-10-03"
 }

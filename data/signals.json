@@ -63,6 +63,7 @@
    "reliability": "high",
    "caveats": "Stickers come off and boxes get thrown away. A suffix-less SKU (K001, K007, K010) covers several revisions.",
    "src": [
+    "m5-basic",
     "m5-basic-v2.7",
     "m5-gray",
     "m5-fire",
@@ -79,7 +80,7 @@
     "m5-cores3-lite"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "power-led",
@@ -107,7 +108,7 @@
     "m5-core2-for-aws-v1.3"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "usb-vid",
@@ -157,7 +158,7 @@
     "m5-fire-v2.7"
    ],
    "confidence": "medium",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "flash-size",
@@ -179,7 +180,7 @@
     "m5-basic-v2.7"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "pmic-probe",
@@ -232,7 +233,7 @@
     "m5-core2-v1.3"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "imu-probe",
@@ -333,7 +334,7 @@
     "m5-m5go-v2.7"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "ina3221-probe",
@@ -372,7 +373,7 @@
     "m5-core2-v1.1"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "atecc-probe",
@@ -426,7 +427,7 @@
     "m5-core2-for-aws-v1.3"
    ],
    "confidence": "medium",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "touch-probe",
@@ -469,7 +470,7 @@
     "m5-cores3"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "ip5306-probe",
@@ -500,7 +501,7 @@
     "m5-gray"
    ],
    "confidence": "medium",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "psram-size",
@@ -524,7 +525,7 @@
     "m5-fire-v2.7"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-10-03"
   }
  ]
 }

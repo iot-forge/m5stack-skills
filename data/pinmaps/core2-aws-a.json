@@ -15,7 +15,7 @@
     "m5-core2-for-aws"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-10-03"
   },
   "i2c_internal": {
    "kind": "i2c",
@@ -27,7 +27,7 @@
     "m5-core2-for-aws"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-10-03"
   },
   "i2c_port_a": {
    "kind": "i2c",
@@ -39,7 +39,7 @@
     "m5-core2-for-aws"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-10-03"
   }
  },
  "connectors": [
@@ -51,7 +51,7 @@
     "m5-core2-for-aws"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "port_b",
@@ -70,7 +70,7 @@
     "m5-core2-for-aws"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "port_c",
@@ -89,7 +89,7 @@
     "m5-core2-for-aws"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "mbus",
@@ -220,7 +220,7 @@
     "m5-core2-for-aws"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-26"
+   "last_verified": "2026-10-03"
   }
  ],
  "pins": {
@@ -523,5 +523,5 @@
   "idf-gpio-esp32"
  ],
  "confidence": "high",
- "last_verified": "2026-09-26"
+ "last_verified": "2026-10-03"
 }

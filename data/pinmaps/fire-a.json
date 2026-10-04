@@ -16,7 +16,7 @@
     "m5-fire-v2.7"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   },
   "i2c_internal": {
    "kind": "i2c",
@@ -29,7 +29,7 @@
     "m5-fire-v2.7"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   }
  },
  "connectors": [
@@ -42,7 +42,7 @@
     "m5-fire-v2.7"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "port_b",
@@ -62,7 +62,7 @@
     "m5-fire-v2.7"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "port_c",
@@ -82,7 +82,7 @@
     "m5-fire-v2.7"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "mbus",
@@ -214,7 +214,7 @@
     "m5-fire-v2.7"
    ],
    "confidence": "high",
-   "last_verified": "2026-09-28"
+   "last_verified": "2026-10-03"
   }
  ],
  "pins": {
@@ -527,5 +527,5 @@
   "idf-gpio-esp32"
  ],
  "confidence": "high",
- "last_verified": "2026-09-28"
+ "last_verified": "2026-10-03"
 }

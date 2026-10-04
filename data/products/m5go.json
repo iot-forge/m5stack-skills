@@ -30,7 +30,7 @@
     "src": [
      "m5-m5go-v2.7"
     ],
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "market_status": "delisted",
    "derived_from": null,
@@ -41,7 +41,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "flash": {
     "value": "16MB",
@@ -49,7 +49,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "psram": {
     "unknown": true,
@@ -58,7 +58,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "low",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "display": {
     "part": "ILI9342C",
@@ -68,7 +68,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "touch": {
     "part": null,
@@ -76,7 +76,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "three physical buttons, no touch panel"
    },
    "imu": {
@@ -87,7 +87,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "magnetometer": {
     "part": "MPU9250",
@@ -96,7 +96,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "pmic": {
     "part": "IP5306",
@@ -107,7 +107,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "rtc": {
     "part": null,
@@ -115,7 +115,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "spec table lists no RTC"
    },
    "audio": {
@@ -125,7 +125,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "usb_bridge": {
     "part": "CP2104",
@@ -133,7 +133,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "sd": {
     "value": "microSD (SPI)",
@@ -141,7 +141,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "battery": {
     "capacity_mah": 600,
@@ -149,7 +149,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "dimensions": {
     "w": 54.0,
@@ -161,7 +161,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "extra_components": [
     {
@@ -171,7 +171,7 @@
       "m5-m5go-v2.7"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "errata": [
@@ -182,7 +182,7 @@
       "m5-m5go-v2.7"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "recommended_targets": {
@@ -234,7 +234,7 @@
     "src": [
      "m5-m5go-v2.7"
     ],
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "market_status": "delisted",
    "derived_from": "m5go@2018.04",
@@ -245,7 +245,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "flash": {
     "value": "16MB",
@@ -253,7 +253,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "psram": {
     "unknown": true,
@@ -262,7 +262,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "low",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "display": {
     "part": "ILI9342C",
@@ -272,7 +272,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "touch": {
     "part": null,
@@ -280,7 +280,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "three physical buttons, no touch panel"
    },
    "imu": {
@@ -291,7 +291,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "magnetometer": {
     "part": "BMM150",
@@ -301,7 +301,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "pmic": {
     "part": "IP5306",
@@ -312,7 +312,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "rtc": {
     "part": null,
@@ -320,7 +320,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "spec table lists no RTC"
    },
    "audio": {
@@ -330,7 +330,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "usb_bridge": {
     "part": "CP2104",
@@ -338,7 +338,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "sd": {
     "value": "microSD (SPI)",
@@ -346,7 +346,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "battery": {
     "capacity_mah": [
@@ -358,7 +358,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "dimensions": {
     "w": 54.0,
@@ -370,7 +370,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "extra_components": [
     {
@@ -380,7 +380,7 @@
       "m5-m5go-v2.7"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "errata": [
@@ -391,7 +391,7 @@
       "m5-m5go-v2.7"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "recommended_targets": {
@@ -443,7 +443,7 @@
     "src": [
      "m5-m5go-v2.7"
     ],
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "market_status": "delisted",
    "derived_from": "m5go@2019.06",
@@ -454,7 +454,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "flash": {
     "value": "16MB",
@@ -462,7 +462,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "psram": {
     "unknown": true,
@@ -471,7 +471,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "low",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "display": {
     "part": "ILI9342C",
@@ -481,7 +481,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "touch": {
     "part": null,
@@ -489,7 +489,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "three physical buttons, no touch panel"
    },
    "imu": {
@@ -500,7 +500,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "magnetometer": {
     "part": null,
@@ -508,7 +508,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "removed in v2.6 (2021.8)"
    },
    "pmic": {
@@ -520,7 +520,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "rtc": {
     "part": null,
@@ -528,7 +528,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "spec table lists no RTC"
    },
    "audio": {
@@ -538,7 +538,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "usb_bridge": {
     "part": "CH9102",
@@ -546,7 +546,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "sd": {
     "value": "microSD (SPI)",
@@ -554,7 +554,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "battery": {
     "capacity_mah": 500,
@@ -562,7 +562,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "dimensions": {
     "w": 54.0,
@@ -574,7 +574,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "extra_components": [
     {
@@ -584,7 +584,7 @@
       "m5-m5go-v2.7"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "errata": [],
@@ -639,7 +639,7 @@
     "src": [
      "m5-m5go-v2.7"
     ],
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "market_status": "listed",
    "derived_from": "m5go@v2.6",
@@ -650,7 +650,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "flash": {
     "value": "16MB",
@@ -658,7 +658,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "psram": {
     "unknown": true,
@@ -667,7 +667,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "low",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "display": {
     "part": "ILI9342C",
@@ -677,7 +677,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "touch": {
     "part": null,
@@ -685,7 +685,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "three physical buttons, no touch panel"
    },
    "imu": {
@@ -696,7 +696,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "magnetometer": {
     "part": null,
@@ -704,7 +704,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "removed in v2.6 (2021.8)"
    },
    "pmic": {
@@ -716,7 +716,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "rtc": {
     "part": null,
@@ -724,7 +724,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "medium",
-    "last_verified": "2026-09-26",
+    "last_verified": "2026-10-03",
     "note": "spec table lists no RTC"
    },
    "audio": {
@@ -734,7 +734,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "usb_bridge": {
     "part": "CH9102F",
@@ -742,7 +742,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "sd": {
     "value": "microSD (SPI)",
@@ -750,7 +750,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "battery": {
     "capacity_mah": 500,
@@ -758,7 +758,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "dimensions": {
     "w": 54.0,
@@ -770,7 +770,7 @@
      "m5-m5go-v2.7"
     ],
     "confidence": "high",
-    "last_verified": "2026-09-26"
+    "last_verified": "2026-10-03"
    },
    "extra_components": [
     {
@@ -780,7 +780,7 @@
       "m5-m5go-v2.7"
      ],
      "confidence": "high",
-     "last_verified": "2026-09-26"
+     "last_verified": "2026-10-03"
     }
    ],
    "errata": [],

@@ -66,7 +66,7 @@
     "m5-fire-v2.7"
    ],
    "confidence": "high",
-   "last_verified": "2026-08-07"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "m5stack-core2",
@@ -87,7 +87,7 @@
     "m5-core2"
    ],
    "confidence": "high",
-   "last_verified": "2026-08-07"
+   "last_verified": "2026-10-03"
   },
   {
    "id": "m5stack-cores3",
@@ -101,7 +101,7 @@
     "m5-cores3"
    ],
    "confidence": "high",
-   "last_verified": "2026-10-02",
+   "last_verified": "2026-10-03",
    "note": "first shipped in platform-espressif32 6.4.0; an older platform reports it as an unknown board. M5's own page uses esp32-s3-devkitc-1 on espressif32@6.7.0 instead"
   }
  ],
