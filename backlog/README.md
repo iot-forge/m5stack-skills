@@ -80,6 +80,7 @@ The hardware unit the release waits for is the maintainer's Tab5, run as `tab5@2
 | [B40 · Settle the four follow-ups from the B38 re-read](B40-b38-follow-ups.md) | done | — |  |
 | [B41 · Pre-approve the reference reads, and grant the pre-approvals in the trigger runs](B41-preapprove-reference-reads.md) | done | — |  |
 | [B42 · Support Tab5 and give the maintainer's unit its hardware run](B42-support-tab5.md) | in-progress | — |  |
+| [B43 · Make verify.py read the tool versions itself](B43-verify-reads-tool-versions.md) | open | — |  |
 
 **First issue: B01.** After it, B03 and B06 can run in parallel.
 

@@ -56,8 +56,10 @@
    },
    "psram": {
     "value": "32MB octal",
+    "note": "M5's page says octal. ESP-IDF v6.1 has one PSRAM mode for the ESP32-P4, 16-line (SPIRAM_MODE_HEX), so an ESP-IDF project sets no mode; the boot log of one tab5@2026.04 unit reported X16 Mode (verification/runs/2026-10-04.md)",
     "src": [
-     "m5-tab5"
+     "m5-tab5",
+     "idf-p4-psram"
     ],
     "confidence": "high",
     "last_verified": "2026-10-04"
@@ -357,8 +359,10 @@
    },
    "psram": {
     "value": "32MB octal",
+    "note": "M5's page says octal. ESP-IDF v6.1 has one PSRAM mode for the ESP32-P4, 16-line (SPIRAM_MODE_HEX), so an ESP-IDF project sets no mode; the boot log of one tab5@2026.04 unit reported X16 Mode (verification/runs/2026-10-04.md)",
     "src": [
-     "m5-tab5"
+     "m5-tab5",
+     "idf-p4-psram"
     ],
     "confidence": "high",
     "last_verified": "2026-10-04"
@@ -676,8 +680,10 @@
    },
    "psram": {
     "value": "32MB octal",
+    "note": "M5's page says octal. ESP-IDF v6.1 has one PSRAM mode for the ESP32-P4, 16-line (SPIRAM_MODE_HEX), so an ESP-IDF project sets no mode; the boot log of one tab5@2026.04 unit reported X16 Mode (verification/runs/2026-10-04.md)",
     "src": [
-     "m5-tab5"
+     "m5-tab5",
+     "idf-p4-psram"
     ],
     "confidence": "high",
     "last_verified": "2026-10-04"
