@@ -245,6 +245,17 @@ class PlantedChecks(unittest.TestCase):
         self.edit_check("flash.arduino.core2@v1.3", depends_on="device.arduino.core2@v1.3")
         self.assertChecksFail("flash.arduino.core2@v1.3")
 
+    def test_build_check_without_built_for(self):  # verify.py generates the smoke project for that revision
+        p = self.tmp / "verification/checks.json"
+        obj = json.loads(p.read_text(encoding="utf-8"))
+        del next(c for c in obj["checks"] if c["id"] == "build.esp-idf.esp32p4")["built_for"]
+        p.write_text(json.dumps(obj, indent=1), encoding="utf-8")
+        self.assertChecksFail("build.esp-idf.esp32p4: a build check needs built_for")
+
+    def test_built_for_a_revision_that_does_not_exist(self):
+        self.edit_check("build.esp-idf.esp32p4", built_for="tab5@v9")
+        self.assertChecksFail("build.esp-idf.esp32p4: built_for 'tab5@v9' does not exist")
+
     def test_depends_on_without_a_step(self):
         self.edit_check("open-question.ghost-touch.cores3-se@v1.0", depends_on="open-question.mpremote.cores3-se@v1.0")
         self.assertChecksFail("open-question.ghost-touch.cores3-se@v1.0: has a depends_on but no step")

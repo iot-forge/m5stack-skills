@@ -559,6 +559,12 @@ def check_verification(root, rep, revisions):
         rev = c.get("revision")
         if rev and revisions and rev not in revisions:
             rep.fail("verification.checks", f"check {c['id']}: revision '{rev}' does not exist")
+        if c.get("kind") == "build" and c["id"] != "build.target-from-data":  # verify.py builds once per built_for
+            if "built_for" not in c:
+                rep.fail("verification.checks", f"check {c['id']}: a build check needs built_for, the revision "
+                                                "its smoke project is generated for")
+            elif revisions and c["built_for"] not in revisions:
+                rep.fail("verification.checks", f"check {c['id']}: built_for '{c['built_for']}' does not exist")
         if "step" in c and c["step"] not in steps:
             rep.fail("verification.checks", f"check {c['id']}: step '{c['step']}' is not in board_steps")
         dep = c.get("depends_on")
