@@ -116,7 +116,7 @@ class Planted(unittest.TestCase):
         self.assertFails("data.v1-fields")
 
     def test_upcoming_stub_passes(self):  # market status: documented, not yet on M5's product index
-        self.edit("products/tab5.json", lambda o: o["revisions"]["tab5@v1.0"].update(market_status="upcoming"))
+        self.edit("products/cores3-thread-br.json", lambda o: o["revisions"]["cores3-thread-br@v1.0"].update(market_status="upcoming"))
         code, out = run_validate(self.tmp, "--data")
         self.assertEqual(code, 0, out)
 

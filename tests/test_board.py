@@ -113,11 +113,35 @@ class Query(unittest.TestCase):
         self.assertNotIn("safe_choice", out["facts"]["flash"], "a product's choice does not cover another product's revisions")
 
     def test_stub_refuses(self):  # query.stub-refuses
-        for b in ("CoreMP135", "Tab5"):
+        for b in ("CoreMP135", "CoreS3 Thread BR"):
             code, out = board("facts", b)
             self.assertEqual(code, 3, out)
             self.assertIn("for this plugin:", out)
             self.assertNotIn("flash:", out)
+
+    def test_tab5_answers_and_its_revisions_split(self):  # B42: three display generations, three revisions
+        rids = revisions_of("tab5")
+        code, out = board_json("facts", "Tab5")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["revisions_in_play"], rids)
+        self.assertEqual(len(rids), 3)
+        self.assertTrue(out["facts"]["imu"]["agree"])
+        self.assertFalse(out["facts"]["display"]["agree"])
+        self.assertEqual(out["facts"]["display"]["tell_apart"], {"signal": "tab5-lcd-label", "kind": "physical", "exact": True})
+
+    def test_esp32_p4_board_lists_its_frameworks(self):  # B42: frameworks answered nothing off esp32 and esp32-s3
+        rids = revisions_of("tab5")
+        code, out = board_json("frameworks", "tab5")
+        self.assertEqual(out["frameworks"]["esp-idf"], {r: "yes (bare ESP-IDF targets the SoC)" for r in rids})
+        code, out = board_json("targets", "tab5", "--toolchain", "esp-idf")
+        self.assertEqual(out["bare_esp_idf_set_target"], ["esp32p4"])
+
+    def test_no_unusable_line_without_unusable_pins(self):  # B42: the ESP32-P4's flash is not on its GPIOs
+        code, text = board("pins", "tab5")
+        self.assertEqual(code, 0, text)
+        self.assertNotIn("UNUSABLE", text)
+        code, text = board("pins", "core2@v1.3")
+        self.assertIn("UNUSABLE: ", text)
 
     def test_pin_conflict(self):  # query.pin-conflict
         code, out = board_json("pins", "Core2", "--use", "sd,display")

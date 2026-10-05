@@ -526,7 +526,8 @@ def cmd_pins(db, a, res):
             line += f"  - occupied: {ms}"
         lines.append(line)
     lines.append("TAKEN: " + "; ".join(f"{cell(r)} [{', '.join(r['by'])}]" for r in res_["taken"]))
-    lines.append("UNUSABLE: " + ", ".join(r["gpio"] for r in res_["unusable"]) + " (SoC: flash)")
+    if res_["unusable"]:
+        lines.append("UNUSABLE: " + ", ".join(r["gpio"] for r in res_["unusable"]) + " (SoC: flash)")
     if res_["not_brought_out"]:
         lines.append("NOT BROUGHT OUT (no connector exposes them): " + ", ".join(res_["not_brought_out"]))
     dedicated = [b for b in pm["buses"] if not any(r["bus"] == b for r in res_["shared_bus"]) and pm["buses"][b].get("pins")]
@@ -616,7 +617,7 @@ def cmd_frameworks(db, a, res):
             m[r] = "yes" if own else (f"via recommended target {rec[0]['target']} (gaps: {rec[0]['gaps']})" if rec else "no")
         return m
     rows = {}
-    if {db["revisions"][r]["platform"] for r in rids} <= {"esp32", "esp32-s3"}:
+    if {db["revisions"][r]["platform"] for r in rids} <= {"esp32", "esp32-s3", "esp32-p4"}:
         rows["arduino (M5Unified/M5GFX)"] = status(["arduino-esp32", "arduino-m5stack"])
         rows["platformio"] = status(["platformio"])
         rows["esp-idf"] = {r: "yes (bare ESP-IDF targets the SoC)" for r in rids}

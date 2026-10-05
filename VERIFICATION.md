@@ -84,7 +84,7 @@ Each check runs `board.py` and compares its output with what `data/` says. The e
 - `query.narrow-seen`: `board.py tell-apart "Core2"` names a distinguishing signal. Passing the value `data/` gives for one revision to `--seen` narrows the revisions in play accordingly. **Fails** if `--seen` is ignored, or narrows to a revision the data does not map that value to.
 - `query.bid-coarse`: a BID shared by several products (BID 1) resolves to every revision carrying it. **Fails** if it resolves to one product.
 - `query.target-many`: `board.py targets "m5stack_core2"` lists every revision the target covers. **Fails** if it names only one.
-- `query.stub-refuses`: `board.py facts` on an `out-of-scope` board (CoreMP135) and on a `roadmap` board (Tab5) refuses, gives the support status and its reason, and exits non-zero. **Fails** if any hardware fact is printed.
+- `query.stub-refuses`: `board.py facts` on an `out-of-scope` board (CoreMP135) and on a `roadmap` board (CoreS3 Thread BR) refuses, gives the support status and its reason, and exits non-zero. **Fails** if any hardware fact is printed.
 - `query.pin-conflict`: `board.py pins "Core2" --use sd,display` reports the pins those features take and, as free, only pins with no conflicting claim. **Fails** if a pin claimed by either feature is listed as free.
 - `query.strict-name`: a misspelled board name exits non-zero with suggestions. **Fails** if it guesses a board.
 - `query.no-self-report`: no distinguishing signal in any output is of kind self-report. **Fails** if `M5.getBoard()` or `BOARD_ID` is offered as a way to tell revisions apart.

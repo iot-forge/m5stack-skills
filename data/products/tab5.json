@@ -6,27 +6,883 @@
   "family": "core",
   "aliases": [
    "m5stack tab5",
-   "tab 5"
+   "tab 5",
+   "m5tab5"
   ]
  },
  "revisions": {
-  "tab5@v1.0": {
-   "label": "v1.0",
+  "tab5@2025.05": {
+   "label": "2025.05 (release: ILI9881C display, GT911 touch)",
    "sku": [
     "C145",
     "K145"
    ],
-   "soc": "ESP32-P4NRW32 (RISC-V) + ESP32-C6-MINI-1U (Wi-Fi 6)",
+   "soc": "esp32-p4",
    "platform": "esp32-p4",
-   "market_status": "listed",
+   "bid": {
+    "value": 22,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
    "support": {
-    "status": "roadmap",
-    "reason": "ESP32-P4: RISC-V, no radio of its own (Wi-Fi through an ESP32-C6), a 5-inch 1280x720 display and a different ESP-IDF baseline. The same four frameworks apply but with a different support matrix, which is not yet worked out.",
+    "status": "supported",
+    "reason": "ESP32-P4 Core-family controller; Wi-Fi through an ESP32-C6 module",
     "src": [
      "m5-tab5"
     ],
-    "last_verified": "2026-09-26"
-   }
+    "last_verified": "2026-10-04"
+   },
+   "market_status": "listed",
+   "derived_from": null,
+   "pin_map": "tab5-a",
+   "soc_part": {
+    "value": "ESP32-P4NRW32",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "psram": {
+    "value": "32MB octal",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "display": {
+    "part": "ILI9881C",
+    "resolution": "1280x720",
+    "interface": "MIPI-DSI",
+    "note": "5-inch IPS; backlight on G22, reset through PI4IOE5V6408 E1 P4",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "touch": {
+    "part": "GT911",
+    "bus": "i2c_internal",
+    "address": "0x14",
+    "note": "reset through PI4IOE5V6408 E1 P5, interrupt on G23",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "imu": {
+    "part": "BMI270",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "magnetometer": {
+    "part": null,
+    "note": "none listed; the BMI270 is a six-axis part",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-10-04"
+   },
+   "pmic": {
+    "part": null,
+    "note": "no PMIC: an IP2326 charger, an MP4560 buck-boost and an INA226 monitor, with the power rails switched through the PI4IOE5V6408 expanders",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "rtc": {
+    "part": "RX8130CE",
+    "bus": "i2c_internal",
+    "address": "0x32",
+    "note": "backed by a 70000 uF supercapacitor",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "audio": {
+    "amp": "NS4150B (1 W, enabled through PI4IOE5V6408 E1 P1)",
+    "codec": "ES8388",
+    "mic": "dual, through the ES7210",
+    "headphone": "3.5 mm jack",
+    "bus": "i2c_internal",
+    "i2c": [
+     {
+      "part": "ES8388",
+      "address": "0x10"
+     },
+     {
+      "part": "ES7210",
+      "address": "0x40"
+     }
+    ],
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "usb_bridge": {
+    "part": "native USB (ESP32-P4 USB Serial/JTAG)",
+    "note": "on the USB-C port, USB1 in M5's pin map overview; the USB-A port is a host port",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-10-04"
+   },
+   "sd": {
+    "value": "microSD (SDIO or SPI)",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "battery": {
+    "capacity_mah": 2000,
+    "note": "removable NP-F550, 7.4 V; comes with the Tab5 Kit (K145), not with the Tab5 (C145)",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "dimensions": {
+    "w": 128.0,
+    "h": 80.0,
+    "d": 12.0,
+    "unit": "mm",
+    "weight_g": 118.4,
+    "note": "the Tab5 Kit with its battery is 26.7 mm deep and weighs 217.3 g",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-10-04"
+   },
+   "extra_components": [
+    {
+     "role": "radio",
+     "part": "ESP32-C6-MINI-1U",
+     "note": "2.4 GHz Wi-Fi 6, Thread and Zigbee for the ESP32-P4, which has no radio; SDIO on G8 to G13, reset on G15, power through PI4IOE5V6408 E2 P0; built-in antenna or MMCX, selected by E1 P0",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "role": "io-expander",
+     "part": "PI4IOE5V6408 (E1)",
+     "bus": "i2c_internal",
+     "address": "0x43",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "role": "io-expander",
+     "part": "PI4IOE5V6408 (E2)",
+     "bus": "i2c_internal",
+     "address": "0x44",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "role": "power-monitor",
+     "part": "INA226",
+     "bus": "i2c_internal",
+     "address": "0x41",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "role": "camera",
+     "part": "SC2356 (2 MP, MIPI-CSI)",
+     "note": "control on the internal I2C bus; M5 gives no address",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "role": "charger",
+     "part": "IP2326",
+     "note": "no I2C; controlled through PI4IOE5V6408 E2 P5 to P7",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "role": "rs485-transceiver",
+     "part": "SIT3088",
+     "note": "switchable 120 ohm terminator; port supply 6 to 24 V",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    }
+   ],
+   "errata": [
+    {
+     "id": "power-cycle-wait",
+     "text": "Shut the Tab5 down before cutting its power or changing the battery. After a direct power cut, wait 5 seconds before powering on again, or the IMU may fail to initialize.",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "id": "charge-only-when-on",
+     "text": "The Tab5 charges only while it is powered on and initialized, not while off. A battery discharged below 6 V goes into protection: remove it, reset the device, refit it, and charge over USB-C; it trickle-charges for several minutes first.",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "id": "m5-pio-pioarduino",
+     "text": "PlatformIO's own platform-espressif32 has no Tab5 or ESP32-P4 board (none at v7.0.1). M5's PlatformIO example uses the pioarduino fork instead: platform = https://github.com/pioarduino/platform-espressif32.git#54.03.21, board = esp32-p4-evboard, board_build.mcu = esp32p4, board_build.flash_mode = qio, framework = arduino, the build flags -DBOARD_HAS_PSRAM, -DARDUINO_USB_CDC_ON_BOOT=1 and -DARDUINO_USB_MODE=1, and M5Unified and M5GFX from GitHub (its debug level and upload speed are left out here).",
+     "src": [
+      "m5-tab5",
+      "pio-esp32"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    }
+   ]
+  },
+  "tab5@2025.10": {
+   "label": "2025.10 (ST7123 display and touch, from 2025.10.14)",
+   "sku": [
+    "C145",
+    "K145"
+   ],
+   "soc": "esp32-p4",
+   "platform": "esp32-p4",
+   "bid": {
+    "value": 22,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-P4 Core-family controller; Wi-Fi through an ESP32-C6 module",
+    "src": [
+     "m5-tab5"
+    ],
+    "last_verified": "2026-10-04"
+   },
+   "market_status": "listed",
+   "derived_from": "tab5@2025.05",
+   "pin_map": "tab5-a",
+   "soc_part": {
+    "value": "ESP32-P4NRW32",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "psram": {
+    "value": "32MB octal",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "display": {
+    "part": "ST7123",
+    "resolution": "1280x720",
+    "interface": "MIPI-DSI",
+    "note": "5-inch IPS; the driver IC also does touch; backlight on G22, reset through PI4IOE5V6408 E1 P4",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "touch": {
+    "part": "ST7123",
+    "bus": "i2c_internal",
+    "address": "0x55",
+    "note": "integrated in the display driver IC; reset through PI4IOE5V6408 E1 P5, interrupt on G23",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "imu": {
+    "part": "BMI270",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "magnetometer": {
+    "part": null,
+    "note": "none listed; the BMI270 is a six-axis part",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-10-04"
+   },
+   "pmic": {
+    "part": null,
+    "note": "no PMIC: an IP2326 charger, an MP4560 buck-boost and an INA226 monitor, with the power rails switched through the PI4IOE5V6408 expanders",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "rtc": {
+    "part": "RX8130CE",
+    "bus": "i2c_internal",
+    "address": "0x32",
+    "note": "backed by a 70000 uF supercapacitor",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "audio": {
+    "amp": "NS4150B (1 W, enabled through PI4IOE5V6408 E1 P1)",
+    "codec": "ES8388",
+    "mic": "dual, through the ES7210",
+    "headphone": "3.5 mm jack",
+    "bus": "i2c_internal",
+    "i2c": [
+     {
+      "part": "ES8388",
+      "address": "0x10"
+     },
+     {
+      "part": "ES7210",
+      "address": "0x40"
+     }
+    ],
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "usb_bridge": {
+    "part": "native USB (ESP32-P4 USB Serial/JTAG)",
+    "note": "on the USB-C port, USB1 in M5's pin map overview; the USB-A port is a host port",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-10-04"
+   },
+   "sd": {
+    "value": "microSD (SDIO or SPI)",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "battery": {
+    "capacity_mah": 2000,
+    "note": "removable NP-F550, 7.4 V; comes with the Tab5 Kit (K145), not with the Tab5 (C145)",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "dimensions": {
+    "w": 128.0,
+    "h": 80.0,
+    "d": 12.0,
+    "unit": "mm",
+    "weight_g": 118.4,
+    "note": "the Tab5 Kit with its battery is 26.7 mm deep and weighs 217.3 g",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-10-04"
+   },
+   "extra_components": [
+    {
+     "role": "radio",
+     "part": "ESP32-C6-MINI-1U",
+     "note": "2.4 GHz Wi-Fi 6, Thread and Zigbee for the ESP32-P4, which has no radio; SDIO on G8 to G13, reset on G15, power through PI4IOE5V6408 E2 P0; built-in antenna or MMCX, selected by E1 P0",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "role": "io-expander",
+     "part": "PI4IOE5V6408 (E1)",
+     "bus": "i2c_internal",
+     "address": "0x43",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "role": "io-expander",
+     "part": "PI4IOE5V6408 (E2)",
+     "bus": "i2c_internal",
+     "address": "0x44",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "role": "power-monitor",
+     "part": "INA226",
+     "bus": "i2c_internal",
+     "address": "0x41",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "role": "camera",
+     "part": "SC2356 (2 MP, MIPI-CSI)",
+     "note": "control on the internal I2C bus; M5 gives no address",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "role": "charger",
+     "part": "IP2326",
+     "note": "no I2C; controlled through PI4IOE5V6408 E2 P5 to P7",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "role": "rs485-transceiver",
+     "part": "SIT3088",
+     "note": "switchable 120 ohm terminator; port supply 6 to 24 V",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    }
+   ],
+   "errata": [
+    {
+     "id": "screen-driver-change",
+     "text": "From 2025.10.14 the ILI9881C display driver and GT911 touch driver were replaced by one integrated display and touch driver (ST7123, then ST7121 from 2026.4.28). Firmware built for the earlier parts may not run: rebuild it with current M5Unified and M5GFX.",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "id": "screen-reset",
+     "text": "On ST7123 and ST7121 units the LCD reset line (PI4IOE5V6408 E1 P4) must be push-pull or open-drain while driven low and input pull-up while high, or I2C communication becomes unstable. M5Unified 0.2.23 and M5GFX 0.2.30 or later do this during initialization.",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "id": "power-cycle-wait",
+     "text": "Shut the Tab5 down before cutting its power or changing the battery. After a direct power cut, wait 5 seconds before powering on again, or the IMU may fail to initialize.",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "id": "charge-only-when-on",
+     "text": "The Tab5 charges only while it is powered on and initialized, not while off. A battery discharged below 6 V goes into protection: remove it, reset the device, refit it, and charge over USB-C; it trickle-charges for several minutes first.",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "id": "m5-pio-pioarduino",
+     "text": "PlatformIO's own platform-espressif32 has no Tab5 or ESP32-P4 board (none at v7.0.1). M5's PlatformIO example uses the pioarduino fork instead: platform = https://github.com/pioarduino/platform-espressif32.git#54.03.21, board = esp32-p4-evboard, board_build.mcu = esp32p4, board_build.flash_mode = qio, framework = arduino, the build flags -DBOARD_HAS_PSRAM, -DARDUINO_USB_CDC_ON_BOOT=1 and -DARDUINO_USB_MODE=1, and M5Unified and M5GFX from GitHub (its debug level and upload speed are left out here).",
+     "src": [
+      "m5-tab5",
+      "pio-esp32"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    }
+   ]
+  },
+  "tab5@2026.04": {
+   "label": "2026.04 (ST7121 display and touch, from 2026.4.28)",
+   "sku": [
+    "C145",
+    "K145"
+   ],
+   "soc": "esp32-p4",
+   "platform": "esp32-p4",
+   "bid": {
+    "value": 22,
+    "src": [
+     "board-id-csv"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "support": {
+    "status": "supported",
+    "reason": "ESP32-P4 Core-family controller; Wi-Fi through an ESP32-C6 module",
+    "src": [
+     "m5-tab5"
+    ],
+    "last_verified": "2026-10-04"
+   },
+   "market_status": "listed",
+   "derived_from": "tab5@2025.10",
+   "pin_map": "tab5-a",
+   "soc_part": {
+    "value": "ESP32-P4NRW32",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "flash": {
+    "value": "16MB",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "psram": {
+    "value": "32MB octal",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "display": {
+    "part": "ST7121",
+    "resolution": "1280x720",
+    "interface": "MIPI-DSI",
+    "note": "5-inch IPS; the driver IC also does touch; backlight on G22, reset through PI4IOE5V6408 E1 P4",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "touch": {
+    "part": "ST7121",
+    "bus": "i2c_internal",
+    "address": "0x55",
+    "note": "integrated in the display driver IC; reset through PI4IOE5V6408 E1 P5, interrupt on G23",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "imu": {
+    "part": "BMI270",
+    "bus": "i2c_internal",
+    "address": "0x68",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "magnetometer": {
+    "part": null,
+    "note": "none listed; the BMI270 is a six-axis part",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-10-04"
+   },
+   "pmic": {
+    "part": null,
+    "note": "no PMIC: an IP2326 charger, an MP4560 buck-boost and an INA226 monitor, with the power rails switched through the PI4IOE5V6408 expanders",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "rtc": {
+    "part": "RX8130CE",
+    "bus": "i2c_internal",
+    "address": "0x32",
+    "note": "backed by a 70000 uF supercapacitor",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "audio": {
+    "amp": "NS4150B (1 W, enabled through PI4IOE5V6408 E1 P1)",
+    "codec": "ES8388",
+    "mic": "dual, through the ES7210",
+    "headphone": "3.5 mm jack",
+    "bus": "i2c_internal",
+    "i2c": [
+     {
+      "part": "ES8388",
+      "address": "0x10"
+     },
+     {
+      "part": "ES7210",
+      "address": "0x40"
+     }
+    ],
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "usb_bridge": {
+    "part": "native USB (ESP32-P4 USB Serial/JTAG)",
+    "note": "on the USB-C port, USB1 in M5's pin map overview; the USB-A port is a host port",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-10-04"
+   },
+   "sd": {
+    "value": "microSD (SDIO or SPI)",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "battery": {
+    "capacity_mah": 2000,
+    "note": "removable NP-F550, 7.4 V; comes with the Tab5 Kit (K145), not with the Tab5 (C145)",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "high",
+    "last_verified": "2026-10-04"
+   },
+   "dimensions": {
+    "w": 128.0,
+    "h": 80.0,
+    "d": 12.0,
+    "unit": "mm",
+    "weight_g": 118.4,
+    "note": "the Tab5 Kit with its battery is 26.7 mm deep and weighs 217.3 g",
+    "src": [
+     "m5-tab5"
+    ],
+    "confidence": "medium",
+    "last_verified": "2026-10-04"
+   },
+   "extra_components": [
+    {
+     "role": "radio",
+     "part": "ESP32-C6-MINI-1U",
+     "note": "2.4 GHz Wi-Fi 6, Thread and Zigbee for the ESP32-P4, which has no radio; SDIO on G8 to G13, reset on G15, power through PI4IOE5V6408 E2 P0; built-in antenna or MMCX, selected by E1 P0",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "role": "io-expander",
+     "part": "PI4IOE5V6408 (E1)",
+     "bus": "i2c_internal",
+     "address": "0x43",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "role": "io-expander",
+     "part": "PI4IOE5V6408 (E2)",
+     "bus": "i2c_internal",
+     "address": "0x44",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "role": "power-monitor",
+     "part": "INA226",
+     "bus": "i2c_internal",
+     "address": "0x41",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "role": "camera",
+     "part": "SC2356 (2 MP, MIPI-CSI)",
+     "note": "control on the internal I2C bus; M5 gives no address",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "role": "charger",
+     "part": "IP2326",
+     "note": "no I2C; controlled through PI4IOE5V6408 E2 P5 to P7",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "role": "rs485-transceiver",
+     "part": "SIT3088",
+     "note": "switchable 120 ohm terminator; port supply 6 to 24 V",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    }
+   ],
+   "errata": [
+    {
+     "id": "screen-driver-change",
+     "text": "From 2025.10.14 the ILI9881C display driver and GT911 touch driver were replaced by one integrated display and touch driver (ST7123, then ST7121 from 2026.4.28). Firmware built for the earlier parts may not run: rebuild it with current M5Unified and M5GFX.",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "id": "screen-reset",
+     "text": "On ST7123 and ST7121 units the LCD reset line (PI4IOE5V6408 E1 P4) must be push-pull or open-drain while driven low and input pull-up while high, or I2C communication becomes unstable. M5Unified 0.2.23 and M5GFX 0.2.30 or later do this during initialization.",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "id": "power-cycle-wait",
+     "text": "Shut the Tab5 down before cutting its power or changing the battery. After a direct power cut, wait 5 seconds before powering on again, or the IMU may fail to initialize.",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "id": "charge-only-when-on",
+     "text": "The Tab5 charges only while it is powered on and initialized, not while off. A battery discharged below 6 V goes into protection: remove it, reset the device, refit it, and charge over USB-C; it trickle-charges for several minutes first.",
+     "src": [
+      "m5-tab5"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "id": "m5-pio-pioarduino",
+     "text": "PlatformIO's own platform-espressif32 has no Tab5 or ESP32-P4 board (none at v7.0.1). M5's PlatformIO example uses the pioarduino fork instead: platform = https://github.com/pioarduino/platform-espressif32.git#54.03.21, board = esp32-p4-evboard, board_build.mcu = esp32p4, board_build.flash_mode = qio, framework = arduino, the build flags -DBOARD_HAS_PSRAM, -DARDUINO_USB_CDC_ON_BOOT=1 and -DARDUINO_USB_MODE=1, and M5Unified and M5GFX from GitHub (its debug level and upload speed are left out here).",
+     "src": [
+      "m5-tab5",
+      "pio-esp32"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    }
+   ]
   }
  }
 }

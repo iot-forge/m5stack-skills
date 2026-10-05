@@ -58,10 +58,20 @@
     ],
     "K128-Lite": [
      "cores3-lite@v1.0"
+    ],
+    "C145": [
+     "tab5@2025.05",
+     "tab5@2025.10",
+     "tab5@2026.04"
+    ],
+    "K145": [
+     "tab5@2025.05",
+     "tab5@2025.10",
+     "tab5@2026.04"
     ]
    },
    "reliability": "high",
-   "caveats": "Stickers come off and boxes get thrown away. A suffix-less SKU (K001, K007, K010) covers several revisions.",
+   "caveats": "Stickers come off and boxes get thrown away. A suffix-less SKU (K001, K007, K010) covers several revisions. C145 (Tab5) and K145 (Tab5 Kit) each cover all three Tab5 revisions.",
    "src": [
     "m5-basic",
     "m5-basic-v2.7",
@@ -77,10 +87,11 @@
     "m5-tough",
     "m5-cores3",
     "m5-cores3-se",
-    "m5-cores3-lite"
+    "m5-cores3-lite",
+    "m5-tab5"
    ],
    "confidence": "high",
-   "last_verified": "2026-10-03"
+   "last_verified": "2026-10-04"
   },
   {
    "id": "power-led",
@@ -141,7 +152,10 @@
     "303A (Espressif native USB)": [
      "cores3@v1.0",
      "cores3-se@v1.0",
-     "cores3-lite@v1.0"
+     "cores3-lite@v1.0",
+     "tab5@2025.05",
+     "tab5@2025.10",
+     "tab5@2026.04"
     ]
    },
    "reliability": "medium",
@@ -154,10 +168,11 @@
     "m5-m5go-v2.7",
     "m5-fire-v2.7",
     "m5-core2-for-aws",
-    "m5-core2-for-aws-v1.3"
+    "m5-core2-for-aws-v1.3",
+    "m5-tab5"
    ],
    "confidence": "medium",
-   "last_verified": "2026-10-03"
+   "last_verified": "2026-10-04"
   },
   {
    "id": "flash-size",
@@ -302,7 +317,10 @@
      "core2@v1.3",
      "core2-for-aws@v1.3",
      "cores3@v1.0",
-     "cores3-lite@v1.0"
+     "cores3-lite@v1.0",
+     "tab5@2025.05",
+     "tab5@2025.10",
+     "tab5@2026.04"
     ],
     "MPU9250": [
      "gray@2017.12",
@@ -330,10 +348,11 @@
     "m5-cores3",
     "m5-gray",
     "m5-fire",
-    "m5-m5go-v2.7"
+    "m5-m5go-v2.7",
+    "m5-tab5"
    ],
    "confidence": "high",
-   "last_verified": "2026-10-03"
+   "last_verified": "2026-10-04"
   },
   {
    "id": "ina3221-probe",
@@ -525,6 +544,64 @@
    ],
    "confidence": "high",
    "last_verified": "2026-10-03"
+  },
+  {
+   "id": "tab5-lcd-label",
+   "kind": "physical",
+   "observe": "On the pin map printed on the back of the Tab5, read the driver named in the '5\" IPS-LCD' box.",
+   "outcomes": {
+    "ILI9881C": [
+     "tab5@2025.05"
+    ],
+    "ST7123": [
+     "tab5@2025.10"
+    ],
+    "ST7121": [
+     "tab5@2026.04"
+    ]
+   },
+   "reliability": "medium",
+   "caveats": "Tab5 only. M5's note about the label was written for the change to the ST7123; its picture shows an ST7123 unit, and M5 does not show the label of an ILI9881C or an ST7121 unit.",
+   "src": [
+    "m5-tab5"
+   ],
+   "confidence": "medium",
+   "last_verified": "2026-10-04"
+  },
+  {
+   "id": "tab5-touch-probe",
+   "kind": "probe",
+   "observe": "Flash a sketch that scans the internal I2C bus for 0x14 and 0x55.",
+   "probe": {
+    "bus": "i2c_internal",
+    "address": [
+     "0x14",
+     "0x55"
+    ],
+    "register": null,
+    "width": null,
+    "expected": {
+     "0x14 (GT911)": "ACK at 0x14",
+     "0x55 (ST7123 or ST7121)": "ACK at 0x55"
+    }
+   },
+   "outcomes": {
+    "0x14 (GT911)": [
+     "tab5@2025.05"
+    ],
+    "0x55 (ST7123 or ST7121)": [
+     "tab5@2025.10",
+     "tab5@2026.04"
+    ]
+   },
+   "reliability": "medium",
+   "caveats": "Needs flashing. Tab5 only. It cannot tell the ST7123 from the ST7121: both answer at 0x55. A GT911 answers at 0x14 only when its interrupt line (G23) is high as it leaves reset, and at 0x5D otherwise; M5GFX drives G23 high and tries both.",
+   "src": [
+    "m5-tab5",
+    "m5gfx"
+   ],
+   "confidence": "medium",
+   "last_verified": "2026-10-04"
   }
  ]
 }

@@ -1,0 +1,866 @@
+{
+ "schema_version": 1,
+ "id": "tab5-a",
+ "soc": "esp32-p4",
+ "populated": true,
+ "buses": {
+  "i2c_internal": {
+   "kind": "i2c",
+   "pins": {
+    "sda": "G31",
+    "scl": "G32"
+   },
+   "src": [
+    "m5-tab5",
+    "m5unified"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-10-04"
+  },
+  "i2c_port_a": {
+   "kind": "i2c",
+   "pins": {
+    "sda": "G53",
+    "scl": "G54"
+   },
+   "src": [
+    "m5-tab5",
+    "m5unified"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-10-04"
+  }
+ },
+ "connectors": [
+  {
+   "id": "port_a",
+   "kind": "grove-i2c",
+   "bus": "i2c_port_a",
+   "src": [
+    "m5-tab5"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-10-04"
+  },
+  {
+   "id": "mbus",
+   "kind": "m-bus",
+   "positions": [
+    {
+     "n": 1,
+     "pin": "GND"
+    },
+    {
+     "n": 2,
+     "gpio": "G16"
+    },
+    {
+     "n": 3,
+     "pin": "GND"
+    },
+    {
+     "n": 4,
+     "gpio": "G17"
+    },
+    {
+     "n": 5,
+     "pin": "GND"
+    },
+    {
+     "n": 6,
+     "pin": "RST"
+    },
+    {
+     "n": 7,
+     "gpio": "G18"
+    },
+    {
+     "n": 8,
+     "gpio": "G45"
+    },
+    {
+     "n": 9,
+     "gpio": "G19"
+    },
+    {
+     "n": 10,
+     "gpio": "G52"
+    },
+    {
+     "n": 11,
+     "gpio": "G5"
+    },
+    {
+     "n": 12,
+     "pin": "3V3"
+    },
+    {
+     "n": 13,
+     "gpio": "G38"
+    },
+    {
+     "n": 14,
+     "gpio": "G37"
+    },
+    {
+     "n": 15,
+     "gpio": "G7"
+    },
+    {
+     "n": 16,
+     "gpio": "G6"
+    },
+    {
+     "n": 17,
+     "gpio": "G31"
+    },
+    {
+     "n": 18,
+     "gpio": "G32"
+    },
+    {
+     "n": 19,
+     "gpio": "G3"
+    },
+    {
+     "n": 20,
+     "gpio": "G4"
+    },
+    {
+     "n": 21,
+     "gpio": "G2"
+    },
+    {
+     "n": 22,
+     "gpio": "G48"
+    },
+    {
+     "n": 23,
+     "gpio": "G47"
+    },
+    {
+     "n": 24,
+     "gpio": "G35"
+    },
+    {
+     "n": 25,
+     "pin": "HVIN"
+    },
+    {
+     "n": 26,
+     "gpio": "G51"
+    },
+    {
+     "n": 27,
+     "pin": "HVIN"
+    },
+    {
+     "n": 28,
+     "pin": "5V"
+    },
+    {
+     "n": 29,
+     "pin": "HVIN"
+    },
+    {
+     "n": 30,
+     "pin": "BAT"
+    }
+   ],
+   "src": [
+    "m5-tab5"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-10-04"
+  },
+  {
+   "id": "ext_port1",
+   "kind": "2.54-10p",
+   "positions": [
+    {
+     "n": 1,
+     "pin": "HVIN"
+    },
+    {
+     "n": 2,
+     "pin": "GND"
+    },
+    {
+     "n": 3,
+     "pin": "3V3"
+    },
+    {
+     "n": 4,
+     "gpio": "G1"
+    },
+    {
+     "n": 5,
+     "gpio": "G50"
+    },
+    {
+     "n": 6,
+     "pin": "GND"
+    },
+    {
+     "n": 7,
+     "pin": "GND"
+    },
+    {
+     "n": 8,
+     "pin": "EXT5V"
+    },
+    {
+     "n": 9,
+     "gpio": "G0"
+    },
+    {
+     "n": 10,
+     "gpio": "G49"
+    }
+   ],
+   "src": [
+    "m5-tab5"
+   ],
+   "confidence": "medium",
+   "last_verified": "2026-10-04"
+  },
+  {
+   "id": "ext_port2",
+   "kind": "1.25-6p",
+   "positions": [
+    {
+     "n": 1,
+     "pin": "GND"
+    },
+    {
+     "n": 2,
+     "pin": "HVIN"
+    },
+    {
+     "n": 3,
+     "pin": "485A"
+    },
+    {
+     "n": 4,
+     "pin": "485B"
+    },
+    {
+     "n": 5,
+     "gpio": "G31"
+    },
+    {
+     "n": 6,
+     "gpio": "G32"
+    }
+   ],
+   "src": [
+    "m5-tab5"
+   ],
+   "confidence": "medium",
+   "last_verified": "2026-10-04"
+  },
+  {
+   "id": "stamp",
+   "kind": "stamp-pads",
+   "positions": [
+    {
+     "n": 1,
+     "gpio": "G46"
+    },
+    {
+     "n": 2,
+     "gpio": "G6"
+    },
+    {
+     "n": 3,
+     "gpio": "G31"
+    },
+    {
+     "n": 4,
+     "gpio": "G32"
+    },
+    {
+     "n": 5,
+     "gpio": "G33"
+    },
+    {
+     "n": 6,
+     "pin": "SYS-5V"
+    },
+    {
+     "n": 7,
+     "pin": "3V3"
+    },
+    {
+     "n": 8,
+     "pin": "GND"
+    },
+    {
+     "n": 9,
+     "gpio": "G5"
+    },
+    {
+     "n": 10,
+     "gpio": "G18"
+    },
+    {
+     "n": 11,
+     "gpio": "G19"
+    }
+   ],
+   "src": [
+    "m5-tab5"
+   ],
+   "confidence": "medium",
+   "last_verified": "2026-10-04"
+  }
+ ],
+ "pins": {
+  "G0": {
+   "uses": [],
+   "exposed_on": [
+    "ext_port1:9"
+   ],
+   "labels": []
+  },
+  "G1": {
+   "uses": [],
+   "exposed_on": [
+    "ext_port1:4"
+   ],
+   "labels": []
+  },
+  "G2": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:21"
+   ],
+   "labels": []
+  },
+  "G3": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:19"
+   ],
+   "labels": []
+  },
+  "G4": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:20"
+   ],
+   "labels": []
+  },
+  "G5": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:11",
+    "stamp:9"
+   ],
+   "labels": [
+    "SCK"
+   ]
+  },
+  "G6": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:16",
+    "stamp:2"
+   ],
+   "labels": [
+    "PC_TX"
+   ]
+  },
+  "G7": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:15"
+   ],
+   "labels": [
+    "PC_RX"
+   ]
+  },
+  "G8": {
+   "uses": [
+    {
+     "function": "ESP32-C6 SDIO2_D3",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G9": {
+   "uses": [
+    {
+     "function": "ESP32-C6 SDIO2_D2",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G10": {
+   "uses": [
+    {
+     "function": "ESP32-C6 SDIO2_D1",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G11": {
+   "uses": [
+    {
+     "function": "ESP32-C6 SDIO2_D0",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G12": {
+   "uses": [
+    {
+     "function": "ESP32-C6 SDIO2_CK",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G13": {
+   "uses": [
+    {
+     "function": "ESP32-C6 SDIO2_CMD",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G14": {
+   "uses": [
+    {
+     "function": "ESP32-C6 IO2",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G15": {
+   "uses": [
+    {
+     "function": "ESP32-C6 RESET",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G16": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:2"
+   ],
+   "labels": []
+  },
+  "G17": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:4"
+   ],
+   "labels": [
+    "PB_IN"
+   ]
+  },
+  "G18": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:7",
+    "stamp:10"
+   ],
+   "labels": [
+    "MOSI"
+   ]
+  },
+  "G19": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:9",
+    "stamp:11"
+   ],
+   "labels": [
+    "MISO"
+   ]
+  },
+  "G20": {
+   "uses": [
+    {
+     "function": "RS485 TX",
+     "claim": "feature",
+     "feature": "rs485"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G21": {
+   "uses": [
+    {
+     "function": "RS485 RX",
+     "claim": "feature",
+     "feature": "rs485"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G22": {
+   "uses": [
+    {
+     "function": "LCD backlight (LEDA)",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G23": {
+   "uses": [
+    {
+     "function": "touch INT (TP_INT)",
+     "claim": "feature",
+     "feature": "touch"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G24": {
+   "uses": [
+    {
+     "function": "USB-C port (USB1, USB Serial/JTAG)",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G25": {
+   "uses": [
+    {
+     "function": "USB-C port (USB1, USB Serial/JTAG)",
+     "claim": "fixed"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G26": {
+   "uses": [
+    {
+     "function": "speaker I2S data out (ES8388 DSDIN)",
+     "claim": "feature",
+     "feature": "speaker"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G27": {
+   "uses": [
+    {
+     "function": "speaker I2S SCLK",
+     "claim": "feature",
+     "feature": "speaker"
+    },
+    {
+     "function": "mic I2S SCLK",
+     "claim": "feature",
+     "feature": "mic"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G28": {
+   "uses": [
+    {
+     "function": "mic I2S data in (ES7210 ASDOUT)",
+     "claim": "feature",
+     "feature": "mic"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G29": {
+   "uses": [
+    {
+     "function": "speaker I2S LRCK",
+     "claim": "feature",
+     "feature": "speaker"
+    },
+    {
+     "function": "mic I2S LRCK",
+     "claim": "feature",
+     "feature": "mic"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G30": {
+   "uses": [
+    {
+     "function": "speaker I2S MCLK",
+     "claim": "feature",
+     "feature": "speaker"
+    },
+    {
+     "function": "mic I2S MCLK",
+     "claim": "feature",
+     "feature": "mic"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G31": {
+   "uses": [
+    {
+     "function": "internal I2C SDA",
+     "claim": "bus",
+     "owner": "i2c_internal"
+    }
+   ],
+   "exposed_on": [
+    "mbus:17",
+    "ext_port2:5",
+    "stamp:3"
+   ],
+   "labels": []
+  },
+  "G32": {
+   "uses": [
+    {
+     "function": "internal I2C SCL",
+     "claim": "bus",
+     "owner": "i2c_internal"
+    }
+   ],
+   "exposed_on": [
+    "mbus:18",
+    "ext_port2:6",
+    "stamp:4"
+   ],
+   "labels": []
+  },
+  "G33": {
+   "uses": [],
+   "exposed_on": [
+    "stamp:5"
+   ],
+   "labels": []
+  },
+  "G34": {
+   "uses": [
+    {
+     "function": "RS485 DIR",
+     "claim": "feature",
+     "feature": "rs485"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G35": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:24"
+   ],
+   "labels": [
+    "BOOT"
+   ]
+  },
+  "G36": {
+   "uses": [
+    {
+     "function": "camera MCLK",
+     "claim": "feature",
+     "feature": "camera"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G37": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:14"
+   ],
+   "labels": [
+    "TXD0"
+   ]
+  },
+  "G38": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:13"
+   ],
+   "labels": [
+    "RXD0"
+   ]
+  },
+  "G39": {
+   "uses": [
+    {
+     "function": "microSD DAT0 (SPI MISO)",
+     "claim": "feature",
+     "feature": "sd"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G40": {
+   "uses": [
+    {
+     "function": "microSD DAT1",
+     "claim": "feature",
+     "feature": "sd"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G41": {
+   "uses": [
+    {
+     "function": "microSD DAT2",
+     "claim": "feature",
+     "feature": "sd"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G42": {
+   "uses": [
+    {
+     "function": "microSD DAT3 (SPI CS)",
+     "claim": "feature",
+     "feature": "sd"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G43": {
+   "uses": [
+    {
+     "function": "microSD CLK (SPI SCK)",
+     "claim": "feature",
+     "feature": "sd"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G44": {
+   "uses": [
+    {
+     "function": "microSD CMD (SPI MOSI)",
+     "claim": "feature",
+     "feature": "sd"
+    }
+   ],
+   "exposed_on": [],
+   "labels": []
+  },
+  "G45": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:8"
+   ],
+   "labels": []
+  },
+  "G46": {
+   "uses": [],
+   "exposed_on": [
+    "stamp:1"
+   ],
+   "labels": []
+  },
+  "G47": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:23"
+   ],
+   "labels": []
+  },
+  "G48": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:22"
+   ],
+   "labels": []
+  },
+  "G49": {
+   "uses": [],
+   "exposed_on": [
+    "ext_port1:10"
+   ],
+   "labels": []
+  },
+  "G50": {
+   "uses": [],
+   "exposed_on": [
+    "ext_port1:5"
+   ],
+   "labels": []
+  },
+  "G51": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:26"
+   ],
+   "labels": []
+  },
+  "G52": {
+   "uses": [],
+   "exposed_on": [
+    "mbus:10"
+   ],
+   "labels": [
+    "PB_OUT"
+   ]
+  },
+  "G53": {
+   "uses": [],
+   "exposed_on": [
+    "port_a:sda"
+   ],
+   "labels": []
+  },
+  "G54": {
+   "uses": [],
+   "exposed_on": [
+    "port_a:scl"
+   ],
+   "labels": []
+  }
+ },
+ "notes": "The display (MIPI-DSI) and the camera (MIPI-CSI) use the ESP32-P4's dedicated DSI and CSI pins, not GPIOs; of the display only the backlight (G22) is on a GPIO, of the camera only MCLK (G36). The camera's control bus is the internal I2C bus. Resets and enables go through the two PI4IOE5V6408 I/O expanders, so they claim no pins: on E1 (0x43) P0 antenna select (low internal, high external), P1 speaker amplifier enable, P2 EXT5V_EN (5 V to the M-Bus, the 2.54-10P port and Port A), P4 LCD reset, P5 touch reset, P6 camera reset, P7 headphone detect; on E2 (0x44) P0 WLAN_PWR_EN (power to the ESP32-C6), P3 USB5V_EN (USB-A), P4 power-off pulse, P5 to P7 the IP2326 charger (nCHG_QC_EN, CHG_STAT_LED, CHG_EN). On ST7123 and ST7121 units, drive LCD reset (E1 P4) push-pull or open-drain while low and switch it to input pull-up while high, or the I2C bus becomes unstable. G8 to G15 carry the ESP32-C6 (SDIO and control) and are never free. Speaker and mic share the I2S clocks (G27, G29, G30); G26 carries data to the ES8388 and G28 data from the ES7210, and M5Unified runs both on one I2S port. The microSD slot is wired for SDIO (G39 to G44) and also works in SPI mode on G39, G42, G43 and G44. G24 and G25 are the USB-C port (USB1 in M5's pin map overview, the ESP32-P4's USB Serial/JTAG); the USB-A port is USB2 on dedicated pins. G35 is the BOOT strapping pin and reaches M-Bus 24: nothing there may hold it low at reset. G34 (RS485 DIR), G37 and G38 (UART0 TXD0 and RXD0 on the M-Bus) are strapping pins too. The M-Bus labels G17 and G52 as Port B (in, out) and G7 and G6 as Port C (RX, TX); the only Grove connector is Port A (G53 SDA, G54 SCL), which is its own I2C bus. The internal I2C bus also reaches M-Bus 17 and 18, the 1.25-6P port and the Stamp pads. M5 gives no position numbers for the 2.54-10P port (ExtPort1), the 1.25-6P port (ExtPort2: GND, HVIN, RS485 A and B, SDA, SCL) or the Stamp pads, so their positions are numbered here in the order M5's pin map overview draws them. M-Bus 25, 27 and 29 are HVIN.",
+ "src": [
+  "m5-tab5",
+  "idf-gpio-esp32p4",
+  "m5unified-audio",
+  "m5unified"
+ ],
+ "confidence": "high",
+ "last_verified": "2026-10-04"
+}
