@@ -55,7 +55,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B15 · Finish verify.py and checks.json](B15-verify-py-and-checks.md) | done | B14, B19 | yes |
 | [B16 · Tune the seven descriptions together, then run every trigger row](B16-description-tuning.md) | done | B07, B08, B09, B10, B11, B12, B13 |  |
 | [B17 · Decide: where and when the checks run](B17-decide-ci.md) | done | B15 |  |
-| [B18 · Publish as a branch of the team's repository](B18-decide-publication.md) | open | the maintainer's go-ahead (parked until a hardware run) |  |
+| [B18 · Publish as a branch of the team's repository](B18-decide-publication.md) | open | B42, then the maintainer's go-ahead |  |
 | [B19 · Align VERIFICATION.md with B01](B19-align-verification-with-b01.md) | done | B01 | yes |
 | [B20 · Rename the CoreS3 download-mode checks after M5's procedure](B20-rename-cores3-download-checks.md) | done | — |  |
 | [B21 · Cite each expected probe value to its own source](B21-per-value-probe-sources.md) | done | — |  |
@@ -79,6 +79,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B39 · Apply the maintainer's answers to B38's open questions](B39-apply-b38-answers.md) | done | — |  |
 | [B40 · Settle the four follow-ups from the B38 re-read](B40-b38-follow-ups.md) | done | — |  |
 | [B41 · Pre-approve the reference reads, and grant the pre-approvals in the trigger runs](B41-preapprove-reference-reads.md) | done | — |  |
+| [B42 · Support Tab5 and give the maintainer's unit its hardware run](B42-support-tab5.md) | in-progress | — |  |
 
 **First issue: B01.** After it, B03 and B06 can run in parallel.
 
