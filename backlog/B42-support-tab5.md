@@ -42,7 +42,7 @@ If step 1 shows this is more than a few sessions, split it into issues here or c
 
 ## Definition of done
 
-- [ ] Each step 1 decision is recorded here or in an ADR
+- [x] Each step 1 decision is recorded here or in an ADR
 - [ ] Tab5's data is sourced and `board.py facts tab5` answers
 - [ ] `verify.py run --board <tab5 revision>` runs on the maintainer's unit and its report is committed
 - [ ] `uv run scripts/check.py` exits 0
@@ -55,8 +55,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: the unit is identified over USB, read-only: `esptool chip-id` on COM3 reports an ESP32-P4, chip revision v1.3, USB-Serial/JTAG (VID 303A, PID 1001). Its boot log (the firmware on it uses M5GFX) prints `M5Tab5 detected ST7121 display` and `ST touch FW version 01`, which points at the third display generation; that is the board's own report, so a lead, not a fact. Decided with the maintainer on 2026-10-04: the three display generations are three revisions, each written out in full; the data covers all four frameworks and the hardware run flashes ESP-IDF and Arduino only; a passing Tab5 run replaces Core2 v1.3 as the release bar, so Core2 facts stay documentation-only and the README says so
-- **Next**: Put the remaining step 1 questions to the maintainer: the revision keys, the radio co-processor, and which chips the run probes
+- **Done**: the unit is identified over USB, read-only: `esptool chip-id` on COM3 reports an ESP32-P4, chip revision v1.3, USB-Serial/JTAG (VID 303A, PID 1001). Its boot log (the firmware on it uses M5GFX) prints `M5Tab5 detected ST7121 display` and `ST touch FW version 01`, which points at the third display generation; that is the board's own report, so a lead, not a fact. Decided with the maintainer on 2026-10-04: the three display generations are three revisions, each written out in full; the data covers all four frameworks and the hardware run flashes ESP-IDF and Arduino only; a passing Tab5 run replaces Core2 v1.3 as the release bar, so Core2 facts stay documentation-only and the README says so; the revisions are keyed by date, `tab5@2025.05`, `tab5@2025.10` and `tab5@2026.04` (the unit is taken to be `tab5@2026.04` until the run confirms it); the ESP32-C6 module is an `extra_components` entry with role `radio`, `soc` stays `esp32-p4`, and no schema field is added; the run reads the touch controller and every I2C chip M5 lists (BMI270, RX8130CE, INA226, both PI4IOE5V6408, ES8388, ES7210), by id register where the datasheet gives one and by presence otherwise, with the gap recorded as ADR 0005 says
+- **Next**: Step 1 is settled. Source the data: re-fetch M5's Tab5 page and its schematic, add `data/socs/esp32-p4.json`, then the three revisions in `data/products/tab5.json`, starting from `data/products/cores3.json` as the pattern
 - **Files touched**: this issue, `backlog/README.md`, `backlog/B18-decide-publication.md`
 - **Last commit**: the one that carries this checkpoint
-- **Open questions**: the revision keys, the radio co-processor in the schema, the probes (the maintainer decides)
+- **Open questions**: none

@@ -66,4 +66,4 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 - **Next**: Parked by the maintainer on 2026-10-04, before the push: hardware testing comes first. When they lift it, re-run the gate, then ask the maintainer, then `git push -u origin m5core-skills-v2` (`origin` is `iot-forge/m5stack-skills`). Watch the Actions run: it is the first time the gate runs on Linux
 - **Files touched**: `scripts/check.py`, `tests/test_check.py`, `.claude-plugin/plugin.json`, `CHANGELOG.md`, `CONTRIBUTING.md`, `README.md`, `.github/workflows/check.yml`, `docs/adr/0001-…`, `docs/adr/0006-…`, this issue, `backlog/README.md`
 - **Last commit**: the one that carries this checkpoint
-- **Open questions**: none. The maintainer asked for the commit email to be changed before anything is pushed; check `git log --format=%ae | sort -u` before pushing
+- **Open questions**: none. Every commit's author and committer email was rewritten to the maintainer's GitHub noreply address on 2026-10-04, so commit ids recorded before that date no longer resolve. The local branch `backup/pre-email-rewrite` holds the old history: never push it
