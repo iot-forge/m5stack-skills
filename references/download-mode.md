@@ -23,7 +23,7 @@ M5's pages give no manual procedure for these boards. After one retry, a framewo
 
 ## Through native USB
 
-esptool recognises the chip's own USB Serial/JTAG port by its vendor and product ID (`303A:1001`, the same on an ESP32-S3 and an ESP32-P4) and uses that port's reset sequence. Espressif's docs call for no other flag. There are two exceptions:
+esptool recognises the chip's own USB Serial/JTAG port by its vendor and product ID (`303A:1001`, the same on an ESP32-S3 and an ESP32-P4) and uses that port's reset sequence *(untested on hardware: open-question.auto-download.tab5@2026.04)*. Espressif's docs call for no other flag. There are two exceptions:
 
 - **A container or virtual machine** that hides the USB descriptors: esptool prints `Failed to get VID/PID of a device on ...` and uses the standard reset sequence instead. Add `--before usb-reset`.
 - **No serial port, or the automatic reset fails.** The firmware on the board may have turned its USB off or reconfigured the USB pins. Enter download mode by hand.
@@ -51,7 +51,7 @@ If the LED didn't do what the board's procedure says, the board is not in downlo
 
 ### Leaving download mode after a manual entry
 
-Over USB Serial/JTAG, esptool's reset after the write is only a core reset (Espressif documents this for the ESP32-S3; on a Tab5 it is unchecked, so go by what the user reports). A core reset doesn't re-read the boot pin, so a board that entered download mode by hand stays there and the new firmware doesn't start. To leave download mode:
+Over USB Serial/JTAG, esptool's reset after the write is only a core reset. Espressif documents this for the ESP32-S3; on an ESP32-P4 board, ask the user whether the new firmware started before applying it. A core reset doesn't re-read the boot pin, so a board that entered download mode by hand stays there and the new firmware doesn't start. To leave download mode:
 
 - **With esptool directly**: add `--after watchdog-reset` before the command name (`esptool --port <port> --after watchdog-reset write-flash ...`). It triggers a full system reset.
 - **Through a toolchain upload**: ask the user to press RST once, or to power-cycle the board.

@@ -305,6 +305,13 @@
    "ref": "fff9895 (tag v6.1)"
   },
   {
+   "id": "idf-p4-psram",
+   "kind": "library-source",
+   "title": "ESP-IDF Kconfig.spiram for the ESP32-P4: SPIRAM is off by default; the PSRAM clock speed choices",
+   "url": "https://github.com/espressif/esp-idf/blob/fff9895c82d744c7237be8847347bdd1b07c6643/components/esp_psram/esp32p4/Kconfig.spiram",
+   "ref": "fff9895 (tag v6.1)"
+  },
+  {
    "id": "idf-gpio-esp32",
    "kind": "vendor-docs",
    "title": "ESP-IDF GPIO reference, ESP32",

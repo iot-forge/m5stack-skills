@@ -293,7 +293,8 @@
      "id": "p4-psram-speed",
      "text": "M5GFX does not set up a Tab5's display when PSRAM is off, and logs an error asking for 200 MHz when the PSRAM clock is 80 MHz or less. An ESP-IDF project sets CONFIG_SPIRAM=y and CONFIG_SPIRAM_SPEED_200M=y.",
      "src": [
-      "m5gfx"
+      "m5gfx",
+      "idf-p4-psram"
      ],
      "confidence": "high",
      "last_verified": "2026-10-04"
@@ -611,7 +612,8 @@
      "id": "p4-psram-speed",
      "text": "M5GFX does not set up a Tab5's display when PSRAM is off, and logs an error asking for 200 MHz when the PSRAM clock is 80 MHz or less. An ESP-IDF project sets CONFIG_SPIRAM=y and CONFIG_SPIRAM_SPEED_200M=y.",
      "src": [
-      "m5gfx"
+      "m5gfx",
+      "idf-p4-psram"
      ],
      "confidence": "high",
      "last_verified": "2026-10-04"
@@ -929,7 +931,8 @@
      "id": "p4-psram-speed",
      "text": "M5GFX does not set up a Tab5's display when PSRAM is off, and logs an error asking for 200 MHz when the PSRAM clock is 80 MHz or less. An ESP-IDF project sets CONFIG_SPIRAM=y and CONFIG_SPIRAM_SPEED_200M=y.",
      "src": [
-      "m5gfx"
+      "m5gfx",
+      "idf-p4-psram"
      ],
      "confidence": "high",
      "last_verified": "2026-10-04"

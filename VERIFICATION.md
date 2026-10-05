@@ -292,12 +292,12 @@ A run writes two files, named by date: `verification/runs/<YYYY-MM-DD>.json` (re
     "operator": "<name>",
     "host_os": "<os and version>",
     "plugin_commit": "<git sha>",
-    "unit": {"revision": "core2@v1.3", "sku_sticker": "K010-V13"},
+    "unit": {"revision": "tab5@2026.04", "sku_sticker": "C145"},
     "toolchains": {"arduino-cli": "<ver>", "esp32 core": "<ver>", "M5Unified": "<ver>", "platformio": "<ver>", "esp-idf": "<ver>", "esptool": "<ver>", "mpremote": "<ver>", "uiflow2 image": "<ver>", "claude-code": "<ver>"}
   },
   "results": [
-    {"check": "fact.pmic.core2@v1.3", "result": "pass", "observed": "<the probe line, e.g. the PMIC's address and AXP192>", "output": "<verbatim, or a path under verification/runs/>"},
-    {"check": "open-question.auto-download.core2@v1.3", "result": "observed", "observed": "<what happened, e.g. esptool entered download mode with no button press>", "output": "<verbatim, or a path under verification/runs/>"}
+    {"check": "fact.imu.tab5@2026.04", "result": "pass", "observed": "<the probe line, e.g. the IMU's address and BMI270>", "output": "<verbatim, or a path under verification/runs/>"},
+    {"check": "open-question.auto-download.tab5@2026.04", "result": "observed", "observed": "<what happened, e.g. esptool entered download mode with no button press>", "output": "<verbatim, or a path under verification/runs/>"}
   ]
 }
 ```

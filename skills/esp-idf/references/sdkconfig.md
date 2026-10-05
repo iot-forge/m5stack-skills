@@ -43,14 +43,15 @@ Set it in `sdkconfig.defaults`, or in `idf.py menuconfig` when `sdkconfig` keeps
 
 An ESP-IDF v6.1 image for the ESP32-P4 runs on chip revisions below v3.0 or on v3.0 and later, never both, and the bootloader refuses an image built for the other range. `board.py facts "<user's words>"` prints this as an `erratum` line, with the `CONFIG_` line for each range. The data does not say which revision a unit carries, so the unit has to.
 
-1. Ask the user for the chip revision: esptool prints it when it connects (`esptool --port <port> chip-id`, a read; standing rule 3), and so does the boot log of firmware already on the board. Done when you have a revision, or the user can't read one.
+1. Ask the user for the chip revision *(untested on hardware: open-question.chip-revision.tab5@2026.04)*: esptool prints it when it connects (`esptool --port <port> chip-id` writes nothing, but it resets the board), and so does the boot log of firmware already on the board. Done when you have a revision, or the user can't read one.
 2. Write the line for that range in `sdkconfig.defaults`:
    - below v3.0: `CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y`
-   - v3.0 or later: no line (the v6.1 default), and remove that one if it is there.
+   - v3.0: `CONFIG_ESP32P4_REV_MIN_300=y`, and remove the line above if it is there. The v6.1 default starts at v3.1, so a default image does not start on a v3.0 chip.
+   - v3.1 or later: no line (the v6.1 default), and remove both lines above if they are there.
    - not known: tell the user the image will start on only one range, and let them choose; the erratum says which one the Arduino cores build for by default.
 
    The option is from ESP-IDF v6.1. If `idf.py reconfigure` warns that it is unknown, the installed version has no such choice: tell the user, and give them the version from `idf.py --version`.
-3. A board that restarts in a loop, printing `Image requires chip rev >= v<x>, but chip is v<y>` or `Image requires chip rev <= v<x>, but chip is v<y>`, has an image for the other range: the message names the chip's revision. Change the line, build and flash again.
+3. A board that restarts in a loop, printing `Image requires chip rev >= v<x>, but chip is v<y>` or `Image requires chip rev <= v<x>, but chip is v<y>`, has an image that leaves the chip's revision out: the message names it. Write the line for that revision, build and flash again.
 
 The erratum's PSRAM lines (`CONFIG_SPIRAM=y`, `CONFIG_SPIRAM_SPEED_200M=y`) go in `sdkconfig.defaults` as they are. The ESP32-P4 has no `CONFIG_SPIRAM_MODE_QUAD` or `_OCT` choice, so write no mode line for it.
 
