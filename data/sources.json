@@ -408,6 +408,13 @@
    "title": "Linux USB ID repository (usb.ids)",
    "url": "http://www.linux-usb.org/usb.ids",
    "ref": "2026.06.26"
+  },
+  {
+   "id": "hw-2026-10-04-tab5@2026.04",
+   "kind": "hardware-test",
+   "title": "Hardware verification run 2026-10-04, tab5@2026.04",
+   "url": "verification/runs/2026-10-04.md",
+   "ref": "2026-10-04"
   }
  ]
 }

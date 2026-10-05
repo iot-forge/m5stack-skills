@@ -23,7 +23,7 @@ M5's pages give no manual procedure for these boards. After one retry, a framewo
 
 ## Through native USB
 
-esptool recognises the chip's own USB Serial/JTAG port by its vendor and product ID (`303A:1001`, the same on an ESP32-S3 and an ESP32-P4) and uses that port's reset sequence *(untested on hardware: open-question.auto-download.tab5@2026.04)*. Espressif's docs call for no other flag. There are two exceptions:
+esptool recognises the chip's own USB Serial/JTAG port by its vendor and product ID (`303A:1001`, the same on an ESP32-S3 and an ESP32-P4) and uses that port's reset sequence. Espressif's docs call for no other flag. There are two exceptions:
 
 - **A container or virtual machine** that hides the USB descriptors: esptool prints `Failed to get VID/PID of a device on ...` and uses the standard reset sequence instead. Add `--before usb-reset`.
 - **No serial port, or the automatic reset fails.** The firmware on the board may have turned its USB off or reconfigured the USB pins. Enter download mode by hand.
@@ -40,18 +40,18 @@ M5 prints the procedure on each native-USB board's own page, and it differs by b
 
 Ask the user to confirm that the green LED lit and then went out.
 
-**Tab5** *(untested on hardware: open-question.manual-download.tab5@2026.04)*:
+**Tab5**:
 
 1. Hold the **RESET** button for about 2 seconds.
-2. When the green LED flashes rapidly, release the button: the board is in download mode.
+2. When the green LED flashes rapidly, release the button: the board is in download mode, and its screen is blank.
 
-Ask the user to confirm that the green LED flashed rapidly.
+Ask the user to confirm that the green LED flashed rapidly. Holding RESET does not keep a Tab5 from being flashed: it puts it in download mode.
 
 If the LED didn't do what the board's procedure says, the board is not in download mode. Then run `doctor.py --ports` again and use the port it lists now. The step is done when that port is named.
 
 ### Leaving download mode after a manual entry
 
-Over USB Serial/JTAG, esptool's reset after the write is only a core reset. Espressif documents this for the ESP32-S3; on an ESP32-P4 board, ask the user whether the new firmware started before applying it. A core reset doesn't re-read the boot pin, so a board that entered download mode by hand stays there and the new firmware doesn't start. To leave download mode:
+Over USB Serial/JTAG, esptool's reset after the write is only a core reset. Espressif documents this for the ESP32-S3, and a Tab5 behaved the same way: after a manual entry it stayed in download mode when esptool reset it. A core reset doesn't re-read the boot pin, so a board that entered download mode by hand stays there and the new firmware doesn't start. To leave download mode:
 
 - **With esptool directly**: add `--after watchdog-reset` before the command name (`esptool --port <port> --after watchdog-reset write-flash ...`). It triggers a full system reset.
 - **Through a toolchain upload**: ask the user to press RST once, or to power-cycle the board.
@@ -77,5 +77,6 @@ This file follows esptool v5. v5 installs as `esptool` and spells commands, opti
 - Espressif, esptool v5 migration guide (hyphenated names, `esptool.py` → `esptool`): https://docs.espressif.com/projects/esptool/en/latest/esp32s3/migration-guide.html
 - M5Stack, "Download Mode" on the CoreS3, CoreS3-SE and CoreS3-Lite pages: https://docs.m5stack.com/en/core/CoreS3, https://docs.m5stack.com/en/core/M5CoreS3%20SE, https://docs.m5stack.com/en/core/CoreS3-Lite
 - M5Stack, "Download Mode" on the Tab5 page: https://docs.m5stack.com/en/core/Tab5
+- For the Tab5, the hardware run of 2026-10-04 on a `tab5@2026.04` (`verification/runs/2026-10-04.md`): esptool 5.3.1 entered download mode with no button press for `chip-id`, `erase-flash` and an upload; M5's manual procedure worked as printed; after it, esptool's hard reset left the unit in download mode
 - esptool 4.11 as PlatformIO ships it (`tool-esptoolpy` 2.41100.0), read 2026-10-04: `loader.py` picks the USB Serial/JTAG reset from the port's product ID (`USB_JTAG_SERIAL_PID = 0x1001`), whatever the chip; `targets/esp32p4.py` has its own `watchdog_reset`
 - M5Stack, Core2 and Core2 v1.3 pages, "USB Driver" (reinstall on timeout or `Failed to write to target RAM`): https://docs.m5stack.com/en/core/core2, https://docs.m5stack.com/en/core/Core2_v1.3

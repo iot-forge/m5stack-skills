@@ -169,9 +169,10 @@
     "m5-fire-v2.7",
     "m5-core2-for-aws",
     "m5-core2-for-aws-v1.3",
-    "m5-tab5"
+    "m5-tab5",
+    "hw-2026-10-04-tab5@2026.04"
    ],
-   "confidence": "medium",
+   "confidence": "high",
    "last_verified": "2026-10-04"
   },
   {
@@ -292,7 +293,8 @@
        "BMI270": {
         "value": "0x24",
         "src": [
-         "ds-bmi270"
+         "ds-bmi270",
+         "hw-2026-10-04-tab5@2026.04"
         ]
        }
       }
@@ -349,7 +351,8 @@
     "m5-gray",
     "m5-fire",
     "m5-m5go-v2.7",
-    "m5-tab5"
+    "m5-tab5",
+    "hw-2026-10-04-tab5@2026.04"
    ],
    "confidence": "high",
    "last_verified": "2026-10-04"
@@ -616,7 +619,8 @@
      "INA226": {
       "value": "0x2260",
       "src": [
-       "ds-ina226"
+       "ds-ina226",
+       "hw-2026-10-04-tab5@2026.04"
       ]
      }
     }
@@ -632,7 +636,8 @@
    "caveats": "Needs flashing. Tab5 only; it is on every Tab5 revision, so it confirms the part and splits nothing.",
    "src": [
     "m5-tab5",
-    "ds-ina226"
+    "ds-ina226",
+    "hw-2026-10-04-tab5@2026.04"
    ],
    "confidence": "high",
    "last_verified": "2026-10-04"
@@ -650,7 +655,8 @@
      "PI4IOE5V6408": {
       "value": "0xA0",
       "src": [
-       "ds-pi4ioe5v6408"
+       "ds-pi4ioe5v6408",
+       "hw-2026-10-04-tab5@2026.04"
       ]
      }
     },
@@ -667,7 +673,8 @@
    "caveats": "Needs flashing. Tab5 only; it is on every Tab5 revision, so it confirms the part and splits nothing.",
    "src": [
     "m5-tab5",
-    "ds-pi4ioe5v6408"
+    "ds-pi4ioe5v6408",
+    "hw-2026-10-04-tab5@2026.04"
    ],
    "confidence": "high",
    "last_verified": "2026-10-04"
@@ -685,7 +692,8 @@
      "PI4IOE5V6408": {
       "value": "0xA0",
       "src": [
-       "ds-pi4ioe5v6408"
+       "ds-pi4ioe5v6408",
+       "hw-2026-10-04-tab5@2026.04"
       ]
      }
     },
@@ -702,7 +710,8 @@
    "caveats": "Needs flashing. Tab5 only; it is on every Tab5 revision, so it confirms the part and splits nothing.",
    "src": [
     "m5-tab5",
-    "ds-pi4ioe5v6408"
+    "ds-pi4ioe5v6408",
+    "hw-2026-10-04-tab5@2026.04"
    ],
    "confidence": "high",
    "last_verified": "2026-10-04"
@@ -735,9 +744,10 @@
    "reliability": "medium",
    "caveats": "Needs flashing. Tab5 only. An answer at an address does not name the chip, and all three are on every Tab5 revision, so it splits nothing.",
    "src": [
-    "m5-tab5"
+    "m5-tab5",
+    "hw-2026-10-04-tab5@2026.04"
    ],
-   "confidence": "medium",
+   "confidence": "high",
    "last_verified": "2026-10-04"
   }
  ]

@@ -126,6 +126,13 @@ class Query(unittest.TestCase):
         self.assertEqual(out["revisions_in_play"], rids)
         self.assertEqual(len(rids), 3)
         self.assertTrue(out["facts"]["imu"]["agree"])
+        # a hardware run on one revision marks that revision only, and splits nothing (VERIFICATION.md section 11)
+        hw = [k for k in out["facts"]["imu"]["values"] if "hardware-verified" in k]
+        for k in hw:
+            self.assertRegex(k, r"\[hardware-verified \d{4}-\d\d-\d\d on [\w.@, -]+ only\]$")
+        code, one = board_json("facts", rids[-1], "imu")
+        for k in one["facts"]["imu"]["values"]:
+            self.assertNotIn(" only]", k)
         self.assertFalse(out["facts"]["display"]["agree"])
         self.assertEqual(out["facts"]["display"]["tell_apart"], {"signal": "tab5-lcd-label", "kind": "physical", "exact": True})
 

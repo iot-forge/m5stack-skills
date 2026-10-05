@@ -285,6 +285,31 @@ def cmd_find(db, a, res):
     return "\n".join(lines)
 
 
+HW_MARK = re.compile(r"  \[hardware-verified (\d{4}-\d\d-\d\d)\]$")
+
+
+def merge_hw_marks(groups, rids):
+    """Join groups that differ only in the hardware-verified mark: a run on one revision confirms a value there,
+    it does not make the revisions diverge. The mark then names the revisions it holds for."""
+    merged = {}  # the value without its mark -> [(revision, date or None)]
+    for k, rs in groups.items():
+        m = HW_MARK.search(k)
+        merged.setdefault(HW_MARK.sub("", k), []).extend((r, m and m.group(1)) for r in rs)
+    out = {}
+    for k, members in merged.items():
+        dates = {d for _, d in members}
+        if dates == {None}:
+            mark = ""
+        elif len(dates) == 1:
+            mark = f"  [hardware-verified {dates.pop()}]"
+        else:
+            checked = [(r, d) for r, d in members if d]
+            mark = (f"  [hardware-verified {max(d for _, d in checked)} on "
+                    f"{', '.join(short(r, rids) for r, _ in checked)} only]")
+        out[k + mark] = [r for r in rids if r in {m for m, _ in members}]
+    return out
+
+
 def cmd_facts(db, a, res):
     rids = res["revisions"]
     fields = a.fields or DEFAULT_FIELDS
@@ -309,7 +334,8 @@ def cmd_facts(db, a, res):
             notes.setdefault(k, set()).add(fmt_field(db, db["revisions"][r], f))
         # show a group's notes only when every member carries the same one
         groups = {(next(iter(notes[k])) if len(notes[k]) == 1 else k): rs for k, rs in groups.items()}
-        entry = {"agree": len(groups) == 1, "values": groups}
+        groups = merge_hw_marks(groups, rids)
+        entry ={"agree": len(groups) == 1, "values": groups}
         if len(groups) == 1:
             lines.append(f"{f}: {next(iter(groups))}")
         else:

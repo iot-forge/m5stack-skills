@@ -709,7 +709,8 @@
     "bus": "i2c_internal",
     "address": "0x68",
     "src": [
-     "m5-tab5"
+     "m5-tab5",
+     "hw-2026-10-04-tab5@2026.04"
     ],
     "confidence": "high",
     "last_verified": "2026-10-04"
@@ -769,9 +770,10 @@
     "part": "native USB (ESP32-P4 USB Serial/JTAG)",
     "note": "on the USB-C port, USB1 in M5's pin map overview; the USB-A port is a host port",
     "src": [
-     "m5-tab5"
+     "m5-tab5",
+     "hw-2026-10-04-tab5@2026.04"
     ],
-    "confidence": "medium",
+    "confidence": "high",
     "last_verified": "2026-10-04"
    },
    "sd": {

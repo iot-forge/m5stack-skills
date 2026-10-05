@@ -43,7 +43,7 @@ Set it in `sdkconfig.defaults`, or in `idf.py menuconfig` when `sdkconfig` keeps
 
 An ESP-IDF v6.1 image for the ESP32-P4 runs on chip revisions below v3.0 or on v3.0 and later, never both, and the bootloader refuses an image built for the other range. `board.py facts "<user's words>"` prints this as an `erratum` line, with the `CONFIG_` line for each range. The data does not say which revision a unit carries, so the unit has to.
 
-1. Ask the user for the chip revision *(untested on hardware: open-question.chip-revision.tab5@2026.04)*: esptool prints it when it connects (`esptool --port <port> chip-id` writes nothing, but it resets the board), and so does the boot log of firmware already on the board. Done when you have a revision, or the user can't read one.
+1. Ask the user for the chip revision: esptool prints it when it connects (`esptool --port <port> chip-id` writes nothing, but it resets the board), and so does the boot log of firmware already on the board. Done when you have a revision, or the user can't read one.
 2. Write the line for that range in `sdkconfig.defaults`:
    - below v3.0: `CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y`
    - v3.0: `CONFIG_ESP32P4_REV_MIN_300=y`, and remove the line above if it is there. The v6.1 default starts at v3.1, so a default image does not start on a v3.0 chip.
@@ -58,6 +58,8 @@ The erratum's PSRAM lines (`CONFIG_SPIRAM=y`, `CONFIG_SPIRAM_SPEED_200M=y`) go i
 Done when `sdkconfig` has each line the erratum names for the unit's range, and the user knows which range the image is for.
 
 ## Sources
+
+For the chip revision, the hardware run of 2026-10-04 on a `tab5@2026.04` (`verification/runs/2026-10-04.md`): `esptool chip-id` printed `Chip type:          ESP32-P4 (revision v1.3)`, the boot log `boot: chip revision: v1.3`, and an image built with `CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y` started on it. That is one unit; it says nothing about other Tab5 units.
 
 ESP-IDF v6.1 (commit `fff9895c82d744c7237be8847347bdd1b07c6643`), https://github.com/espressif/esp-idf/tree/v6.1:
 
