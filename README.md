@@ -81,7 +81,7 @@ Not in this version. Until each exists, its questions go to the skill named here
 | `power-and-battery` skill | the AXP192/AXP2101 PMIC split across Core2 revisions, battery and charging | `board-identification` for PMIC and battery facts |
 | `units-and-peripherals` skill | a catalogue of Grove and M-Bus units | `pinout-lookup` for the port's pins; a unit's own wiring or driver is pointed at the `m5stack` MCP server |
 | JTAG / OpenOCD debugging | on-chip debugging; only the ESP32-S3 boards have USB-JTAG built in, the ESP32 boards need an external probe | declined by `flashing-and-debugging` |
-| CoreS3 Thread BR, Tab5 | boards whose data is a `roadmap` stub: a second radio SoC, and an ESP32-P4 | `board.py` refuses them and gives the reason |
+| CoreS3 Thread BR | a board whose data is a `roadmap` stub: it has a second radio SoC | `board.py` refuses it and gives the reason |
 | Other M5 families | Stick, Atom, Cardputer, Stamp, E-Paper and others; the data schema already accepts them | not covered |
 
 Work still to do on v1 is in [`backlog/`](backlog/README.md).
