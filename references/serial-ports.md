@@ -17,7 +17,7 @@ On macOS, `doctor.py` lists the ports and the vendor IDs separately and says so 
 
 ## Recognise the bridge
 
-The `<-` marker says what kind of USB connection the port has: a bridge chip (vendor ID `10C4` or `1A86`), or the ESP32-S3's own USB (`303A`, marked `Espressif native USB`). Take which revisions carry which bridge from `board.py facts <board> usb_bridge`, and compare the marked port with it:
+The `<-` marker says what kind of USB connection the port has: a bridge chip (vendor ID `10C4` or `1A86`), or the chip's own USB on an ESP32-S3 or ESP32-P4 board (`303A`, marked `Espressif native USB`). Take which revisions carry which bridge from `board.py facts <board> usb_bridge`, and compare the marked port with it:
 
 - **The vendor ID fits a revision in play**: this is the candidate port.
 - **It fits no revision in play**: say so. Either the port belongs to another device, or the user's board is not what they named; ask which.

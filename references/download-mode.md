@@ -6,7 +6,7 @@ For when a write needs the board's ROM bootloader (download mode) and doesn't ge
 
 Run `board.py facts <board> usb_bridge`:
 
-- **`native USB (ESP32-S3 USB Serial/JTAG)`** on every revision in play: [Through native USB](#through-native-usb).
+- **A value that starts `native USB`** (the ESP32-S3's or the ESP32-P4's own USB Serial/JTAG) on every revision in play: [Through native USB](#through-native-usb).
 - **Anything else**, whether a bridge chip name, a set of bridge chips, divergent branches of bridge chips, or `not documented`: [Through a USB bridge](#through-a-usb-bridge).
 
 ## Through a USB bridge
@@ -23,24 +23,35 @@ M5's pages give no manual procedure for these boards. After one retry, a framewo
 
 ## Through native USB
 
-esptool recognises the ESP32-S3's own USB Serial/JTAG port by its vendor and product ID and uses that port's reset sequence. Espressif's docs call for no other flag. There are two exceptions:
+esptool recognises the chip's own USB Serial/JTAG port by its vendor and product ID (`303A:1001`, the same on an ESP32-S3 and an ESP32-P4) and uses that port's reset sequence. Espressif's docs call for no other flag. There are two exceptions:
 
 - **A container or virtual machine** that hides the USB descriptors: esptool prints `Failed to get VID/PID of a device on ...` and uses the standard reset sequence instead. Add `--before usb-reset`.
 - **No serial port, or the automatic reset fails.** The firmware on the board may have turned its USB off or reconfigured the USB pins. Enter download mode by hand.
 
 ### Entering download mode by hand
 
-This is M5's procedure, as printed on each native-USB board's own page *(untested on hardware: open-question.manual-download.cores3@v1.0)* *(untested on hardware: open-question.manual-download.cores3-se@v1.0)*:
+M5 prints the procedure on each native-USB board's own page, and it differs by board. Take the board from `board.py find`.
+
+**CoreS3, CoreS3 SE, CoreS3-Lite** *(untested on hardware: open-question.manual-download.cores3@v1.0)* *(untested on hardware: open-question.manual-download.cores3-se@v1.0)*:
 
 1. Hold the **RESET** (RST) button for about 3 seconds.
 2. When the green LED lights, release the button.
 3. The green LED goes out: the board is in download mode.
 
-Ask the user to confirm that the green LED lit and then went out. If it didn't, the board is not in download mode. Then run `doctor.py --ports` again and use the port it lists now. The step is done when that port is named.
+Ask the user to confirm that the green LED lit and then went out.
+
+**Tab5** *(untested on hardware: open-question.manual-download.tab5@2026.04)*:
+
+1. Hold the **RESET** button for about 2 seconds.
+2. When the green LED flashes rapidly, release the button: the board is in download mode.
+
+Ask the user to confirm that the green LED flashed rapidly.
+
+If the LED didn't do what the board's procedure says, the board is not in download mode. Then run `doctor.py --ports` again and use the port it lists now. The step is done when that port is named.
 
 ### Leaving download mode after a manual entry
 
-Over USB Serial/JTAG, esptool's reset after the write is only a core reset. A core reset doesn't re-read the boot pin, so a board that entered download mode by hand stays there and the new firmware doesn't start. To leave download mode:
+Over USB Serial/JTAG, esptool's reset after the write is only a core reset (Espressif documents this for the ESP32-S3; on a Tab5 it is unchecked, so go by what the user reports). A core reset doesn't re-read the boot pin, so a board that entered download mode by hand stays there and the new firmware doesn't start. To leave download mode:
 
 - **With esptool directly**: add `--after watchdog-reset` before the command name (`esptool --port <port> --after watchdog-reset write-flash ...`). It triggers a full system reset.
 - **Through a toolchain upload**: ask the user to press RST once, or to power-cycle the board.
@@ -65,4 +76,6 @@ This file follows esptool v5. v5 installs as `esptool` and spells commands, opti
 - esptool v5.3.1, run 2026-09-29: `--after` and `-b` are accepted before `write-flash` and rejected after it ("No such option")
 - Espressif, esptool v5 migration guide (hyphenated names, `esptool.py` → `esptool`): https://docs.espressif.com/projects/esptool/en/latest/esp32s3/migration-guide.html
 - M5Stack, "Download Mode" on the CoreS3, CoreS3-SE and CoreS3-Lite pages: https://docs.m5stack.com/en/core/CoreS3, https://docs.m5stack.com/en/core/M5CoreS3%20SE, https://docs.m5stack.com/en/core/CoreS3-Lite
+- M5Stack, "Download Mode" on the Tab5 page: https://docs.m5stack.com/en/core/Tab5
+- esptool 4.11 as PlatformIO ships it (`tool-esptoolpy` 2.41100.0), read 2026-10-04: `loader.py` picks the USB Serial/JTAG reset from the port's product ID (`USB_JTAG_SERIAL_PID = 0x1001`), whatever the chip; `targets/esp32p4.py` has its own `watchdog_reset`
 - M5Stack, Core2 and Core2 v1.3 pages, "USB Driver" (reinstall on timeout or `Failed to write to target RAM`): https://docs.m5stack.com/en/core/core2, https://docs.m5stack.com/en/core/Core2_v1.3

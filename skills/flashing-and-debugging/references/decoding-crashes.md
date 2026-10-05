@@ -6,6 +6,7 @@ Use this when the user has serial output with a panic, a backtrace or repeated r
 
 - [Match the output](#match-the-output)
 - [Decode the backtrace](#decode-the-backtrace)
+- [A panic with no Backtrace line (ESP32-P4)](#a-panic-with-no-backtrace-line-esp32-p4)
 - [What the panic line means](#what-the-panic-line-means)
 - [Brownout](#brownout)
 - [A boot loop with no backtrace](#a-boot-loop-with-no-backtrace)
@@ -19,6 +20,7 @@ Use this when the user has serial output with a panic, a backtrace or repeated r
 | The output shows | Case |
 |---|---|
 | A `Backtrace:` line, after `Guru Meditation Error`, `abort() was called`, `Stack smashing protect failure!`, `CORRUPT HEAP` or `Task watchdog got triggered` | [Decode the backtrace](#decode-the-backtrace) |
+| A register dump that starts `MEPC`, then `Stack memory:`, and no `Backtrace:` line | [A panic with no Backtrace line (ESP32-P4)](#a-panic-with-no-backtrace-line-esp32-p4) |
 | `Brownout detector was triggered`, or a reset line starting `rst:0xf` | [Brownout](#brownout) |
 | `invalid header: 0xffffffff`, again and again | [A boot loop with no backtrace](#a-boot-loop-with-no-backtrace) |
 | `Detected size(…) smaller than the size in the binary image header(…)` | [A boot loop with no backtrace](#a-boot-loop-with-no-backtrace) |
@@ -36,13 +38,28 @@ Use this when the user has serial output with a panic, a backtrace or repeated r
 
    No project or no ELF: tell the user the decode needs the ELF from the build they flashed. Building belongs to the framework skill: it rebuilds the same source, unchanged, and step 3 checks the result. A rebuild can differ from the flashed build even so (ESP-IDF stamps the build time into the image unless `CONFIG_APP_COMPILE_TIME_DATE` is off); then flashing the rebuild and reproducing the crash gives an ELF that matches. Done when you have the ELF's path, or the user knows what is needed and which skill builds it.
 3. **Check it is the right ELF.** The panic output's `ELF file SHA256:` line prints the start of the SHA-256 of the ELF that was flashed. Hash the file (`sha256sum <elf>`, `certutil -hashfile <elf> SHA256`, or Python's `hashlib`) and compare the start. A mismatch means another build: its addresses point at other code, so say the decode is not trustworthy until the ELF matches. No such line, or a value of all zeros: tell the user the match can't be checked. Done when the start matches, or the user has accepted an unchecked ELF.
-4. **Find the decoder.** Read `soc_part` from `board.py facts`: ESP32-S3 needs `xtensa-esp32s3-elf-addr2line`, any other ESP32 part `xtensa-esp32-elf-addr2line`. Run `doctor.py`. Under `addr2line:` each line reads `<decoder> (<where>): <path>`, where it was found: `PATH`, `arduino`, `platformio` or `esp-idf`. Take the path from the first of these lines that exists for that decoder: a `PATH` line (an ESP-IDF shell puts its own decoder there); the project's toolchain, where an `arduino` path names the core (`packages/esp32/` or `packages/m5stack/`); any other line, and then tell the user which toolchain it is from. `addr2line: MISSING` means none is on PATH or in the toolchains' default folders: tell the user it ships with each toolchain (standing rule 5). Done when you have the decoder's path.
+4. **Find the decoder.** Read `soc_part` from `board.py facts`: ESP32-S3 needs `xtensa-esp32s3-elf-addr2line`, ESP32-P4 (a RISC-V chip) `riscv32-esp-elf-addr2line`, any other ESP32 part `xtensa-esp32-elf-addr2line`. Run `doctor.py`. Under `addr2line:` each line reads `<decoder> (<where>): <path>`, where it was found: `PATH`, `arduino`, `platformio` or `esp-idf`. Take the path from the first of these lines that exists for that decoder: a `PATH` line (an ESP-IDF shell puts its own decoder there); the project's toolchain, where an `arduino` path names the core (`packages/esp32/` or `packages/m5stack/`); any other line, and then tell the user which toolchain it is from. `addr2line: MISSING` means none is on PATH or in the toolchains' default folders: tell the user it ships with each toolchain (standing rule 5). Done when you have the decoder's path.
 5. **Decode.** Run `<decoder> -pfiaC -e <elf> <PC> <PC> ...` with every address from step 1. Each line reads `<address>: <function> at <file>:<line>`. `?? ??:0` means the address is not in this ELF: ROM code, or an ELF from another build. Done when every address has a line.
 6. **Report.** Give the panic line and its meaning from the table below, then the frames from the top. The first frame in the user's own files is where the fault shows. Fixing it belongs to the framework skill for the project (bugs in the user's own code). Frames only in libraries go on with the last frame that called them: M5Unified or M5GFX to `arduino-m5unified`, whatever the build system; the Arduino core or ESP-IDF to the project's framework skill. For a crash the user can repeat, offer [a monitor that decodes as it runs](#a-monitor-that-decodes-as-it-runs). Done when the user has the decoded frames and knows which skill takes it next.
 
+## A panic with no Backtrace line (ESP32-P4)
+
+The ESP32-P4 is a RISC-V chip. By default its panic handler prints the registers and a `Stack memory:` dump, and no `Backtrace:` line: the ESP-IDF default is no backtrace on the device (`CONFIG_ESP_SYSTEM_NO_BACKTRACE`), and both Arduino cores' ESP32-P4 builds keep it.
+
+1. **Take two addresses** from the register dump: `MEPC`, where the fault happened, and `RA`, the return address of the function that was running. Done when you have both.
+2. **Find the ELF, check it, find the decoder**: steps 2 to 4 of [Decode the backtrace](#decode-the-backtrace). The decoder is `riscv32-esp-elf-addr2line`.
+3. **Decode** both: `<decoder> -pfiaC -e <elf> <MEPC> <RA>`. Done when each has a line, or `?? ??:0`.
+4. **Report** the panic line with its meaning from the tables below, where `MEPC` points, and where `RA` points. Say that these are two frames, not the call stack. `MTVAL` is the address a load or store fault tried to reach. Then hand on as in step 6 of [Decode the backtrace](#decode-the-backtrace). Done when the user has both and knows which skill takes it next.
+5. **The whole call stack**, for a crash the user can repeat:
+   - ESP-IDF: `idf.py monitor` rebuilds a backtrace from the stack dump; the user runs it and reproduces the crash.
+   - Any toolchain with an `sdkconfig`: `CONFIG_ESP_SYSTEM_USE_FRAME_POINTER=y` makes the panic handler print a `Backtrace:` line (about 5 to 6% more code), and so does `CONFIG_ESP_SYSTEM_USE_EH_FRAME=y` (20 to 100% more; not for production builds). Setting it belongs to the `esp-idf` skill. The line then decodes as in [Decode the backtrace](#decode-the-backtrace).
+   - Arduino: the cores' ESP32-P4 libraries are prebuilt without either option, so `MEPC` and `RA` are what there is.
+
+   Done when the user has the call stack, or knows what their toolchain can give.
+
 ## What the panic line means
 
-The cause is the text in brackets after `Guru Meditation Error: Core N panic'ed`.
+The cause is the text in brackets after `Guru Meditation Error: Core N panic'ed`. The first table is for the ESP32 and ESP32-S3, the second for the ESP32-P4.
 
 | Cause | Meaning |
 |---|---|
@@ -54,6 +71,17 @@ The cause is the text in brackets after `Guru Meditation Error: Core N panic'ed`
 | `Interrupt wdt timeout on CPU0` or `CPU1` | Interrupts were blocked too long: interrupts disabled, a critical section, or a long interrupt handler |
 | `Cache error` | Flash was reached while its cache was off (during a flash write, for example), typically from an interrupt handler registered with `ESP_INTR_FLAG_IRAM` whose code or data is not all in IRAM |
 | `Unhandled debug exception`, with `Debug exception reason: Stack canary watchpoint triggered (<task>)` below it | The named task overflowed its stack |
+
+| Cause on an ESP32-P4 | Meaning |
+|---|---|
+| `Load access fault`, `Store access fault` | A read or write at an invalid address, printed as `MTVAL`. Zero, or close to zero, is a NULL pointer or a member of a NULL struct |
+| `Instruction access fault` | A call through a function pointer that points at no code; `MEPC` is zero or garbage |
+| `Illegal instruction` | A FreeRTOS task function returned instead of deleting itself, a non-void function ended without `return`, or the flash pins were reconfigured |
+| `Load address misaligned`, `Store address misaligned`, `Instruction address misaligned` | A misaligned access or jump |
+| `Breakpoint` | The CPU ran a breakpoint instruction with no debugger attached |
+| `Stack protection fault` | The running task overflowed its stack |
+| `Memory protection fault` | An access to memory the chip's protection settings forbid |
+| `Interrupt wdt timeout on CPU0` or `CPU1`, `Cache error` | As in the table above |
 
 `Task watchdog got triggered` lists the tasks that did not yield within the timeout: code that loops or waits without yielding. `abort() was called at PC …` follows a failed check; the lines above it say which. `CORRUPT HEAP` means the heap's own checks found it overwritten, usually by a buffer overrun or an out-of-bounds write.
 
@@ -73,7 +101,7 @@ The cause is the text in brackets after `Guru Meditation Error: Core N panic'ed`
 
 ## The reset reason
 
-The ROM prints `rst:0x<code> (<name>)` on every boot. Read the code: the names differ between ESP32 and ESP32-S3.
+The ROM prints `rst:0x<code> (<name>)` on every boot. Read the code: the names differ between the ESP32, ESP32-S3 and ESP32-P4. The rows with no chip named hold for all three.
 
 | Code | Reason |
 |---|---|
@@ -83,6 +111,9 @@ The ROM prints `rst:0x<code> (<name>)` on every boot. Read the code: the names d
 | `0x7`, `0x8`, `0x9`, `0xb`, `0xd`, `0x10`; on the ESP32-S3 also `0x11`, `0x12` | A watchdog. Look for a watchdog message before it; with none, report the codes |
 | `0xf` | Brownout: [Brownout](#brownout) |
 | `0x15`, `0x16` | ESP32-S3 only: a reset through the chip's USB-UART or USB-JTAG peripheral |
+| On an ESP32-P4: `0x12` | A watchdog (the super watchdog), as above |
+| On an ESP32-P4: `0x16`, `0x17` | A reset through the chip's USB-JTAG or USB-UART peripheral: an upload or a monitor did it |
+| On an ESP32-P4: `0x1a` | The CPU locked up. Report the code and the output before it |
 | Any other | Report the code and the name the ROM printed |
 
 Done when each reset in the output has a reason, or has been reported as printed.
@@ -105,7 +136,8 @@ Done when the user has the command for their toolchain, or knows to use the step
 
 - ESP-IDF v6.1, `docs/en/api-guides/fatal-errors.rst`: the register dump and `Backtrace:` format, each Guru Meditation cause, `Brownout detector was triggered` (and that only part of it may print), `CORRUPT HEAP`, `Stack canary watchpoint triggered`, `Stack smashing protect failure!`. `components/esp_system/port/arch/xtensa/panic_arch.c`: the canary watchpoint panics as `Unhandled debug exception` and prints `Debug exception reason:` after it.
 - ESP-IDF v6.1, `components/esp_system/panic.c` (`ELF file SHA256:`), `components/esp_app_format/Kconfig.projbuild` (`APP_RETRIEVE_LEN_ELF_SHA`, default 9 characters; `APP_COMPILE_TIME_DATE`, default on: the build time goes into the image), `components/esp_system/port/arch/xtensa/debug_helpers.c` (`|<-CORRUPTED`, `|<-CONTINUES`), `components/esp_system/task_wdt/task_wdt.c` and `docs/en/api-reference/system/wdts.rst` (the task watchdog message; what blocks interrupts), `docs/en/api-reference/system/heap_debug.rst` (heap corruption usually means an overrun), `components/spi_flash/esp_flash_spi_init.c` (the flash-size message), `components/esp_psram/esp32/esp_psram_impl_quad.c` (the ESP32's `PSRAM ID read error: … PSRAM chip not found or not supported`) and `components/esp_psram/device/esp_psram_impl_ap_quad.c` (the ESP32-S3's warning, "fallback to use default driver pattern"), `components/esp_stdio/Kconfig` (`ESP_CONSOLE_UART_BAUDRATE`).
-- ESP-IDF v6.1, `components/esp_rom/esp32/include/esp32/rom/rtc.h` and `components/esp_rom/esp32s3/include/esp32s3/rom/rtc.h`: the reset reason codes and names.
+- ESP-IDF v6.1, `components/esp_rom/esp32/include/esp32/rom/rtc.h`, `components/esp_rom/esp32s3/include/esp32s3/rom/rtc.h` and `components/esp_rom/esp32p4/include/esp32p4/rom/rtc.h`: the reset reason codes and names.
+- ESP-IDF v6.1, for RISC-V chips: `docs/en/api-guides/fatal-errors.rst` (the `MEPC` register dump; IDF Monitor's backtrace from the stack dump; `CONFIG_ESP_SYSTEM_USE_EH_FRAME` and `CONFIG_ESP_SYSTEM_USE_FRAME_POINTER` with their size costs), `components/esp_system/Kconfig` (`ESP_BACKTRACING_METHOD`, default `ESP_SYSTEM_NO_BACKTRACE`), `components/esp_system/port/arch/riscv/panic_arch.c` (the cause names, `Stack memory:`, `Stack protection fault`, `Memory protection fault`). Read on 2026-10-04 in arduino-esp32 3.3.12 and the m5stack core 3.3.9: the `sdkconfig` of `esp32p4-libs` and `esp32p4_es-libs` has neither backtrace option set. None of the ESP32-P4 text here has been run on hardware.
 - ESP-IDF v6.1, `docs/en/api-guides/bootloader.rst`: `invalid header: 0xffffffff` when no image loads. `docs/en/api-guides/tools/idf-monitor.rst`: IDF Monitor decodes addresses with `addr2line -pfiaC -e build/PROJECT.elf`. `tools/idf_tools.py`: `IDF_TOOLS_PATH` defaults to `~/.espressif`.
 - arduino-esp32 3.3.12, `platform.txt`: the ELF is `{build.path}/{build.project_name}.elf`; `elf2image --elf-sha256-offset 0xb0` writes its SHA-256 into the image; "Export compiled Binary" copies it to `{sketch_path}/build/<vendor>.<arch>.<board>/`.
 - PlatformIO platform espressif32 7.0.1, `monitor/filter_exception_decoder.py`: the `esp32_exception_decoder` filter.
