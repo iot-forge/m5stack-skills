@@ -7,6 +7,10 @@
    "text": "Plug the unit in. doctor.py should list exactly one new port; compare its VID/PID with the USB bridge `board.py facts <revision>` gives, and check the bridge driver is present."
   },
   {
+   "id": "chip-id",
+   "text": "Run `esptool chip-id` on that port. Record the line that gives the chip revision, verbatim."
+  },
+  {
    "id": "erase",
    "text": "Run `esptool erase-flash` on that port, once, after confirming the erase. It clears M5's cached board identity in NVS."
   },
@@ -950,7 +954,7 @@
     "esp-idf"
    ],
    "revision": "tab5@2026.04",
-   "step": "plug-in",
+   "step": "chip-id",
    "depends_on": "host.port.tab5@2026.04",
    "note": "VERIFICATION.md section 7"
   },

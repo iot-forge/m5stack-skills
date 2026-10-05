@@ -808,7 +808,7 @@ class Tab5Run(RepoCopy):  # B42: the release bar's unit, run in Arduino and ESP-
     def test_the_tab5_run_asks_in_this_order_and_blocks_on_these(self):
         obj, _ = self.board()
         self.assertEqual([r["check"].removesuffix(f".{TAB5}") for r in obj["results"]], [
-            "host.port", "host.bridge", "host.driver", "fact.bridge", "open-question.chip-revision",
+            "host.port", "host.bridge", "host.driver", "fact.bridge", "open-question.chip-revision",  # chip-id: its own step
             "flash.arduino", "device.arduino", "open-question.auto-download", "open-question.display-driver",
             "fact.touch", "fact.imu", "fact.ina226", "fact.expander-1", "fact.expander-2", "fact.presence", "fact.port-a-bus",
             "flash.esp-idf", "device.esp-idf", "open-question.manual-download", "handoff.live"])
@@ -869,6 +869,8 @@ class Tab5Run(RepoCopy):  # B42: the release bar's unit, run in Arduino and ESP-
                     if "check-targets" in cmd:
                         return 0, json.dumps([{"check": "build.target-from-data", "output": rev,
                                                "result": "fail" if rev == TAB5 else "pass"}]), ""
+                    if "generate" in cmd:
+                        return 0, "", ""
                     if rev == TAB5:
                         return 2, "", "smoke.py: no such data"
                     return 0, json.dumps([{"check": i, "result": "pass", "output": ""} for i, r in built_for.items() if r == rev]), ""
@@ -880,9 +882,10 @@ class Tab5Run(RepoCopy):  # B42: the release bar's unit, run in Arduino and ESP-
         self.assertEqual(res["build.target-from-data"]["result"], "fail", "one revision's mismatch fails the check")
         self.assertIn(REV, res["build.target-from-data"]["output"])
         self.assertIn(TAB5, res["build.target-from-data"]["output"])
-        # the projects on disk are the last revision's, so each revision's are generated again before they are checked
+        # the projects on disk are the last revision's, so each revision's are generated before they are checked; the
+        # build comes last, so the nonce it leaves on disk is the one in the image
         smoke = [(c[2], c[c.index("--revision") + 1]) for c in runner.calls if "--revision" in c]
-        self.assertEqual(smoke, [(cmd, rev) for rev in (REV, TAB5) for cmd in ("build", "generate", "check-targets")])
+        self.assertEqual(smoke, [(cmd, rev) for rev in (REV, TAB5) for cmd in ("generate", "check-targets", "build")])
 
 
 def verify_tests(module):

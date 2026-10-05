@@ -167,7 +167,7 @@ class Tab5(Workdir):  # B42
         self.assertEqual(smoke.library_floors(TAB5), {"M5GFX": ("0.2.30", "screen-reset"), "M5Unified": ("0.2.23", "screen-reset")})
         self.assertEqual(smoke.library_floors("tab5@2025.05"), {}, "the release unit carries neither erratum")
         for eid, floors in smoke.LIBRARY_FLOORS.items():  # each version is the one the erratum's own text gives
-            rev = REV if eid == "lcd-ili9342e" else TAB5
+            rev = next(r for r in (REV, TAB5) if any(e["id"] == eid for e in smoke.revision_record(r)["errata"]))
             for lib, version in floors.items():
                 self.assertIn(f"{lib} {version}", erratum(rev, eid)["text"], eid)
 

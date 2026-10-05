@@ -359,12 +359,14 @@ def run_offline(operator, runner=sh, skip=(), ask=None, only=None):
     else:
         per_rev = []
         for rev, ids in builds.items():
+            if wanted("build.target-from-data"):
+                # the projects on disk are the last revision's: generate this one's, then check them. The build that
+                # follows generates again, so the nonce left on disk is the one in the image
+                code, out, err = runner([sys.executable, str(ROOT / "scripts/smoke.py"), "generate", "--revision", rev])
+                per_rev.append({"result": "fail", "output": f"smoke.py generate --revision {rev} exited {code}: {(err or out)[-2000:]}"}
+                               if code else smoke_results(runner, ["check-targets", "--revision", rev], ["build.target-from-data"])[0])
             if any(map(wanted, ids)):
                 results += smoke_results(runner, ["build", "--revision", rev], ids)
-            if wanted("build.target-from-data"):
-                # the projects on disk are the last revision's: generate this one's again, then check them
-                runner([sys.executable, str(ROOT / "scripts/smoke.py"), "generate", "--revision", rev])
-                per_rev += smoke_results(runner, ["check-targets", "--revision", rev], ["build.target-from-data"])[:1]
         if per_rev:  # one check: every revision's projects use the targets board.py recommends
             results.append({"check": "build.target-from-data",
                             "result": next((r for r in ("fail", "blocked") if any(x["result"] == r for x in per_rev)), "pass"),

@@ -42,7 +42,7 @@ Full definitions are in `CONTEXT.md`. The ones this file leans on:
 | `host` | `doctor.py` finds the port, and the USB bridge VID/PID matches the data for the revision | Yes | A VID/PID belonging to another revision's bridge |
 | `flash` | The toolchain's normal upload succeeds, including any download-mode gesture | Yes | Upload output that claims success when the board is running old firmware (caught by `device`) |
 | `device` | The smoke program's observable behaviour appears on the board | Yes, with a person watching | A display showing an old nonce |
-| `fact` | A hardware fact in `data/` matches the unit | Yes | The value `data/` holds for a sibling revision |
+| `fact` | A hardware fact in `data/` matches the unit | Yes | The value `data/` holds for a sibling revision. Where every sibling shares the value, the check confirms the part and rejects no sibling, and section 6 says so |
 | `open-question` | Records an observation where the answer is unknown | Yes | Not applicable: the observation is the record, and it has no pass or fail |
 
 Two rules apply to every check:
@@ -231,12 +231,13 @@ The same session with fewer steps: no PlatformIO, esp-bsp or UIFlow2 step (secti
 
 | Step | Checks | What happens | Needs a person for |
 |---|---|---|---|
-| 1 | `host.port.tab5@2026.04`, `host.bridge.tab5@2026.04`, `host.driver.tab5@2026.04`, `fact.bridge.tab5@2026.04`, `open-question.chip-revision.tab5@2026.04` | Plug in the USB-C port. `doctor.py` lists exactly one new port; its VID/PID matches the USB bridge `board.py facts tab5@2026.04` gives. Run `esptool chip-id` on it for the chip revision | Plugging in |
-| 2 | (none) | `esptool erase-flash` on that port, once. It also removes the factory firmware | Confirming the erase |
-| 3 | `flash.arduino.tab5@2026.04`, `device.arduino.tab5@2026.04`, `open-question.auto-download.tab5@2026.04`, `open-question.display-driver.tab5@2026.04`, and the `fact` checks below | Build and upload the Arduino smoke program | Reading the nonce off the display |
-| 4 | `flash.esp-idf.tab5@2026.04`, `device.esp-idf.tab5@2026.04` | Same, through `idf.py` | Reading the nonce |
-| 5 | `open-question.manual-download.tab5@2026.04` | Enter download mode by hand, with M5's procedure (section 7) | Holding the button and watching the LED |
-| 6 | `handoff.live.tab5@2026.04` | Ask `arduino-m5unified` or `esp-idf` to upload while the operator holds the unit in reset. Same pass rule as `handoff.<skill>` | Holding reset |
+| 1 | `host.port.tab5@2026.04`, `host.bridge.tab5@2026.04`, `host.driver.tab5@2026.04`, `fact.bridge.tab5@2026.04` | Plug in the USB-C port. `doctor.py` lists exactly one new port; its VID/PID matches the USB bridge `board.py facts tab5@2026.04` gives | Plugging in |
+| 2 | `open-question.chip-revision.tab5@2026.04` | Run `esptool chip-id` on that port for the chip revision | Nothing |
+| 3 | (none) | `esptool erase-flash` on that port, once. It also removes the factory firmware | Confirming the erase |
+| 4 | `flash.arduino.tab5@2026.04`, `device.arduino.tab5@2026.04`, `open-question.auto-download.tab5@2026.04`, `open-question.display-driver.tab5@2026.04`, and the `fact` checks below | Build and upload the Arduino smoke program | Reading the nonce off the display |
+| 5 | `flash.esp-idf.tab5@2026.04`, `device.esp-idf.tab5@2026.04` | Same, through `idf.py` | Reading the nonce |
+| 6 | `open-question.manual-download.tab5@2026.04` | Enter download mode by hand, with M5's procedure (section 7) | Holding the button and watching the LED |
+| 7 | `handoff.live.tab5@2026.04` | Ask `arduino-m5unified` or `esp-idf` to upload while the operator holds the unit in reset. Same pass rule as `handoff.<skill>` | Holding reset |
 
 **`fact` checks.** Each one compares a probe line of the Arduino smoke program with what `data/` says for `tab5@2026.04`. The three Tab5 revisions differ only in the display and touch parts, so only `fact.touch.tab5@2026.04` can reject a sibling; the others confirm a part every Tab5 carries:
 
