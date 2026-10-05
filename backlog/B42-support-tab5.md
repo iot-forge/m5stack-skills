@@ -55,8 +55,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: the unit is identified over USB, read-only: `esptool chip-id` on COM3 reports an ESP32-P4, chip revision v1.3, USB-Serial/JTAG (VID 303A, PID 1001). Its display generation is not yet known
-- **Next**: Put the step 1 questions to the maintainer
+- **Done**: the unit is identified over USB, read-only: `esptool chip-id` on COM3 reports an ESP32-P4, chip revision v1.3, USB-Serial/JTAG (VID 303A, PID 1001). Its boot log (the firmware on it uses M5GFX) prints `M5Tab5 detected ST7121 display` and `ST touch FW version 01`, which points at the third display generation; that is the board's own report, so a lead, not a fact. Decided with the maintainer on 2026-10-04: the three display generations are three revisions, each written out in full; the data covers all four frameworks and the hardware run flashes ESP-IDF and Arduino only; a passing Tab5 run replaces Core2 v1.3 as the release bar, so Core2 facts stay documentation-only and the README says so
+- **Next**: Put the remaining step 1 questions to the maintainer: the revision keys, the radio co-processor, and which chips the run probes
 - **Files touched**: this issue, `backlog/README.md`, `backlog/B18-decide-publication.md`
-- **Last commit**: the one that adds this issue
-- **Open questions**: the five in step 1 (the maintainer decides)
+- **Last commit**: the one that carries this checkpoint
+- **Open questions**: the revision keys, the radio co-processor in the schema, the probes (the maintainer decides)
