@@ -602,6 +602,143 @@
    ],
    "confidence": "medium",
    "last_verified": "2026-10-04"
+  },
+  {
+   "id": "tab5-ina226-probe",
+   "kind": "probe",
+   "observe": "Flash a sketch that reads 16-bit register 0xFF of the chip at I2C 0x41 on the internal bus.",
+   "probe": {
+    "bus": "i2c_internal",
+    "address": "0x41",
+    "register": "0xFF",
+    "width": 16,
+    "expected": {
+     "INA226": {
+      "value": "0x2260",
+      "src": [
+       "ds-ina226"
+      ]
+     }
+    }
+   },
+   "outcomes": {
+    "INA226": [
+     "tab5@2025.05",
+     "tab5@2025.10",
+     "tab5@2026.04"
+    ]
+   },
+   "reliability": "high",
+   "caveats": "Needs flashing. Tab5 only; it is on every Tab5 revision, so it confirms the part and splits nothing.",
+   "src": [
+    "m5-tab5",
+    "ds-ina226"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-10-04"
+  },
+  {
+   "id": "tab5-expander-1-probe",
+   "kind": "probe",
+   "observe": "Flash a sketch that reads register 0x01 of the I/O expander at I2C 0x43 on the internal bus.",
+   "probe": {
+    "bus": "i2c_internal",
+    "address": "0x43",
+    "register": "0x01",
+    "width": 8,
+    "expected": {
+     "PI4IOE5V6408": {
+      "value": "0xA0",
+      "src": [
+       "ds-pi4ioe5v6408"
+      ]
+     }
+    },
+    "note": "Register 0x01 holds the manufacturer ID (101) in bits 7 to 5, the firmware revision (000) in bits 4 to 2 and a reset flag in bit 1. The flag is set after any reset and clears when the register is read, so the first read after a reset gives 0xA2 and later ones 0xA0. M5GFX reads the register while it detects the board, so a probe that runs after M5.begin() reads 0xA0; one that runs before it reads 0xA2, which the smoke program prints as present raw 0xA2."
+   },
+   "outcomes": {
+    "PI4IOE5V6408": [
+     "tab5@2025.05",
+     "tab5@2025.10",
+     "tab5@2026.04"
+    ]
+   },
+   "reliability": "high",
+   "caveats": "Needs flashing. Tab5 only; it is on every Tab5 revision, so it confirms the part and splits nothing.",
+   "src": [
+    "m5-tab5",
+    "ds-pi4ioe5v6408"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-10-04"
+  },
+  {
+   "id": "tab5-expander-2-probe",
+   "kind": "probe",
+   "observe": "Flash a sketch that reads register 0x01 of the I/O expander at I2C 0x44 on the internal bus.",
+   "probe": {
+    "bus": "i2c_internal",
+    "address": "0x44",
+    "register": "0x01",
+    "width": 8,
+    "expected": {
+     "PI4IOE5V6408": {
+      "value": "0xA0",
+      "src": [
+       "ds-pi4ioe5v6408"
+      ]
+     }
+    },
+    "note": "Register 0x01 holds the manufacturer ID (101) in bits 7 to 5, the firmware revision (000) in bits 4 to 2 and a reset flag in bit 1. The flag is set after any reset and clears when the register is read, so the first read after a reset gives 0xA2 and later ones 0xA0. M5GFX reads the register while it detects the board, so a probe that runs after M5.begin() reads 0xA0; one that runs before it reads 0xA2, which the smoke program prints as present raw 0xA2."
+   },
+   "outcomes": {
+    "PI4IOE5V6408": [
+     "tab5@2025.05",
+     "tab5@2025.10",
+     "tab5@2026.04"
+    ]
+   },
+   "reliability": "high",
+   "caveats": "Needs flashing. Tab5 only; it is on every Tab5 revision, so it confirms the part and splits nothing.",
+   "src": [
+    "m5-tab5",
+    "ds-pi4ioe5v6408"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-10-04"
+  },
+  {
+   "id": "tab5-presence-probe",
+   "kind": "probe",
+   "observe": "Flash a sketch that scans the internal I2C bus for 0x10 (ES8388), 0x32 (RX8130CE) and 0x40 (ES7210).",
+   "probe": {
+    "bus": "i2c_internal",
+    "address": [
+     "0x10",
+     "0x32",
+     "0x40"
+    ],
+    "register": null,
+    "width": null,
+    "expected": {
+     "present": "ACK at 0x10, 0x32 and 0x40"
+    },
+    "note": "Presence only: the ES8388 and ES7210 datasheets M5 links and the RX8130CE register manual name no identification register, so an answer at the address is all this reads (ADR 0005)."
+   },
+   "outcomes": {
+    "present": [
+     "tab5@2025.05",
+     "tab5@2025.10",
+     "tab5@2026.04"
+    ]
+   },
+   "reliability": "medium",
+   "caveats": "Needs flashing. Tab5 only. An answer at an address does not name the chip, and all three are on every Tab5 revision, so it splits nothing.",
+   "src": [
+    "m5-tab5"
+   ],
+   "confidence": "medium",
+   "last_verified": "2026-10-04"
   }
  ]
 }

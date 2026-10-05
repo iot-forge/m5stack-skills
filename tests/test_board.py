@@ -129,6 +129,12 @@ class Query(unittest.TestCase):
         self.assertFalse(out["facts"]["display"]["agree"])
         self.assertEqual(out["facts"]["display"]["tell_apart"], {"signal": "tab5-lcd-label", "kind": "physical", "exact": True})
 
+    def test_confirm_only_probe_is_never_offered(self):  # B42: a probe with one outcome splits nothing
+        single = [s["id"] for s in load("signals.json")["signals"] if len(s["outcomes"]) == 1]
+        self.assertIn("tab5-ina226-probe", single)
+        code, out = board_json("tell-apart", "tab5")
+        self.assertFalse(set(single) & {s["signal"] for s in out["signals"]})
+
     def test_esp32_p4_board_lists_its_frameworks(self):  # B42: frameworks answered nothing off esp32 and esp32-s3
         rids = revisions_of("tab5")
         code, out = board_json("frameworks", "tab5")

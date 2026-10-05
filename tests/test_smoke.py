@@ -92,6 +92,20 @@ class Generate(Workdir):
         self.assertEqual(table["atecc-probe"]["expect_bytes"], [int(b, 16) for b in atecc["expected"]["present"]["value"]])
         self.assertGreaterEqual(table["atecc-probe"]["wake_wait_us"], atecc["wake"]["then_wait_us_min"])
 
+    def test_tab5_run_reads_every_i2c_chip_m5_lists(self):  # B42: by id register where a datasheet gives one, else by presence
+        table = {p["id"]: p for p in smoke.probe_table("tab5@2026.04")}
+        acked = {a for p in table.values() if p["kind"] == "ack" for a in p["reads"][0]["addrs"]}
+        self.assertEqual(acked, {0x14, 0x55, 0x10, 0x32, 0x40}, "touch, ES8388, RX8130CE, ES7210")
+        self.assertEqual(table["imu-probe"]["kind"], "reg")
+        ina = table["tab5-ina226-probe"]["reads"][0]
+        self.assertEqual((ina["addrs"], ina["width"]), ([0x41], 16))
+        for sid, addr in (("tab5-expander-1-probe", 0x43), ("tab5-expander-2-probe", 0x44)):
+            read = table[sid]["reads"][0]
+            self.assertEqual(read["addrs"], [addr])
+            self.assertEqual(dict(read["expect"]), {"PI4IOE5V6408": 0xA0}, "the value once M5GFX has read the reset flag away")
+        self.assertFalse(any(p["gap"] for p in table.values()), "every id value here is in a datasheet")
+        self.assertEqual(smoke.bus_pins("tab5@2026.04", "i2c_internal"), (31, 32))
+
     def test_bus_pins_come_from_pin_map(self):
         pm = json.loads((DATA / "pinmaps/core2-a.json").read_text(encoding="utf-8"))["buses"]["i2c_internal"]["pins"]
         self.assertEqual(smoke.bus_pins(REV, "i2c_internal"), (int(pm["sda"][1:]), int(pm["scl"][1:])))

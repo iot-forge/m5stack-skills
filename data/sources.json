@@ -368,6 +368,20 @@
    "ref": "SBOS576C, revised September 2026, retrieved 2026-09-26"
   },
   {
+   "id": "ds-ina226",
+   "kind": "datasheet",
+   "title": "INA226 (Texas Instruments)",
+   "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1132/INA226.pdf",
+   "ref": "ZHCS078A, revised August 2015 (Chinese edition, the copy M5 hosts), retrieved 2026-10-04"
+  },
+  {
+   "id": "ds-pi4ioe5v6408",
+   "kind": "datasheet",
+   "title": "PI4IOE5V6408 (Diodes)",
+   "url": "https://www.diodes.com/assets/Datasheets/PI4IOE5V6408.pdf",
+   "ref": "DS40583 rev 3-5 (September 2022), retrieved 2026-10-04"
+  },
+  {
    "id": "ds-atecc608b-tngtls",
    "kind": "datasheet",
    "title": "Microchip ATECC608B-TNGTLS CryptoAuthentication data sheet (I2C address, wake, status codes)",
