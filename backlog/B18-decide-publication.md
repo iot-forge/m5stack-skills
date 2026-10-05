@@ -63,7 +63,7 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 <!-- Overwrite, never append. The next session starts from here. -->
 
 - **Done**: the decisions (ADR 0006); the version guard (`python -m unittest tests.test_check`, 23 pass); the manifest, `CHANGELOG.md`, `CONTRIBUTING.md`, `.github/workflows/check.yml`; the README's install route, status line, Alternatives (web search 2026-10-04) and verification table (report 2026-09-29, no board run); `uv run scripts/check.py` exits 0; `claude plugin validate .` passes with one warning (no marketplace description)
-- **Next**: Ask the maintainer, then `git push -u https://github.com/iot-forge/m5stack-skills m5core-skills-v2`. Watch the Actions run: it is the first time the gate runs on Linux
+- **Next**: Ask the maintainer, then `git push -u origin m5core-skills-v2` (`origin` is `iot-forge/m5stack-skills`). Watch the Actions run: it is the first time the gate runs on Linux
 - **Files touched**: `scripts/check.py`, `tests/test_check.py`, `.claude-plugin/plugin.json`, `CHANGELOG.md`, `CONTRIBUTING.md`, `README.md`, `.github/workflows/check.yml`, `docs/adr/0001-…`, `docs/adr/0006-…`, this issue, `backlog/README.md`
 - **Last commit**: the one that carries this checkpoint
 - **Open questions**: none
