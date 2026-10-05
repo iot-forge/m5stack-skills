@@ -6,8 +6,8 @@ allowed-tools:
   - Bash(uv run "${CLAUDE_PLUGIN_ROOT}/scripts/board.py" *)
   - Read(${CLAUDE_PLUGIN_ROOT}/references/**)
 metadata:
-  tested-with: "none"
-  verification: "unverified"
+  tested-with: "claude-code 2.1.289"
+  verification: "partial 2026-10-04: tab5@2026.04"
 ---
 
 # M5Stack Core board identification

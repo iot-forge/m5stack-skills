@@ -379,9 +379,9 @@
   },
   {
    "check": "fact.touch.tab5@2026.04",
-   "result": "fail",
-   "observed": "0x55 answers, and 0x14 answers too",
-   "output": "I2C 0x14 present / I2C 0x55 present"
+   "result": "pass",
+   "observed": "The firmware-version byte at 0x55 reads 0x01, the ST7121's. Read again on 2026-10-05, in the same sitting, with the smoke program of commit 6bfefa6 (operator: claude, from the serial port). The first read, an address scan, failed: 0x14 answered as well as 0x55, and the probe was changed for that reason.",
+   "output": "I2C 0x55 ST7121 raw 0x01"
   },
   {
    "check": "fact.imu.tab5@2026.04",

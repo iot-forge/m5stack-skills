@@ -705,7 +705,8 @@
     "address": "0x55",
     "note": "integrated in the display driver IC; reset through PI4IOE5V6408 E1 P5, interrupt on G23",
     "src": [
-     "m5-tab5"
+     "m5-tab5",
+     "hw-2026-10-04-tab5@2026.04"
     ],
     "confidence": "high",
     "last_verified": "2026-10-04"
