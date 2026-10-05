@@ -109,11 +109,12 @@
    "per_revision": {},
    "src": [
     "uiflow2-boards",
-    "uiflow2-m5gfx"
+    "uiflow2-m5gfx",
+    "m5-tab5"
    ],
-   "confidence": "medium",
+   "confidence": "low",
    "last_verified": "2026-10-04",
-   "note": "the 2.5.3 image bundles M5GFX 0.2.28, which has the ILI9881C, ST7123 and ST7121 panels. Under this image the USB-C port enumerates as 303A:817A (TinyUSB, 'Tab5(UiFlow2)'), not as the ESP32-P4's USB Serial/JTAG device"
+   "note": "the 2.5.3 image bundles M5GFX 0.2.28, which has the ILI9881C, ST7123 and ST7121 panels but is older than the 0.2.30 M5 asks for on ST7123 and ST7121 units (erratum screen-reset); untested on those. Under this image the USB-C port enumerates as 303A:817A (TinyUSB, 'Tab5(UiFlow2)'), not as the ESP32-P4's USB Serial/JTAG device"
   }
  ],
  "safe_choices": [

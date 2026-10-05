@@ -231,9 +231,10 @@
     {
      "role": "camera",
      "part": "SC2356 (2 MP, MIPI-CSI)",
-     "note": "control on the internal I2C bus; M5 gives no address",
+     "note": "control on the internal I2C bus; M5 gives no address. M5's page names the sensor SC2356; esp-bsp's Tab5 component names it SC202CS",
      "src": [
-      "m5-tab5"
+      "m5-tab5",
+      "esp-bsp"
      ],
      "confidence": "high",
      "last_verified": "2026-10-04"
@@ -510,9 +511,10 @@
     {
      "role": "camera",
      "part": "SC2356 (2 MP, MIPI-CSI)",
-     "note": "control on the internal I2C bus; M5 gives no address",
+     "note": "control on the internal I2C bus; M5 gives no address. M5's page names the sensor SC2356; esp-bsp's Tab5 component names it SC202CS",
      "src": [
-      "m5-tab5"
+      "m5-tab5",
+      "esp-bsp"
      ],
      "confidence": "high",
      "last_verified": "2026-10-04"
@@ -807,9 +809,10 @@
     {
      "role": "camera",
      "part": "SC2356 (2 MP, MIPI-CSI)",
-     "note": "control on the internal I2C bus; M5 gives no address",
+     "note": "control on the internal I2C bus; M5 gives no address. M5's page names the sensor SC2356; esp-bsp's Tab5 component names it SC202CS",
      "src": [
-      "m5-tab5"
+      "m5-tab5",
+      "esp-bsp"
      ],
      "confidence": "high",
      "last_verified": "2026-10-04"

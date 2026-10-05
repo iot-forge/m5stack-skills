@@ -678,7 +678,12 @@
    "labels": []
   },
   "G35": {
-   "uses": [],
+   "uses": [
+    {
+     "function": "BOOT (download mode; driven by the PMS150G power controller)",
+     "claim": "fixed"
+    }
+   ],
    "exposed_on": [
     "mbus:24"
    ],
@@ -854,7 +859,7 @@
    "labels": []
   }
  },
- "notes": "The display (MIPI-DSI) and the camera (MIPI-CSI) use the ESP32-P4's dedicated DSI and CSI pins, not GPIOs; of the display only the backlight (G22) is on a GPIO, of the camera only MCLK (G36). The camera's control bus is the internal I2C bus. Resets and enables go through the two PI4IOE5V6408 I/O expanders, so they claim no pins: on E1 (0x43) P0 antenna select (low internal, high external), P1 speaker amplifier enable, P2 EXT5V_EN (5 V to the M-Bus, the 2.54-10P port and Port A), P4 LCD reset, P5 touch reset, P6 camera reset, P7 headphone detect; on E2 (0x44) P0 WLAN_PWR_EN (power to the ESP32-C6), P3 USB5V_EN (USB-A), P4 power-off pulse, P5 to P7 the IP2326 charger (nCHG_QC_EN, CHG_STAT_LED, CHG_EN). On ST7123 and ST7121 units, drive LCD reset (E1 P4) push-pull or open-drain while low and switch it to input pull-up while high, or the I2C bus becomes unstable. G8 to G15 carry the ESP32-C6 (SDIO and control) and are never free. Speaker and mic share the I2S clocks (G27, G29, G30); G26 carries data to the ES8388 and G28 data from the ES7210, and M5Unified runs both on one I2S port. The microSD slot is wired for SDIO (G39 to G44) and also works in SPI mode on G39, G42, G43 and G44. G24 and G25 are the USB-C port (USB1 in M5's pin map overview, the ESP32-P4's USB Serial/JTAG); the USB-A port is USB2 on dedicated pins. G35 is the BOOT strapping pin and reaches M-Bus 24: nothing there may hold it low at reset. G34 (RS485 DIR), G37 and G38 (UART0 TXD0 and RXD0 on the M-Bus) are strapping pins too. The M-Bus labels G17 and G52 as Port B (in, out) and G7 and G6 as Port C (RX, TX); the only Grove connector is Port A (G53 SDA, G54 SCL), which is its own I2C bus. The internal I2C bus also reaches M-Bus 17 and 18, the 1.25-6P port and the Stamp pads. M5 gives no position numbers for the 2.54-10P port (ExtPort1), the 1.25-6P port (ExtPort2: GND, HVIN, RS485 A and B, SDA, SCL) or the Stamp pads, so their positions are numbered here in the order M5's pin map overview draws them. M-Bus 25, 27 and 29 are HVIN.",
+ "notes": "The display (MIPI-DSI) and the camera (MIPI-CSI) use the ESP32-P4's dedicated DSI and CSI pins, not GPIOs; of the display only the backlight (G22) is on a GPIO, of the camera only MCLK (G36). The camera's control bus is the internal I2C bus. Resets and enables go through the two PI4IOE5V6408 I/O expanders, so they claim no pins: on E1 (0x43) P0 antenna select (low internal, high external), P1 speaker amplifier enable, P2 EXT5V_EN (5 V to the M-Bus, the 2.54-10P port and Port A), P4 LCD reset, P5 touch reset, P6 camera reset, P7 headphone detect; on E2 (0x44) P0 WLAN_PWR_EN (power to the ESP32-C6), P3 USB5V_EN (USB-A), P4 power-off pulse, P5 to P7 the IP2326 charger (nCHG_QC_EN, CHG_STAT_LED, CHG_EN). On ST7123 and ST7121 units, drive LCD reset (E1 P4) push-pull or open-drain while low and switch it to input pull-up while high, or the I2C bus becomes unstable. G8 to G15 carry the ESP32-C6 (SDIO and control) and are never free. Speaker and mic share the I2S clocks (G27, G29, G30); G26 carries data to the ES8388 and G28 data from the ES7210, and M5Unified runs both on one I2S port. The microSD slot is wired for SDIO (G39 to G44) and also works in SPI mode on G39, G42, G43 and G44. G24 and G25 are the USB-C port (USB1 in M5's pin map overview, the ESP32-P4's USB Serial/JTAG); the USB-A port is USB2 on dedicated pins. G35 is the BOOT strapping pin: M5's pin map overview draws it from the PMS150G power controller, which holds it for download mode, so it is taken although it reaches M-Bus 24, and nothing there may hold it low at reset. G34 (RS485 DIR), G37 and G38 (UART0 TXD0 and RXD0 on the M-Bus) are strapping pins too. The M-Bus labels G17 and G52 as Port B (in, out) and G7 and G6 as Port C (RX, TX); the only Grove connector is Port A (G53 SDA, G54 SCL), which is its own I2C bus. The internal I2C bus also reaches M-Bus 17 and 18, the 1.25-6P port and the Stamp pads. M5 gives no position numbers for the 2.54-10P port (ExtPort1), the 1.25-6P port (ExtPort2: GND, HVIN, RS485 A and B, SDA, SCL) or the Stamp pads, so their positions are numbered here in the order M5's pin map overview draws them. M-Bus 25, 27 and 29 are HVIN.",
  "src": [
   "m5-tab5",
   "idf-gpio-esp32p4",
