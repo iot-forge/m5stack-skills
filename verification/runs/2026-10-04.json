@@ -3,9 +3,19 @@
   "date": "2026-10-04",
   "operator": "claude",
   "host_os": "Windows 11",
-  "plugin_commit": "d410f6c",
-  "unit": null,
-  "toolchains": {}
+  "plugin_commit": "5f78fc8",
+  "unit": {
+   "revision": "tab5@2026.04",
+   "sku_sticker": "1111"
+  },
+  "toolchains": {
+   "arduino-cli": "1.5.2-rc.1",
+   "esp32 core": "3.3.12",
+   "M5Unified": "0.2.23",
+   "esp-idf": "v6.1",
+   "esptool": "5.3.1",
+   "claude-code": "2.1.289"
+  }
  },
  "results": [
   {
@@ -312,6 +322,125 @@
    "check": "handoff.uiflow2-micropython",
    "result": "blocked",
    "output": "operator-read (VERIFICATION.md section 4): blocked until there is a port that exists but fails; handoff.live.<revision> covers it in the hardware session"
+  },
+  {
+   "check": "host.port.tab5@2026.04",
+   "result": "pass",
+   "observed": "one serial port for the unit, COM3 (the operator typed \"good\"; corrected after the session from the output line)",
+   "output": "COM3: VID 303A PID 1001; driver ok <- Espressif native USB (ESP32-S3 or ESP32-P4 USB Serial/JTAG)  (USB Serial Device (COM3))"
+  },
+  {
+   "check": "host.bridge.tab5@2026.04",
+   "result": "pass",
+   "observed": "VID 303A PID 1001, Espressif native USB, as board.py facts gives for tab5@2026.04",
+   "output": "COM3: VID 303A PID 1001; driver ok <- Espressif native USB (ESP32-S3 or ESP32-P4 USB Serial/JTAG)  (USB Serial Device (COM3))"
+  },
+  {
+   "check": "host.driver.tab5@2026.04",
+   "result": "pass",
+   "observed": "driver ok for the USB Serial Device on COM3",
+   "output": "COM3: VID 303A PID 1001; driver ok <- Espressif native USB (ESP32-S3 or ESP32-P4 USB Serial/JTAG)  (USB Serial Device (COM3))"
+  },
+  {
+   "check": "fact.bridge.tab5@2026.04",
+   "result": "pass",
+   "observed": "VID 303A PID 1001: Espressif native USB Serial/JTAG, no bridge chip, as board.py facts gives",
+   "output": "COM3: VID 303A PID 1001; driver ok <- Espressif native USB (ESP32-S3 or ESP32-P4 USB Serial/JTAG)  (USB Serial Device (COM3))"
+  },
+  {
+   "check": "open-question.chip-revision.tab5@2026.04",
+   "result": "observed",
+   "observed": "esptool v5.3.1 chip-id on COM3 reports ESP32-P4 revision v1.3; it connected with no button press",
+   "output": "Chip type:          ESP32-P4 (revision v1.3)"
+  },
+  {
+   "check": "flash.arduino.tab5@2026.04",
+   "result": "pass",
+   "observed": "arduino-cli upload of m5stack:esp32:m5stack_tab5 to COM3 exited 0, hash verified",
+   "output": "Wrote 553104 bytes (307104 compressed) at 0x00010000 in 1.6 seconds / Hash of data verified."
+  },
+  {
+   "check": "device.arduino.tab5@2026.04",
+   "result": "pass",
+   "observed": "RVQTNJ",
+   "output": "SMOKE RVQTNJ"
+  },
+  {
+   "check": "open-question.auto-download.tab5@2026.04",
+   "result": "observed",
+   "observed": "esptool entered download mode with no button press, for chip-id, erase-flash and the upload",
+   "output": "Connected to ESP32-P4 on COM3:"
+  },
+  {
+   "check": "open-question.display-driver.tab5@2026.04",
+   "result": "observed",
+   "observed": "ST7121: the unit is a tab5@2026.04",
+   "output": "[M5GFX] M5Tab5 ST touch FW version 01 / [M5GFX] M5Tab5 detected ST7121 display"
+  },
+  {
+   "check": "fact.touch.tab5@2026.04",
+   "result": "fail",
+   "observed": "0x55 answers, and 0x14 answers too",
+   "output": "I2C 0x14 present / I2C 0x55 present"
+  },
+  {
+   "check": "fact.imu.tab5@2026.04",
+   "result": "pass",
+   "observed": "BMI270 at 0x68",
+   "output": "I2C 0x68 BMI270"
+  },
+  {
+   "check": "fact.ina226.tab5@2026.04",
+   "result": "pass",
+   "observed": "INA226 at 0x41",
+   "output": "I2C 0x41 INA226"
+  },
+  {
+   "check": "fact.expander-1.tab5@2026.04",
+   "result": "pass",
+   "observed": "PI4IOE5V6408 at 0x43",
+   "output": "I2C 0x43 PI4IOE5V6408"
+  },
+  {
+   "check": "fact.expander-2.tab5@2026.04",
+   "result": "pass",
+   "observed": "PI4IOE5V6408 at 0x44",
+   "output": "I2C 0x44 PI4IOE5V6408"
+  },
+  {
+   "check": "fact.presence.tab5@2026.04",
+   "result": "pass",
+   "observed": "0x10, 0x32 and 0x40 answer",
+   "output": "I2C 0x10 present / I2C 0x32 present / I2C 0x40 present"
+  },
+  {
+   "check": "fact.port-a-bus.tab5@2026.04",
+   "result": "blocked",
+   "observed": "no Grove unit to hand"
+  },
+  {
+   "check": "flash.esp-idf.tab5@2026.04",
+   "result": "pass",
+   "observed": "idf.py -p COM3 flash exited 0,hash verified",
+   "output": "Wrote 470384 bytes (247737 compressed) at 0x00010000 in 1.8 seconds / Hash of data verified."
+  },
+  {
+   "check": "device.esp-idf.tab5@2026.04",
+   "result": "pass",
+   "observed": "984N5T",
+   "output": "SMOKE 984N5T"
+  },
+  {
+   "check": "open-question.manual-download.tab5@2026.04",
+   "result": "observed",
+   "observed": "Held reset about 2 s: the green LED flashed rapidly and the screen went blank. esptool chip-id then connected on COM3. After esptool's hard reset the unit stayed in download mode (no serial output for 8 s); a short press of reset was needed to start the firmware.",
+   "output": "Connected to ESP32-P4 on COM3: Chip type:          ESP32-P4 (revision v1.3)"
+  },
+  {
+   "check": "handoff.live.tab5@2026.04",
+   "result": "blocked",
+   "observed": "Holding reset puts a Tab5 in download mode, so the esp-idf skill's idf.py flash on COM3 exited 0 on the first attempt and no failure occurred. The step cannot produce a failing port on this board.",
+   "output": "The flash to the Tab5 on COM3 exited 0 and all three images verified, but nothing was actually rewritten: esptool found this exact build already on the board (\"No changed sectors found\")."
   }
  ]
 }
