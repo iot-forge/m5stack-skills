@@ -17,12 +17,13 @@ from pathlib import Path
 
 TIMEOUT = 20  # seconds; `pio --version` can take ~10 s on its first run while it bootstraps
 VENV_BIN, EXE = ("Scripts", ".exe") if os.name == "nt" else ("bin", "")
-DECODERS = ("xtensa-esp32-elf-addr2line", "xtensa-esp32s3-elf-addr2line")  # ESP32, ESP32-S3
+XTENSA = ("xtensa-esp32-elf-addr2line", "xtensa-esp32s3-elf-addr2line")  # ESP32, ESP32-S3
+DECODERS = (*XTENSA, "riscv32-esp-elf-addr2line")  # and the RISC-V parts: ESP32-P4
 EIM_TOOLS = Path("C:/Espressif/tools")  # where EIM, ESP-IDF's installer, puts the tools on Windows
 BRIDGES = {  # USB vendor ID -> what it means on an M5Stack Core (vendor IDs from the Linux usb.ids registry)
     "10C4": "Silicon Labs CP210x bridge (CP2104)",
     "1A86": "WCH bridge (CH9102)",
-    "303A": "Espressif native USB (ESP32-S3 USB Serial/JTAG)",
+    "303A": "Espressif native USB (ESP32-S3 or ESP32-P4 USB Serial/JTAG)",
 }
 GET = {
     "arduino-cli": "https://arduino.github.io/arduino-cli/latest/installation/",
@@ -102,16 +103,19 @@ def decoder_dirs(home, env, system):
     arduino = Path(env.get("ARDUINO_DIRECTORIES_DATA") or {
         "Windows": Path(env.get("LOCALAPPDATA") or home / "AppData/Local") / "Arduino15",
         "Darwin": home / "Library/Arduino15"}.get(system, home / ".arduino15"))
-    dirs = [("arduino", d) for d in sorted(arduino.glob("packages/*/tools/esp-x32/*/bin"))]
-    # PlatformIO: one package per chip (toolchain-xtensa-esp32, -esp32s3), with `@<version>` on an extra copy
+    # (esp-x32 for the Xtensa parts, esp-rv32 for the RISC-V ones)
+    dirs = [("arduino", d) for tools in ("esp-x32", "esp-rv32") for d in sorted(arduino.glob(f"packages/*/tools/{tools}/*/bin"))]
+    # PlatformIO: one package per chip (toolchain-xtensa-esp32, -esp32s3) and one for RISC-V (toolchain-riscv32-esp),
+    # with `@<version>` on an extra copy
     pio = Path(env.get("PLATFORMIO_CORE_DIR") or home / ".platformio")
-    dirs += [("platformio", d) for d in sorted(pio.glob("packages/toolchain-xtensa-esp32*/bin"))]
+    dirs += [("platformio", d) for pkg in ("toolchain-xtensa-esp32*", "toolchain-riscv32-esp*") for d in sorted(pio.glob(f"packages/{pkg}/bin"))]
     # ESP-IDF: install.sh puts the tools in $IDF_TOOLS_PATH/tools (~/.espressif by default); EIM sets IDF_TOOLS_PATH to the tools folder itself
     set_ = env.get("IDF_TOOLS_PATH")
     roots = [Path(set_) / "tools", Path(set_)] if set_ else [home / ".espressif/tools"]
     if system == "Windows":
         roots.append(EIM_TOOLS)
-    return dirs + [("esp-idf", d) for root in roots for d in sorted(root.glob("xtensa-esp-elf/*/xtensa-esp-elf/bin"))]
+    return dirs + [("esp-idf", d) for arch in ("xtensa-esp-elf", "riscv32-esp-elf") for root in roots
+                   for d in sorted(root.glob(f"{arch}/*/{arch}/bin"))]
 
 
 def find_decoders(which=shutil.which, home=None, env=None, system=None):

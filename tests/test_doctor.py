@@ -125,13 +125,22 @@ class Addr2line(unittest.TestCase):
         planted = self.plant(self.home / "AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/bin")
         self.assertEqual([d["path"] for d in self.find("Windows")], planted)
 
+    def test_the_risc_v_decoder_is_found_in_each_toolchain(self):  # B42: an ESP32-P4 is RISC-V
+        rv = ("riscv32-esp-elf-addr2line",)
+        self.assertIn(rv[0], doctor.DECODERS)
+        planted = (self.plant(self.home / ".arduino15/packages/esp32/tools/esp-rv32/2601/bin", rv)
+                   + self.plant(self.home / ".platformio/packages/toolchain-riscv32-esp/bin", rv)
+                   + self.plant(self.home / ".espressif/tools/riscv32-esp-elf/esp-15.2.0_20251204/riscv32-esp-elf/bin", rv))
+        self.assertEqual([(d["name"], d["path"], d["where"]) for d in self.find()],
+                         list(zip(rv * 3, planted, ("arduino", "platformio", "esp-idf"))))
+
     def test_platformio_layout(self):
         packages = self.home / ".platformio/packages"
         planted = (self.plant(packages / "toolchain-xtensa-esp32/bin", doctor.DECODERS[:1])
-                   + self.plant(packages / "toolchain-xtensa-esp32s3/bin", doctor.DECODERS[1:]))
+                   + self.plant(packages / "toolchain-xtensa-esp32s3/bin", doctor.DECODERS[1:2]))
         found = self.find()
         self.assertEqual([(d["name"], d["path"], d["where"]) for d in found],
-                         [(n, p, "platformio") for n, p in zip(doctor.DECODERS, planted)])
+                         [(n, p, "platformio") for n, p in zip(doctor.XTENSA, planted)])
 
     def test_esp_idf_layout_under_the_default_tools_folder(self):
         planted = self.plant(self.home / ".espressif/tools/xtensa-esp-elf/esp-15.2.0_20251204/xtensa-esp-elf/bin")
@@ -177,8 +186,8 @@ class Addr2line(unittest.TestCase):
             self.assertEqual([d["path"] for d in self.find()], planted)
 
     def test_path_comes_first_and_is_listed_once(self):
-        planted = self.plant(self.home / ".espressif/tools/xtensa-esp-elf/esp-15/xtensa-esp-elf/bin")
-        on_path = dict(zip(doctor.DECODERS, planted))
+        planted = self.plant(self.home / ".espressif/tools/xtensa-esp-elf/esp-15/xtensa-esp-elf/bin", doctor.XTENSA)
+        on_path = dict(zip(doctor.XTENSA, planted))
         self.plant(self.home / ".platformio/packages/toolchain-xtensa-esp32/bin", doctor.DECODERS[:1])
         found = self.find(which=on_path.get)
         self.assertEqual([(d["path"], d["where"]) for d in found[:2]], [(p, "PATH") for p in planted])
