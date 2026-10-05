@@ -57,15 +57,17 @@ Check ids are `<kind>.<subject>`, with `.<revision>` added where a board is need
 The plugin is release-ready when:
 
 1. Every hardware-free check (`data`, `query`, `build`, `trigger`, `handoff`) passes.
-2. On **`core2@v1.3`**, every `host` and `fact` check passes, and `flash` and `device` pass in **all four frameworks**.
-3. Every `open-question` check that can run on a Core2 v1.3 has been run and its observation recorded, whatever it turned out to be.
+2. On **`tab5@2026.04`**, every `host` and `fact` check passes, and `flash` and `device` pass in **Arduino and ESP-IDF**.
+3. Every `open-question` check that can run on that Tab5 has been run and its observation recorded, whatever it turned out to be.
 
-| Revision | `host` | `flash` × 4 frameworks | `device` × 4 frameworks | `fact` | `open-question` |
+| Revision | `host` | `flash`: Arduino, ESP-IDF | `device`: Arduino, ESP-IDF | `fact` | `open-question` |
 |---|---|---|---|---|---|
-| `core2@v1.3` | mandatory | mandatory | mandatory | mandatory | run and record |
+| `tab5@2026.04` | mandatory | mandatory | mandatory | mandatory | run and record |
 | every other `supported` revision | `not-run` | `not-run` | `not-run` | `not-run` | `not-run` |
 
-The only unit planned for is a Core2 v1.3. Any other unit someone owns can run the same hardware session (section 6). The fact checks for that revision are the ones `data/` lets you derive: every component it lists, checked the same way. Add them to `checks.json`, each with the section 6 step it belongs to (`step`, an id from `board_steps`) and the check that must pass before it is asked (`depends_on`). `verify.py run --board` refuses a revision with a check that has no step.
+The unit the release waits for is the maintainer's Tab5, taken to be `tab5@2026.04` (decided on 2026-10-04; it replaced a Core2 v1.3 nobody had run). Its run flashes Arduino and ESP-IDF only: PlatformIO has no Tab5 target, and the UIFlow2 image bundles an M5GFX older than the one M5 asks for on this revision. So no `flash` or `device` check exists for PlatformIO or UIFlow2 on the Tab5, a report shows those cells as `n/a`, and a Tab5 run leaves the `platformio` and `uiflow2-micropython` skills `unverified` (section 10).
+
+`core2@v1.3` keeps its whole session, in all four frameworks (section 6). Any other unit someone owns can run a hardware session too. The fact checks for that revision are the ones `data/` lets you derive: every component it lists, checked the same way. Add them to `checks.json`, each with the section 6 step it belongs to (`step`, an id from `board_steps`) and the check that must pass before it is asked (`depends_on`). `verify.py run --board` refuses a revision with a check that has no step.
 
 ## 4. Hardware-free checks
 
@@ -91,8 +93,8 @@ Each check runs `board.py` and compares its output with what `data/` says. The e
 
 ### `build`
 
-- `build.<framework>.<target>`: for each framework and each recommended build target, the smoke project (section 5) is generated fresh with a new nonce and built. **Passes** only if the build exits 0 *and* the nonce string appears in the output image. UIFlow2 has no build step, so it has no `build` check.
-- `build.target-from-data`: the target each smoke project uses equals the one `board.py targets` recommends for that revision and toolchain. For ESP-IDF that is the bare `idf.py set-target` it prints, not an esp-bsp board: the smoke project uses M5Unified for the display (section 5). **Fails** if a project hard-codes a target the data does not recommend.
+- `build.<framework>.<target>`: for each framework and each recommended build target, the smoke project (section 5) is generated fresh with a new nonce and built. This is done for two revisions, `core2@v1.3` and `tab5@2026.04`; `checks.json` names the one each check is built for (`built_for`). A framework `board.py` recommends no target for (PlatformIO on a Tab5) has no check. **Passes** only if the build exits 0 *and* the nonce string appears in the output image. UIFlow2 has no build step, so it has no `build` check.
+- `build.target-from-data`: the target each smoke project uses equals the one `board.py targets` recommends for that revision and toolchain, for both revisions. For ESP-IDF that is the bare `idf.py set-target` it prints, not an esp-bsp board: the smoke project uses M5Unified for the display (section 5). **Fails** if a project hard-codes a target the data does not recommend.
 
 ### `trigger`
 
@@ -148,7 +150,7 @@ A run that `claude` can't complete makes its row `blocked`. If the cause is the 
 
 Run interactively in Claude Code. The operator reads the transcript.
 
-The skills list ports before any write, and with **no** port they stop and report rather than attempt an upload. So this check needs a port that **exists but fails**: a bare USB-to-serial adapter with nothing connected to it. Without one, `handoff.<skill>` is `blocked` until the hardware session, where `handoff.live.core2@v1.3` covers it with the unit held in reset.
+The skills list ports before any write, and with **no** port they stop and report rather than attempt an upload. So this check needs a port that **exists but fails**: a bare USB-to-serial adapter with nothing connected to it. Without one, `handoff.<skill>` is `blocked` until the hardware session, where `handoff.live.<revision>` covers it with the unit held in reset. On a Tab5 that covers `arduino-m5unified` and `esp-idf` only.
 
 - `handoff.<skill>` for `arduino-m5unified`, `platformio`, `esp-idf` and `uiflow2-micropython`: ask the skill to upload the smoke project. **Passes** if the skill:
   1. attempts the upload once;
@@ -172,6 +174,11 @@ The same program exists in all four frameworks, so one flash is a `flash`, a `de
    - **ATECC608B**: present or absent. Presence separates Core2 for AWS v1.3 from Core2 v1.3.
    - **INA3221**: present or absent. Only Core2 v1.1 carries it.
 
+   For a Tab5 it means:
+   - **Touch controller**: which of its two addresses answers. The GT911 of the release units and the ST7123 or ST7121 of the later ones sit at different addresses.
+   - **IMU**, **INA226** and the two **PI4IOE5V6408** I/O expanders: each identified from its identification register.
+   - **ES8388**, **RX8130CE** and **ES7210**: present or absent. Their documents name no identification register.
+
    The addresses, registers and expected values are not written here. They come from the parts' datasheets, or from library source with a `datasheet_gap` (ADR 0005), and are recorded as `probe` signals in `data/signals.json`. The smoke program is generated from them.
 4. Prints the libraries' self-report on one line labelled `SELF-REPORT (not evidence)`. It is recorded and never compared.
 
@@ -181,12 +188,12 @@ The same program exists in all four frameworks, so one flash is a `flash`, a `de
 
 - **Arduino / M5Unified**: the reference implementation, and the one that carries the `fact` checks.
 - **PlatformIO**: the Arduino program under a `platformio.ini`, using the target `board.py` recommends for PlatformIO.
-- **ESP-IDF**: M5Unified as an IDF component for the display. The probe uses the IDF I2C driver directly.
+- **ESP-IDF**: M5Unified as an IDF component for the display. The probe uses the IDF I2C driver directly, before `M5.begin()`. On a board with an I/O expander on the internal bus (Tab5) it runs after `M5.begin()`, on M5Unified's bus, as the Arduino program does: until then the expander may hold the touch controller in reset.
 - **UIFlow2**: a `main.py` pushed with `mpremote`, using the `M5` module for the display and `machine.I2C` for the probe.
 
 ## 6. The hardware session
 
-For `core2@v1.3`. Do the steps in this order: UIFlow2 replaces whatever firmware is on the unit, so it goes last. When a step fails, the checks that depend on it become `blocked`, not `fail`. `verify.py run --board <revision>` walks the operator through these steps. It reads them from `checks.json` (`board_steps`, and each check's `step` and `depends_on`), so another revision's steps are data too. Every write to the board is confirmed first, as the skills' standing rules require.
+The steps below are for `core2@v1.3`; [the Tab5's](#tab5202604) follow. Do the steps in this order: UIFlow2 replaces whatever firmware is on the unit, so it goes last. When a step fails, the checks that depend on it become `blocked`, not `fail`. `verify.py run --board <revision>` walks the operator through these steps. It reads them from `checks.json` (`board_steps`, and each check's `step` and `depends_on`), so another revision's steps are data too. Every write to the board is confirmed first, as the skills' standing rules require.
 
 Before starting, record in the results file:
 - the SKU on the unit's sticker (`K010-V13` expected);
@@ -218,6 +225,29 @@ Before starting, record in the results file:
 
 Together these checks separate v1.3 from every other Core2 and Core2 for AWS revision: `fact.imu.core2@v1.3` rejects v1.0 and 2023.02; `fact.pmic.core2@v1.3`, `fact.imu.core2@v1.3`, `fact.no-ina3221.core2@v1.3` and `fact.power-led.core2@v1.3` reject v1.1; `fact.imu.core2@v1.3`, `fact.bridge.core2@v1.3` and `fact.no-atecc.core2@v1.3` reject Core2 for AWS v1.0; and `fact.no-atecc.core2@v1.3` alone rejects Core2 for AWS v1.3, which shares every value the other checks observe. The SKU on the sticker, recorded before the session starts, is a cross-check.
 
+### `tab5@2026.04`
+
+The same session with fewer steps: no PlatformIO, esp-bsp or UIFlow2 step (section 3). Before starting, record the SKU on the unit's sticker (`C145` or `K145` expected) and the rest of the list above. Generate and build with `--revision tab5@2026.04`: `smoke.py` defaults to the Core2.
+
+| Step | Checks | What happens | Needs a person for |
+|---|---|---|---|
+| 1 | `host.port.tab5@2026.04`, `host.bridge.tab5@2026.04`, `host.driver.tab5@2026.04`, `fact.bridge.tab5@2026.04`, `open-question.chip-revision.tab5@2026.04` | Plug in the USB-C port. `doctor.py` lists exactly one new port; its VID/PID matches the USB bridge `board.py facts tab5@2026.04` gives. Run `esptool chip-id` on it for the chip revision | Plugging in |
+| 2 | (none) | `esptool erase-flash` on that port, once. It also removes the factory firmware | Confirming the erase |
+| 3 | `flash.arduino.tab5@2026.04`, `device.arduino.tab5@2026.04`, `open-question.auto-download.tab5@2026.04`, `open-question.display-driver.tab5@2026.04`, and the `fact` checks below | Build and upload the Arduino smoke program | Reading the nonce off the display |
+| 4 | `flash.esp-idf.tab5@2026.04`, `device.esp-idf.tab5@2026.04` | Same, through `idf.py` | Reading the nonce |
+| 5 | `open-question.manual-download.tab5@2026.04` | Enter download mode by hand, with M5's procedure (section 7) | Holding the button and watching the LED |
+| 6 | `handoff.live.tab5@2026.04` | Ask `arduino-m5unified` or `esp-idf` to upload while the operator holds the unit in reset. Same pass rule as `handoff.<skill>` | Holding reset |
+
+**`fact` checks.** Each one compares a probe line of the Arduino smoke program with what `data/` says for `tab5@2026.04`. The three Tab5 revisions differ only in the display and touch parts, so only `fact.touch.tab5@2026.04` can reject a sibling; the others confirm a part every Tab5 carries:
+
+- `fact.touch.tab5@2026.04`: the touch controller answers at the address of the ST7123 and ST7121, and nothing answers at the GT911's. An answer at the GT911's address means the unit is a `tab5@2025.05`. It cannot tell `tab5@2025.10` from `tab5@2026.04`: `open-question.display-driver.tab5@2026.04` records what does.
+- `fact.imu.tab5@2026.04`: the IMU is a BMI270.
+- `fact.ina226.tab5@2026.04`: the power monitor's identification register reads as an INA226.
+- `fact.expander-1.tab5@2026.04` and `fact.expander-2.tab5@2026.04`: each I/O expander's identification register reads as a PI4IOE5V6408. The program probes after `M5.begin()`; a `present raw` value with the reset flag set means it probed before.
+- `fact.presence.tab5@2026.04`: something answers at each of the ES8388's, RX8130CE's and ES7210's addresses. This confirms presence, not the part.
+- `fact.bridge.tab5@2026.04`: comes from step 1's VID/PID: Espressif's native USB, not a bridge chip.
+- `fact.port-a-bus.tab5@2026.04`: with any I2C Grove unit on Port A, a scan on the Port A pins `board.py pins` gives finds the unit, and a scan of the internal bus does not. With no Grove unit to hand, the result is `blocked`.
+
 ## 7. Open questions
 
 Record what happens. Each observation goes into the report verbatim, including error output and firmware versions. Once an observation settles a question, the skill step carrying a matching *(untested on hardware: <check id>)* marker is updated and the marker removed.
@@ -233,6 +263,13 @@ Record what happens. Each observation goes into the report verbatim, including e
 - `open-question.playraw-1mb.core2@v1.3`: does `playRaw` truncate a clip larger than about 1 MB?
 - `open-question.lcd-driver.core2@v1.3`: which LCD driver does the unit carry, ILI9342C or ILI9342E? M5 dates the change to the ILI9342E to units made from 2026.8.7. Record the driver and how it was determined. Either way, the smoke program needs M5GFX 0.2.27 or later.
 - `open-question.esp-bsp-ili9342e.core2@v1.3`: the esp-bsp Core2 component drives the panel with its own `esp_lcd_ili9341` driver, not M5GFX, so the ILI9342E erratum's M5GFX fix does not reach it. With the component and `CONFIG_BSP_PMU_AXP192=y` (what `board.py targets core2@v1.3 --toolchain esp-idf` prints), does esp-bsp's own `display` example show its picture correctly? Record the component version (`version:` in the clone's `bsp/m5stack_core_2/idf_component.yml`), the ESP-IDF version, and what the display shows. A dark display with `CONFIG_BSP_PMU_AXP2101=y` in `sdkconfig` is the PMU setting, not the LCD driver: fix the setting and run again. When `open-question.lcd-driver.core2@v1.3` finds an ILI9342C, record that this observation says nothing about the ILI9342E.
+
+**Runnable on a Tab5 (`tab5@2026.04`):**
+
+- `open-question.chip-revision.tab5@2026.04`: which ESP32-P4 chip revision does `esptool chip-id` report? ESP-IDF 6.1 builds for revision v3.0 and later unless `CONFIG_ESP32P4_SELECTS_REV_LESS_V3` is set, and the two ranges exclude each other, so the answer decides what an ESP-IDF project for this unit must set. Record the esptool line verbatim.
+- `open-question.display-driver.tab5@2026.04`: which display and touch part does the unit carry? During `M5.begin()` M5GFX logs `M5Tab5 ST touch FW version ..` and `M5Tab5 detected ... display` at Info level, before the `SMOKE` line. Record both lines verbatim. An ST7121 confirms the unit is a `tab5@2026.04`; an ST7123 makes it a `tab5@2025.10`, and then this run's results belong to that revision.
+- `open-question.auto-download.tab5@2026.04`: does the upload enter download mode over USB Serial/JTAG with no button press?
+- `open-question.manual-download.tab5@2026.04`: M5's procedure for entering download mode by hand: hold the reset button for about 2 seconds, until the green LED flashes rapidly, then release it. Confirm it, and record whether `esptool chip-id` then connects.
 
 **Needs a CoreS3-family unit, so `not-run` in the Core2 session:**
 

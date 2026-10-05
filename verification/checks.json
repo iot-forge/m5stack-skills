@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "note": "Every check in VERIFICATION.md, with its kind, the skills whose status it counts toward, its revision, and the data entries a pass cites (covers, used by verify.py ingest). A trigger check carries its request, the fixture project it runs from (verification/triggers/<fixture>, or an empty directory when null) and its owner skills (any of them may fire first). A blocked check with satisfied_by counts toward a skill's status when <satisfied_by>.<revision> passed. board_steps lists the steps of VERIFICATION.md section 6 in the order they are done, each with what the operator does (<revision> stands for the unit's revision). A hardware check names its step and, in depends_on, the check that must pass before it is asked; within a step, checks are asked in the order they appear here. verify.py run --board shows a revision the steps its checks name, plus every step no check names (the erase).",
+ "note": "Every check in VERIFICATION.md, with its kind, the skills whose status it counts toward, its revision, and the data entries a pass cites (covers, used by verify.py ingest). A build check names the revision its smoke project is generated for (built_for). A trigger check carries its request, the fixture project it runs from (verification/triggers/<fixture>, or an empty directory when null) and its owner skills (any of them may fire first). A blocked check with satisfied_by counts toward a skill's status when <satisfied_by>.<revision> passed. board_steps lists the steps of VERIFICATION.md section 6 in the order they are done, each with what the operator does (<revision> stands for the unit's revision). A hardware check names its step and, in depends_on, the check that must pass before it is asked; within a step, checks are asked in the order they appear here. verify.py run --board shows a revision the steps its checks name, plus every step no check names (the erase).",
  "board_steps": [
   {
    "id": "plug-in",
@@ -12,7 +12,7 @@
   },
   {
    "id": "arduino",
-   "text": "Build and upload the Arduino smoke program (`smoke.py generate arduino`, then arduino-cli). Type the nonce you read off the display, and record the serial probe lines."
+   "text": "Build and upload the Arduino smoke program (`smoke.py generate arduino --revision <revision>`, then arduino-cli). Type the nonce you read off the display, and record the serial probe lines."
   },
   {
    "id": "platformio",
@@ -25,6 +25,10 @@
   {
    "id": "esp-bsp-display",
    "text": "Build esp-bsp's examples/display from a clone at the pinned esp-bsp commit, with idf.py -D SDKCONFIG_DEFAULTS= the board's sdkconfig.bsp file plus the PMU setting `board.py targets <revision> --toolchain esp-idf` prints (the bsp file's own PMU choice may be wrong for this revision), and flash it. Record the component and ESP-IDF versions and what the display shows (section 7)."
+  },
+  {
+   "id": "manual-download",
+   "text": "Put the unit in download mode by hand, with M5's procedure for this board (VERIFICATION.md section 7), then run `esptool chip-id` on the port `doctor.py --ports` lists. Record what the LED did and whether esptool connected, then reset the unit."
   },
   {
    "id": "live-handoff",
@@ -202,7 +206,8 @@
    "skills": [
     "arduino-m5unified"
    ],
-   "note": "VERIFICATION.md section 4; run by scripts/smoke.py build"
+   "note": "VERIFICATION.md section 4; run by scripts/smoke.py build",
+   "built_for": "core2@v1.3"
   },
   {
    "id": "build.arduino.m5stack:esp32:m5stack_core2",
@@ -210,7 +215,8 @@
    "skills": [
     "arduino-m5unified"
    ],
-   "note": "VERIFICATION.md section 4; run by scripts/smoke.py build"
+   "note": "VERIFICATION.md section 4; run by scripts/smoke.py build",
+   "built_for": "core2@v1.3"
   },
   {
    "id": "build.platformio.m5stack-core2",
@@ -218,7 +224,8 @@
    "skills": [
     "platformio"
    ],
-   "note": "VERIFICATION.md section 4; run by scripts/smoke.py build"
+   "note": "VERIFICATION.md section 4; run by scripts/smoke.py build",
+   "built_for": "core2@v1.3"
   },
   {
    "id": "build.esp-idf.esp32",
@@ -226,7 +233,35 @@
    "skills": [
     "esp-idf"
    ],
-   "note": "VERIFICATION.md section 4; run by scripts/smoke.py build"
+   "note": "VERIFICATION.md section 4; run by scripts/smoke.py build",
+   "built_for": "core2@v1.3"
+  },
+  {
+   "id": "build.arduino.esp32:esp32:m5stack_tab5",
+   "kind": "build",
+   "skills": [
+    "arduino-m5unified"
+   ],
+   "note": "VERIFICATION.md section 4; run by scripts/smoke.py build",
+   "built_for": "tab5@2026.04"
+  },
+  {
+   "id": "build.arduino.m5stack:esp32:m5stack_tab5",
+   "kind": "build",
+   "skills": [
+    "arduino-m5unified"
+   ],
+   "note": "VERIFICATION.md section 4; run by scripts/smoke.py build",
+   "built_for": "tab5@2026.04"
+  },
+  {
+   "id": "build.esp-idf.esp32p4",
+   "kind": "build",
+   "skills": [
+    "esp-idf"
+   ],
+   "note": "VERIFICATION.md section 4; run by scripts/smoke.py build",
+   "built_for": "tab5@2026.04"
   },
   {
    "id": "build.target-from-data",
@@ -861,6 +896,241 @@
    "step": "esp-bsp-display",
    "depends_on": "host.port.core2@v1.3",
    "note": "VERIFICATION.md section 7"
+  },
+  {
+   "id": "host.port.tab5@2026.04",
+   "kind": "host",
+   "skills": [
+    "flashing-and-debugging"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "plug-in"
+  },
+  {
+   "id": "host.bridge.tab5@2026.04",
+   "kind": "host",
+   "skills": [
+    "flashing-and-debugging"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "plug-in",
+   "depends_on": "host.port.tab5@2026.04",
+   "covers": [
+    "products/tab5.json#tab5@2026.04.usb_bridge"
+   ]
+  },
+  {
+   "id": "host.driver.tab5@2026.04",
+   "kind": "host",
+   "skills": [
+    "flashing-and-debugging"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "plug-in",
+   "depends_on": "host.port.tab5@2026.04"
+  },
+  {
+   "id": "fact.bridge.tab5@2026.04",
+   "kind": "fact",
+   "skills": [
+    "board-identification"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "plug-in",
+   "depends_on": "host.bridge.tab5@2026.04",
+   "covers": [
+    "products/tab5.json#tab5@2026.04.usb_bridge",
+    "signals.json#usb-vid"
+   ]
+  },
+  {
+   "id": "open-question.chip-revision.tab5@2026.04",
+   "kind": "open-question",
+   "skills": [
+    "esp-idf"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "plug-in",
+   "depends_on": "host.port.tab5@2026.04",
+   "note": "VERIFICATION.md section 7"
+  },
+  {
+   "id": "flash.arduino.tab5@2026.04",
+   "kind": "flash",
+   "skills": [
+    "arduino-m5unified"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "arduino",
+   "depends_on": "host.port.tab5@2026.04"
+  },
+  {
+   "id": "device.arduino.tab5@2026.04",
+   "kind": "device",
+   "skills": [
+    "arduino-m5unified"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "arduino",
+   "depends_on": "flash.arduino.tab5@2026.04"
+  },
+  {
+   "id": "open-question.auto-download.tab5@2026.04",
+   "kind": "open-question",
+   "skills": [
+    "flashing-and-debugging"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "arduino",
+   "depends_on": "host.port.tab5@2026.04",
+   "note": "VERIFICATION.md section 7"
+  },
+  {
+   "id": "open-question.display-driver.tab5@2026.04",
+   "kind": "open-question",
+   "skills": [
+    "arduino-m5unified"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "arduino",
+   "depends_on": "device.arduino.tab5@2026.04",
+   "note": "VERIFICATION.md section 7"
+  },
+  {
+   "id": "fact.touch.tab5@2026.04",
+   "kind": "fact",
+   "skills": [
+    "board-identification"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "arduino",
+   "depends_on": "device.arduino.tab5@2026.04",
+   "covers": [
+    "products/tab5.json#tab5@2026.04.touch",
+    "signals.json#tab5-touch-probe"
+   ]
+  },
+  {
+   "id": "fact.imu.tab5@2026.04",
+   "kind": "fact",
+   "skills": [
+    "board-identification"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "arduino",
+   "depends_on": "device.arduino.tab5@2026.04",
+   "covers": [
+    "products/tab5.json#tab5@2026.04.imu",
+    "signals.json#imu-probe"
+   ]
+  },
+  {
+   "id": "fact.ina226.tab5@2026.04",
+   "kind": "fact",
+   "skills": [
+    "board-identification"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "arduino",
+   "depends_on": "device.arduino.tab5@2026.04",
+   "covers": [
+    "signals.json#tab5-ina226-probe"
+   ]
+  },
+  {
+   "id": "fact.expander-1.tab5@2026.04",
+   "kind": "fact",
+   "skills": [
+    "board-identification"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "arduino",
+   "depends_on": "device.arduino.tab5@2026.04",
+   "covers": [
+    "signals.json#tab5-expander-1-probe"
+   ]
+  },
+  {
+   "id": "fact.expander-2.tab5@2026.04",
+   "kind": "fact",
+   "skills": [
+    "board-identification"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "arduino",
+   "depends_on": "device.arduino.tab5@2026.04",
+   "covers": [
+    "signals.json#tab5-expander-2-probe"
+   ]
+  },
+  {
+   "id": "fact.presence.tab5@2026.04",
+   "kind": "fact",
+   "skills": [
+    "board-identification"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "arduino",
+   "depends_on": "device.arduino.tab5@2026.04",
+   "covers": [
+    "signals.json#tab5-presence-probe"
+   ]
+  },
+  {
+   "id": "fact.port-a-bus.tab5@2026.04",
+   "kind": "fact",
+   "skills": [
+    "pinout-lookup"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "arduino",
+   "depends_on": "device.arduino.tab5@2026.04",
+   "covers": [
+    "pinmaps/tab5-a.json#buses.i2c_port_a"
+   ]
+  },
+  {
+   "id": "flash.esp-idf.tab5@2026.04",
+   "kind": "flash",
+   "skills": [
+    "esp-idf"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "esp-idf",
+   "depends_on": "host.port.tab5@2026.04"
+  },
+  {
+   "id": "device.esp-idf.tab5@2026.04",
+   "kind": "device",
+   "skills": [
+    "esp-idf"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "esp-idf",
+   "depends_on": "flash.esp-idf.tab5@2026.04"
+  },
+  {
+   "id": "open-question.manual-download.tab5@2026.04",
+   "kind": "open-question",
+   "skills": [
+    "flashing-and-debugging"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "manual-download",
+   "depends_on": "host.port.tab5@2026.04",
+   "note": "VERIFICATION.md section 7"
+  },
+  {
+   "id": "handoff.live.tab5@2026.04",
+   "kind": "handoff",
+   "skills": [
+    "arduino-m5unified",
+    "esp-idf",
+    "flashing-and-debugging"
+   ],
+   "revision": "tab5@2026.04",
+   "step": "live-handoff",
+   "depends_on": "host.port.tab5@2026.04"
   },
   {
    "id": "open-question.manual-download.cores3@v1.0",

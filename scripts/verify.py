@@ -114,7 +114,9 @@ def satisfied(check, revision, results):
 
 def set_skill_status(obj, root=ROOT):
     """Rewrite metadata.verification and metadata.tested-with (section 10). A skill whose checks all count on the run's
-    unit adds that revision, under the run's date and toolchains. A skill with a failed check there loses that revision
+    unit adds that revision, under the run's date and toolchains, provided one of them is a check on that revision: a
+    run that never exercised the skill on the unit (PlatformIO on a Tab5) says nothing about it. A skill with a failed
+    check there loses that revision
     and keeps the rest, with their date; with none left it is unverified. A check that is only missing, not-run or
     blocked changes nothing: the run says nothing about it."""
     if not obj["run"].get("unit"):
@@ -131,7 +133,7 @@ def set_skill_status(obj, root=ROOT):
         text = skill_md.read_bytes().decode("utf-8")
         old = re.search(r'(?m)^  verification: "(?:partial|verified) ([\d-]+): ([^"]+)"', text)
         listed = set(old.group(2).split(", ")) if old else set()
-        if all(satisfied(c, revision, results) for c in mine):
+        if any(c.get("revision") == revision for c in mine) and all(satisfied(c, revision, results) for c in mine):
             revs, when = sorted(listed | {revision}), date
             tools = ", ".join(f"{t} {toolchains[t]}" for t in SKILL_TOOLS.get(skill, ()) if t in toolchains) or "none"
         elif revision in listed and any(results.get(c["id"]) == "fail" for c in mine):
@@ -347,14 +349,26 @@ def run_offline(operator, runner=sh, skip=(), ask=None, only=None):
                 line = queries.get(QUERY_TESTS.get(c["id"].split(".", 1)[1]), "")
                 results.append({"check": c["id"], "result": verdict(line), "output": line})
         results += planted_results(test_lines(log, "test_validate"))
-    builds = [c["id"] for c in checks if c["kind"] == "build" and c["id"] != "build.target-from-data"]
+    builds = {}  # the revision a smoke project is generated for -> its build checks
+    for c in checks:
+        if c["kind"] == "build" and c["id"] != "build.target-from-data":
+            builds.setdefault(c["built_for"], []).append(c["id"])
     if "build" in skip:
-        results += [{"check": i, "result": "not-run", "output": "skipped (--skip build)"} for i in builds + ["build.target-from-data"]]
+        results += [{"check": i, "result": "not-run", "output": "skipped (--skip build)"}
+                    for i in [*sum(builds.values(), []), "build.target-from-data"]]
     else:
-        if any(map(wanted, builds)):
-            results += smoke_results(runner, ["build"], builds)
-        if wanted("build.target-from-data"):
-            results += smoke_results(runner, ["check-targets"], ["build.target-from-data"])
+        per_rev = []
+        for rev, ids in builds.items():
+            if any(map(wanted, ids)):
+                results += smoke_results(runner, ["build", "--revision", rev], ids)
+            if wanted("build.target-from-data"):
+                # the projects on disk are the last revision's: generate this one's again, then check them
+                runner([sys.executable, str(ROOT / "scripts/smoke.py"), "generate", "--revision", rev])
+                per_rev += smoke_results(runner, ["check-targets", "--revision", rev], ["build.target-from-data"])[:1]
+        if per_rev:  # one check: every revision's projects use the targets board.py recommends
+            results.append({"check": "build.target-from-data",
+                            "result": next((r for r in ("fail", "blocked") if any(x["result"] == r for x in per_rev)), "pass"),
+                            "output": "\n".join(f"{rev}:\n{x.get('output', '')}" for rev, x in zip(builds, per_rev))})
     limit, left = None, []
     for c in (c for c in checks if wanted(c["id"])):
         if c["kind"] == "trigger":
@@ -438,14 +452,14 @@ def run_board(revision, operator, ask=input, root=ROOT):
 
 RESULTS = ("pass", "fail", "blocked", "not-run", "observed")
 KINDS = ("data", "query", "build", "trigger", "handoff", "host", "flash", "device", "fact", "open-question")
-RELEASE_UNIT = "core2@v1.3"  # the release bar's mandatory revision (section 3)
+RELEASE_UNIT = "tab5@2026.04"  # the release bar's mandatory revision (section 3)
 MARKER_RE = re.compile(r"\(untested on hardware: ([^)]+)\)")
 
 
-def cell(results):
-    """A release-bar cell: the results' counts, e.g. 'pass 3 · fail 1', or 'not-run' when there are none."""
+def cell(results, none="not-run"):
+    """A release-bar cell: the results' counts, e.g. 'pass 3 · fail 1', or NONE when there are none."""
     counts = [f"{r} {sum(1 for x in results if x == r)}" for r in RESULTS if r in results]
-    return " · ".join(counts) or "not-run"
+    return " · ".join(counts) or none
 
 
 def expected(cid, covers, root):
@@ -488,9 +502,12 @@ def render_report(obj, root=ROOT):
             *((f"device {fw}", f"device.{fw}.") for fw in FRAMEWORKS),
             ("fact", "fact."), ("open-question", "open-question.")]
     out += ["", "| Revision | " + " | ".join(f"`{c}`" for c, _ in cols) + " |", "|---|" + "---|" * len(cols)]
+    all_ids = [c["id"] for c in read_json(root / "verification/checks.json")["checks"]]
     for rev in dict.fromkeys([RELEASE_UNIT, *([unit] if unit else [])]):  # section 3's mandatory row is always shown
+        has = lambda p: any(i.startswith(p) and i.endswith(f".{rev}") for i in all_ids)  # n/a: no such check for this revision
         out.append(f"| `{rev}` | " + " | ".join(cell([r["result"] for r in results if r["check"].startswith(p)
-                                                         and r["check"].endswith(f".{rev}")]) for _, p in cols) + " |")
+                                                         and r["check"].endswith(f".{rev}")], "not-run" if has(p) else "n/a")
+                                                   for _, p in cols) + " |")
     out.append("| every other `supported` revision | " + " | ".join("not-run" for _ in cols) + " |")
 
     out += ["", "## Failures", ""]

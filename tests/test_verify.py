@@ -24,7 +24,9 @@ def run_file(results, unit=REV, toolchains=None):
             "results": results}
 
 
-class Ingest(unittest.TestCase):
+class RepoCopy(unittest.TestCase):
+    """A copy of data/, skills/ and checks.json that `verify.py ingest` may rewrite."""
+
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
         for p in ("data", "skills"):
@@ -49,6 +51,25 @@ class Ingest(unittest.TestCase):
     def signal(self, sid):
         return next(s for s in self.data("signals.json")["signals"] if s["id"] == sid)
 
+    def skill_meta(self, skill):
+        text = (self.tmp / "skills" / skill / "SKILL.md").read_text(encoding="utf-8")
+        return {k: text.split(f"  {k}: \"", 1)[1].split('"', 1)[0] for k in ("verification", "tested-with")}
+
+    def all_passing(self, skill, revision=REV):
+        """A result for every check tagged SKILL on REVISION or on no revision: open questions observed, the rest pass."""
+        checks = verify.read_json(REPO / "verification/checks.json")["checks"]
+        return [{"check": c["id"], "result": "observed" if c["kind"] == "open-question" else "pass"}
+                for c in checks if skill in c["skills"] and c.get("revision") in (None, revision)]
+
+    def set_meta(self, skill, verification, tested_with):
+        p = self.tmp / "skills" / skill / "SKILL.md"
+        b = p.read_bytes()
+        for key, value in (("verification", verification), ("tested-with", tested_with)):
+            b = re.sub(rf'(?m)^  {key}: "[^"]*"'.encode(), f'  {key}: "{value}"'.encode(), b, count=1)
+        p.write_bytes(b)
+
+
+class Ingest(RepoCopy):
     def test_passing_fact_cites_a_hardware_test_source(self):
         before = self.data("products/core2.json")["revisions"][REV]["pmic"]
         self.ingest(run_file([{"check": "fact.pmic.core2@v1.3", "result": "pass", "observed": "I2C 0x34 AXP192"}]))
@@ -108,16 +129,6 @@ class Ingest(unittest.TestCase):
         self.assertTrue(extras)
         self.assertTrue(all(HW in e["src"] for e in extras))
 
-    def skill_meta(self, skill):
-        text = (self.tmp / "skills" / skill / "SKILL.md").read_text(encoding="utf-8")
-        return {k: text.split(f"  {k}: \"", 1)[1].split('"', 1)[0] for k in ("verification", "tested-with")}
-
-    def all_passing(self, skill, revision=REV):
-        """A result for every check tagged SKILL on REVISION or on no revision: open questions observed, the rest pass."""
-        checks = verify.read_json(REPO / "verification/checks.json")["checks"]
-        return [{"check": c["id"], "result": "observed" if c["kind"] == "open-question" else "pass"}
-                for c in checks if skill in c["skills"] and c.get("revision") in (None, revision)]
-
     def test_skill_with_only_observed_open_questions_is_partial(self):
         results = self.all_passing("uiflow2-micropython")
         self.assertTrue(any(r["result"] == "observed" for r in results))
@@ -132,13 +143,6 @@ class Ingest(unittest.TestCase):
         next(r for r in results if r["result"] == "pass")["result"] = "fail"
         self.ingest(run_file(results))
         self.assertEqual(self.skill_meta("uiflow2-micropython"), {"verification": "unverified", "tested-with": "none"})
-
-    def set_meta(self, skill, verification, tested_with):
-        p = self.tmp / "skills" / skill / "SKILL.md"
-        b = p.read_bytes()
-        for key, value in (("verification", verification), ("tested-with", tested_with)):
-            b = re.sub(rf'(?m)^  {key}: "[^"]*"'.encode(), f'  {key}: "{value}"'.encode(), b, count=1)
-        p.write_bytes(b)
 
     def test_a_failure_takes_the_revision_off_the_status(self):
         self.set_meta("uiflow2-micropython", f"partial 2026-10-01: core2@v1.1, {REV}", "mpremote 1.24.1")
@@ -722,7 +726,7 @@ class Report(unittest.TestCase):
 
     def test_release_bar_keeps_the_mandatory_row_on_an_offline_run(self):
         md = verify.render_report(run_file([{"check": "data.validate", "result": "pass"}], unit=None), REPO)
-        row = next(l for l in md.split("## Release bar", 1)[1].splitlines() if l.startswith(f"| `{REV}`"))
+        row = next(l for l in md.split("## Release bar", 1)[1].splitlines() if l.startswith(f"| `{verify.RELEASE_UNIT}`"))
         self.assertIn("not-run", row)
         self.assertEqual(md.split("## Open-question observations", 1)[1].split("## ", 1)[0].strip(), "None.")
 
@@ -786,6 +790,99 @@ class ChecksJson(unittest.TestCase):
         for cid, request, owner in rows:
             self.assertEqual(checks[cid]["request"], request)
             self.assertEqual(checks[cid]["owner"], re.findall(r"`([a-z0-9-]+)`", owner), cid)
+
+
+TAB5 = "tab5@2026.04"
+
+
+class Tab5Run(RepoCopy):  # B42: the release bar's unit, run in Arduino and ESP-IDF only
+    def board(self, results=None):
+        self.op = Operator(results)
+        with contextlib.redirect_stderr(io.StringIO()):
+            obj = verify.run_board(TAB5, "test", self.op)
+        return obj, {r["check"]: r for r in obj["results"]}
+
+    def test_the_tab5_is_the_release_unit(self):
+        self.assertEqual(verify.RELEASE_UNIT, TAB5)
+
+    def test_the_tab5_run_asks_in_this_order_and_blocks_on_these(self):
+        obj, _ = self.board()
+        self.assertEqual([r["check"].removesuffix(f".{TAB5}") for r in obj["results"]], [
+            "host.port", "host.bridge", "host.driver", "fact.bridge", "open-question.chip-revision",
+            "flash.arduino", "device.arduino", "open-question.auto-download", "open-question.display-driver",
+            "fact.touch", "fact.imu", "fact.ina226", "fact.expander-1", "fact.expander-2", "fact.presence", "fact.port-a-bus",
+            "flash.esp-idf", "device.esp-idf", "open-question.manual-download", "handoff.live"])
+        _, res = self.board({f"host.port.{TAB5}": "f"})
+        on_arduino = ("open-question.display-driver", "fact.touch", "fact.imu", "fact.ina226", "fact.expander-1",
+                      "fact.expander-2", "fact.presence", "fact.port-a-bus")
+        self.assertEqual({c.removesuffix(f".{TAB5}"): r["blocked_by"][0].removesuffix(f".{TAB5}") for c, r in res.items()
+                          if r.get("blocked_by")}, {
+            "host.bridge": "host.port", "host.driver": "host.port", "fact.bridge": "host.bridge",
+            "open-question.chip-revision": "host.port",
+            "flash.arduino": "host.port", "device.arduino": "flash.arduino", "open-question.auto-download": "host.port",
+            **{c: "device.arduino" for c in on_arduino},
+            "flash.esp-idf": "host.port", "device.esp-idf": "flash.esp-idf",
+            "open-question.manual-download": "host.port", "handoff.live": "host.port"})
+        steps = [p for p in self.op.prompts if p.startswith("Step ")]
+        self.assertEqual(len(steps), 1)  # only the erase step asks "done?"; no PlatformIO, esp-bsp or UIFlow2 step is shown
+
+    def test_only_a_skill_with_a_check_on_the_unit_gains_the_revision(self):
+        # PlatformIO and UIFlow2 are not flashed on a Tab5: a run that passes everything else says nothing about them
+        for skill in ("platformio", "uiflow2-micropython"):
+            self.ingest(run_file(self.all_passing(skill, TAB5), unit=TAB5))
+            self.assertEqual(self.skill_meta(skill)["verification"], "unverified", skill)
+        for skill in ("arduino-m5unified", "esp-idf", "flashing-and-debugging", "board-identification", "pinout-lookup"):
+            self.ingest(run_file(self.all_passing(skill, TAB5), unit=TAB5))
+            self.assertEqual(self.skill_meta(skill)["verification"], f"partial {DATE}: {TAB5}", skill)
+
+    def test_a_passing_probe_fact_cites_the_unit(self):
+        out = self.ingest(run_file([{"check": f"fact.ina226.{TAB5}", "result": "pass", "observed": "I2C 0x41 INA226"},
+                                    {"check": f"fact.touch.{TAB5}", "result": "pass", "observed": "I2C 0x55 present"}], unit=TAB5))
+        hw = f"hw-{DATE}-{TAB5}"
+        self.assertIn(hw, self.signal("tab5-ina226-probe")["probe"]["expected"]["INA226"]["src"])
+        self.assertIn(hw, self.data("products/tab5.json")["revisions"][TAB5]["touch"]["src"])
+        self.assertNotIn(hw, json.dumps(self.data("products/tab5.json")["revisions"]["tab5@2025.10"]))
+
+    def test_the_release_bar_marks_what_the_unit_does_not_run(self):
+        md = verify.render_report(run_file([{"check": f"flash.arduino.{TAB5}", "result": "pass"}], unit=TAB5), REPO)
+        bar = md.split("## Release bar", 1)[1].split("\n## ", 1)[0]
+        header = [c.strip(" `") for c in next(l for l in bar.splitlines() if l.startswith("| Revision")).split("|")[1:-1]]
+        row = [c.strip() for c in next(l for l in bar.splitlines() if l.startswith(f"| `{TAB5}`")).split("|")[1:-1]]
+        cells = dict(zip(header, row))
+        self.assertEqual(cells["flash arduino"], "pass 1")
+        self.assertEqual(cells["flash esp-idf"], "not-run")
+        self.assertEqual((cells["flash platformio"], cells["device uiflow2"]), ("n/a", "n/a"))
+        self.assertNotIn("| `core2@v1.3`", bar)
+
+    def test_offline_builds_both_revisions(self):
+        checks = verify.read_json(REPO / "verification/checks.json")["checks"]
+        built_for = {c["id"]: c["built_for"] for c in checks if c["kind"] == "build" and c["id"] != "build.target-from-data"}
+        self.assertEqual(sorted(set(built_for.values())), [REV, TAB5])
+        self.assertEqual({i for i, r in built_for.items() if r == TAB5},
+                         {"build.arduino.esp32:esp32:m5stack_tab5", "build.arduino.m5stack:esp32:m5stack_tab5", "build.esp-idf.esp32p4"})
+
+        class Runner(FakeRunner):
+            def __call__(self, cmd, cwd=None, stdin=None):
+                if any("smoke.py" in str(c) for c in cmd) and "--revision" in cmd:
+                    rev = cmd[cmd.index("--revision") + 1]
+                    self.calls.append(cmd)
+                    if "check-targets" in cmd:
+                        return 0, json.dumps([{"check": "build.target-from-data", "output": rev,
+                                               "result": "fail" if rev == TAB5 else "pass"}]), ""
+                    if rev == TAB5:
+                        return 2, "", "smoke.py: no such data"
+                    return 0, json.dumps([{"check": i, "result": "pass", "output": ""} for i, r in built_for.items() if r == rev]), ""
+                return super().__call__(cmd, cwd, stdin)
+        runner = Runner(validate_tests={**GUARDS_OK, **ALL_PLANTED_OK})
+        res = {r["check"]: r for r in verify.run_offline("test", runner=runner, skip=("trigger",))["results"]}
+        for cid, rev in built_for.items():
+            self.assertEqual(res[cid]["result"], "fail" if rev == TAB5 else "pass", cid)
+        self.assertEqual(res["build.target-from-data"]["result"], "fail", "one revision's mismatch fails the check")
+        self.assertIn(REV, res["build.target-from-data"]["output"])
+        self.assertIn(TAB5, res["build.target-from-data"]["output"])
+        # the projects on disk are the last revision's, so each revision's are generated again before they are checked
+        smoke = [(c[2], c[c.index("--revision") + 1]) for c in runner.calls if "--revision" in c]
+        self.assertEqual(smoke, [(cmd, rev) for rev in (REV, TAB5) for cmd in ("build", "generate", "check-targets")])
 
 
 def verify_tests(module):
