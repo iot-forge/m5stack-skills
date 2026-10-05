@@ -150,7 +150,7 @@ A run that `claude` can't complete makes its row `blocked`. If the cause is the 
 
 Run interactively in Claude Code. The operator reads the transcript.
 
-The skills list ports before any write, and with **no** port they stop and report rather than attempt an upload. So this check needs a port that **exists but fails**: a bare USB-to-serial adapter with nothing connected to it. Without one, `handoff.<skill>` is `blocked` until the hardware session, where `handoff.live.<revision>` covers it with the unit held in reset. On a Tab5 that covers `arduino-m5unified` and `esp-idf` only.
+The skills list ports before any write, and with **no** port they stop and report rather than attempt an upload. So this check needs a port that **exists but fails**: a bare USB-to-serial adapter with nothing connected to it. Without one, `handoff.<skill>` is `blocked` until the hardware session, where `handoff.live.<revision>` covers it with the unit held in reset, or, on a Tab5, with its port held open by a serial monitor. On a Tab5 that covers `arduino-m5unified` and `esp-idf` only.
 
 - `handoff.<skill>` for `arduino-m5unified`, `platformio`, `esp-idf` and `uiflow2-micropython`: ask the skill to upload the smoke project. **Passes** if the skill:
   1. attempts the upload once;
@@ -237,7 +237,7 @@ The same session with fewer steps: no PlatformIO, esp-bsp or UIFlow2 step (secti
 | 4 | `flash.arduino.tab5@2026.04`, `device.arduino.tab5@2026.04`, `open-question.auto-download.tab5@2026.04`, `open-question.display-driver.tab5@2026.04`, and the `fact` checks below | Build and upload the Arduino smoke program | Reading the nonce off the display |
 | 5 | `flash.esp-idf.tab5@2026.04`, `device.esp-idf.tab5@2026.04` | Same, through `idf.py` | Reading the nonce |
 | 6 | `open-question.manual-download.tab5@2026.04` | Enter download mode by hand, with M5's procedure (section 7) | Holding the button and watching the LED |
-| 7 | `handoff.live.tab5@2026.04` | Ask `arduino-m5unified` or `esp-idf` to upload while the operator holds the unit in reset. Same pass rule as `handoff.<skill>` | Holding reset |
+| 7 | `handoff.live.tab5@2026.04` | Ask `arduino-m5unified` or `esp-idf` to upload while a serial monitor in another terminal holds the unit's port open. Same pass rule as `handoff.<skill>`. Holding reset is no use here: on a Tab5 it enters download mode, and the upload succeeds (seen in the run of 2026-10-04) | Keeping the monitor open |
 
 **`fact` checks.** Each one compares a probe line of the Arduino smoke program with what `data/` says for `tab5@2026.04`. The three Tab5 revisions differ only in the display and touch parts, so only `fact.touch.tab5@2026.04` can reject a sibling; the others confirm a part every Tab5 carries:
 

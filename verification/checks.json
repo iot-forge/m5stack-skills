@@ -39,6 +39,10 @@
    "text": "Ask a framework skill to upload while you hold the unit in reset. Pass: one attempt, the serial-port and download-mode procedures, exactly one retry, then a hand-off to flashing-and-debugging."
   },
   {
+   "id": "live-handoff-busy-port",
+   "text": "Open a serial monitor on the unit's port in another terminal and leave it open. Ask a framework skill to upload, and keep the monitor open through the retry. Pass: one attempt, the serial-port and download-mode procedures, exactly one retry, then a hand-off to flashing-and-debugging."
+  },
+  {
    "id": "uiflow2",
    "text": "Flash the UIFlow2 image `board.py targets` recommends with `esptool write-flash 0x0`, then push the smoke main.py with mpremote. Record the UIFlow2 observations in section 7."
   },
@@ -1133,7 +1137,7 @@
     "flashing-and-debugging"
    ],
    "revision": "tab5@2026.04",
-   "step": "live-handoff",
+   "step": "live-handoff-busy-port",
    "depends_on": "host.port.tab5@2026.04"
   },
   {
