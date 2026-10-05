@@ -18,3 +18,4 @@ verification/smoke/esp-idf/sdkconfig*
 verification/smoke/esp-idf/managed_components/
 verification/smoke/esp-idf/dependencies.lock
 verification/smoke/uiflow2/main.py
+verification/smoke/esp-idf/main/idf_component.yml

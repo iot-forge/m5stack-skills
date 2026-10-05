@@ -12,10 +12,17 @@ uv run scripts/smoke.py check-targets           # build.target-from-data
 |---|---|---|---|
 | Arduino / M5Unified (the reference) | `arduino/smoke/smoke.ino` | `smoke_gen.h`, `smoke_probe.hpp` beside it | `arduino/build/<fqbn, colons as underscores>/smoke.ino.bin` |
 | PlatformIO | none: `src/` gets a copy of `smoke.ino` | the whole `platformio/` folder | `platformio/.pio/build/<board>/firmware.bin` |
-| ESP-IDF | `esp-idf/CMakeLists.txt`, `esp-idf/main/` | `main/smoke_gen.h`, `main/smoke_probe.hpp`, `sdkconfig.defaults` | `esp-idf/build/smoke.bin` |
+| ESP-IDF | `esp-idf/CMakeLists.txt`, `esp-idf/main/` | `main/smoke_gen.h`, `main/smoke_probe.hpp`, `main/idf_component.yml`, `sdkconfig.defaults` | `esp-idf/build/smoke.bin` |
 | UIFlow2 | `uiflow2/main.template.py` | `uiflow2/main.py` (push this one with `mpremote`) | none |
 
 `common/smoke_probe.hpp` is the C++ probe logic both C++ projects get a copy of. The UIFlow2 template mirrors it; change both together. `tests/test_smoke.py` runs the UIFlow2 version under CPython against a simulated bus.
+
+The commands default to `core2@v1.3`; `--revision tab5@2026.04` generates for a Tab5. What differs there comes from the data:
+
+- PlatformIO is skipped, because `board.py` recommends no PlatformIO target for a Tab5.
+- The M5Unified and M5GFX floors come from the errata the revision carries (`LIBRARY_FLOORS` in `smoke.py`).
+- The ESP-IDF program probes after `M5.begin()`, as the Arduino one always does. An I/O expander on the internal bus holds the touch controller in reset until then.
+- `sdkconfig.defaults` turns PSRAM on at 200 MHz, which M5GFX needs on a Tab5, and builds for ESP32-P4 chip revisions below v3.0.
 
 Each project has its own nonce, so a `device` check can't pass on a build left over from another framework. `smoke.json` in each project records the nonce and targets.
 
