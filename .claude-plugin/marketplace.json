@@ -3,6 +3,9 @@
   "owner": {
     "name": "IoT Forge"
   },
+  "metadata": {
+    "description": "One plugin: skills for M5Stack Core controllers that answer board questions from per-revision data."
+  },
   "plugins": [
     {
       "name": "m5core-skills",

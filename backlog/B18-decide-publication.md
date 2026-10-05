@@ -45,11 +45,11 @@ Build:
 ## Definition of done
 
 - [x] Each decision above is recorded (ADR 0006, 2026-10-04)
-- [ ] The version guard reads `m5core-skills--v*` tags and requires a higher version, with tests
-- [ ] The manifests, `CHANGELOG.md`, `CONTRIBUTING.md` and the workflow are in place
-- [ ] The README's install route, status line and Alternatives are current
-- [ ] The README's verification table is regenerated from the latest run
-- [ ] `uv run scripts/check.py` exits 0
+- [x] The version guard reads `m5core-skills--v*` tags and requires a higher version, with tests
+- [x] The manifests, `CHANGELOG.md`, `CONTRIBUTING.md` and the workflow are in place
+- [x] The README's install route, status line and Alternatives are current
+- [x] The README's verification table is regenerated from the latest run
+- [x] `uv run scripts/check.py` exits 0
 - [ ] The branch is pushed and its Actions run passes
 - [ ] The install route is tested from GitHub
 - [ ] The tag `m5core-skills--v2.0.0` is pushed
@@ -62,8 +62,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: Change the version guard in `scripts/check.py`, test first
-- **Files touched**: none
-- **Last commit**: none
+- **Done**: the decisions (ADR 0006); the version guard (`python -m unittest tests.test_check`, 23 pass); the manifest, `CHANGELOG.md`, `CONTRIBUTING.md`, `.github/workflows/check.yml`; the README's install route, status line, Alternatives (web search 2026-10-04) and verification table (report 2026-09-29, no board run); `uv run scripts/check.py` exits 0; `claude plugin validate .` passes with one warning (no marketplace description)
+- **Next**: Ask the maintainer, then `git push -u https://github.com/iot-forge/m5stack-skills m5core-skills-v2`. Watch the Actions run: it is the first time the gate runs on Linux
+- **Files touched**: `scripts/check.py`, `tests/test_check.py`, `.claude-plugin/plugin.json`, `CHANGELOG.md`, `CONTRIBUTING.md`, `README.md`, `.github/workflows/check.yml`, `docs/adr/0001-…`, `docs/adr/0006-…`, this issue, `backlog/README.md`
+- **Last commit**: the one that carries this checkpoint
 - **Open questions**: none

@@ -1,0 +1,23 @@
+name: check
+
+# This file only takes effect on the m5core-skills-v2 branch, which has no history in common with main.
+on:
+  push:
+    branches: [m5core-skills-v2]
+  pull_request:
+    branches: [m5core-skills-v2]
+
+jobs:
+  gate:
+    name: The gate
+    runs-on: ubuntu-latest
+    steps:
+      # The version guard fails in a shallow clone and needs the release tags: fetch everything.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Run the gate
+        run: uv run scripts/check.py

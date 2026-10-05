@@ -4,7 +4,7 @@ Claude Code skills for **M5Stack Core controllers**: Basic, Gray, Fire, M5GO, Co
 
 What makes it different: **boards are data, and revisions are real.** A "Core2" is four hardware revisions with different PMICs, IMUs, USB bridges and RTC backup cells, and the PMIC goes AXP192 → AXP2101 → AXP192 again. Every skill answers board questions from bundled per-revision data through one query script. Every fact cites its primary source and the date it was last checked. Where revisions disagree, a skill gives every branch and tells you the cheapest way to find out which one you have. It never trusts the board's own report of itself.
 
-> **Status: scaffold.** `board-identification` is fully written. The other six skills have their scope, triggers and hand-offs in place, but their task sections are still marked TODO. Nothing has been verified on hardware yet (see [Verification](#verification)).
+> **Status: 2.0.0, not yet verified on hardware.** All seven skills are written and pass the data, query and trigger checks, which need no board. No board has been run yet, so every skill is `unverified` and every fact comes from documentation (see [Verification](#verification)).
 
 ## Requirements
 
@@ -16,16 +16,16 @@ What makes it different: **boards are data, and revisions are real.** A "Core2" 
 
 Install the whole plugin. A single skill folder copied on its own is **unsupported**: every skill reads the shared `data/` and `scripts/` at the plugin root and cannot reach them from anywhere else.
 
-From a clone, as a local marketplace:
+The plugin lives on the `m5core-skills-v2` branch of [`iot-forge/m5stack-skills`](https://github.com/iot-forge/m5stack-skills), so add that branch as a marketplace:
 
 ```
-/plugin marketplace add <path-to-your-clone>
+/plugin marketplace add iot-forge/m5stack-skills#m5core-skills-v2
 /plugin install m5core-skills@m5core-skills
 ```
 
-For development, load it for one session: `claude --plugin-dir <path-to-your-clone>`.
+Updates arrive with each new version; [`CHANGELOG.md`](CHANGELOG.md) lists them. For development, load a clone for one session: `claude --plugin-dir <path-to-your-clone>`.
 
-**Do not install alongside [`iot-forge/m5stack-skills`](https://github.com/iot-forge/m5stack-skills).** That is unsupported. Both plugins have Core2 skills whose descriptions compete for the same requests, and they answer board questions differently (that plugin records one PMIC for every Core2). Pick one.
+**Do not install alongside the `core` plugin from that repository's `main` branch** (`core@m5stack`). That is unsupported. Both plugins have Core2 skills whose descriptions compete for the same requests, and they answer board questions differently (`core` records one PMIC for every Core2). Pick one.
 
 ## The skills
 
@@ -62,13 +62,14 @@ The plugin declares M5Stack's knowledge server (`m5stack`, `https://mcp.m5stack.
 
 ## Alternatives
 
-Other M5Stack skills exist. As of 2026-09-21 there were about fifteen sources; none modelled Core2 revisions correctly, which is why this one exists. The main ones:
+Other M5Stack skills exist. As of 2026-09-21 there were about fifteen sources; none modelled Core2 revisions correctly, which is why this one exists. A web search on 2026-10-04 turned up two more, listed last; neither tells Core2 revisions apart. The main ones:
 
-- [`iot-forge/m5stack-skills`](https://github.com/iot-forge/m5stack-skills): a Claude Code plugin marketplace with per-family skills. Don't install it together with this one (see above).
+- The `m5stack` marketplace on the [`main` branch of this repository](https://github.com/iot-forge/m5stack-skills): per-family plugins (`core`, `cardputer`, `esp32-chips`) from the same team. Don't install `core` together with this plugin (see above).
 - M5Stack's official **uiflow2-coder** and **uiflow2-ui-designer** skills ([`m5stack/uiflow-micropython`, `tools/knowledge-base/`](https://github.com/m5stack/uiflow-micropython/tree/master/tools/knowledge-base)): the UIFlow2 API reference. This plugin's `uiflow2-micropython` skill points to uiflow2-coder for API detail.
 - Anthropic's [`cwc-makers`](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/cwc-makers) plugin: a UIFlow2 flashing playbook.
 - `m5stack-assistant` (yuyun2000, on ClawHub): the client for the same M5 knowledge server this plugin declares.
 - Single-board skills: [`charlesliang924/m5stack-dev-skill`](https://github.com/charlesliang924/m5stack-dev-skill) (Arduino), [`fxp/m5stack-embedded-dev-skill`](https://github.com/fxp/m5stack-embedded-dev-skill), [`ishamehra/m5stack-uiflow-skill`](https://github.com/ishamehra/m5stack-uiflow-skill), [`grapeot/m5stack-sticks3-skill`](https://github.com/grapeot/m5stack-sticks3-skill), [`cguldogan/m5papercolor-skill`](https://github.com/cguldogan/m5papercolor-skill).
+- Found 2026-10-04: [`Sunwood-ai-labs/m5stack-arduino-cli-skill`](https://github.com/Sunwood-ai-labs/m5stack-arduino-cli-skill), a Codex skill for arduino-cli on Windows with Core2 defaults, and the CoreS3 bring-up skill inside [`houxiaomu/m5stack-coding-toys`](https://github.com/houxiaomu/m5stack-coding-toys), which covers CoreS3 and CoreS3 SE only.
 
 ## Roadmap
 
@@ -93,7 +94,7 @@ How the skills are checked against real hardware is in [`VERIFICATION.md`](VERIF
 |---|---|---|---|
 | — | none yet | — | every skill is `unverified`; every fact is `sourced` (documentation only) |
 
-This table is regenerated from the latest report in `verification/runs/`.
+This table is regenerated from the latest report in `verification/runs/`. The latest, 2026-09-29, ran no board: its data, query and trigger checks passed, and its build checks were not run.
 
 ## Contributing
 

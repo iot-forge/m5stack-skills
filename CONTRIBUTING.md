@@ -39,10 +39,21 @@ python -m unittest discover tests  # the query checks and a planted fixture per 
 uv run scripts/verify.py run --offline --skip build --skip trigger   # the data and query checks
 ```
 
-The fourth is the version guard. Once a `v*` tag exists, a change under `skills/`, `data/`, `references/`, `scripts/` or `.claude-plugin/` since the latest tag needs a new `version` in `.claude-plugin/plugin.json`.
+The fourth is the version guard. Once a `m5core-skills--v*` release tag exists, a change under `skills/`, `data/`, `references/`, `scripts/` or `.claude-plugin/` since the latest tag needs a higher `version` in `.claude-plugin/plugin.json`.
+
+GitHub Actions runs the same gate on every push and pull request to the `m5core-skills-v2` branch (`.github/workflows/check.yml`).
 
 These are not in the gate. Run them by hand:
 
 - **The trigger rows**: before a release, and in any change that touches a skill's `description`. They run locally and never in CI, because they need a logged-in `claude`. `uv run scripts/verify.py run --offline --skip build` runs each row 3 times through `claude -p`, one at a time (VERIFICATION.md section 4), and takes about 35 minutes.
 - **The build checks**: before a hardware session and before a release. The full `uv run scripts/verify.py run --offline` builds the smoke program in every toolchain and runs the trigger rows too. It takes about an hour.
-- **`uv run scripts/refresh.py`**: once a month, and before a release.
+- **`uv run scripts/refresh.py --strict`**: before a release. Nothing runs it on a schedule: GitHub runs schedules only from a repository's default branch, and this plugin lives on another one (ADR 0006).
+
+## Releasing
+
+The plugin is published as the `m5core-skills-v2` branch of [`iot-forge/m5stack-skills`](https://github.com/iot-forge/m5stack-skills). Users receive new files only when `version` rises, so every change they should get needs a release.
+
+1. Run the three by-hand checks above. Settle any drift `refresh.py --strict` reports before going on.
+2. Raise `version` in `.claude-plugin/plugin.json` and add that version's entry to `CHANGELOG.md`.
+3. Run the gate, push the branch, and wait for its GitHub Actions run to pass.
+4. Tag that commit `m5core-skills--v<version>` and push the tag. The name is not a bare `v<version>` because tags are shared with the other plugins in the repository.

@@ -44,13 +44,13 @@ class VersionGuard(unittest.TestCase):
         self.assertIn("no release tag yet", message)
 
     def test_nothing_guarded_changed_since_the_tag_passes(self):
-        self.git("tag", "v0.1.0")
+        self.git("tag", "m5core-skills--v0.1.0")
         ok, message = check.version_guard(self.root)
         self.assertTrue(ok)
-        self.assertIn("v0.1.0", message)
+        self.assertIn("m5core-skills--v0.1.0", message)
 
     def test_a_guarded_change_under_the_released_version_fails_and_names_the_file(self):
-        self.git("tag", "v0.1.0")
+        self.git("tag", "m5core-skills--v0.1.0")
         self.write("skills/a/SKILL.md", "two\n")
         self.commit("change a skill")
         ok, message = check.version_guard(self.root)
@@ -59,7 +59,7 @@ class VersionGuard(unittest.TestCase):
         self.assertIn("0.1.0", message)
 
     def test_a_guarded_change_with_a_new_version_passes(self):
-        self.git("tag", "v0.1.0")
+        self.git("tag", "m5core-skills--v0.1.0")
         self.write("skills/a/SKILL.md", "two\n")
         self.bump("0.1.1")
         self.commit("change a skill and bump")
@@ -67,35 +67,69 @@ class VersionGuard(unittest.TestCase):
         self.assertTrue(ok)
         self.assertIn("0.1.1", message)
 
+    def test_a_guarded_change_with_a_lower_version_fails(self):
+        self.git("tag", "m5core-skills--v0.1.0")
+        self.write("skills/a/SKILL.md", "two\n")
+        self.bump("0.0.9")
+        self.commit("change a skill and go backwards")
+        ok, message = check.version_guard(self.root)
+        self.assertFalse(ok)
+        self.assertIn("0.0.9", message)
+        self.assertIn("higher", message)
+
+    def test_versions_compare_as_numbers_not_text(self):
+        self.git("tag", "m5core-skills--v0.1.0")
+        self.write("skills/a/SKILL.md", "two\n")
+        self.bump("0.10.0")
+        self.commit("change a skill and bump")
+        self.assertTrue(check.version_guard(self.root)[0])
+
+    def test_a_version_that_is_not_three_numbers_fails_with_a_message(self):
+        self.git("tag", "m5core-skills--v0.1.0")
+        self.write("skills/a/SKILL.md", "two\n")
+        self.bump("next")
+        self.commit("change a skill and bump")
+        ok, message = check.version_guard(self.root)
+        self.assertFalse(ok)
+        self.assertIn("next", message)
+
+    def test_a_bare_v_tag_is_not_this_plugins_release(self):
+        self.git("tag", "v9.0.0")
+        self.write("skills/a/SKILL.md", "two\n")
+        self.commit("change a skill")
+        ok, message = check.version_guard(self.root)
+        self.assertTrue(ok)
+        self.assertIn("no release tag yet", message)
+
     def test_a_change_outside_the_guarded_paths_needs_no_bump(self):
-        self.git("tag", "v0.1.0")
+        self.git("tag", "m5core-skills--v0.1.0")
         self.write("backlog/README.md", "two\n")
         self.commit("backlog only")
         self.assertTrue(check.version_guard(self.root)[0])
 
     def test_an_uncommitted_guarded_change_fails(self):
-        self.git("tag", "v0.1.0")
+        self.git("tag", "m5core-skills--v0.1.0")
         self.write("skills/a/SKILL.md", "two\n")
         self.assertFalse(check.version_guard(self.root)[0])
 
     def test_a_new_untracked_guarded_file_fails(self):
-        self.git("tag", "v0.1.0")
+        self.git("tag", "m5core-skills--v0.1.0")
         self.write("data/new.json", "{}\n")
         ok, message = check.version_guard(self.root)
         self.assertFalse(ok)
         self.assertIn("data/new.json", message)
 
     def test_the_latest_release_tag_is_the_base(self):
-        self.git("tag", "v0.1.0")
+        self.git("tag", "m5core-skills--v0.1.0")
         self.write("skills/a/SKILL.md", "two\n")
         self.bump("0.2.0")
         self.commit("second release")
-        self.git("tag", "v0.2.0")
+        self.git("tag", "m5core-skills--v0.2.0")
         self.write("skills/a/SKILL.md", "three\n")
         self.commit("after the second release")
         ok, message = check.version_guard(self.root)
         self.assertFalse(ok)
-        self.assertIn("v0.2.0", message)
+        self.assertIn("m5core-skills--v0.2.0", message)
 
     def test_a_tag_that_is_not_a_release_tag_is_ignored(self):
         self.git("tag", "hardware-day")
@@ -108,14 +142,14 @@ class VersionGuard(unittest.TestCase):
     def test_the_highest_release_tag_is_the_base_even_from_another_branch(self):
         self.git("checkout", "-q", "-b", "release")
         self.git("commit", "-q", "--allow-empty", "-m", "release")
-        self.git("tag", "v0.9.0")
-        self.git("tag", "v0.10.0")
+        self.git("tag", "m5core-skills--v0.9.0")
+        self.git("tag", "m5core-skills--v0.10.0")
         self.git("checkout", "-q", "-")
         self.write("skills/a/SKILL.md", "two\n")
         self.commit("change a skill")
         ok, message = check.version_guard(self.root)
         self.assertFalse(ok)
-        self.assertIn("v0.10.0", message)
+        self.assertIn("m5core-skills--v0.10.0", message)
 
     def test_a_folder_that_is_not_a_git_repo_fails(self):
         bare = Path(tempfile.mkdtemp())
@@ -125,7 +159,7 @@ class VersionGuard(unittest.TestCase):
         self.assertIn("git", message)
 
     def test_a_shallow_clone_fails_rather_than_passing_for_lack_of_tags(self):
-        self.git("tag", "v0.1.0")
+        self.git("tag", "m5core-skills--v0.1.0")
         self.write("skills/a/SKILL.md", "two\n")
         self.commit("change a skill")
         clone = Path(tempfile.mkdtemp()) / "clone"
@@ -139,12 +173,12 @@ class VersionGuard(unittest.TestCase):
     def test_a_tag_without_the_manifest_fails_with_a_message(self):
         self.git("rm", "-q", ".claude-plugin/plugin.json")
         self.commit("no manifest")
-        self.git("tag", "v0.0.1")
+        self.git("tag", "m5core-skills--v0.0.1")
         self.bump("0.1.0")
         self.commit("manifest back")
         ok, message = check.version_guard(self.root)
         self.assertFalse(ok)
-        self.assertIn("v0.0.1", message)
+        self.assertIn("m5core-skills--v0.0.1", message)
         self.assertIn(".claude-plugin/plugin.json", message)
 
 

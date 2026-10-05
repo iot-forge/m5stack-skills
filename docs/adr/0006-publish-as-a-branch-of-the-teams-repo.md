@@ -20,7 +20,7 @@ The plugin is published as the branch `m5core-skills-v2` of the team's existing 
 - **Versions**: `version` in `plugin.json` starts at 2.0.0, the team's second generation of M5Stack skills, and rises with every release. Claude Code gives users new files only when it changes.
 - **Tags** are `m5core-skills--v<version>`, not `v<version>`. Tags are shared by every branch of a repository, so a bare `v*` would claim the namespace for the whole marketplace. `<plugin>--v<version>` is also the form Claude Code resolves plugin dependencies against.
 - **No scheduled check.** GitHub Actions runs schedules and manual runs only from a workflow file on the default branch. The monthly `refresh.py --strict` that the CI decision of 2026-10-02 planned is run by hand before a release instead. The gate still runs on every push and pull request to the branch, from a workflow file on the branch.
-- **No pull-request template**, for the same reason. The trigger-row rule stays in `CONTRIBUTING.md`.
+- **No pull-request template.** The trigger-row rule stays in `CONTRIBUTING.md`.
 - **The branch is not discoverable from `main`.** The maintainer shares the install line.
 - **Whether this plugin replaces `core` on `main` is open.** Nothing here closes off either answer. Until it is decided, installing this plugin together with `core` stays unsupported.
 - `backlog/` stays as files on the branch. GitHub issues in that repo would mix with the `main` plugins'.
