@@ -50,6 +50,20 @@
    ],
    "confidence": "medium",
    "last_verified": "2026-08-07"
+  },
+  {
+   "id": "espressif/m5stack_tab5",
+   "covers": [
+    "tab5@2025.05",
+    "tab5@2025.10"
+   ],
+   "per_revision": {},
+   "src": [
+    "esp-bsp"
+   ],
+   "confidence": "medium",
+   "last_verified": "2026-10-04",
+   "note": "version 1.2.0~1 at this commit, for ESP-IDF 5.4 or later. It lists ILI9881C and ST7123 display drivers and GT911 and ST7123 touch drivers, and none for the ST7121, so it does not cover tab5@2026.04"
   }
  ]
 }

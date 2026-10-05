@@ -90,6 +90,23 @@
    ],
    "confidence": "high",
    "last_verified": "2026-09-26"
+  },
+  {
+   "id": "m5stack:esp32:m5stack_tab5",
+   "covers": [
+    "tab5@2025.05",
+    "tab5@2025.10",
+    "tab5@2026.04"
+   ],
+   "per_revision": {},
+   "src": [
+    "arduino-m5stack-boards",
+    "m5gfx",
+    "m5-tab5"
+   ],
+   "confidence": "high",
+   "last_verified": "2026-10-04",
+   "note": "the USB Mode menu defaults to Hardware CDC and JTAG and USB CDC On Boot to Enabled, so Serial is the USB-C port; PSRAM defaults to Enabled, which M5GFX needs on this board. ST7123 and ST7121 units need M5Unified 0.2.23 and M5GFX 0.2.30 or later"
   }
  ]
 }

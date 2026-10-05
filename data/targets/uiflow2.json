@@ -98,6 +98,22 @@
    "confidence": "high",
    "last_verified": "2026-10-03",
    "note": "ILI9342E units need M5GFX 0.2.27 or later; the 2.5.3 image bundles 0.2.28, so use 2.5.3 or later"
+  },
+  {
+   "id": "M5STACK_Tab5",
+   "covers": [
+    "tab5@2025.05",
+    "tab5@2025.10",
+    "tab5@2026.04"
+   ],
+   "per_revision": {},
+   "src": [
+    "uiflow2-boards",
+    "uiflow2-m5gfx"
+   ],
+   "confidence": "medium",
+   "last_verified": "2026-10-04",
+   "note": "the 2.5.3 image bundles M5GFX 0.2.28, which has the ILI9881C, ST7123 and ST7121 panels. Under this image the USB-C port enumerates as 303A:817A (TinyUSB, 'Tab5(UiFlow2)'), not as the ESP32-P4's USB Serial/JTAG device"
   }
  ],
  "safe_choices": [
