@@ -1,6 +1,6 @@
 # m5core-skills
 
-Claude Code skills for **M5Stack Core controllers**: Basic, Gray, Fire, M5GO, Core2, Core2 for AWS, Tough, CoreS3, CoreS3-SE and CoreS3-Lite. They cover four frameworks (Arduino with M5Unified/M5GFX, PlatformIO, ESP-IDF, and UIFlow2 MicroPython on the device) and three jobs that cut across them (identifying a board, looking up pins, flashing and debugging).
+Claude Code skills for **M5Stack Core controllers**: Basic, Gray, Fire, M5GO, Core2, Core2 for AWS, Tough, CoreS3, CoreS3-SE, CoreS3-Lite and Tab5. They cover four frameworks (Arduino with M5Unified/M5GFX, PlatformIO, ESP-IDF, and UIFlow2 MicroPython on the device) and three jobs that cut across them (identifying a board, looking up pins, flashing and debugging).
 
 What makes it different: **boards are data, and revisions are real.** A "Core2" is four hardware revisions with different PMICs, IMUs, USB bridges and RTC backup cells, and the PMIC goes AXP192 → AXP2101 → AXP192 again. Every skill answers board questions from bundled per-revision data through one query script. Every fact cites its primary source and the date it was last checked. Where revisions disagree, a skill gives every branch and tells you the cheapest way to find out which one you have. It never trusts the board's own report of itself.
 
@@ -80,7 +80,7 @@ Not in this version. Until each exists, its questions go to the skill named here
 | `display-graphics` skill | M5GFX and LVGL in depth | `arduino-m5unified` for the display API |
 | `power-and-battery` skill | the AXP192/AXP2101 PMIC split across Core2 revisions, battery and charging | `board-identification` for PMIC and battery facts |
 | `units-and-peripherals` skill | a catalogue of Grove and M-Bus units | `pinout-lookup` for the port's pins; a unit's own wiring or driver is pointed at the `m5stack` MCP server |
-| JTAG / OpenOCD debugging | on-chip debugging; only the ESP32-S3 boards have USB-JTAG built in, the ESP32 boards need an external probe | declined by `flashing-and-debugging` |
+| JTAG / OpenOCD debugging | on-chip debugging; only the ESP32-S3 and ESP32-P4 boards have USB-JTAG built in, the ESP32 boards need an external probe | declined by `flashing-and-debugging` |
 | CoreS3 Thread BR | a board whose data is a `roadmap` stub: it has a second radio SoC | `board.py` refuses it and gives the reason |
 | Other M5 families | Stick, Atom, Cardputer, Stamp, E-Paper and others; the data schema already accepts them | not covered |
 

@@ -32,7 +32,7 @@ Use these if your environment has them; if not, the issue and `docs/authoring/` 
 
 ## The hardware-ready gate
 
-The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Before hardware day, the gate issues must be `done` and `uv run scripts/verify.py run --offline` must pass. The other skills are not needed on the day: the toolchain `flash` and `device` checks cover the hardware, and `handoff.live` needs one framework skill, B07.
+The hardware unit the release waits for is the maintainer's Tab5, run as `tab5@2026.04` (`VERIFICATION.md` section 3; until 2026-10-04 it was a Core2 v1.3). Before hardware day, the gate issues must be `done` and `uv run scripts/verify.py run --offline` must pass. The other skills are not needed on the day: the toolchain `flash` and `device` checks cover the hardware, and `handoff.live` needs one framework skill, B07.
 
 ## Status
 
