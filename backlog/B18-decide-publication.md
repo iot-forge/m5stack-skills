@@ -1,7 +1,7 @@
 # B18 · Publish as a branch of the team's repository
 
-Status: in-progress
-Blocked by: [B01](B01-fix-verification-documents.md), [B02](B02-repin-data-and-triage-drift.md), [B03](B03-chip-level-sources.md), [B04](B04-pinmaps-esp32-basic-lineage.md), [B05](B05-pinmaps-cores3-family.md), [B06](B06-shared-procedures.md), [B07](B07-skill-arduino-m5unified.md), [B08](B08-skill-platformio.md), [B09](B09-skill-esp-idf.md), [B10](B10-skill-uiflow2-micropython.md), [B11](B11-skill-pinout-lookup.md), [B12](B12-skill-flashing-and-recovery.md), [B13](B13-skill-crash-decoding.md), [B14](B14-smoke-program.md), [B15](B15-verify-py-and-checks.md), [B16](B16-description-tuning.md), [B17](B17-decide-ci.md), [B19](B19-align-verification-with-b01.md), [B20](B20-rename-cores3-download-checks.md), [B21](B21-per-value-probe-sources.md), [B23](B23-target-safe-default.md), [B24](B24-planted-fixtures-copy-smoke-output.md), [B25](B25-fact-check-wording.md), [B26](B26-board-steps-in-checks-json.md), [B27](B27-stop-triggers-at-spend-limit.md), [B28](B28-skill-allowed-tools-preapproval.md), [B29](B29-cores3-platformio-release-and-example.md), [B30](B30-doctor-idf-version-on-windows.md), [B31](B31-esp-bsp-ili9342e-check.md), [B32](B32-connector-power-positions.md), [B33](B33-arduino-body-under-10kb.md), [B34](B34-doctor-addr2line-toolchain-folders.md), [B35](B35-cross-target-safe-choice.md), [B37](B37-docs-page-content-hash.md), [B38](B38-reread-cited-docs-pages.md), [B39](B39-apply-b38-answers.md), [B40](B40-b38-follow-ups.md), [B41](B41-preapprove-reference-reads.md)
+Status: open
+Blocked by: the maintainer's go-ahead. Parked on 2026-10-04 until a hardware run has been done (see the Checkpoint)
 Gate: none
 
 ## Before you start
@@ -63,7 +63,7 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 <!-- Overwrite, never append. The next session starts from here. -->
 
 - **Done**: the decisions (ADR 0006); the version guard (`python -m unittest tests.test_check`, 23 pass); the manifest, `CHANGELOG.md`, `CONTRIBUTING.md`, `.github/workflows/check.yml`; the README's install route, status line, Alternatives (web search 2026-10-04) and verification table (report 2026-09-29, no board run); `uv run scripts/check.py` exits 0; `claude plugin validate .` passes with one warning (no marketplace description)
-- **Next**: Ask the maintainer, then `git push -u origin m5core-skills-v2` (`origin` is `iot-forge/m5stack-skills`). Watch the Actions run: it is the first time the gate runs on Linux
+- **Next**: Parked by the maintainer on 2026-10-04, before the push: hardware testing comes first. When they lift it, re-run the gate, then ask the maintainer, then `git push -u origin m5core-skills-v2` (`origin` is `iot-forge/m5stack-skills`). Watch the Actions run: it is the first time the gate runs on Linux
 - **Files touched**: `scripts/check.py`, `tests/test_check.py`, `.claude-plugin/plugin.json`, `CHANGELOG.md`, `CONTRIBUTING.md`, `README.md`, `.github/workflows/check.yml`, `docs/adr/0001-…`, `docs/adr/0006-…`, this issue, `backlog/README.md`
 - **Last commit**: the one that carries this checkpoint
-- **Open questions**: none
+- **Open questions**: none. The maintainer asked for the commit email to be changed before anything is pushed; check `git log --format=%ae | sort -u` before pushing

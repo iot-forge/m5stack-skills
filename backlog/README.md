@@ -1,6 +1,6 @@
 # Backlog
 
-The remaining work on this plugin, as issues a session with no other context can pick up. The design is decided: an issue says what to build, never what to decide, except B17 and B18, which are marked as decisions, and step 1 of B35, which settles a data shape with the maintainer.
+The remaining work on this plugin, as issues a session with no other context can pick up. The design is decided: an issue says what to build, never what to decide, except B17, which is marked as a decision (B18 was one too, until it was settled on 2026-10-04), and step 1 of B35, which settles a data shape with the maintainer.
 
 ## Start here
 
@@ -26,7 +26,7 @@ Read these in order, and stop when you have what your issue needs:
 Use these if your environment has them; if not, the issue and `docs/authoring/` are enough to work from.
 
 - **Writing skill prose** (B06–B13, and any SKILL.md or `references/` edit): the `/writing-for-agents` skill and the maintainer's skill-authoring cheatsheet (`~/.claude/docs/Claude Skill authoring cheatsheet.md`). Use the `skill-creator` skill for the skill folder and for a first review of its description; the cross-skill tuning waits for B16.
-- **A decision issue** (B17, B18): settle it in a `/grilling` session with the maintainer. The agent asks; it never answers for the maintainer.
+- **A decision issue** (B17, and B18 before 2026-10-04): settle it in a `/grilling` session with the maintainer. The agent asks; it never answers for the maintainer.
 - **An issue too big for one session** (most likely B14 or B15): plan it with the `writing-plans` skill, but keep the issue as the plan of record. Put the plan's next step in the Checkpoint's Next field, not in a separate file.
 - **Design questions piling up**: if several issues raise Open questions that depend on each other, stop picking issues. Chart a new map with the `/wayfinder` skill instead of settling them one issue at a time.
 
@@ -55,7 +55,7 @@ The one planned hardware unit is a Core2 v1.3 (`VERIFICATION.md` section 3). Bef
 | [B15 · Finish verify.py and checks.json](B15-verify-py-and-checks.md) | done | B14, B19 | yes |
 | [B16 · Tune the seven descriptions together, then run every trigger row](B16-description-tuning.md) | done | B07, B08, B09, B10, B11, B12, B13 |  |
 | [B17 · Decide: where and when the checks run](B17-decide-ci.md) | done | B15 |  |
-| [B18 · Publish as a branch of the team's repository](B18-decide-publication.md) | in-progress | B01, B02, B03, B04, B05, B06, B07, B08, B09, B10, B11, B12, B13, B14, B15, B16, B17, B19, B20, B21, B23, B24, B25, B26, B27, B28, B29, B30, B31, B32, B33, B34, B35, B37, B38, B39, B40, B41 |  |
+| [B18 · Publish as a branch of the team's repository](B18-decide-publication.md) | open | the maintainer's go-ahead (parked until a hardware run) |  |
 | [B19 · Align VERIFICATION.md with B01](B19-align-verification-with-b01.md) | done | B01 | yes |
 | [B20 · Rename the CoreS3 download-mode checks after M5's procedure](B20-rename-cores3-download-checks.md) | done | — |  |
 | [B21 · Cite each expected probe value to its own source](B21-per-value-probe-sources.md) | done | — |  |
