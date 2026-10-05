@@ -1,6 +1,6 @@
 ---
 name: board-identification
-description: M5Stack Core board identification and facts — works out which product and revision the user has, what chips and memory each revision carries, how revisions differ, and which board fits a project, from bundled board data. Use when the user asks which Core2, CoreS3, Basic, Fire, Gray or Tough they have, doubts what M5.getBoard() reports, compares boards, asks what PMIC, IMU or PSRAM a board has, or is choosing one to buy. Not for GPIO or connector questions — use pinout-lookup.
+description: M5Stack Core board identification and facts — works out which product and revision the user has, what chips and memory each revision carries, how revisions differ, and which board fits a project, from bundled board data. Use when the user asks which Core2, CoreS3, Basic, Fire, Gray, Tough or Tab5 they have, doubts what M5.getBoard() reports, compares boards, asks what PMIC, IMU or PSRAM a board has, or is choosing one to buy. Not for GPIO or connector questions — use pinout-lookup.
 license: MIT
 allowed-tools:
   - Bash(uv run "${CLAUDE_PLUGIN_ROOT}/scripts/board.py" *)
