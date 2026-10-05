@@ -288,6 +288,26 @@
      ],
      "confidence": "high",
      "last_verified": "2026-10-04"
+    },
+    {
+     "id": "p4-psram-speed",
+     "text": "M5GFX does not set up a Tab5's display when PSRAM is off, and logs an error asking for 200 MHz when the PSRAM clock is 80 MHz or less. An ESP-IDF project sets CONFIG_SPIRAM=y and CONFIG_SPIRAM_SPEED_200M=y.",
+     "src": [
+      "m5gfx"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "id": "p4-chip-revision",
+     "text": "An ESP-IDF image for the ESP32-P4 supports either chip revisions below v3.0 or v3.0 and later, never both. ESP-IDF v6.1 builds for v3.1 and later by default; CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y builds for v0.x and v1.x instead. Both Arduino cores build a Tab5 for chips before v3.0 by default (Tools > Chip Variant: Before v3.00, ChipVariant=prev3; ChipVariant=postv3 is v3.00 or newer). No source says which chip revision a Tab5 carries: read it from the unit with esptool chip-id before choosing.",
+     "src": [
+      "idf-p4-chip-revision",
+      "arduino-m5stack-boards",
+      "arduino-esp32-boards"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
     }
    ]
   },
@@ -586,6 +606,26 @@
      ],
      "confidence": "high",
      "last_verified": "2026-10-04"
+    },
+    {
+     "id": "p4-psram-speed",
+     "text": "M5GFX does not set up a Tab5's display when PSRAM is off, and logs an error asking for 200 MHz when the PSRAM clock is 80 MHz or less. An ESP-IDF project sets CONFIG_SPIRAM=y and CONFIG_SPIRAM_SPEED_200M=y.",
+     "src": [
+      "m5gfx"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "id": "p4-chip-revision",
+     "text": "An ESP-IDF image for the ESP32-P4 supports either chip revisions below v3.0 or v3.0 and later, never both. ESP-IDF v6.1 builds for v3.1 and later by default; CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y builds for v0.x and v1.x instead. Both Arduino cores build a Tab5 for chips before v3.0 by default (Tools > Chip Variant: Before v3.00, ChipVariant=prev3; ChipVariant=postv3 is v3.00 or newer). No source says which chip revision a Tab5 carries: read it from the unit with esptool chip-id before choosing.",
+     "src": [
+      "idf-p4-chip-revision",
+      "arduino-m5stack-boards",
+      "arduino-esp32-boards"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
     }
    ]
   },
@@ -881,6 +921,26 @@
      "src": [
       "m5-tab5",
       "pio-esp32"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "id": "p4-psram-speed",
+     "text": "M5GFX does not set up a Tab5's display when PSRAM is off, and logs an error asking for 200 MHz when the PSRAM clock is 80 MHz or less. An ESP-IDF project sets CONFIG_SPIRAM=y and CONFIG_SPIRAM_SPEED_200M=y.",
+     "src": [
+      "m5gfx"
+     ],
+     "confidence": "high",
+     "last_verified": "2026-10-04"
+    },
+    {
+     "id": "p4-chip-revision",
+     "text": "An ESP-IDF image for the ESP32-P4 supports either chip revisions below v3.0 or v3.0 and later, never both. ESP-IDF v6.1 builds for v3.1 and later by default; CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y builds for v0.x and v1.x instead. Both Arduino cores build a Tab5 for chips before v3.0 by default (Tools > Chip Variant: Before v3.00, ChipVariant=prev3; ChipVariant=postv3 is v3.00 or newer). No source says which chip revision a Tab5 carries: read it from the unit with esptool chip-id before choosing.",
+     "src": [
+      "idf-p4-chip-revision",
+      "arduino-m5stack-boards",
+      "arduino-esp32-boards"
      ],
      "confidence": "high",
      "last_verified": "2026-10-04"

@@ -56,6 +56,7 @@ Copy this checklist and tick it off:
 4. Run `board.py facts "<user's words>" flash psram` and write `sdkconfig.defaults`, keeping any other lines:
    - `flash: <n>MB`: `CONFIG_ESPTOOLPY_FLASHSIZE_<n>MB=y`. On `DIVERGES`, run `board.py tell-apart "<user's words>"`, ask for the cheapest observation and re-run `facts` with `--seen`. Read `${CLAUDE_PLUGIN_ROOT}/references/identifying-a-revision.md` when only host or probe signals remain. If the user can observe nothing, use the printed `safe choice` and pass on what it gives up; with none, stop.
    - PSRAM on every revision in play (sizes may differ): `CONFIG_SPIRAM=y`, and on `esp32s3` `CONFIG_SPIRAM_MODE_QUAD=y` or `CONFIG_SPIRAM_MODE_OCT=y`, as `facts` prints `quad` or `octal`. When it prints a size with neither, write no mode line (ESP-IDF keeps its default), say the data has no mode, and ask the user which their module is. Any revision with `none` or `not documented`: leave PSRAM off and say why.
+   - An `erratum` line that names `CONFIG_` lines (on an ESP32-P4: PSRAM speed, chip revision): read `${CLAUDE_SKILL_DIR}/references/sdkconfig.md`, "An ESP32-P4's chip revision", then write them.
    - Read `${CLAUDE_SKILL_DIR}/references/sdkconfig.md` when the user wants OTA, a data partition or a bigger app.
 
    Done when `sdkconfig.defaults` has a line for each fact that applies.

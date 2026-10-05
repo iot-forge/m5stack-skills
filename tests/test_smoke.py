@@ -153,6 +153,17 @@ class Tab5(Workdir):  # B42
         for line in ('CONFIG_IDF_TARGET="esp32p4"', "CONFIG_SPIRAM=y", "CONFIG_SPIRAM_SPEED_200M=y",
                      f"CONFIG_ESPTOOLPY_FLASHSIZE_{flash}=y", "CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y"):
             self.assertIn(line, cfg)
+        self.assertNotIn("unit reports", "\n".join(cfg), "which chip revision a unit carries is the run's to record")
+
+    def test_sdkconfig_lines_come_from_the_revisions_errata(self):
+        self.assertEqual(smoke.sdkconfig_lines(REV), [])
+        for rev in ("tab5@2025.05", "tab5@2025.10", TAB5):
+            self.assertEqual(smoke.sdkconfig_lines(rev),
+                             [("CONFIG_SPIRAM=y", "p4-psram-speed"), ("CONFIG_SPIRAM_SPEED_200M=y", "p4-psram-speed"),
+                              ("CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y", "p4-chip-revision")], rev)
+        for eid, lines in smoke.SDKCONFIG_LINES.items():  # each line is one the erratum's own text gives
+            for line in lines:
+                self.assertIn(line, erratum(TAB5, eid)["text"], eid)
 
     def test_core2_sdkconfig_is_unchanged(self):
         m = smoke.generate("esp-idf", REV, self.root)

@@ -19,6 +19,7 @@ verification/smoke/<framework>/, with a fresh 6-character nonce per project:
     `idf.py set-target`: the project uses M5Unified, not esp-bsp, for the display). A framework board.py
     recommends no target for (PlatformIO on a Tab5) is skipped: nothing is generated, built or checked;
   - the M5Unified and M5GFX floors, from the errata REV carries (LIBRARY_FLOORS below);
+  - the sdkconfig lines those errata call for (SDKCONFIG_LINES below);
   - smoke.json, the manifest: nonce, revision, targets, generated files.
 `build` regenerates each project, builds it once per recommended target and passes only if the build
 exits 0 and the nonce is in the image. A missing toolchain, core or library makes the check `blocked`,
@@ -44,6 +45,10 @@ VENV_BIN, EXE = ("Scripts", ".exe") if os.name == "nt" else ("bin", "")
 # floors, never as pins; tests/test_smoke.py checks each version against the erratum's text in data/products/.
 LIBRARY_FLOORS = {"lcd-ili9342e": {"M5GFX": "0.2.27"},
                   "screen-reset": {"M5GFX": "0.2.30", "M5Unified": "0.2.23"}}
+# The sdkconfig lines an erratum asks for, by erratum id, in the order sdkconfig.defaults lists them;
+# tests/test_smoke.py checks each line against the erratum's text in data/products/.
+SDKCONFIG_LINES = {"p4-psram-speed": ["CONFIG_SPIRAM=y", "CONFIG_SPIRAM_SPEED_200M=y"],
+                   "p4-chip-revision": ["CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y"]}
 BUILD_TIMEOUT = 3600
 
 
@@ -114,6 +119,12 @@ def library_floors(revision):
             if lib not in floors or version_tuple(v) > version_tuple(floors[lib][0]):
                 floors[lib] = (v, e["id"])
     return floors
+
+
+def sdkconfig_lines(revision):
+    """[(sdkconfig line, erratum id)] from the errata REV carries."""
+    carried = {e["id"] for e in revision_record(revision).get("errata", [])}
+    return [(line, eid) for eid, lines in SDKCONFIG_LINES.items() if eid in carried for line in lines]
 
 
 def addresses(sid, a):
@@ -220,12 +231,12 @@ def sdkconfig_defaults(nonce, revision, targets):
              "# Info-level logs show M5GFX's panel read-back (open-question.lcd-driver)",
              "CONFIG_LOG_DEFAULT_LEVEL_INFO=y"]
     if targets[0] == "esp32p4":
-        lines += ["# M5GFX gives up on a Tab5 without PSRAM, or with PSRAM at 80 MHz or less (M5GFX.cpp, board_M5Tab5)",
-                  "CONFIG_SPIRAM=y", "CONFIG_SPIRAM_SPEED_200M=y",
-                  f"CONFIG_ESPTOOLPY_FLASHSIZE_{revision_record(revision)['flash']['value']}=y",
-                  "# ESP-IDF 6.1 builds for chip revision v3.x unless told otherwise, and that image does not boot on",
-                  "# v0.x and v1.x chips (Kconfig: ESP32P4_SELECTS_REV_LESS_V3). The maintainer's unit reports v1.3.",
-                  "CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y"]
+        lines.append(f"CONFIG_ESPTOOLPY_FLASHSIZE_{revision_record(revision)['flash']['value']}=y")
+    by_erratum = {}
+    for line, eid in sdkconfig_lines(revision):
+        by_erratum.setdefault(eid, []).append(line)
+    for eid, asked in by_erratum.items():
+        lines += [f"# erratum {eid} (board.py facts {revision})", *asked]
     return "\n".join(lines + [""])
 
 

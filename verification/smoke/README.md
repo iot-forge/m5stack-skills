@@ -22,7 +22,7 @@ The commands default to `core2@v1.3`; `--revision tab5@2026.04` generates for a 
 - PlatformIO is skipped, because `board.py` recommends no PlatformIO target for a Tab5.
 - The M5Unified and M5GFX floors come from the errata the revision carries (`LIBRARY_FLOORS` in `smoke.py`).
 - The ESP-IDF program probes after `M5.begin()`, as the Arduino one always does. An I/O expander on the internal bus holds the touch controller in reset until then.
-- `sdkconfig.defaults` turns PSRAM on at 200 MHz, which M5GFX needs on a Tab5, and builds for ESP32-P4 chip revisions below v3.0.
+- `sdkconfig.defaults` turns PSRAM on at 200 MHz, which M5GFX needs on a Tab5, and builds for ESP32-P4 chip revisions below v3.0, as both Arduino cores do for this board. Both come from errata the revision carries (`SDKCONFIG_LINES` in `smoke.py`).
 
 Each project has its own nonce, so a `device` check can't pass on a build left over from another framework. `smoke.json` in each project records the nonce and targets.
 

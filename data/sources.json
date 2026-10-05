@@ -298,6 +298,13 @@
    "ref": "8c750b0 (tag v5.5)"
   },
   {
+   "id": "idf-p4-chip-revision",
+   "kind": "library-source",
+   "title": "ESP-IDF Kconfig.hw_support for the ESP32-P4: an image supports chip revisions below v3.0 or v3.0 and later, chosen by ESP32P4_SELECTS_REV_LESS_V3",
+   "url": "https://github.com/espressif/esp-idf/blob/fff9895c82d744c7237be8847347bdd1b07c6643/components/esp_hw_support/port/esp32p4/Kconfig.hw_support#L1-L69",
+   "ref": "fff9895 (tag v6.1)"
+  },
+  {
    "id": "idf-gpio-esp32",
    "kind": "vendor-docs",
    "title": "ESP-IDF GPIO reference, ESP32",
