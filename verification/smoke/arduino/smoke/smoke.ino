@@ -28,8 +28,11 @@ bool smoke_bus_ack(uint8_t addr) {
   return ok;
 }
 
-bool smoke_bus_read_reg(uint8_t addr, uint8_t reg, uint8_t* buf, size_t n) {
-  return M5.In_I2C.readRegister(addr, reg, buf, n, SMOKE_I2C_HZ);
+bool smoke_bus_read_reg(uint8_t addr, const uint8_t* reg, size_t reg_n, uint8_t* buf, size_t n) {
+  bool ok = M5.In_I2C.start(addr, false, SMOKE_I2C_HZ) && M5.In_I2C.write(reg, reg_n)
+         && M5.In_I2C.restart(addr, true, SMOKE_I2C_HZ) && M5.In_I2C.read(buf, n, true);
+  M5.In_I2C.stop();
+  return ok;
 }
 
 bool smoke_bus_read(uint8_t addr, uint8_t* buf, size_t n) {

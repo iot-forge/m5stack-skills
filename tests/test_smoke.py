@@ -95,7 +95,16 @@ class Generate(Workdir):
     def test_tab5_run_reads_every_i2c_chip_m5_lists(self):  # B42: by id register where a datasheet gives one, else by presence
         table = {p["id"]: p for p in smoke.probe_table("tab5@2026.04")}
         acked = {a for p in table.values() if p["kind"] == "ack" for a in p["reads"][0]["addrs"]}
-        self.assertEqual(acked, {0x14, 0x55, 0x10, 0x32, 0x40}, "touch, ES8388, RX8130CE, ES7210")
+        self.assertEqual(acked, {0x10, 0x32, 0x40}, "ES8388, RX8130CE, ES7210")
+        # the touch part is read as M5GFX reads it: one byte at the 16-bit register address 0x0000 of 0x55.
+        # An address scan cannot do it: an ST7121 unit answered at the GT911's 0x14 too (the run of 2026-10-04)
+        touch = table["tab5-touch-probe"]
+        self.assertEqual(touch["kind"], "reg")
+        read = touch["reads"][0]
+        self.assertEqual((read["addrs"], read["reg"], read["reg_bytes"], read["width"]), ([0x55], 0, 2, 8))
+        self.assertEqual(dict(read["expect"]), {"ST7121": 0x01, "ST7123": 0x03})
+        self.assertEqual(signal("tab5-touch-probe")["outcomes"],
+                         {"ST7121": ["tab5@2026.04"], "ST7123": ["tab5@2025.10"], "none": ["tab5@2025.05"]})
         self.assertEqual(table["imu-probe"]["kind"], "reg")
         ina = table["tab5-ina226-probe"]["reads"][0]
         self.assertEqual((ina["addrs"], ina["width"]), ([0x41], 16))
@@ -103,7 +112,10 @@ class Generate(Workdir):
             read = table[sid]["reads"][0]
             self.assertEqual(read["addrs"], [addr])
             self.assertEqual(dict(read["expect"]), {"PI4IOE5V6408": 0xA0}, "the value once M5GFX has read the reset flag away")
-        self.assertFalse(any(p["gap"] for p in table.values()), "every id value here is in a datasheet")
+        self.assertEqual([p["id"] for p in table.values() if p["gap"]], ["tab5-touch-probe"],
+                         "every other id value here is in a datasheet")
+        self.assertTrue(all(r["reg_bytes"] == 1 for p in table.values() if p["id"] != "tab5-touch-probe"
+                            for r in p["reads"] if r["reg"] is not None))
         self.assertEqual(smoke.bus_pins("tab5@2026.04", "i2c_internal"), (31, 32))
 
     def test_bus_pins_come_from_pin_map(self):
@@ -209,10 +221,22 @@ class Tab5(Workdir):  # B42
             self.assertIsNone(smoke.arduino_prereqs(["cli"], fqbn, TAB5))
 
     def test_uiflow2_program_reads_a_tab5_as_the_data_says(self):
+        for rev, line in ((TAB5, "I2C 0x55 ST7121 raw 0x01"), ("tab5@2025.10", "I2C 0x55 ST7123 raw 0x03"),
+                          ("tab5@2025.05", "I2C 0x55 absent")):
+            smoke.generate("uiflow2", rev, self.root)
+            probes = smoke.probe_table(rev)
+            lines, _ = run_main_py(self.root / "uiflow2/main.py", unit(rev, probes))
+            self.assertEqual([l for l in lines if l.startswith("I2C ")], expected_lines(rev, probes), rev)
+            self.assertIn(line, lines, rev)
+
+    def test_a_16_bit_register_address_reaches_the_programs(self):
+        smoke.generate("esp-idf", TAB5, self.root)
+        gen = (self.root / "esp-idf/main/smoke_gen.h").read_text(encoding="utf-8")
+        self.assertIn("{{0x55}, 1, 0x0000, 2, 8, ", gen)
+        self.assertIn("{{0x41}, 1, 0x00FF, 1, 16, ", gen, "an 8-bit register address keeps one address byte")
         smoke.generate("uiflow2", TAB5, self.root)
-        probes = smoke.probe_table(TAB5)
-        lines, _ = run_main_py(self.root / "uiflow2/main.py", unit(TAB5, probes))
-        self.assertEqual([l for l in lines if l.startswith("I2C ")], expected_lines(TAB5, probes))
+        main = (self.root / "uiflow2/main.py").read_text(encoding="utf-8")
+        self.assertIn("'reg_bytes': 2", main)
 
 
 class FakeI2C:
@@ -230,10 +254,10 @@ class FakeI2C:
             return 1
         raise OSError(19)
 
-    def readfrom_mem(self, addr, reg, n):
+    def readfrom_mem(self, addr, reg, n, addrsize=8):
         if addr not in self.regs:
             raise OSError(19)
-        return self.regs[addr].get(reg, bytes([0xAA] * n))[:n]
+        return self.regs[addr].get((reg, addrsize), bytes([0xAA] * n))[:n]
 
     def readfrom(self, addr, n):
         if addr == self.atecc_addr and self.atecc and self.awake:
@@ -310,7 +334,8 @@ def unit(revision, probes):
             for r in reads_of(p["id"]):
                 if label in r["expected"]:
                     a = int(as_list(r["address"])[0], 16)
-                    regs.setdefault(a, {})[int(r["register"], 16)] = int(r["expected"][label]["value"], 16).to_bytes(r["width"] // 8, "big")
+                    key = (int(r["register"], 16), r.get("register_width", 8))  # a read at the other address size misses
+                    regs.setdefault(a, {})[key] = int(r["expected"][label]["value"], 16).to_bytes(r["width"] // 8, "big")
                     break
     return FakeI2C(regs, atecc)
 
@@ -373,7 +398,7 @@ class ProbeLogic(Workdir):
         r = reads_of("pmic-probe")[0]
         a, reg = int(r["address"], 16), int(r["register"], 16)
         v = next(x for x in range(256) if x not in {int(e["value"], 16) for e in r["expected"].values()})
-        lines, _ = run_main_py(self.main, FakeI2C({a: {reg: bytes([v])}}))
+        lines, _ = run_main_py(self.main, FakeI2C({a: {(reg, 8): bytes([v])}}))
         self.assertIn(f"I2C 0x{a:02X} present raw 0x{v:02X}", lines)
 
     def test_unexpected_wake_reply_prints_raw(self):

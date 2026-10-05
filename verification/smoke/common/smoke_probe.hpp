@@ -15,7 +15,8 @@ struct SmokeExpect { const char* label; uint32_t value; };
 
 struct SmokeRead {
   uint8_t addrs[4]; uint8_t n_addrs;
-  uint8_t reg; uint8_t width;            // width in bits; 16-bit registers are read MSB first
+  uint16_t reg; uint8_t reg_bytes;       // the register address, sent in 1 or 2 bytes, MSB first
+  uint8_t width;                         // the value's width in bits; 16-bit values are read MSB first
   const SmokeExpect* expect; uint8_t n_expect;
 };
 
@@ -26,7 +27,7 @@ struct SmokeProbe {
 };
 
 bool smoke_bus_ack(uint8_t addr);
-bool smoke_bus_read_reg(uint8_t addr, uint8_t reg, uint8_t* buf, size_t n);
+bool smoke_bus_read_reg(uint8_t addr, const uint8_t* reg, size_t reg_n, uint8_t* buf, size_t n);
 bool smoke_bus_read(uint8_t addr, uint8_t* buf, size_t n);
 void smoke_bus_wake(void);               // an address byte of 0x00 at SMOKE_I2C_HZ: SDA held low for 8 bit times
 void smoke_delay_us(uint32_t us);
@@ -57,7 +58,8 @@ static void smoke_run_reg(const SmokeProbe& p, smoke_emit_t emit) {
     for (uint8_t i = 0; i < rd.n_addrs; ++i) {
       uint8_t buf[2] = {0, 0};
       size_t n = rd.width / 8;
-      if (!smoke_bus_read_reg(rd.addrs[i], rd.reg, buf, n)) continue;
+      const uint8_t reg[2] = {(uint8_t)(rd.reg >> 8), (uint8_t)rd.reg};
+      if (!smoke_bus_read_reg(rd.addrs[i], reg + 2 - rd.reg_bytes, rd.reg_bytes, buf, n)) continue;
       uint32_t v = (n == 2) ? ((uint32_t)buf[0] << 8 | buf[1]) : buf[0];
       for (uint8_t e = 0; e < rd.n_expect; ++e)
         if (rd.expect[e].value == v) {

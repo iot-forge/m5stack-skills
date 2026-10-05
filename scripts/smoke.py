@@ -154,7 +154,7 @@ def probe_table(revision):
             raise DataError(f"{s['id']}: bus {p['bus']} is not one the smoke program probes")
         gap = any(isinstance(v, dict) and v.get("datasheet_gap") for r in p.get("reads") or [p] for v in r["expected"].values())
         row = {"id": s["id"], "gap": gap, "reads": [], "wake_wait_us": 0, "wake_hz": None, "expect_bytes": []}
-        presence = lambda: {"addrs": addresses(s["id"], p["address"]), "reg": None, "width": None, "expect": []}
+        presence = lambda: {"addrs": addresses(s["id"], p["address"]), "reg": None, "reg_bytes": None, "width": None, "expect": []}
         if p.get("wake"):
             row["kind"], row["reads"] = "wake_read", [presence()]
             row["wake_wait_us"] = 2 * p["wake"]["then_wait_us_min"]  # twice the data's minimum
@@ -168,7 +168,10 @@ def probe_table(revision):
             for r in p.get("reads") or [p]:
                 if r["width"] not in (8, 16):
                     raise DataError(f"{s['id']}: register width {r['width']} is not 8 or 16")
+                if r.get("register_width", 8) not in (8, 16):
+                    raise DataError(f"{s['id']}: register_width {r['register_width']} is not 8 or 16")
                 row["reads"].append({"addrs": addresses(s["id"], r["address"]), "reg": int(r["register"], 16),
+                                     "reg_bytes": r.get("register_width", 8) // 8,  # sent MSB first
                                      "width": r["width"], "expect": [(k, int(v["value"], 16)) for k, v in r["expected"].items()]})
         else:
             row["kind"], row["reads"] = "ack", [presence()]
@@ -195,7 +198,7 @@ def cpp_gen(nonce, revision, probes, pins):
                            + ", ".join(f'{{"{k}", 0x{v:X}}}' for k, v in r["expect"]) + "};")
                 exp = f"smoke_e{i}_{j}"
             addrs = ", ".join(f"0x{a:02X}" for a in r["addrs"])
-            reads.append(f"{{{{{addrs}}}, {len(r['addrs'])}, 0x{(r['reg'] or 0):02X}, {r['width'] or 0}, {exp}, {len(r['expect'])}}}")
+            reads.append(f"{{{{{addrs}}}, {len(r['addrs'])}, 0x{(r['reg'] or 0):04X}, {r['reg_bytes'] or 0}, {r['width'] or 0}, {exp}, {len(r['expect'])}}}")
         out.append(f"static const SmokeRead smoke_r{i}[] = {{{', '.join(reads)}}};")
         expect_bytes = "nullptr"
         if p["expect_bytes"]:

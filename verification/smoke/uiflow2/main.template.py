@@ -23,9 +23,9 @@ def ack(i2c, addr):
         return False
 
 
-def read_reg(i2c, addr, reg, width):
+def read_reg(i2c, addr, reg, reg_bytes, width):
     try:
-        b = i2c.readfrom_mem(addr, reg, width // 8)
+        b = i2c.readfrom_mem(addr, reg, width // 8, addrsize=8 * reg_bytes)
     except OSError:
         return None
     return (b[0] << 8 | b[1]) if width == 16 else b[0]
@@ -35,7 +35,7 @@ def run_reg(i2c, p):
     unmatched = None
     for rd in p["reads"]:
         for a in rd["addrs"]:
-            v = read_reg(i2c, a, rd["reg"], rd["width"])
+            v = read_reg(i2c, a, rd["reg"], rd["reg_bytes"], rd["width"])
             if v is None:
                 continue
             for label, want in rd["expect"]:

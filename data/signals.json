@@ -574,31 +574,43 @@
   {
    "id": "tab5-touch-probe",
    "kind": "probe",
-   "observe": "Flash a sketch that scans the internal I2C bus for 0x14 and 0x55.",
+   "observe": "Flash a sketch that reads one byte at the 16-bit register address 0x0000 of the chip at I2C 0x55 on the internal bus, after M5.begin() has released the touch reset.",
    "probe": {
     "bus": "i2c_internal",
-    "address": [
-     "0x14",
-     "0x55"
-    ],
-    "register": null,
-    "width": null,
+    "address": "0x55",
+    "register": "0x0000",
+    "register_width": 16,
+    "width": 8,
     "expected": {
-     "0x14 (GT911)": "ACK at 0x14",
-     "0x55 (ST7123 or ST7121)": "ACK at 0x55"
+     "ST7121": {
+      "value": "0x01",
+      "src": [
+       "m5gfx"
+      ],
+      "datasheet_gap": "The value comes from M5GFX, which reads this byte as the ST touch firmware version and takes 1 for an ST7121. No datasheet for the part is cited. M5GFX logged this value on a tab5@2026.04 unit in the hardware run of 2026-10-04; the smoke program has not read it yet."
+     },
+     "ST7123": {
+      "value": "0x03",
+      "src": [
+       "m5gfx"
+      ],
+      "datasheet_gap": "The value comes from M5GFX, which reads this byte as the ST touch firmware version and takes 3 for an ST7123. No datasheet for the part is cited. A hardware run on a tab5@2025.10 settles it."
+     }
     }
    },
    "outcomes": {
-    "0x14 (GT911)": [
-     "tab5@2025.05"
-    ],
-    "0x55 (ST7123 or ST7121)": [
-     "tab5@2025.10",
+    "ST7121": [
      "tab5@2026.04"
+    ],
+    "ST7123": [
+     "tab5@2025.10"
+    ],
+    "none": [
+     "tab5@2025.05"
     ]
    },
    "reliability": "medium",
-   "caveats": "Needs flashing. Tab5 only. It cannot tell the ST7123 from the ST7121: both answer at 0x55. A GT911 answers at 0x14 only when its interrupt line (G23) is high as it leaves reset, and at 0x5D otherwise; M5GFX drives G23 high and tries both.",
+   "caveats": "Needs flashing. Tab5 only. An address scan cannot do this: in the hardware run of 2026-10-04 an ST7121 unit answered at 0x14, the GT911's address, as well as at 0x55. No answer at 0x55 is taken for a GT911 unit, as M5GFX takes it; no tab5@2025.05 has been read.",
    "src": [
     "m5-tab5",
     "m5gfx"
