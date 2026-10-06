@@ -4,7 +4,7 @@ Claude Code skills for **M5Stack Core controllers**: Basic, Gray, Fire, M5GO, Co
 
 What makes it different: **boards are data, and revisions are real.** A "Core2" is four hardware revisions with different PMICs, IMUs, USB bridges and RTC backup cells, and the PMIC goes AXP192 → AXP2101 → AXP192 again. Every skill answers board questions from bundled per-revision data through one query script. Every fact cites its primary source and the date it was last checked. Where revisions disagree, a skill gives every branch and tells you the cheapest way to find out which one you have. It never trusts the board's own report of itself.
 
-> **Status: 2.0.0, not yet verified on hardware.** All seven skills are written and pass the data, query and trigger checks, which need no board. No board has been run yet, so every skill is `unverified` and every fact comes from documentation (see [Verification](#verification)).
+> **Status: 2.0.0, checked on one board.** All seven skills are written and pass the data, query, build and trigger checks, which need no board. One unit has had a hardware run: a Tab5 (`tab5@2026.04`), in Arduino and ESP-IDF. On that revision `board-identification`, `arduino-m5unified`, `esp-idf` and `flashing-and-debugging` are `partial`; `pinout-lookup`, `platformio` and `uiflow2-micropython` are `unverified`. Facts about every other revision come from documentation (see [Verification](#verification)).
 
 ## Requirements
 
@@ -92,9 +92,10 @@ How the skills are checked against real hardware is in [`VERIFICATION.md`](VERIF
 
 | Revision | Last run | Toolchains | Result |
 |---|---|---|---|
-| — | none yet | — | every skill is `unverified`; every fact is `sourced` (documentation only) |
+| `tab5@2026.04` | 2026-10-04 | arduino-cli 1.5.2-rc.1, esp32 core 3.3.12, M5Unified 0.2.23, esp-idf v6.1, esptool 5.3.1, claude-code 2.1.289 | no failure: `host` 3 pass; `flash` and `device` pass in Arduino and ESP-IDF; `fact` 7 pass, 1 blocked (Port A, for want of a Grove unit); 4 open questions observed; the live hand-off passes (run on 2026-10-06) |
+| every other `supported` revision | none yet | — | every fact is `sourced` (documentation only) |
 
-This table is regenerated from the latest report in `verification/runs/`. The latest, 2026-09-29, ran no board: its data, query and trigger checks passed, and its build checks were not run.
+This table is regenerated from the latest report in `verification/runs/`. The latest, 2026-10-04, also passed its data, query, build and trigger checks. PlatformIO and UIFlow2 were not flashed: PlatformIO has no Tab5 target, and the UIFlow2 image bundles an M5GFX older than the one M5 asks for on this revision.
 
 ## Contributing
 

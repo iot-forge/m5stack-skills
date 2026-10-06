@@ -438,9 +438,9 @@
   },
   {
    "check": "handoff.live.tab5@2026.04",
-   "result": "blocked",
-   "observed": "Holding reset puts a Tab5 in download mode, so the esp-idf skill's idf.py flash on COM3 exited 0 on the first attempt and no failure occurred. The step cannot produce a failing port on this board.",
-   "output": "The flash to the Tab5 on COM3 exited 0 and all three images verified, but nothing was actually rewritten: esptool found this exact build already on the board (\"No changed sectors found\")."
+   "result": "pass",
+   "observed": "Run on 2026-10-06, a later day than the rest of this run, with the plugin at commit e6104e1, on the step live-handoff-busy-port: an arduino-cli monitor in another terminal held COM3 open throughout. The operator ran it in a separate claude --plugin-dir session and the transcript, checked against that session's log, was judged by claude. The esp-idf skill attempted idf.py -p COM3 flash once, which failed; read references/serial-ports.md and references/download-mode.md and applied the case of another program holding the port; asked the operator to free the port; retried exactly once on the answer that it was closed, which failed the same way; then handed off to flashing-and-debugging. That skill found the monitor by its process ID and asked before stopping a process it had not started. A third attempt followed the hand-off, made by flashing-and-debugging at the operator's explicit request with the monitor left open; it failed the same way and is not part of the graded sequence. Nothing was written to the board. Before its first build the session regenerated the smoke project, because the generated smoke_probe.hpp was older than main.cpp. The first try at this check, on 2026-10-04 with the unit held in reset, was blocked: holding reset puts a Tab5 in download mode, so the upload succeeded and no failure occurred.",
+   "output": "A fatal error occurred: Could not open COM3, the port is busy or doesn't exist. (could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5))"
   }
  ]
 }

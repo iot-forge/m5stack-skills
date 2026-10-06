@@ -8,8 +8,8 @@ allowed-tools:
   - Read(${CLAUDE_PLUGIN_ROOT}/references/**)
   - Read(${CLAUDE_SKILL_DIR}/references/**)
 metadata:
-  tested-with: "none"
-  verification: "unverified"
+  tested-with: "arduino-cli 1.5.2-rc.1, esp32 core 3.3.12, M5Unified 0.2.23, claude-code 2.1.289"
+  verification: "partial 2026-10-04: tab5@2026.04"
 ---
 
 # Arduino and M5Unified on M5Stack Core

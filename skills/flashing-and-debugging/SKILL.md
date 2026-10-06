@@ -8,8 +8,8 @@ allowed-tools:
   - Read(${CLAUDE_PLUGIN_ROOT}/references/**)
   - Read(${CLAUDE_SKILL_DIR}/references/**)
 metadata:
-  tested-with: "none"
-  verification: "unverified"
+  tested-with: "esptool 5.3.1, claude-code 2.1.289"
+  verification: "partial 2026-10-04: tab5@2026.04"
 ---
 
 # Flashing, recovery and crash diagnosis on M5Stack Core

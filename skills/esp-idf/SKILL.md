@@ -8,8 +8,8 @@ allowed-tools:
   - Read(${CLAUDE_PLUGIN_ROOT}/references/**)
   - Read(${CLAUDE_SKILL_DIR}/references/**)
 metadata:
-  tested-with: "none"
-  verification: "unverified"
+  tested-with: "esp-idf v6.1, claude-code 2.1.289"
+  verification: "partial 2026-10-04: tab5@2026.04"
 ---
 
 # ESP-IDF on M5Stack Core
