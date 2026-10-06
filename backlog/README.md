@@ -55,7 +55,7 @@ The hardware unit the release waits for is the maintainer's Tab5, run as `tab5@2
 | [B15 · Finish verify.py and checks.json](B15-verify-py-and-checks.md) | done | B14, B19 | yes |
 | [B16 · Tune the seven descriptions together, then run every trigger row](B16-description-tuning.md) | done | B07, B08, B09, B10, B11, B12, B13 |  |
 | [B17 · Decide: where and when the checks run](B17-decide-ci.md) | done | B15 |  |
-| [B18 · Publish as a branch of the team's repository](B18-decide-publication.md) | open | B42, then the maintainer's go-ahead |  |
+| [B18 · Publish as a branch of the team's repository](B18-decide-publication.md) | open | the maintainer's go-ahead |  |
 | [B19 · Align VERIFICATION.md with B01](B19-align-verification-with-b01.md) | done | B01 | yes |
 | [B20 · Rename the CoreS3 download-mode checks after M5's procedure](B20-rename-cores3-download-checks.md) | done | — |  |
 | [B21 · Cite each expected probe value to its own source](B21-per-value-probe-sources.md) | done | — |  |
@@ -81,7 +81,7 @@ The hardware unit the release waits for is the maintainer's Tab5, run as `tab5@2
 | [B41 · Pre-approve the reference reads, and grant the pre-approvals in the trigger runs](B41-preapprove-reference-reads.md) | done | — |  |
 | [B42 · Support Tab5 and give the maintainer's unit its hardware run](B42-support-tab5.md) | done | — |  |
 | [B43 · Make verify.py read the tool versions itself](B43-verify-reads-tool-versions.md) | open | — |  |
-| [B44 · Apply the maintainer's answers to B42's open questions](B44-apply-b42-answers.md) | in-progress | — |  |
+| [B44 · Apply the maintainer's answers to B42's open questions](B44-apply-b42-answers.md) | done | — |  |
 
 **First issue: B01.** After it, B03 and B06 can run in parallel.
 

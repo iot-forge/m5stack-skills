@@ -1,6 +1,6 @@
 # B44 · Apply the maintainer's answers to B42's open questions
 
-Status: in-progress
+Status: done
 Blocked by: none
 Gate: none
 
@@ -23,10 +23,10 @@ B42 closed with four questions for the maintainer about the release bar and the 
 
 ## Definition of done
 
-- [ ] Section 3 names the three exceptions, and the README says whether the bar is met
-- [ ] The report of 2026-10-04 lists the first `fact.touch` failure under Failures and the three cleared markers under Markers cleared, both from the results file
-- [ ] `VERIFICATION.md` and `CONTEXT.md` allow a later-day check in a run
-- [ ] `uv run scripts/check.py` exits 0
+- [x] Section 3 names the three exceptions, and the README says whether the bar is met
+- [x] The report of 2026-10-04 lists the first `fact.touch` failure under Failures and the three cleared markers under Markers cleared, both from the results file
+- [x] `VERIFICATION.md` and `CONTEXT.md` allow a later-day check in a run
+- [x] `uv run scripts/check.py` exits 0
 
 ## Stopping rule
 
@@ -36,8 +36,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: answer 3 first (test-first in `tests/test_verify.py`), then answer 2, then the documents
-- **Files touched**: this issue, `backlog/README.md`
-- **Last commit**: the claim
+- **Done**: all. With the three exceptions, the run of 2026-10-04 meets the release bar: every other check passes, is observed, or is a `handoff.<skill>` check the live hand-off covers
+- **Next**: nothing
+- **Files touched**: `scripts/verify.py`, `tests/test_verify.py`, `verification/results.schema.json`, `verification/runs/2026-10-04.json` and `.md`, `VERIFICATION.md`, `CONTEXT.md`, `README.md`, this issue, `backlog/README.md`, `backlog/B42-support-tab5.md`, `backlog/B18-decide-publication.md`
+- **Last commit**: Close B44: apply the maintainer's answers to B42's open questions
 - **Open questions**: none
