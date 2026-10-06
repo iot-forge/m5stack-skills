@@ -167,9 +167,9 @@ def probe_table(revision):
             row["kind"] = "reg"
             for r in p.get("reads") or [p]:
                 if r["width"] not in (8, 16):
-                    raise DataError(f"{s['id']}: register width {r['width']} is not 8 or 16")
+                    raise DataError(f"{s['id']}: width {r['width']} (the value's) is not 8 or 16")
                 if r.get("register_width", 8) not in (8, 16):
-                    raise DataError(f"{s['id']}: register_width {r['register_width']} is not 8 or 16")
+                    raise DataError(f"{s['id']}: register_width {r['register_width']} (the register address's) is not 8 or 16")
                 row["reads"].append({"addrs": addresses(s["id"], r["address"]), "reg": int(r["register"], 16),
                                      "reg_bytes": r.get("register_width", 8) // 8,  # sent MSB first
                                      "width": r["width"], "expect": [(k, int(v["value"], 16)) for k, v in r["expected"].items()]})

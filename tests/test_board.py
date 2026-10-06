@@ -126,8 +126,9 @@ class Query(unittest.TestCase):
         self.assertEqual(out["revisions_in_play"], rids)
         self.assertEqual(len(rids), 3)
         self.assertTrue(out["facts"]["imu"]["agree"])
-        # a hardware run on one revision marks that revision only, and splits nothing (VERIFICATION.md section 11)
+        # a hardware run on one revision marks that revision only, and splits nothing (VERIFICATION.md section 10)
         hw = [k for k in out["facts"]["imu"]["values"] if "hardware-verified" in k]
+        self.assertTrue(hw, "the imu of tab5@2026.04 is hardware-verified")
         for k in hw:
             self.assertRegex(k, r"\[hardware-verified \d{4}-\d\d-\d\d on [\w.@, -]+ only\]$")
         code, one = board_json("facts", rids[-1], "imu")
@@ -339,6 +340,54 @@ class Query(unittest.TestCase):
             self.assertEqual(code, 0)
             self.assertIn(release, text)
             self.assertIn(text, out)
+
+
+def board_module():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("board", REPO / "scripts/board.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+class ValueGroups(unittest.TestCase):
+    """How `facts` groups revisions by value when only some are hardware-verified (VERIFICATION.md section 10)."""
+    RIDS = ["x@a", "x@b", "x@c"]
+
+    def groups(self, shown):
+        return board_module().value_groups(shown, self.RIDS)
+
+    def test_one_verified_revision_splits_nothing(self):
+        out = self.groups({"x@a": ("V", "V"), "x@b": ("V", "V"), "x@c": ("V  [hardware-verified 2026-10-04]",) * 2})
+        self.assertEqual(out, {"V  [hardware-verified 2026-10-04 on c only]": self.RIDS})
+
+    def test_all_verified_on_one_date_keeps_the_plain_mark(self):
+        out = self.groups({r: ("V  [hardware-verified 2026-10-04]",) * 2 for r in self.RIDS})
+        self.assertEqual(out, {"V  [hardware-verified 2026-10-04]": self.RIDS})
+
+    def test_all_verified_on_different_dates_gives_each_date_and_no_only(self):
+        out = self.groups({"x@a": ("V  [hardware-verified 2026-10-04]",) * 2, "x@b": ("V  [hardware-verified 2026-11-01]",) * 2,
+                           "x@c": ("V  [hardware-verified 2026-10-04]",) * 2})
+        self.assertEqual(out, {"V  [hardware-verified 2026-10-04 on a, c; 2026-11-01 on b]": self.RIDS})
+
+    def test_two_dates_and_one_unverified(self):
+        out = self.groups({"x@a": ("V  [hardware-verified 2026-10-04]",) * 2, "x@b": ("V  [hardware-verified 2026-11-01]",) * 2,
+                           "x@c": ("V", "V")})
+        self.assertEqual(out, {"V  [hardware-verified 2026-10-04 on a; 2026-11-01 on b only]": self.RIDS})
+
+    def test_a_differing_note_never_splits_a_value_one_revision_verified(self):
+        out = self.groups({"x@a": ("V", "V (old note)"), "x@b": ("V", "V (old note)"),
+                           "x@c": ("V  [hardware-verified 2026-10-04]", "V (new note)  [hardware-verified 2026-10-04]")})
+        self.assertEqual(out, {"V  [hardware-verified 2026-10-04 on c only]": self.RIDS})
+
+    def test_a_shared_note_is_shown(self):
+        out = self.groups({"x@a": ("V", "V (note)"), "x@b": ("V", "V (note)"),
+                           "x@c": ("V  [hardware-verified 2026-10-04]", "V (note)  [hardware-verified 2026-10-04]")})
+        self.assertEqual(out, {"V (note)  [hardware-verified 2026-10-04 on c only]": self.RIDS})
+
+    def test_different_values_still_diverge(self):
+        out = self.groups({"x@a": ("V", "V"), "x@b": ("W", "W"), "x@c": ("W  [hardware-verified 2026-10-04]",) * 2})
+        self.assertEqual(out, {"V": ["x@a"], "W  [hardware-verified 2026-10-04 on c only]": ["x@b", "x@c"]})
 
 
 if __name__ == "__main__":

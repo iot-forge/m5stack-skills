@@ -350,8 +350,8 @@
   {
    "check": "open-question.chip-revision.tab5@2026.04",
    "result": "observed",
-   "observed": "esptool v5.3.1 chip-id on COM3 reports ESP32-P4 revision v1.3; it connected with no button press",
-   "output": "Chip type:          ESP32-P4 (revision v1.3)"
+   "observed": "esptool v5.3.1 chip-id on COM3 reports ESP32-P4 revision v1.3; it connected with no button press. The boot log of the ESP-IDF smoke image, built with CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y and read from COM3 in the same sitting, gives the same revision, shows the image starting, and reports the PSRAM in X16 Mode at 200 MHz (the lines below; added to this result on 2026-10-06 from that sitting's log)",
+   "output": "Chip type:          ESP32-P4 (revision v1.3)\nI (30) boot: chip revision: v1.3\nI (243) hex_psram: BitMode      : 0x01 (X16 Mode)\nI (434) esp_psram: Found 32MB PSRAM device\nI (435) esp_psram: Speed: 200MHz\nI (1461) efuse_init: Min chip rev:     v0.0\nI (1465) efuse_init: Max chip rev:     v1.99\nI (1469) efuse_init: Chip rev:         v1.3"
   },
   {
    "check": "flash.arduino.tab5@2026.04",

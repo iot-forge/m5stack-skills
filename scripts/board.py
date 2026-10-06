@@ -288,25 +288,42 @@ def cmd_find(db, a, res):
 HW_MARK = re.compile(r"  \[hardware-verified (\d{4}-\d\d-\d\d)\]$")
 
 
-def merge_hw_marks(groups, rids):
-    """Join groups that differ only in the hardware-verified mark: a run on one revision confirms a value there,
-    it does not make the revisions diverge. The mark then names the revisions it holds for."""
-    merged = {}  # the value without its mark -> [(revision, date or None)]
-    for k, rs in groups.items():
-        m = HW_MARK.search(k)
-        merged.setdefault(HW_MARK.sub("", k), []).extend((r, m and m.group(1)) for r in rs)
+def split_hw_mark(text):
+    """A formatted value without its hardware-verified mark, and the mark's date (None when it has no mark)."""
+    found = HW_MARK.search(text)
+    return HW_MARK.sub("", text), found and found.group(1)
+
+
+def group_hw_mark(dates, rids):
+    """The mark for one value group. DATES maps each member to the date it was hardware-verified, or None.
+    Every member verified on one date keeps the plain mark; otherwise the mark names the revisions per date,
+    and ends with `only` when a member is unverified."""
+    by_date = {}
+    for r, d in dates.items():
+        if d:
+            by_date.setdefault(d, []).append(r)
+    if not by_date:
+        return ""
+    if len(by_date) == 1 and all(dates.values()):
+        return f"  [hardware-verified {next(iter(by_date))}]"
+    per_date = "; ".join(f"{d} on {', '.join(short(r, rids) for r in rs)}" for d, rs in sorted(by_date.items()))
+    return f"  [hardware-verified {per_date}{'' if all(dates.values()) else ' only'}]"
+
+
+def value_groups(shown, rids):
+    """Group the revisions by value. SHOWN maps a revision to its formatted value without and with its note.
+    Neither the hardware-verified mark nor a note splits a group: a run on one revision confirms a value there,
+    it does not make the revisions diverge."""
+    members = {}  # the value without note or mark -> {revision: date or None}
+    for r in rids:
+        value, date = split_hw_mark(shown[r][0])
+        members.setdefault(value, {})[r] = date
     out = {}
-    for k, members in merged.items():
-        dates = {d for _, d in members}
-        if dates == {None}:
-            mark = ""
-        elif len(dates) == 1:
-            mark = f"  [hardware-verified {dates.pop()}]"
-        else:
-            checked = [(r, d) for r, d in members if d]
-            mark = (f"  [hardware-verified {max(d for _, d in checked)} on "
-                    f"{', '.join(short(r, rids) for r, _ in checked)} only]")
-        out[k + mark] = [r for r in rids if r in {m for m, _ in members}]
+    for value, dates in members.items():
+        noted = {split_hw_mark(shown[r][1])[0] for r in dates}
+        # show a group's notes only when every member carries the same one
+        text = noted.pop() if len(noted) == 1 else value
+        out[text + group_hw_mark(dates, rids)] = list(dates)
     return out
 
 
@@ -327,15 +344,9 @@ def cmd_facts(db, a, res):
             for e in entries_of(db["revisions"][r], f):
                 if not is_hw(db, e):
                     any_unverified = True
-        groups, notes = {}, {}
-        for r in rids:
-            k = fmt_field(db, db["revisions"][r], f, notes=False)
-            groups.setdefault(k, []).append(r)
-            notes.setdefault(k, set()).add(fmt_field(db, db["revisions"][r], f))
-        # show a group's notes only when every member carries the same one
-        groups = {(next(iter(notes[k])) if len(notes[k]) == 1 else k): rs for k, rs in groups.items()}
-        groups = merge_hw_marks(groups, rids)
-        entry ={"agree": len(groups) == 1, "values": groups}
+        groups = value_groups({r: (fmt_field(db, db["revisions"][r], f, notes=False), fmt_field(db, db["revisions"][r], f))
+                               for r in rids}, rids)
+        entry = {"agree": len(groups) == 1, "values": groups}
         if len(groups) == 1:
             lines.append(f"{f}: {next(iter(groups))}")
         else:
