@@ -101,6 +101,43 @@
       "items": {
        "type": "string"
       }
+     },
+     "markers": {
+      "description": "On an observed open question: the files its (untested on hardware: <id>) marker sat in. verify.py report records them, so a report written after they are removed still lists them.",
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "first_failure": {
+      "description": "A failure that was fixed and the check run again in the same run (VERIFICATION.md section 9). The report keeps it in its Failures section.",
+      "type": "object",
+      "required": [
+       "observed",
+       "resolved"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "observed": {
+        "type": "string"
+       },
+       "output": {
+        "type": "string"
+       },
+       "suspected_cause": {
+        "enum": [
+         "data",
+         "skill",
+         "script",
+         "toolchain",
+         "unit",
+         "unknown"
+        ]
+       },
+       "resolved": {
+        "type": "string"
+       }
+      }
      }
     }
    }

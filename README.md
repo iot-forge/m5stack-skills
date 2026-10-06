@@ -92,10 +92,10 @@ How the skills are checked against real hardware is in [`VERIFICATION.md`](VERIF
 
 | Revision | Last run | Toolchains | Result |
 |---|---|---|---|
-| `tab5@2026.04` | 2026-10-04 | arduino-cli 1.5.2-rc.1, esp32 core 3.3.12, M5Unified 0.2.23, esp-idf v6.1, esptool 5.3.1, claude-code 2.1.289 | no failure: `host` 3 pass; `flash` and `device` pass in Arduino and ESP-IDF; `fact` 7 pass, 1 blocked (Port A, for want of a Grove unit); 4 open questions observed; the live hand-off passes (run on 2026-10-06) |
+| `tab5@2026.04` | 2026-10-04 | arduino-cli 1.5.2-rc.1, esp32 core 3.3.12, M5Unified 0.2.23, esp-idf v6.1, esptool 5.3.1, claude-code 2.1.289 | `host` 3 pass; `flash` and `device` pass in Arduino and ESP-IDF; `fact` 7 pass (the touch check on a second read, after its probe was fixed), 1 blocked (Port A, for want of a Grove unit); 4 open questions observed; the live hand-off passes (run on 2026-10-06) |
 | every other `supported` revision | none yet | — | every fact is `sourced` (documentation only) |
 
-This table is regenerated from the latest report in `verification/runs/`. The latest, 2026-10-04, also passed its data, query, build and trigger checks. PlatformIO and UIFlow2 were not flashed: PlatformIO has no Tab5 target, and the UIFlow2 image bundles an M5GFX older than the one M5 asks for on this revision. The release bar ([`VERIFICATION.md`](VERIFICATION.md) section 3) is not met yet. Two things are owed: the Port A `fact` check, which needs a Grove unit, and the hand-off checks of `platformio` and `uiflow2-micropython`, which a Tab5 cannot cover and which need a port that exists but fails.
+This table is regenerated from the latest report in `verification/runs/`. The latest, 2026-10-04, also passed its data, query, build and trigger checks. PlatformIO and UIFlow2 were not flashed: PlatformIO has no Tab5 target, and the UIFlow2 image bundles an M5GFX older than the one M5 asks for on this revision. The release bar ([`VERIFICATION.md`](VERIFICATION.md) section 3) is met, with the three exceptions it names: the Port A `fact` check, which needs a Grove unit, and the hand-off checks of `platformio` and `uiflow2-micropython`, which a Tab5 cannot cover, stay `blocked`. They verify nothing.
 
 ## Contributing
 

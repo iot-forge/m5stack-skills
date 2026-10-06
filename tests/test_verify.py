@@ -767,6 +767,66 @@ class Report(unittest.TestCase):
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
 
+    # B44: a marker removed after the run still shows in a regenerated report, from the results file
+    GONE = f"open-question.auto-download.{REV}"
+
+    def test_a_recorded_marker_is_listed_after_it_left_its_file(self):
+        results = [{"check": self.GONE, "result": "observed", "observed": "x", "markers": ["skills/esp-idf/SKILL.md"]}]
+        m = verify.render_report(run_file(results), REPO).split("## Markers cleared", 1)[1]
+        self.assertIn(f"- `{self.GONE}`: skills/esp-idf/SKILL.md (removed), references/download-mode.md, "
+                      "skills/flashing-and-debugging/SKILL.md", m)
+
+    def test_record_markers_adds_where_each_answered_marker_sits(self):
+        obj = run_file([dict(r) for r in self.RESULTS])
+        self.assertTrue(verify.record_markers(obj, REPO))
+        by = {r["check"]: r for r in obj["results"]}
+        self.assertIn("references/download-mode.md", by[self.GONE]["markers"])
+        self.assertNotIn("markers", by[f"open-question.speaker-mic.{REV}"], "not observed, so nothing is cleared")
+        self.assertNotIn("markers", by[f"fact.pmic.{REV}"])
+        self.assertFalse(verify.record_markers(obj, REPO), "a second pass finds nothing new")
+
+    def test_report_command_records_the_markers_in_the_results_file(self):
+        tmp = Path(tempfile.mkdtemp())
+        try:
+            f = tmp / f"{DATE}.json"
+            f.write_bytes((json.dumps(run_file(self.RESULTS), indent=1) + "\n").encode("utf-8"))
+            p = subprocess.run([sys.executable, str(REPO / "scripts/verify.py"), "report", str(f)],
+                               capture_output=True, text=True, encoding="utf-8")
+            self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+            by = {r["check"]: r for r in json.loads(f.read_text(encoding="utf-8"))["results"]}
+            self.assertIn("references/download-mode.md", by[self.GONE]["markers"])
+            self.assertNotIn(b"\r\n", f.read_bytes())
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+    # B44: a failure fixed and re-checked in the same run stays in Failures (section 9)
+    FIXED = {"check": f"fact.pmic.{REV}", "result": "pass", "observed": "I2C 0x34 AXP192",
+             "first_failure": {"observed": "two addresses answered", "output": "I2C 0x34 0x35", "suspected_cause": "data",
+                               "resolved": "the probe now reads a register; re-read in the same sitting"}}
+
+    def test_a_first_failure_is_listed_in_section_9_shape(self):
+        f = verify.render_report(run_file([self.FIXED]), REPO).split("## Failures", 1)[1].split("\n## ", 1)[0]
+        self.assertIn(f"### fact.pmic.{REV}", f)
+        self.assertIn("- **Expected**: data/ says", f)
+        self.assertIn("- **Observed**: two addresses answered", f)
+        self.assertIn("- **Output**: I2C 0x34 0x35", f)
+        self.assertIn("- **Suspected cause**: data", f)
+        self.assertIn("- **Blocks**: nothing", f)
+        self.assertIn("- **Resolved**: the probe now reads a register; re-read in the same sitting. The check's result is now `pass`", f)
+        self.assertNotIn("None.", f)
+
+    def test_a_first_failure_does_not_count_as_a_fail(self):
+        md = verify.render_report(run_file([self.FIXED]), REPO)
+        row = next(l for l in md.split("## Summary", 1)[1].splitlines() if l.startswith("| fact "))
+        self.assertEqual([x.strip() for x in row.split("|")[2:-1]], ["1", "0", "0", "0", "0"])
+
+    def test_the_new_result_fields_are_in_the_schema(self):
+        props = verify.read_json(REPO / "verification/results.schema.json")["properties"]["results"]["items"]["properties"]
+        self.assertEqual(props["markers"]["type"], "array")
+        self.assertEqual(props["first_failure"]["required"], ["observed", "resolved"])
+        self.assertEqual(props["first_failure"]["properties"]["suspected_cause"]["enum"],
+                         ["data", "skill", "script", "toolchain", "unit", "unknown"])
+
 
 class ChecksJson(unittest.TestCase):
     def setUp(self):

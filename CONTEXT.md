@@ -115,7 +115,7 @@ _Avoid_: claim type, test type
 The outcome of running one **Check**: `pass`, `fail`, `blocked` (a prerequisite failed or is missing), `not-run`, or `observed` (an `open-question` check that ran and had its observation recorded). A check on a board nobody owns stays `not-run` indefinitely — never assumed to pass.
 
 **Run**:
-One sitting in which checks are executed, producing a dated report and a machine-readable results file. A passing hardware result in a run is what becomes a `hardware-test` **Source**; a failing one never changes a fact, it is recorded for someone to diagnose.
+One sitting in which checks are executed, producing a dated report and a machine-readable results file. A check that finishes the sitting on a later day may join the run, with its day recorded in the result. A passing hardware result in a run is what becomes a `hardware-test` **Source**; a failing one never changes a fact, it is recorded for someone to diagnose.
 _Avoid_: session, test pass
 
 **Verification tier**:

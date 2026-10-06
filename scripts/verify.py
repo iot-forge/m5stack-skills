@@ -10,7 +10,8 @@
   uv run scripts/verify.py run --board REV                       # section 6, step by step, asking the operator
   uv run scripts/verify.py ingest RESULTS                        # section 8: cite passing hardware checks in data/,
                                                                  # set each skill's metadata; never commits
-  uv run scripts/verify.py report RESULTS                        # section 8: write <date>.md next to RESULTS
+  uv run scripts/verify.py report RESULTS                        # section 8: write <date>.md next to RESULTS, and
+                                                                 # record in RESULTS where each answered marker sits
 
 `run` prints the results; with --write it merges them into verification/runs/<date>.json, so an offline run
 and a board run on the same day make one results file. trigger.row-11 asks the operator to judge the answers
@@ -456,6 +457,7 @@ RESULTS = ("pass", "fail", "blocked", "not-run", "observed")
 KINDS = ("data", "query", "build", "trigger", "handoff", "host", "flash", "device", "fact", "open-question")
 RELEASE_UNIT = "tab5@2026.04"  # the release bar's mandatory revision (section 3)
 MARKER_RE = re.compile(r"\(untested on hardware: ([^)]+)\)")
+UNDIAGNOSED = "unknown (to diagnose after the session: data, skill, script, toolchain or unit)"
 
 
 def cell(results, none="not-run"):
@@ -513,16 +515,21 @@ def render_report(obj, root=ROOT):
     out.append("| every other `supported` revision | " + " | ".join("not-run" for _ in cols) + " |")
 
     out += ["", "## Failures", ""]
-    failures = [r for r in results if r["result"] == "fail"]
+    failures = [r for r in results if r["result"] == "fail" or r.get("first_failure")]
     covers = {c["id"]: c.get("covers", []) for c in read_json(root / "verification/checks.json")["checks"]}
     for r in failures:
         blocks = [b["check"] for b in results if r["check"] in b.get("blocked_by", [])]
+        first = r.get("first_failure")  # fixed and re-checked in this run: the failure stays on record (section 9)
+        failed = first or r
         out += [f"### {r['check']}", "",
                 f"- **Expected**: {expected(r['check'], covers.get(r['check'], []), root)}",
-                f"- **Observed**: {r.get('observed') or 'not recorded'}",
-                f"- **Output**: {r.get('output') or 'none recorded'}",
-                "- **Suspected cause**: unknown (to diagnose after the session: data, skill, script, toolchain or unit)",
-                f"- **Blocks**: {', '.join(blocks) or 'nothing'}", ""]
+                f"- **Observed**: {failed.get('observed') or 'not recorded'}",
+                f"- **Output**: {failed.get('output') or 'none recorded'}",
+                f"- **Suspected cause**: {failed.get('suspected_cause') or UNDIAGNOSED}",
+                f"- **Blocks**: {', '.join(blocks) or 'nothing'}"]
+        if first:
+            out.append(f"- **Resolved**: {first['resolved']}. The check's result is now `{r['result']}`")
+        out.append("")
     if not failures:
         out += ["None.", ""]
 
@@ -538,15 +545,39 @@ def render_report(obj, root=ROOT):
         out += ["None.", ""]
 
     out += ["## Markers cleared", "",
-            "Each marker below names an open question this run observed. Update the step it sits on and remove it (section 7).", ""]
+            "Each marker below names an open question this run observed. Update the step it sits on and remove it (section 7). "
+            "A file shown as removed no longer carries the marker.", ""]
+    found = answered_markers(results, root)
+    cleared = {}
+    for r in results:  # the files the results file recorded first, then any the marker is in now
+        files = list(dict.fromkeys([*r.get("markers", []), *found.get(r["check"], [])]))
+        if files:
+            cleared[r["check"]] = [f if f in found.get(r["check"], []) else f"{f} (removed)" for f in files]
+    out += [f"- `{cid}`: {', '.join(files)}" for cid, files in cleared.items()] or ["None."]
+    return "\n".join(out) + "\n"
+
+
+def answered_markers(results, root=ROOT):
+    """Where the marker of each open question the results observed sits now: {check id: [file, ...]}."""
     answered = {r["check"] for r in results if r["result"] == "observed"}
     found = {}
     for f in sorted([*(root / "skills").rglob("*.md"), *(root / "references").glob("*.md")]):
-        for cid in MARKER_RE.findall(f.read_text(encoding="utf-8")):
+        for cid in dict.fromkeys(MARKER_RE.findall(f.read_text(encoding="utf-8"))):
             if cid in answered:
                 found.setdefault(cid, []).append(f.relative_to(root).as_posix())
-    out += [f"- `{cid}`: {', '.join(dict.fromkeys(files))}" for cid, files in found.items()] or ["None."]
-    return "\n".join(out) + "\n"
+    return found
+
+
+def record_markers(obj, root=ROOT):
+    """Add to each observed open question's result the files its marker sits in (`markers`), so a report written
+    after the markers are removed still lists them. True when OBJ changed."""
+    found = answered_markers(obj["results"], root)
+    changed = False
+    for r in obj["results"]:
+        files = list(dict.fromkeys([*r.get("markers", []), *found.get(r["check"], [])]))
+        if files != r.get("markers", []):
+            r["markers"], changed = files, True
+    return changed
 
 
 def write_report(obj, runs, root=ROOT):
@@ -604,7 +635,10 @@ def main():
         print("Review the git diff, then commit it with the run files (VERIFICATION.md section 8).")
         return 0
     if a.cmd == "report":
-        out = write_report(read_json(a.results), a.results.parent, a.root.resolve())
+        obj = read_json(a.results)
+        if record_markers(obj, a.root.resolve()):
+            write_json_like(a.results, obj)
+        out = write_report(obj, a.results.parent, a.root.resolve())
         print(f"wrote {out}")
         return 0
     if a.offline:

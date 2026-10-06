@@ -25,7 +25,7 @@ Full definitions are in `CONTEXT.md`. The ones this file leans on:
 - **Check**: one assertion about the plugin that can fail. Every check states its pass condition and the plausible wrong answer it must reject. A check that passes on the right answer *and* on a convincing wrong one is broken, not passing.
 - **Check kind**: what sort of assertion a check makes (section 2).
 - **Result**: `pass`, `fail`, `blocked` (a prerequisite failed or is missing), `not-run`, or `observed` (an `open-question` check that ran and had its observation recorded).
-- **Run**: one sitting in which checks are executed. It produces a dated report and a results file.
+- **Run**: one sitting in which checks are executed. It produces a dated report and a results file. A check that finishes the sitting on a later day may join it (section 8).
 - **Verification tier** of a board fact: `hardware-verified` (it cites a `hardware-test` source), `sourced` (primary sources only), or `starting-point` (`confidence: low`). It is worked out from the fact's sources and never stored separately.
 - **Revision**: one hardware configuration of a product, written `<product>@<revision>` (`core2@v1.3`). Checks that need a board name a revision, never a product.
 - **Self-report**: what a board's firmware says it is (`M5.getBoard()`, UIFlow2's `BOARD_ID`). It is never evidence, in a skill or in a check.
@@ -56,9 +56,16 @@ Check ids are `<kind>.<subject>`, with `.<revision>` added where a board is need
 
 The plugin is release-ready when:
 
-1. Every hardware-free check (`data`, `query`, `build`, `trigger`, `handoff`) passes.
+1. Every hardware-free check (`data`, `query`, `build`, `trigger`, `handoff`) passes. A `handoff.<skill>` check that is `blocked` counts as passed when `handoff.live.tab5@2026.04` passed and covers that skill (section 4).
 2. On **`tab5@2026.04`**, every `host` and `fact` check passes, and `flash` and `device` pass in **Arduino and ESP-IDF**.
 3. Every `open-question` check that can run on that Tab5 has been run and its observation recorded, whatever it turned out to be.
+
+Three checks, and no others, may stay `blocked` without holding the release (decided on 2026-10-06):
+
+- `fact.port-a-bus.tab5@2026.04`: it needs a Grove unit on Port A.
+- `handoff.platformio` and `handoff.uiflow2-micropython`: they need a port that exists but fails, and the Tab5's live hand-off cannot stand in for them, because a Tab5 run flashes neither framework.
+
+An exception lets the release go ahead; it verifies nothing. The skills those checks count toward keep the status section 10 gives them, and any other `blocked` check still holds the release.
 
 | Revision | `host` | `flash`: Arduino, ESP-IDF | `device`: Arduino, ESP-IDF | `fact` | `open-question` |
 |---|---|---|---|---|---|
@@ -308,7 +315,11 @@ A run writes two files, named by date: `verification/runs/<YYYY-MM-DD>.json` (re
 2. The release bar (section 3), with each cell filled in.
 3. **Failures**, in the fixed shape of section 9.
 4. Open-question observations.
-5. Markers cleared: every *(untested on hardware: <id>)* marker whose question this run answered.
+5. Markers cleared: every *(untested on hardware: <id>)* marker whose question this run answered, with the files it sat in. `verify.py report` records those files in the results file (`markers` on the open question's result), so a report written again after the markers are removed still lists them, each shown as removed.
+
+Two optional fields keep a run's record whole. `markers` is the one above. `first_failure` (`observed`, `output`, `suspected_cause`, `resolved`) goes on a result whose check failed, was fixed and was run again in the same run (section 9).
+
+A check run on a later day may join the run it belongs to, when it finishes that run's session on the same unit: record it in that run's results file by hand and give the day in `observed`. The run keeps its date, and so do the skills' status lines. `handoff.live.tab5@2026.04`, run on 2026-10-06, sits in the run of 2026-10-04 this way.
 
 **Ingest.** `uv run scripts/verify.py ingest verification/runs/<date>.json` updates the repo from a run. Review the git diff, then commit it together with the run files.
 
@@ -336,6 +347,8 @@ Each failure goes in the report's **Failures** section in this shape:
 - **Suspected cause**: data | skill | script | toolchain | unit | unknown
 - **Blocks**: <check ids marked blocked because of this>
 ```
+
+If a failure was fixed and the check run again in the same run all the same, the failure stays on record: the result carries the new outcome and a `first_failure` with what was observed, the output, the suspected cause and what resolved it. The report lists it under Failures in the shape above, with a **Resolved** line. It does not count as a `fail` in the summary or toward a skill's status.
 
 "Unit" means the board itself may be faulty, for example a single unit's touch panel. Unless the fault is reproduced, it never changes data or skills.
 

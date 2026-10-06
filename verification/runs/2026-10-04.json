@@ -351,7 +351,10 @@
    "check": "open-question.chip-revision.tab5@2026.04",
    "result": "observed",
    "observed": "esptool v5.3.1 chip-id on COM3 reports ESP32-P4 revision v1.3; it connected with no button press. The boot log of the ESP-IDF smoke image, built with CONFIG_ESP32P4_SELECTS_REV_LESS_V3=y and read from COM3 in the same sitting, gives the same revision, shows the image starting, and reports the PSRAM in X16 Mode at 200 MHz (the lines below; added to this result on 2026-10-06 from that sitting's log)",
-   "output": "Chip type:          ESP32-P4 (revision v1.3)\nI (30) boot: chip revision: v1.3\nI (243) hex_psram: BitMode      : 0x01 (X16 Mode)\nI (434) esp_psram: Found 32MB PSRAM device\nI (435) esp_psram: Speed: 200MHz\nI (1461) efuse_init: Min chip rev:     v0.0\nI (1465) efuse_init: Max chip rev:     v1.99\nI (1469) efuse_init: Chip rev:         v1.3"
+   "output": "Chip type:          ESP32-P4 (revision v1.3)\nI (30) boot: chip revision: v1.3\nI (243) hex_psram: BitMode      : 0x01 (X16 Mode)\nI (434) esp_psram: Found 32MB PSRAM device\nI (435) esp_psram: Speed: 200MHz\nI (1461) efuse_init: Min chip rev:     v0.0\nI (1465) efuse_init: Max chip rev:     v1.99\nI (1469) efuse_init: Chip rev:         v1.3",
+   "markers": [
+    "skills/esp-idf/references/sdkconfig.md"
+   ]
   },
   {
    "check": "flash.arduino.tab5@2026.04",
@@ -369,7 +372,10 @@
    "check": "open-question.auto-download.tab5@2026.04",
    "result": "observed",
    "observed": "esptool entered download mode with no button press, for chip-id, erase-flash and the upload",
-   "output": "Connected to ESP32-P4 on COM3:"
+   "output": "Connected to ESP32-P4 on COM3:",
+   "markers": [
+    "references/download-mode.md"
+   ]
   },
   {
    "check": "open-question.display-driver.tab5@2026.04",
@@ -380,8 +386,14 @@
   {
    "check": "fact.touch.tab5@2026.04",
    "result": "pass",
-   "observed": "The firmware-version byte at 0x55 reads 0x01, the ST7121's. Read again on 2026-10-05, in the same sitting, with the smoke program of commit 6bfefa6 (operator: claude, from the serial port). The first read, an address scan, failed: 0x14 answered as well as 0x55, and the probe was changed for that reason.",
-   "output": "I2C 0x55 ST7121 raw 0x01"
+   "observed": "The firmware-version byte at 0x55 reads 0x01, the ST7121's. Read again on 2026-10-05, in the same sitting, with the smoke program of commit 6bfefa6 (operator: claude, from the serial port).",
+   "output": "I2C 0x55 ST7121 raw 0x01",
+   "first_failure": {
+    "observed": "0x55 answers, and 0x14 answers too",
+    "output": "I2C 0x14 present / I2C 0x55 present",
+    "suspected_cause": "data",
+    "resolved": "The probe scanned for the two touch addresses, and an ST7121 unit answers at the GT911's address as well. The signal tab5-touch-probe now reads the firmware-version byte at 0x55, as M5GFX does (commit 6bfefa6), and the check was read again in the same sitting, against section 9's rule of fixing nothing during a session"
+   }
   },
   {
    "check": "fact.imu.tab5@2026.04",
@@ -434,7 +446,11 @@
    "check": "open-question.manual-download.tab5@2026.04",
    "result": "observed",
    "observed": "Held reset about 2 s: the green LED flashed rapidly and the screen went blank. esptool chip-id then connected on COM3. After esptool's hard reset the unit stayed in download mode (no serial output for 8 s); a short press of reset was needed to start the firmware.",
-   "output": "Connected to ESP32-P4 on COM3: Chip type:          ESP32-P4 (revision v1.3)"
+   "output": "Connected to ESP32-P4 on COM3: Chip type:          ESP32-P4 (revision v1.3)",
+   "markers": [
+    "references/download-mode.md",
+    "skills/flashing-and-debugging/SKILL.md"
+   ]
   },
   {
    "check": "handoff.live.tab5@2026.04",
