@@ -208,11 +208,11 @@ Before the first step the results file gets:
 - the plugin commit;
 - every toolchain version. `verify.py` reads them from the tools; nobody types one (below).
 
-**Where the versions come from.** `verify.py run`, with `--board` or `--offline`, runs `doctor.py --json` and takes from it the versions of arduino-cli, the installed Arduino cores, PlatformIO, ESP-IDF, esptool and mpremote. It asks `arduino-cli lib list` for M5Unified and `claude --version` for Claude Code. A tool `doctor.py` does not find is left out, so run from a shell where the tools are on `PATH` and the ESP-IDF environment is active. Two entries are not read:
-- `esp32 core` names the core and its version, like `esp32:esp32 3.3.12`. With both cores installed, a board run asks which one the run flashes with and offers only the installed ones. An offline run builds with every installed core and names them all.
+**Where the versions come from.** `verify.py run`, with `--board` or `--offline`, runs `doctor.py --json` and takes from it the versions of arduino-cli, the installed Arduino cores, PlatformIO, ESP-IDF, esptool and mpremote. It asks `arduino-cli lib list` for M5Unified and `claude --version` for Claude Code. A tool `doctor.py` does not find is left out, so run from a shell where the tools are on `PATH` and the ESP-IDF environment is active. Two entries need the operator:
+- `esp32 core` names the core and its version, like `esp32:esp32 3.3.12`. With both cores installed, a board run asks which one the run flashes with and offers only the installed ones. An offline run flashes nothing, so it names every installed core.
 - `uiflow2 image`: the image is not a tool on the host, so a board run asks for its version when the revision has the UIFlow2 step, and takes a version or nothing.
 
-An `observed` answer says what was seen. A result letter or a bare verdict (`p`, `pass`, `good`) is asked again.
+An `observed` answer says what was seen. A result letter or a bare verdict (`p`, `pass`, `good`) is asked again; `yes` and `no` are taken, because they answer an open question.
 
 | Step | Checks | What happens | Needs a person for |
 |---|---|---|---|
@@ -294,7 +294,7 @@ Record what happens. Each observation goes into the report verbatim, including e
 
 ## 8. Recording results
 
-A run writes two files, named by date: `verification/runs/<YYYY-MM-DD>.json` (results) and `verification/runs/<YYYY-MM-DD>.md` (report). `verify.py run --write` merges into that date's results file, so the hardware-free checks and the hardware session run on one day make one file; a check run twice keeps its later result, and an offline run never replaces the toolchains a board run recorded. `verify.py report` writes the report from the results. You can write both by hand if `verify.py` is unavailable.
+A run writes two files, named by date: `verification/runs/<YYYY-MM-DD>.json` (results) and `verification/runs/<YYYY-MM-DD>.md` (report). `verify.py run --write` merges into that date's results file, so the hardware-free checks and the hardware session run on one day make one file; a check run twice keeps its later result, and an offline run never replaces the `esp32 core` a board run recorded. `verify.py report` writes the report from the results. You can write both by hand if `verify.py` is unavailable.
 
 **Results file** (validated against `verification/results.schema.json`):
 

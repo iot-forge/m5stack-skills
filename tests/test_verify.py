@@ -210,10 +210,18 @@ class FakeRunner:
         self.targets = targets or {"check": "build.target-from-data", "result": "pass", "output": ""}
         self.claude, self.calls = claude or (lambda request, cwd: ""), []
         self.tools = tools or {}  # what the machine has: doctor.py's `toolchains`, plus `libs` and `claude`
+        self.timeouts = []  # the time limit each version read was given
 
-    def __call__(self, cmd, cwd=None, stdin=None):
+    @staticmethod
+    def asks_a_tool(cmd):
+        """A call that reads a version: doctor.py, arduino-cli's library list or `claude --version`."""
+        return str(cmd[1]).endswith("doctor.py") or cmd[0] == "arduino-cli" or cmd == ["claude", "--version"]
+
+    def __call__(self, cmd, cwd=None, stdin=None, timeout=None):
         self.calls.append(cmd)
         text = " ".join(map(str, cmd))
+        if self.asks_a_tool(cmd):
+            self.timeouts.append(timeout)
         if str(cmd[1]).endswith("doctor.py"):  # a trigger row's claude command names doctor.py too, in its grants
             found = {k: v for k, v in self.tools.items() if k not in ("libs", "claude")}
             return 0, json.dumps({"host": "Test 1", "toolchains": found, "ports": [], "note": None}), ""
@@ -411,8 +419,8 @@ class Triggers(unittest.TestCase):
         runner = FakeRunner(claude=lambda request, cwd: stream())
         res = verify.run_offline("test", runner=runner, only={"trigger.neg-02", "trigger.row-17"})["results"]
         self.assertEqual(sorted(r["check"] for r in res), ["trigger.neg-02", "trigger.row-17"])
-        self.assertFalse([c for c in runner.calls if "claude" not in c[0] and "doctor.py" not in str(c[1])
-                          and c[0] != "arduino-cli"])  # no validate, unittest or build run: only the tools are asked
+        # no validate, unittest or build run: besides the rows, only the tools are asked for their versions
+        self.assertFalse([c for c in runner.calls if c not in runner.trigger_runs and not runner.asks_a_tool(c)])
         self.assertEqual(len(runner.trigger_runs), 2 * 3)
 
     def offline_until(self, call, only, answer=LIMIT, ask=None):
@@ -554,9 +562,18 @@ class ToolVersions(unittest.TestCase):
 
     def test_doctor_failing_leaves_only_what_the_other_tools_say(self):
         class Broken(FakeRunner):
-            def __call__(self, cmd, cwd=None, stdin=None):
-                return (1, "", "Traceback") if str(cmd[1]).endswith("doctor.py") else super().__call__(cmd, cwd, stdin)
+            def __call__(self, cmd, **kw):
+                return (1, "", "Traceback") if str(cmd[1]).endswith("doctor.py") else super().__call__(cmd, **kw)
         self.assertEqual(verify.tool_versions(Broken(tools=MACHINE)), {"claude-code": "2.1.292"})
+
+    def test_a_version_line_with_no_number_drops_only_that_tool(self):  # a nightly arduino-cli still lists its cores
+        tools = {**MACHINE, "arduino-cli": {**MACHINE["arduino-cli"], "version": "arduino-cli  Version: nightly Commit: fef6e48df"}}
+        self.assertEqual(list(self.versions(tools))[:2], ["esp32 core", "M5Unified"])
+
+    def test_a_tool_that_hangs_is_given_a_minute_not_the_build_timeout(self):
+        runner = FakeRunner(tools=MACHINE)
+        verify.tool_versions(runner)
+        self.assertEqual(runner.timeouts, [60, 60, 60])
 
 
 class Operator:
@@ -632,6 +649,8 @@ class Board(unittest.TestCase):
         obj, _ = self.board(scripted={"uiflow2 image version": ["latest", ""]})
         self.assertEqual(sum(p.startswith("uiflow2 image version") for p in self.op.prompts), 2)
         self.assertNotIn("uiflow2 image", obj["run"]["toolchains"])
+        obj, _ = self.board(scripted={"uiflow2 image version": ["v2.5.3"]})  # as the file name spells it
+        self.assertEqual(obj["run"]["toolchains"]["uiflow2 image"], "v2.5.3")
 
     def test_the_sku_is_one_of_the_revisions_in_data(self):  # the Tab5 run of 2026-10-04 took `1111`
         obj, _ = self.board(scripted={"SKU": ["1111", "K010", " k010-v13 "]})
@@ -648,6 +667,11 @@ class Board(unittest.TestCase):
         _, res = self.board(scripted={f"{cid} observed": ["p", "good", "Pass", "AXP2101 answers at 0x34"]})
         self.assertEqual(sum(p.startswith(f"{cid} observed") for p in self.op.prompts), 4)
         self.assertEqual(res[cid]["observed"], "AXP2101 answers at 0x34")
+
+    def test_yes_or_no_answers_an_open_question(self):  # section 7 asks "does esptool enter download mode with no press?"
+        cid = f"open-question.auto-download.{REV}"
+        _, res = self.board(scripted={f"{cid} observed": ["no"]})
+        self.assertEqual(res[cid]["observed"], "no")
 
     def test_a_one_word_observation_is_taken(self):  # a nonce, a part name
         _, res = self.board(scripted={f"device.arduino.{REV} observed": ["7F3A"], f"fact.imu.{REV} observed": ["BMI270"]})
@@ -818,11 +842,13 @@ class WriteRun(unittest.TestCase):
         self.assertEqual(merged["run"]["toolchains"], {"esptool": "4.8.1"})
 
     def test_an_offline_rerun_keeps_what_the_board_run_recorded(self):  # B43: the core the unit was flashed with
-        board = run_file([], toolchains={"esp32 core": "esp32:esp32 3.3.12", "esptool": "5.3.1"})
-        offline = run_file([], unit=None, toolchains={"esp32 core": "esp32:esp32 3.3.12 and m5stack:esp32 3.3.9", "platformio": "6.1.19"})
+        board = run_file([], toolchains={"esp32 core": "esp32:esp32 3.3.12", "esptool": "5.3.1", "claude-code": "2.1.289"})
+        offline = run_file([], unit=None, toolchains={"esp32 core": "esp32:esp32 3.3.12 and m5stack:esp32 3.3.9",
+                                                      "platformio": "6.1.19", "claude-code": "2.1.292"})
         verify.write_run(board, self.tmp)
         merged = verify.read_json(verify.write_run(offline, self.tmp))["run"]["toolchains"]
-        self.assertEqual(merged, {"esp32 core": "esp32:esp32 3.3.12", "esptool": "5.3.1", "platformio": "6.1.19"})
+        # every other tool is as the later run found it: the trigger rows ran under that claude
+        self.assertEqual(merged, {"esp32 core": "esp32:esp32 3.3.12", "esptool": "5.3.1", "platformio": "6.1.19", "claude-code": "2.1.292"})
         verify.write_run(run_file([], toolchains={"esp32 core": "m5stack:esp32 3.3.9"}), self.tmp)  # a second board run
         self.assertEqual(verify.read_json(self.tmp / f"{DATE}.json")["run"]["toolchains"]["esp32 core"], "m5stack:esp32 3.3.9")
 
@@ -1081,7 +1107,7 @@ class Tab5Run(RepoCopy):  # B42: the release bar's unit, run in Arduino and ESP-
                          {"build.arduino.esp32:esp32:m5stack_tab5", "build.arduino.m5stack:esp32:m5stack_tab5", "build.esp-idf.esp32p4"})
 
         class Runner(FakeRunner):
-            def __call__(self, cmd, cwd=None, stdin=None):
+            def __call__(self, cmd, cwd=None, stdin=None, **kw):
                 if any("smoke.py" in str(c) for c in cmd) and "--revision" in cmd:
                     rev = cmd[cmd.index("--revision") + 1]
                     self.calls.append(cmd)
@@ -1093,7 +1119,7 @@ class Tab5Run(RepoCopy):  # B42: the release bar's unit, run in Arduino and ESP-
                     if rev == TAB5:
                         return 2, "", "smoke.py: no such data"
                     return 0, json.dumps([{"check": i, "result": "pass", "output": ""} for i, r in built_for.items() if r == rev]), ""
-                return super().__call__(cmd, cwd, stdin)
+                return super().__call__(cmd, cwd, stdin, **kw)
         runner = Runner(validate_tests={**GUARDS_OK, **ALL_PLANTED_OK})
         res = {r["check"]: r for r in verify.run_offline("test", runner=runner, skip=("trigger",))["results"]}
         for cid, rev in built_for.items():

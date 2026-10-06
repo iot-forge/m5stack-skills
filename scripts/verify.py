@@ -340,9 +340,9 @@ DOCTOR_TOOLS = {"arduino-cli": "arduino-cli", "platformio": "pio", "esp-idf": "i
 
 
 def tool_output(runner, cmd):
-    """CMD's stdout, or "" when the tool is missing, exits non-zero or never answers."""
+    """CMD's stdout, or "" when the tool is missing, exits non-zero or does not answer within a minute."""
     try:
-        code, out, _ = runner(cmd)
+        code, out, _ = runner(cmd, timeout=60)
     except (OSError, subprocess.TimeoutExpired):
         return ""
     return out if code == 0 else ""
@@ -364,7 +364,7 @@ def tool_versions(runner=sh, pick_core=None):
         # the number in the tool's line; ESP-IDF's keeps its `v`, as `idf.py --version` spells it
         if m := re.search(r"v\d+\.\d+\S*" if name == "esp-idf" else r"\d+\.\d+\S*", text):
             seen[name] = m.group(0)
-    if "arduino-cli" in seen:
+    if found.get("arduino-cli", {}).get("found"):
         cores = {c: v for c, v in found["arduino-cli"].get("cores", {}).items() if v}
         if len(cores) > 1 and pick_core:
             cores = {(core := pick_core(cores)): cores[core]}
@@ -449,8 +449,9 @@ def run_offline(operator, runner=sh, skip=(), ask=None, only=None):
 
 FRAMEWORKS = ("arduino", "platformio", "esp-idf", "uiflow2")
 ANSWERS = {"p": "pass", "f": "fail", "b": "blocked", "n": "not-run", "o": "observed"}
-# not an observation: a result letter typed one prompt late, a result, or a judgement in a word
-VERDICTS = {*ANSWERS, *ANSWERS.values(), "good", "bad", "ok", "okay", "fine", "works", "yes", "no", "y", "done"}
+# not an observation: a result letter typed one prompt late, a result, or a judgement in a word. `yes` and `no` are
+# not here: they answer an open question (section 7)
+VERDICTS = {*ANSWERS, *ANSWERS.values(), "good", "bad", "ok", "okay", "fine"}
 
 
 def ask_until(ask, prompt, accept, hint):
@@ -489,9 +490,10 @@ def run_board(revision, operator, ask=input, root=ROOT, runner=sh):
         f"answer one of {', '.join(cores)}"))
     if any(c["step"] == "uiflow2" for c in checks):  # the image is not a tool on this machine: nothing to read it from
         if image := ask_until(ask, "uiflow2 image version (blank if not flashed): ",
-                              lambda a: a if re.fullmatch(r"(\d+\.\d+\S*)?", a) else None,
+                              lambda a: a if re.fullmatch(r"(v?\d+\.\d+\S*)?", a) else None,
                               "answer the version in the image's file name, like 2.5.3, or nothing"):
-            toolchains = {t: v for t in TOOLCHAINS if (v := {**toolchains, "uiflow2 image": image}.get(t))}
+            toolchains["uiflow2 image"] = image
+            toolchains = {t: toolchains[t] for t in TOOLCHAINS if t in toolchains}
     results, outcome = [], {}
     for n, (text, in_step) in enumerate(steps, 1):
         print(f"\nStep {n}: {text}", file=sys.stderr)
@@ -511,7 +513,7 @@ def run_board(revision, operator, ask=input, root=ROOT, runner=sh):
                 print(f"  answer one of {choices}", file=sys.stderr)
             r = {"check": cid, "result": ANSWERS[a]}
             if a != "n":
-                r["observed"] = ask_until(ask, f"{cid} observed: ", lambda a: None if a.lower() in VERDICTS else a,
+                r["observed"] = ask_until(ask, f"{cid} observed: ", lambda seen: None if seen.lower() in VERDICTS else seen,
                                           "say what you saw (the line, the value, what the display showed), not how it went")
                 if out := ask(f"{cid} output (verbatim, or a path under verification/runs/; blank for none): ").strip():
                     r["output"] = out
@@ -658,8 +660,8 @@ def write_report(obj, runs, root=ROOT):
 def write_run(obj, runs=ROOT / "verification/runs"):
     """Write OBJ to <runs>/<date>.json, merging into that date's file: one results file per sitting (section 8).
     A check already there is replaced in place; the unit and toolchains are filled in, never cleared. The newer
-    run's toolchains win, except that an offline run never replaces what a board run recorded: the board run's are
-    the ones the unit was flashed with (its `esp32 core` is one core, the offline run's every installed one)."""
+    run's toolchains win, except that an offline run never replaces a board run's `esp32 core`: that is the one
+    core the unit was flashed with, and the offline run's is every installed one."""
     out = Path(runs) / f"{obj['run']['date']}.json"
     if out.exists():
         old = read_json(out)
@@ -667,8 +669,9 @@ def write_run(obj, runs=ROOT / "verification/runs"):
         merged.update((r["check"], r) for r in obj["results"])
         run = {**old["run"], **obj["run"], "unit": obj["run"]["unit"] or old["run"]["unit"],
                "operator": obj["run"]["operator"] if obj["run"]["operator"] != "unknown" else old["run"]["operator"],
-               "toolchains": {**obj["run"]["toolchains"], **old["run"]["toolchains"]} if old["run"]["unit"] and not obj["run"]["unit"]
-               else {**old["run"]["toolchains"], **obj["run"]["toolchains"]}}
+               "toolchains": {**old["run"]["toolchains"], **obj["run"]["toolchains"]}}
+        if old["run"]["unit"] and not obj["run"]["unit"] and "esp32 core" in old["run"]["toolchains"]:
+            run["toolchains"]["esp32 core"] = old["run"]["toolchains"]["esp32 core"]
         obj = {"run": run, "results": list(merged.values())}
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_bytes((json.dumps(obj, indent=1, ensure_ascii=False) + "\n").encode("utf-8"))
