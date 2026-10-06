@@ -15,7 +15,8 @@
 
 `run` prints the results; with --write it merges them into verification/runs/<date>.json, so an offline run
 and a board run on the same day make one results file. trigger.row-11 asks the operator to judge the answers
-when stdin is a terminal, and is not-run otherwise. Exit codes: 0 no check failed; 1 a check failed.
+when stdin is a terminal, and is not-run otherwise. Both runs read the tool versions from the tools (doctor.py,
+arduino-cli, claude); a tool that is not found is left out. Exit codes: 0 no check failed; 1 a check failed.
 """
 import argparse, datetime, json, platform, re, shutil, subprocess, sys, tempfile
 from pathlib import Path
@@ -334,6 +335,51 @@ def ask_operator(prompt):
     return input()
 
 
+TOOLCHAINS = ("arduino-cli", "esp32 core", "M5Unified", "platformio", "esp-idf", "esptool", "mpremote", "uiflow2 image", "claude-code")
+DOCTOR_TOOLS = {"arduino-cli": "arduino-cli", "platformio": "pio", "esp-idf": "idf.py", "esptool": "esptool", "mpremote": "mpremote"}
+
+
+def tool_output(runner, cmd):
+    """CMD's stdout, or "" when the tool is missing, exits non-zero or never answers."""
+    try:
+        code, out, _ = runner(cmd)
+    except (OSError, subprocess.TimeoutExpired):
+        return ""
+    return out if code == 0 else ""
+
+
+def tool_versions(runner=sh, pick_core=None):
+    """The run's `toolchains`: each tool's version as the tool itself reports it, in TOOLCHAINS order. A tool that is
+    missing, or that gave no version, is left out. doctor.py finds the tools and asks most of them; arduino-cli and
+    claude are asked here for what doctor.py does not report. `esp32 core` names every installed Arduino core;
+    PICK_CORE({core: version}) -> the core a run flashed with, asked only when more than one is installed.
+    The UIFlow2 image is not a tool on the host: run_board asks for it."""
+    try:
+        found = json.loads(tool_output(runner, [sys.executable, str(ROOT / "scripts/doctor.py"), "--json"]))["toolchains"]
+    except (json.JSONDecodeError, KeyError, TypeError):
+        found = {}
+    seen = {}
+    for name, key in DOCTOR_TOOLS.items():
+        text = found.get(key, {}).get("version") or ""
+        # the number in the tool's line; ESP-IDF's keeps its `v`, as `idf.py --version` spells it
+        if m := re.search(r"v\d+\.\d+\S*" if name == "esp-idf" else r"\d+\.\d+\S*", text):
+            seen[name] = m.group(0)
+    if "arduino-cli" in seen:
+        cores = {c: v for c, v in found["arduino-cli"].get("cores", {}).items() if v}
+        if len(cores) > 1 and pick_core:
+            cores = {(core := pick_core(cores)): cores[core]}
+        if cores:
+            seen["esp32 core"] = " and ".join(f"{c} {v}" for c, v in cores.items())
+        try:
+            libs = json.loads(tool_output(runner, ["arduino-cli", "lib", "list", "--json"]))["installed_libraries"]
+            seen["M5Unified"] = next(x["library"]["version"] for x in libs if x["library"]["name"] == "M5Unified")
+        except (json.JSONDecodeError, KeyError, TypeError, StopIteration):
+            pass
+    if m := re.search(r"\d+\.\d+\S*", tool_output(runner, ["claude", "--version"])):
+        seen["claude-code"] = m.group(0)
+    return {t: seen[t] for t in TOOLCHAINS if t in seen}
+
+
 def run_offline(operator, runner=sh, skip=(), ask=None, only=None):
     """Section 4's hardware-free checks. Kinds in SKIP are recorded not-run; with ONLY, just those check ids run."""
     checks = read_json(ROOT / "verification/checks.json")["checks"]
@@ -397,17 +443,27 @@ def run_offline(operator, runner=sh, skip=(), ask=None, only=None):
               + " ".join(f"--only {i}" for i in left), file=sys.stderr)
     date = datetime.date.today().isoformat()
     return {"run": {"date": date, "operator": operator, "host_os": f"{platform.system()} {platform.release()}",
-                    "plugin_commit": git_head(), "unit": None, "toolchains": {}},
+                    "plugin_commit": git_head(), "unit": None, "toolchains": tool_versions(runner)},
             "results": [r for r in results if wanted(r["check"])]}
 
 
 FRAMEWORKS = ("arduino", "platformio", "esp-idf", "uiflow2")
-TOOLCHAINS = ("arduino-cli", "esp32 core", "M5Unified", "platformio", "esp-idf", "esptool", "mpremote", "uiflow2 image", "claude-code")
 ANSWERS = {"p": "pass", "f": "fail", "b": "blocked", "n": "not-run", "o": "observed"}
+# not an observation: a result letter typed one prompt late, a result, or a judgement in a word
+VERDICTS = {*ANSWERS, *ANSWERS.values(), "good", "bad", "ok", "okay", "fine", "works", "yes", "no", "y", "done"}
 
 
-def run_board(revision, operator, ask=input, root=ROOT):
+def ask_until(ask, prompt, accept, hint):
+    """ASK(PROMPT) until ACCEPT(answer) gives something other than None; that is the answer. HINT says what is wanted."""
+    while (a := accept(ask(prompt).strip())) is None:
+        print(f"  {hint}", file=sys.stderr)
+    return a
+
+
+def run_board(revision, operator, ask=input, root=ROOT, runner=sh):
     """Walk the operator through section 6 for REVISION and record every result. ASK(prompt) -> the operator's answer.
+    The tool versions are read from the tools (tool_versions); the operator only picks the Arduino core the run
+    flashes with when more than one is installed, and gives the UIFlow2 image's version when the revision has that step.
     The steps, which check goes in each and what each check depends on come from checks.json (board_steps, step,
     depends_on). A step no check names, like the erase, is done for every revision."""
     doc = read_json(root / "verification/checks.json")
@@ -422,8 +478,20 @@ def run_board(revision, operator, ask=input, root=ROOT):
     steps_in_use = {c["step"] for c in doc["checks"] if "step" in c}
     steps = [(s["text"].replace("<revision>", revision), in_step) for s in doc["board_steps"]
              if (in_step := [c for c in checks if c["step"] == s["id"]]) or s["id"] not in steps_in_use]
-    unit = {"revision": revision, "sku_sticker": ask("SKU on the unit's sticker: ").strip()}
-    toolchains = {t: v for t in TOOLCHAINS if (v := ask(f"{t} version (blank if not used): ").strip())}
+    # the sticker's SKU is one of those data/ gives the revision; a revision data/ has no SKU for takes any
+    skus = [s for p in sorted((root / "data/products").glob("*.json")) for s in read_json(p)["revisions"].get(revision, {}).get("sku", [])]
+    sku = ask_until(ask, f"SKU on the unit's sticker{' [' + '/'.join(skus) + ']' if skus else ''}: ",
+                    lambda a: next((s for s in skus if s.lower() == a.lower()), None) if skus else a,
+                    f"answer one of {', '.join(skus)}: the SKUs data/ gives {revision}")
+    unit = {"revision": revision, "sku_sticker": sku}
+    toolchains = tool_versions(runner, lambda cores: ask_until(
+        ask, f"esp32 core the run flashes with [{'/'.join(cores)}]: ", lambda a: a.lower() if a.lower() in cores else None,
+        f"answer one of {', '.join(cores)}"))
+    if any(c["step"] == "uiflow2" for c in checks):  # the image is not a tool on this machine: nothing to read it from
+        if image := ask_until(ask, "uiflow2 image version (blank if not flashed): ",
+                              lambda a: a if re.fullmatch(r"(\d+\.\d+\S*)?", a) else None,
+                              "answer the version in the image's file name, like 2.5.3, or nothing"):
+            toolchains = {t: v for t in TOOLCHAINS if (v := {**toolchains, "uiflow2 image": image}.get(t))}
     results, outcome = [], {}
     for n, (text, in_step) in enumerate(steps, 1):
         print(f"\nStep {n}: {text}", file=sys.stderr)
@@ -443,7 +511,8 @@ def run_board(revision, operator, ask=input, root=ROOT):
                 print(f"  answer one of {choices}", file=sys.stderr)
             r = {"check": cid, "result": ANSWERS[a]}
             if a != "n":
-                r["observed"] = ask(f"{cid} observed: ").strip()
+                r["observed"] = ask_until(ask, f"{cid} observed: ", lambda a: None if a.lower() in VERDICTS else a,
+                                          "say what you saw (the line, the value, what the display showed), not how it went")
                 if out := ask(f"{cid} output (verbatim, or a path under verification/runs/; blank for none): ").strip():
                     r["output"] = out
             outcome[cid] = r["result"]
@@ -588,7 +657,9 @@ def write_report(obj, runs, root=ROOT):
 
 def write_run(obj, runs=ROOT / "verification/runs"):
     """Write OBJ to <runs>/<date>.json, merging into that date's file: one results file per sitting (section 8).
-    A check already there is replaced in place; the unit and toolchains are filled in, never cleared."""
+    A check already there is replaced in place; the unit and toolchains are filled in, never cleared. The newer
+    run's toolchains win, except that an offline run never replaces what a board run recorded: the board run's are
+    the ones the unit was flashed with (its `esp32 core` is one core, the offline run's every installed one)."""
     out = Path(runs) / f"{obj['run']['date']}.json"
     if out.exists():
         old = read_json(out)
@@ -596,7 +667,8 @@ def write_run(obj, runs=ROOT / "verification/runs"):
         merged.update((r["check"], r) for r in obj["results"])
         run = {**old["run"], **obj["run"], "unit": obj["run"]["unit"] or old["run"]["unit"],
                "operator": obj["run"]["operator"] if obj["run"]["operator"] != "unknown" else old["run"]["operator"],
-               "toolchains": {**old["run"]["toolchains"], **obj["run"]["toolchains"]}}
+               "toolchains": {**obj["run"]["toolchains"], **old["run"]["toolchains"]} if old["run"]["unit"] and not obj["run"]["unit"]
+               else {**old["run"]["toolchains"], **obj["run"]["toolchains"]}}
         obj = {"run": run, "results": list(merged.values())}
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_bytes((json.dumps(obj, indent=1, ensure_ascii=False) + "\n").encode("utf-8"))

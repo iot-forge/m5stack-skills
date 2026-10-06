@@ -202,11 +202,17 @@ The same program exists in all four frameworks, so one flash is a `flash`, a `de
 
 The steps below are for `core2@v1.3`; [the Tab5's](#tab5202604) follow. Do the steps in this order: UIFlow2 replaces whatever firmware is on the unit, so it goes last. When a step fails, the checks that depend on it become `blocked`, not `fail`. `verify.py run --board <revision>` walks the operator through these steps. It reads them from `checks.json` (`board_steps`, and each check's `step` and `depends_on`), so another revision's steps are data too. Every write to the board is confirmed first, as the skills' standing rules require.
 
-Before starting, record in the results file:
-- the SKU on the unit's sticker (`K010-V13` expected);
+Before the first step the results file gets:
+- the SKU on the unit's sticker (`K010-V13` expected). `verify.py` offers the SKUs `data/` gives the revision and takes only one of them;
 - the host OS;
 - the plugin commit;
-- every toolchain version, as reported by `doctor.py` and by each tool itself.
+- every toolchain version. `verify.py` reads them from the tools; nobody types one (below).
+
+**Where the versions come from.** `verify.py run`, with `--board` or `--offline`, runs `doctor.py --json` and takes from it the versions of arduino-cli, the installed Arduino cores, PlatformIO, ESP-IDF, esptool and mpremote. It asks `arduino-cli lib list` for M5Unified and `claude --version` for Claude Code. A tool `doctor.py` does not find is left out, so run from a shell where the tools are on `PATH` and the ESP-IDF environment is active. Two entries are not read:
+- `esp32 core` names the core and its version, like `esp32:esp32 3.3.12`. With both cores installed, a board run asks which one the run flashes with and offers only the installed ones. An offline run builds with every installed core and names them all.
+- `uiflow2 image`: the image is not a tool on the host, so a board run asks for its version when the revision has the UIFlow2 step, and takes a version or nothing.
+
+An `observed` answer says what was seen. A result letter or a bare verdict (`p`, `pass`, `good`) is asked again.
 
 | Step | Checks | What happens | Needs a person for |
 |---|---|---|---|
@@ -288,7 +294,7 @@ Record what happens. Each observation goes into the report verbatim, including e
 
 ## 8. Recording results
 
-A run writes two files, named by date: `verification/runs/<YYYY-MM-DD>.json` (results) and `verification/runs/<YYYY-MM-DD>.md` (report). `verify.py run --write` merges into that date's results file, so the hardware-free checks and the hardware session run on one day make one file; a check run twice keeps its later result. `verify.py report` writes the report from the results. You can write both by hand if `verify.py` is unavailable.
+A run writes two files, named by date: `verification/runs/<YYYY-MM-DD>.json` (results) and `verification/runs/<YYYY-MM-DD>.md` (report). `verify.py run --write` merges into that date's results file, so the hardware-free checks and the hardware session run on one day make one file; a check run twice keeps its later result, and an offline run never replaces the toolchains a board run recorded. `verify.py report` writes the report from the results. You can write both by hand if `verify.py` is unavailable.
 
 **Results file** (validated against `verification/results.schema.json`):
 
@@ -300,7 +306,7 @@ A run writes two files, named by date: `verification/runs/<YYYY-MM-DD>.json` (re
     "host_os": "<os and version>",
     "plugin_commit": "<git sha>",
     "unit": {"revision": "tab5@2026.04", "sku_sticker": "C145"},
-    "toolchains": {"arduino-cli": "<ver>", "esp32 core": "<ver>", "M5Unified": "<ver>", "platformio": "<ver>", "esp-idf": "<ver>", "esptool": "<ver>", "mpremote": "<ver>", "uiflow2 image": "<ver>", "claude-code": "<ver>"}
+    "toolchains": {"arduino-cli": "<ver>", "esp32 core": "<core> <ver>", "M5Unified": "<ver>", "platformio": "<ver>", "esp-idf": "<ver>", "esptool": "<ver>", "mpremote": "<ver>", "uiflow2 image": "<ver>", "claude-code": "<ver>"}
   },
   "results": [
     {"check": "fact.imu.tab5@2026.04", "result": "pass", "observed": "<the probe line, e.g. the IMU's address and BMI270>", "output": "<verbatim, or a path under verification/runs/>"},

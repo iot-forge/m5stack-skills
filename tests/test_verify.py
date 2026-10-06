@@ -204,15 +204,26 @@ def unittest_line(test, module, verdict="ok"):
 
 class FakeRunner:
     """Stands in for subprocess: answers each command from canned output and records the calls."""
-    def __init__(self, validate_tests=None, query_tests=None, build=None, targets=None, claude=None):
+    def __init__(self, validate_tests=None, query_tests=None, build=None, targets=None, claude=None, tools=None):
         self.validate_tests, self.query_tests = validate_tests or {}, query_tests or {}
         self.build = build if build is not None else []
         self.targets = targets or {"check": "build.target-from-data", "result": "pass", "output": ""}
         self.claude, self.calls = claude or (lambda request, cwd: ""), []
+        self.tools = tools or {}  # what the machine has: doctor.py's `toolchains`, plus `libs` and `claude`
 
     def __call__(self, cmd, cwd=None, stdin=None):
         self.calls.append(cmd)
         text = " ".join(map(str, cmd))
+        if str(cmd[1]).endswith("doctor.py"):  # a trigger row's claude command names doctor.py too, in its grants
+            found = {k: v for k, v in self.tools.items() if k not in ("libs", "claude")}
+            return 0, json.dumps({"host": "Test 1", "toolchains": found, "ports": [], "note": None}), ""
+        if cmd[:3] == ["arduino-cli", "lib", "list"]:
+            return 0, json.dumps({"installed_libraries": [{"library": {"name": n, "version": v}}
+                                                          for n, v in self.tools.get("libs", {}).items()]}), ""
+        if cmd == ["claude", "--version"]:
+            if "claude" not in self.tools:
+                raise FileNotFoundError("claude")
+            return 0, self.tools["claude"] + "\n", ""
         if "validate.py" in text:
             return 0, "ok\n", ""
         if "unittest" in text:
@@ -228,6 +239,11 @@ class FakeRunner:
             code, out = got if isinstance(got, tuple) else (0, got)
             return code, out, ""
         raise AssertionError(f"unexpected command {cmd}")
+
+    @property
+    def trigger_runs(self):
+        """The `claude -p` calls: asking claude for its version is not a trigger run."""
+        return [c for c in self.calls if c[0] == "claude" and "-p" in c]
 
 
 ALL_PLANTED_OK = {t: "ok" for tests in verify.PLANTED.values() for t in tests}
@@ -267,6 +283,13 @@ class Offline(unittest.TestCase):
         names = {n for n in dir(verify_tests("test_validate").Planted) if n.startswith("test_")}
         mapped = set(verify.FIXTURE_GUARDS) | {t for tests in verify.PLANTED.values() for t in tests}
         self.assertEqual(names, mapped)
+
+    def test_an_offline_run_records_the_tool_versions(self):  # B43: it builds with both Arduino cores, so it names both
+        runner = FakeRunner(validate_tests={**GUARDS_OK, **ALL_PLANTED_OK}, tools=MACHINE)
+        run = verify.run_offline("test", runner=runner, skip=("build", "trigger"))["run"]
+        self.assertEqual(run["toolchains"], {
+            "arduino-cli": "1.5.2-rc.1", "esp32 core": "esp32:esp32 3.3.12 and m5stack:esp32 3.3.9", "M5Unified": "0.2.23",
+            "platformio": "6.1.19", "esp-idf": "v6.1", "esptool": "5.3.1", "mpremote": "1.24.1", "claude-code": "2.1.292"})
 
 
 def stream(*skills, answer="done"):
@@ -388,8 +411,9 @@ class Triggers(unittest.TestCase):
         runner = FakeRunner(claude=lambda request, cwd: stream())
         res = verify.run_offline("test", runner=runner, only={"trigger.neg-02", "trigger.row-17"})["results"]
         self.assertEqual(sorted(r["check"] for r in res), ["trigger.neg-02", "trigger.row-17"])
-        self.assertTrue(all(c[0] == "claude" for c in runner.calls))  # no validate, unittest or build run
-        self.assertEqual(len(runner.calls), 2 * 3)
+        self.assertFalse([c for c in runner.calls if "claude" not in c[0] and "doctor.py" not in str(c[1])
+                          and c[0] != "arduino-cli"])  # no validate, unittest or build run: only the tools are asked
+        self.assertEqual(len(runner.trigger_runs), 2 * 3)
 
     def offline_until(self, call, only, answer=LIMIT, ask=None):
         """run_offline over ONLY with a claude whose CALL-th call (1-based) exits 1 with ANSWER as its result; every
@@ -404,7 +428,7 @@ class Triggers(unittest.TestCase):
         runner, err = FakeRunner(claude=claude), io.StringIO()
         with contextlib.redirect_stderr(err):
             res = verify.run_offline("test", runner=runner, only=only, ask=ask)["results"]
-        return {r["check"]: r for r in res}, sum(1 for c in runner.calls if c[0] == "claude"), err.getvalue()
+        return {r["check"]: r for r in res}, len(runner.trigger_runs), err.getvalue()
 
     def test_account_limit_stops_the_trigger_rows(self):
         rows = [c["id"] for c in verify.read_json(REPO / "verification/checks.json")["checks"] if c["kind"] == "trigger"]
@@ -459,25 +483,103 @@ class Triggers(unittest.TestCase):
         self.assertEqual(len(rows), 21)
         self.assertEqual(res["trigger.neg-03"]["result"], "pass")
         self.assertEqual(res["trigger.row-04"]["result"], "fail")
-        self.assertEqual(sum(1 for c in runner.calls if c[0] == "claude"), 21 * 3)
+        self.assertEqual(len(runner.trigger_runs), 21 * 3)
         # section 4: without a port that exists but fails, handoff.<skill> is blocked until the hardware session
         self.assertEqual(res["handoff.platformio"]["result"], "blocked")
 
 
+# What each tool printed on the maintainer's machine (2026-10-06), in the shape `doctor.py --json` reports it; the
+# idf.py, esptool and mpremote lines are those tools' own formats
+MISSING = {"found": False, "version": None}
+MACHINE = {
+    "arduino-cli": {"found": True, "version": "arduino-cli  Version: 1.5.2-rc.1 Commit: fef6e48df Date: 2026-07-23T11:13:25Z",
+                    "cores": {"esp32:esp32": "3.3.12", "m5stack:esp32": "3.3.9"}},
+    "pio": {"found": True, "version": "PlatformIO Core, version 6.1.19"},
+    "idf.py": {"found": True, "version": "ESP-IDF v6.1", "note": None, "IDF_PATH": "C:/esp/v6.1/esp-idf"},
+    "esptool": {"found": True, "version": "v5.3.1"},
+    "mpremote": {"found": True, "version": "mpremote 1.24.1"},
+    "addr2line": {"found": False, "version": None, "decoders": []},
+    "libs": {"M5GFX": "0.2.30", "M5Unified": "0.2.23"},
+    "claude": "2.1.292 (Claude Code)",
+}
+
+
+class ToolVersions(unittest.TestCase):
+    """B43: a version is read from the tool, never typed. One test per tool's parsing."""
+    def versions(self, tools=MACHINE, **kw):
+        return verify.tool_versions(FakeRunner(tools=tools), **kw)
+
+    def test_arduino_cli(self):
+        self.assertEqual(self.versions()["arduino-cli"], "1.5.2-rc.1")
+
+    def test_platformio(self):
+        self.assertEqual(self.versions()["platformio"], "6.1.19")
+
+    def test_esp_idf(self):
+        self.assertEqual(self.versions()["esp-idf"], "v6.1")
+
+    def test_esptool(self):
+        self.assertEqual(self.versions()["esptool"], "5.3.1")
+
+    def test_mpremote(self):
+        self.assertEqual(self.versions()["mpremote"], "1.24.1")
+
+    def test_claude_code(self):
+        self.assertEqual(self.versions()["claude-code"], "2.1.292")
+
+    def test_m5unified_comes_from_the_installed_libraries(self):
+        self.assertEqual(self.versions()["M5Unified"], "0.2.23")
+
+    def test_the_esp32_core_names_every_installed_core_until_one_is_picked(self):
+        self.assertEqual(self.versions()["esp32 core"], "esp32:esp32 3.3.12 and m5stack:esp32 3.3.9")
+        picked = self.versions(pick_core=lambda cores: "m5stack:esp32")
+        self.assertEqual(picked["esp32 core"], "m5stack:esp32 3.3.9")
+
+    def test_a_single_installed_core_needs_no_pick(self):
+        tools = {**MACHINE, "arduino-cli": {**MACHINE["arduino-cli"], "cores": {"esp32:esp32": "3.3.12", "m5stack:esp32": None}}}
+        self.assertEqual(self.versions(tools, pick_core=lambda cores: self.fail("asked"))["esp32 core"], "esp32:esp32 3.3.12")
+
+    def test_a_missing_tool_is_left_out(self):
+        tools = {"arduino-cli": MISSING, "pio": MISSING, "esptool": MISSING, "mpremote": MISSING,
+                 "idf.py": {"found": False, "version": None, "note": None, "IDF_PATH": None}}
+        self.assertEqual(self.versions(tools), {})
+
+    def test_a_tool_that_gave_no_version_is_left_out(self):  # doctor.py found idf.py, but it answered with something else
+        tools = {**MACHINE, "idf.py": {"found": True, "version": None, "note": "found, but `idf.py --version` printed nothing"}}
+        self.assertNotIn("esp-idf", self.versions(tools))
+
+    def test_the_tools_keep_the_order_of_the_report(self):
+        self.assertEqual(list(self.versions()), ["arduino-cli", "esp32 core", "M5Unified", "platformio", "esp-idf", "esptool",
+                                                 "mpremote", "claude-code"])
+
+    def test_doctor_failing_leaves_only_what_the_other_tools_say(self):
+        class Broken(FakeRunner):
+            def __call__(self, cmd, cwd=None, stdin=None):
+                return (1, "", "Traceback") if str(cmd[1]).endswith("doctor.py") else super().__call__(cmd, cwd, stdin)
+        self.assertEqual(verify.tool_versions(Broken(tools=MACHINE)), {"claude-code": "2.1.292"})
+
+
 class Operator:
     """A scripted operator for run --board: answers each check's result prompt from RESULTS (default pass, or
-    observed for an open question) and records every prompt."""
-    def __init__(self, results=None):
+    observed for an open question) and records every prompt. SCRIPTED gives the answers, in order, to the prompts
+    that start with each key; after them, and for every other prompt, it answers as a careful operator would."""
+    def __init__(self, results=None, scripted=None):
         self.results, self.prompts = results or {}, []
+        self.scripted = {k: list(v) for k, v in (scripted or {}).items()}
 
     def __call__(self, prompt):
         self.prompts.append(prompt)
         if len(self.prompts) > 1000:
             raise AssertionError(f"run_board keeps asking: {prompt}")
-        if prompt.startswith("SKU"):
-            return "K010-V13"
-        if " version" in prompt:
-            return "1.0" if prompt.startswith("esptool") else ""
+        for start, answers in self.scripted.items():
+            if prompt.startswith(start) and answers:
+                return answers.pop(0)
+        if prompt.startswith("SKU"):  # the first SKU the prompt offers
+            return prompt.split("[", 1)[1].split("/")[0].split("]")[0] if "[" in prompt else "K010-V13"
+        if prompt.startswith("esp32 core"):
+            return "esp32:esp32"
+        if prompt.startswith("uiflow2 image version"):
+            return "2.5.3"
         if " result " in prompt:
             cid = prompt.split(" result ", 1)[0]
             return self.results.get(cid, "o" if cid.startswith("open-question.") else "p")
@@ -487,10 +589,10 @@ class Operator:
 
 
 class Board(unittest.TestCase):
-    def board(self, results=None):
-        self.op = Operator(results)
+    def board(self, results=None, scripted=None, tools=MACHINE):
+        self.op = Operator(results, scripted)
         with contextlib.redirect_stderr(io.StringIO()):
-            obj = verify.run_board(REV, "test", self.op)
+            obj = verify.run_board(REV, "test", self.op, runner=FakeRunner(tools=tools))
         return obj, {r["check"]: r for r in obj["results"]}
 
     def asked(self, cid):
@@ -505,12 +607,51 @@ class Board(unittest.TestCase):
         self.assertLess(order.index(f"device.esp-idf.{REV}"), order.index(f"handoff.live.{REV}"))
         self.assertLess(order.index(f"handoff.live.{REV}"), order.index(f"flash.uiflow2.{REV}"))  # UIFlow2 goes last
         self.assertEqual(obj["run"]["unit"], {"revision": REV, "sku_sticker": "K010-V13"})
-        self.assertEqual(obj["run"]["toolchains"], {"esptool": "1.0"})
+
+    def test_the_versions_are_read_not_asked(self):  # B43
+        obj, _ = self.board()
+        self.assertEqual(obj["run"]["toolchains"], {
+            "arduino-cli": "1.5.2-rc.1", "esp32 core": "esp32:esp32 3.3.12", "M5Unified": "0.2.23", "platformio": "6.1.19",
+            "esp-idf": "v6.1", "esptool": "5.3.1", "mpremote": "1.24.1", "uiflow2 image": "2.5.3", "claude-code": "2.1.292"})
+        # the UIFlow2 image is no tool on the host, so its version is the one that is still asked for
+        self.assertEqual([p for p in self.op.prompts if "version" in p], ["uiflow2 image version (blank if not flashed): "])
+
+    def test_the_operator_picks_the_core_from_the_installed_ones(self):
+        obj, _ = self.board(scripted={"esp32 core": ["3.3.9", "m5stack", "M5Stack:ESP32"]})
+        asked = [p for p in self.op.prompts if p.startswith("esp32 core")]
+        self.assertEqual(asked, ["esp32 core the run flashes with [esp32:esp32/m5stack:esp32]: "] * 3)
+        self.assertEqual(obj["run"]["toolchains"]["esp32 core"], "m5stack:esp32 3.3.9")
+
+    def test_one_installed_core_is_not_asked_about(self):
+        one = {**MACHINE, "arduino-cli": {**MACHINE["arduino-cli"], "cores": {"esp32:esp32": None, "m5stack:esp32": "3.3.9"}}}
+        obj, _ = self.board(tools=one)
+        self.assertEqual(obj["run"]["toolchains"]["esp32 core"], "m5stack:esp32 3.3.9")
+        self.assertFalse([p for p in self.op.prompts if p.startswith("esp32 core")])
+
+    def test_a_uiflow2_image_version_must_be_a_version_or_blank(self):
+        obj, _ = self.board(scripted={"uiflow2 image version": ["latest", ""]})
+        self.assertEqual(sum(p.startswith("uiflow2 image version") for p in self.op.prompts), 2)
+        self.assertNotIn("uiflow2 image", obj["run"]["toolchains"])
+
+    def test_the_sku_is_one_of_the_revisions_in_data(self):  # the Tab5 run of 2026-10-04 took `1111`
+        obj, _ = self.board(scripted={"SKU": ["1111", "K010", " k010-v13 "]})
+        self.assertEqual([p for p in self.op.prompts if p.startswith("SKU")], ["SKU on the unit's sticker [K010-V13]: "] * 3)
+        self.assertEqual(obj["run"]["unit"], {"revision": REV, "sku_sticker": "K010-V13"})
 
     def test_observations_are_recorded(self):
         _, res = self.board()
         self.assertEqual(res[f"fact.pmic.{REV}"], {"check": f"fact.pmic.{REV}", "result": "pass", "observed": f"saw fact.pmic.{REV}"})
         self.assertEqual(res[f"open-question.auto-download.{REV}"]["result"], "observed")
+
+    def test_an_observation_says_what_was_seen_not_how_it_went(self):  # the Tab5 run of 2026-10-04 took `good`
+        cid = f"fact.pmic.{REV}"
+        _, res = self.board(scripted={f"{cid} observed": ["p", "good", "Pass", "AXP2101 answers at 0x34"]})
+        self.assertEqual(sum(p.startswith(f"{cid} observed") for p in self.op.prompts), 4)
+        self.assertEqual(res[cid]["observed"], "AXP2101 answers at 0x34")
+
+    def test_a_one_word_observation_is_taken(self):  # a nonce, a part name
+        _, res = self.board(scripted={f"device.arduino.{REV} observed": ["7F3A"], f"fact.imu.{REV} observed": ["BMI270"]})
+        self.assertEqual((res[f"device.arduino.{REV}"]["observed"], res[f"fact.imu.{REV}"]["observed"]), ("7F3A", "BMI270"))
 
     def test_a_failure_blocks_its_dependants_without_asking(self):
         _, res = self.board({f"flash.arduino.{REV}": "f"})
@@ -603,7 +744,7 @@ class MadeUpBoard(unittest.TestCase):
         (self.tmp / "verification/checks.json").write_text(json.dumps(obj), encoding="utf-8")
         self.op, err = Operator(results), io.StringIO()
         with contextlib.redirect_stderr(err):
-            run = verify.run_board(self.FAKE, "test", self.op, root=self.tmp)
+            run = verify.run_board(self.FAKE, "test", self.op, root=self.tmp, runner=FakeRunner())
         return run, {r["check"].removesuffix(f".{self.FAKE}"): r for r in run["results"]}, err.getvalue()
 
     def checks(self):
@@ -646,6 +787,11 @@ class MadeUpBoard(unittest.TestCase):
         self.assertNotIn(f"host.port.{self.FAKE}", str(e.exception.code))
         self.assertEqual(self.op.prompts, [])  # refused before the operator is asked anything
 
+    def test_a_revision_data_gives_no_sku_for_takes_what_the_sticker_says(self):
+        run, _, _ = self.board(self.checks())
+        self.assertEqual(run["run"]["unit"]["sku_sticker"], "K010-V13")
+        self.assertIn("SKU on the unit's sticker: ", self.op.prompts)
+
     def test_a_check_whose_step_is_not_in_board_steps_is_refused_by_name(self):
         with self.assertRaises(SystemExit) as e:
             self.board(self.checks() + [("fact.imu", {"step": "nowhere"})])
@@ -670,6 +816,15 @@ class WriteRun(unittest.TestCase):
         self.assertEqual([r["check"] for r in merged["results"]], ["data.validate", "trigger.row-10", "fact.pmic.core2@v1.3"])
         self.assertEqual(merged["run"]["unit"], board["run"]["unit"])
         self.assertEqual(merged["run"]["toolchains"], {"esptool": "4.8.1"})
+
+    def test_an_offline_rerun_keeps_what_the_board_run_recorded(self):  # B43: the core the unit was flashed with
+        board = run_file([], toolchains={"esp32 core": "esp32:esp32 3.3.12", "esptool": "5.3.1"})
+        offline = run_file([], unit=None, toolchains={"esp32 core": "esp32:esp32 3.3.12 and m5stack:esp32 3.3.9", "platformio": "6.1.19"})
+        verify.write_run(board, self.tmp)
+        merged = verify.read_json(verify.write_run(offline, self.tmp))["run"]["toolchains"]
+        self.assertEqual(merged, {"esp32 core": "esp32:esp32 3.3.12", "esptool": "5.3.1", "platformio": "6.1.19"})
+        verify.write_run(run_file([], toolchains={"esp32 core": "m5stack:esp32 3.3.9"}), self.tmp)  # a second board run
+        self.assertEqual(verify.read_json(self.tmp / f"{DATE}.json")["run"]["toolchains"]["esp32 core"], "m5stack:esp32 3.3.9")
 
     def test_an_unnamed_rerun_keeps_the_recorded_operator(self):
         named = run_file([], unit=None)
@@ -859,7 +1014,7 @@ class Tab5Run(RepoCopy):  # B42: the release bar's unit, run in Arduino and ESP-
     def board(self, results=None):
         self.op = Operator(results)
         with contextlib.redirect_stderr(io.StringIO()):
-            obj = verify.run_board(TAB5, "test", self.op)
+            obj = verify.run_board(TAB5, "test", self.op, runner=FakeRunner(tools=MACHINE))
         return obj, {r["check"]: r for r in obj["results"]}
 
     def test_the_tab5_is_the_release_unit(self):
@@ -885,6 +1040,10 @@ class Tab5Run(RepoCopy):  # B42: the release bar's unit, run in Arduino and ESP-
             "open-question.manual-download": "host.port", "handoff.live": "host.port"})
         steps = [p for p in self.op.prompts if p.startswith("Step ")]
         self.assertEqual(len(steps), 1)  # only the erase step asks "done?"; no PlatformIO, esp-bsp or UIFlow2 step is shown
+        self.assertEqual(obj["run"]["unit"]["sku_sticker"], "C145")
+        self.assertIn("SKU on the unit's sticker [C145/K145]: ", self.op.prompts)
+        self.assertNotIn("uiflow2 image", obj["run"]["toolchains"])  # no UIFlow2 step, so no image to ask about
+        self.assertFalse([p for p in self.op.prompts if "version" in p])
 
     def test_only_a_skill_with_a_check_on_the_unit_gains_the_revision(self):
         # PlatformIO and UIFlow2 are not flashed on a Tab5: a run that passes everything else says nothing about them
