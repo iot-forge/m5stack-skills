@@ -241,7 +241,7 @@ The same session with fewer steps: no PlatformIO, esp-bsp or UIFlow2 step (secti
 
 **`fact` checks.** Each one compares a probe line of the Arduino smoke program with what `data/` says for `tab5@2026.04`. The three Tab5 revisions differ only in the display and touch parts, so only `fact.touch.tab5@2026.04` can reject a sibling; the others confirm a part every Tab5 carries:
 
-- `fact.touch.tab5@2026.04`: the touch part's firmware-version byte, read at the ST parts' address, is the ST7121's. The ST7123's value means the unit is a `tab5@2025.10`; no answer there means a GT911, a `tab5@2025.05`. The values are M5GFX's, with no datasheet behind them (a `datasheet_gap`, so the line carries the raw value). The first Tab5 run, on 2026-10-04, scanned for the two addresses instead and failed: an ST7121 unit answers at the GT911's address too.
+- `fact.touch.tab5@2026.04`: the touch part's firmware-version byte, read at the ST parts' address, is the ST7121's. The ST7123's value means the unit is a `tab5@2025.10`; no answer there means a GT911, a `tab5@2025.05`. The values are M5GFX's, with no datasheet behind them (the ST7123's still carries a `datasheet_gap`; the line carries the raw value). The first Tab5 run, on 2026-10-04, scanned for the two addresses instead and failed: an ST7121 unit answers at the GT911's address too.
 - `fact.imu.tab5@2026.04`: the IMU is a BMI270.
 - `fact.ina226.tab5@2026.04`: the power monitor's identification register reads as an INA226.
 - `fact.expander-1.tab5@2026.04` and `fact.expander-2.tab5@2026.04`: each I/O expander's identification register reads as a PI4IOE5V6408. The program probes after `M5.begin()`; a `present raw` value with the reset flag set means it probed before.
