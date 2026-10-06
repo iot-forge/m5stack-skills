@@ -1,6 +1,6 @@
 # B43 · Make verify.py read the tool versions itself
 
-Status: open
+Status: in-progress
 Blocked by: —
 Gate: none
 
