@@ -496,8 +496,10 @@ class Triggers(unittest.TestCase):
         self.assertEqual(res["handoff.platformio"]["result"], "blocked")
 
 
-# What each tool printed on the maintainer's machine (2026-10-06), in the shape `doctor.py --json` reports it; the
-# idf.py, esptool and mpremote lines are those tools' own formats
+# A machine with every tool, in the shape `doctor.py --json` reports it. The arduino-cli, pio, library and claude
+# values are what the tools printed on the maintainer's machine (2026-10-06). doctor.py found no idf.py, esptool or
+# mpremote from that shell, so those three are not captures: the idf.py and esptool values are the shape doctor.py's
+# own regexes give, and the mpremote line is from memory of `mpremote version`
 MISSING = {"found": False, "version": None}
 MACHINE = {
     "arduino-cli": {"found": True, "version": "arduino-cli  Version: 1.5.2-rc.1 Commit: fef6e48df Date: 2026-07-23T11:13:25Z",

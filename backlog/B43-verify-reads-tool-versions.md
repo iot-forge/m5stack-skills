@@ -1,6 +1,6 @@
 # B43 · Make verify.py read the tool versions itself
 
-Status: in-progress
+Status: done
 Blocked by: —
 Gate: none
 
@@ -29,10 +29,10 @@ Gate: none
 
 ## Definition of done
 
-- [ ] `verify.py run --board` and `run --offline` record tool versions without asking for them, with a test for each tool's parsing
-- [ ] The SKU and `observed` prompts reject the two answers above, with tests
-- [ ] `VERIFICATION.md` says where the versions come from
-- [ ] `uv run scripts/check.py` exits 0
+- [x] `verify.py run --board` and `run --offline` record tool versions without asking for them, with a test for each tool's parsing
+- [x] The SKU and `observed` prompts reject the two answers above, with tests
+- [x] `VERIFICATION.md` says where the versions come from
+- [x] `uv run scripts/check.py` exits 0
 
 ## Stopping rule
 
@@ -42,8 +42,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: claim the issue
-- **Files touched**: none
-- **Last commit**: none
-- **Open questions**: none
+- **Done**: all. Both runs record the tool versions unasked (`ToolVersions`, one test a tool, and the `Offline` and `Board` tests); the SKU prompt takes only a SKU `data/` gives the revision and the `observed` prompt asks again after a result letter or a bare verdict (`Board`); `VERIFICATION.md` section 6 says where the versions come from; `uv run scripts/check.py` exits 0
+- **Next**: nothing
+- **Files touched**: `scripts/verify.py`, `tests/test_verify.py`, `VERIFICATION.md`, this issue, `backlog/README.md`
+- **Last commit**: Close B43: verify.py reads the tool versions itself
+- **Open questions**: one, for the maintainer. On the maintainer's machine `doctor.py` finds no `esptool` on `PATH` (the Arduino core and PlatformIO each bundle one) and finds `idf.py` only from a shell with the ESP-IDF environment active. A board run from a plain shell now records neither, where the run of 2026-10-04 had `esptool 5.3.1` and `esp-idf v6.1` typed in, and the next `ingest` would then cut `flashing-and-debugging`'s `tested-with` down to `claude-code`. Should `doctor.py` also look for the esptool a toolchain bundles, as it does for addr2line (B34)? That would be a new issue. Until it is settled, start a board run from the ESP-IDF shell with an esptool on `PATH`. Three choices made here are worth a look as well: the `observed` prompt also asks again after `pass`, `fail`, `good`, `bad`, `ok`, `okay` and `fine`, since the Job names a result letter and the Definition of done names `good`; an offline run names every installed Arduino core, because it flashes nothing; and an offline run written after a board run on the same day keeps the board run's `esp32 core`
