@@ -30,6 +30,8 @@ Steps:
    - *The run's `esptool`*: a copy on PATH wins, because it is the one a typed `esptool` command runs. With none on PATH, it is the copy bundled with the Arduino core the run flashes with (the single installed core, or the one `pick_core` chose), because the upload uses it. With no such copy, it is the version every found copy agrees on. Copies that differ with nothing to choose between them record no `esptool`; `verify.py` never guesses.
    - *The skill step*: it uses a copy that is found but not on PATH, by the full path `doctor.py` prints, and stops only when `doctor.py` finds no copy anywhere.
 
+   Kept by the maintainer on 2026-10-06, after it was built: the skill step chooses a version 5 copy when one is listed, because the skill's commands follow esptool v5's spelling.
+
    Added while building, and not asked of the maintainer:
    - A copy that gave no version is never stood in for by another copy: a copy on PATH, or the flashing core's copy, that did not answer records no `esptool`, and so does any unread copy when the rule falls back to what the copies agree on.
    - PlatformIO's copy is a script that needs PlatformIO's Python, so `doctor.py` reads its version from the package and prints the command that runs it (`pio pkg exec -p tool-esptoolpy -- esptool.py`).
