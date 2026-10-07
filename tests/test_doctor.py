@@ -205,5 +205,153 @@ class Addr2line(unittest.TestCase):
         self.assertIn(f"{doctor.DECODERS[0]} (platformio): {planted[0]}", report)
 
 
+class Esptool(unittest.TestCase):
+    """B45: each toolchain bundles an esptool in a folder that is not on PATH. Each test plants a toolchain's folders
+    under a stand-in home; nothing is on the stand-in PATH unless said, and no planted copy is ever started."""
+    EXE, BIN = f"esptool{doctor.EXE}", doctor.VENV_BIN
+
+    def setUp(self):
+        self.home = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.home, ignore_errors=True)
+
+    def plant(self, file, text=""):
+        file.parent.mkdir(parents=True, exist_ok=True)
+        file.write_text(text, encoding="utf-8")
+        return str(file)
+
+    def find(self, system="Linux", env=None, which=lambda name: None, eim=None):
+        with mock.patch.object(doctor, "EIM_TOOLS", eim or self.home / "no-eim"):
+            return doctor.find_esptools(which=which, home=self.home, env=env or {}, system=system)
+
+    def answers(self, versions):
+        """A stand-in for doctor.run: each path in VERSIONS answers `version` as esptool v5 does; the calls are kept."""
+        self.ran = []
+
+        def run(cmd):
+            self.ran.append(cmd)
+            return (True, f"esptool v{versions[cmd[0]]}\n{versions[cmd[0]]}") if cmd[0] in versions else (False, None)
+        return run
+
+    def test_no_copy_is_missing(self):
+        self.assertEqual(self.find(), [])
+        with mock.patch.object(doctor, "find_esptools", return_value=[]):
+            item = doctor.esptool()
+        self.assertEqual(item, {"found": False, "version": None, "copies": []})
+        self.assertIn("MISSING", doctor.tool_line("esptool", item))
+
+    def test_arduino_layout_per_host(self):  # the esp32 and m5stack cores each bundle a copy, of different versions
+        local = self.home / "AppData/Local"
+        for system, data in (("Windows", local / "Arduino15"), ("Darwin", self.home / "Library/Arduino15"), ("Linux", self.home / ".arduino15")):
+            planted = [self.plant(data / f"packages/{package}/tools/esptool_py/{v}/{self.EXE}") for package, v in (("esp32", "5.3.1"), ("m5stack", "5.3.0"))]
+            self.assertEqual(self.find(system, env={"LOCALAPPDATA": str(local)}),
+                             [{"path": p, "where": "arduino", "package": package} for p, package in zip(planted, ("esp32", "m5stack"))], system)
+            shutil.rmtree(data)
+
+    def test_platformio_layout(self):  # a Python package: the script, not an executable
+        packages = self.home / "pio-core/packages"
+        planted = [self.plant(packages / f"{pkg}/esptool.py") for pkg in ("tool-esptoolpy", "tool-esptoolpy@1.40501.0")]
+        self.assertEqual(self.find(), [])
+        found = self.find(env={"PLATFORMIO_CORE_DIR": str(self.home / "pio-core")})
+        self.assertEqual(found, [{"path": p, "where": "platformio"} for p in planted])
+
+    def test_esp_idf_layout_in_the_python_environment_of_install_sh(self):
+        planted = self.plant(self.home / f".espressif/python_env/idf6.1_py3.11_env/{self.BIN}/{self.EXE}")
+        self.assertEqual(self.find(), [{"path": planted, "where": "esp-idf"}])
+
+    def test_esp_idf_layout_under_idf_tools_path(self):
+        self.plant(self.home / f".espressif/python_env/idf5.5_py3.11_env/{self.BIN}/{self.EXE}")
+        planted = self.plant(self.home / f"idf-tools/python_env/idf6.1_py3.11_env/{self.BIN}/{self.EXE}")
+        self.assertEqual([c["path"] for c in self.find(env={"IDF_TOOLS_PATH": str(self.home / "idf-tools")})], [planted])
+
+    def test_esp_idf_layout_from_the_eim_installer(self):
+        eim = self.home / "Espressif/tools"
+        planted = self.plant(eim / f"python/v6.1/venv/{self.BIN}/{self.EXE}")
+        self.assertEqual(self.find("Windows", eim=eim), [{"path": planted, "where": "esp-idf"}])
+        self.assertEqual(self.find("Linux", eim=eim), [])
+        found = self.find("Windows", env={"IDF_TOOLS_PATH": str(eim)}, eim=eim)
+        self.assertEqual([c["path"] for c in found], [planted], "one folder reached two ways is listed once")
+
+    def test_esp_idf_layout_in_the_active_environment(self):
+        planted = self.plant(self.home / f"some-venv/{self.BIN}/{self.EXE}")
+        found = self.find(env={"IDF_PYTHON_ENV_PATH": str(self.home / "some-venv")})
+        self.assertEqual(found, [{"path": planted, "where": "esp-idf"}])
+
+    def test_esptool_v4_in_an_environment_is_esptool_py(self):
+        planted = self.plant(self.home / f".espressif/python_env/idf5.1_py3.11_env/{self.BIN}/esptool.py")
+        self.assertEqual([c["path"] for c in self.find()], [planted])
+
+    def test_path_comes_first_and_is_listed_once(self):
+        active = self.plant(self.home / f".espressif/python_env/idf6.1_py3.11_env/{self.BIN}/{self.EXE}")
+        arduino = self.plant(self.home / f".arduino15/packages/esp32/tools/esptool_py/5.3.1/{self.EXE}")
+        found = self.find(which={"esptool": active}.get)
+        self.assertEqual(found, [{"path": active, "where": "PATH"}, {"path": arduino, "where": "arduino", "package": "esp32"}])
+
+    def test_esptool_py_on_the_path_is_the_fallback(self):
+        self.assertEqual(self.find(which={"esptool.py": "/usr/bin/esptool.py"}.get), [{"path": "/usr/bin/esptool.py", "where": "PATH"}])
+
+    def test_a_folder_that_cannot_be_read_is_not_an_error(self):
+        self.plant(self.home / ".platformio/packages/tool-esptoolpy/esptool.py")
+        planted = self.plant(self.home / f".espressif/python_env/idf6.1_py3.11_env/{self.BIN}/{self.EXE}")
+        is_file = Path.is_file
+
+        def denied_in_platformio(path):
+            if ".platformio" in path.parts:
+                raise PermissionError("denied")
+            return is_file(path)
+        with mock.patch.object(Path, "is_file", denied_in_platformio):
+            self.assertEqual([c["path"] for c in self.find()], [planted])
+
+    def test_a_copy_is_asked_for_its_version(self):
+        run = self.answers({"/a/esptool": "5.3.1"})
+        self.assertEqual(doctor.esptool_version({"path": "/a/esptool", "where": "arduino", "package": "esp32"}, run), "v5.3.1")
+        self.assertEqual(self.ran, [["/a/esptool", "version"]])
+        self.assertIsNone(doctor.esptool_version({"path": "/gone/esptool", "where": "esp-idf"}, run))
+
+    def test_a_copy_that_does_not_answer_has_no_version(self):
+        run = lambda cmd: (True, doctor.NoAnswer("found at /a/esptool, but it did not answer: TimeoutExpired"))
+        self.assertIsNone(doctor.esptool_version({"path": "/a/esptool", "where": "PATH"}, run))
+
+    def test_the_platformio_version_is_read_from_the_package_not_by_running_it(self):  # it needs PlatformIO's Python
+        package = self.home / ".platformio/packages/tool-esptoolpy"
+        script = self.plant(package / "esptool.py")
+        copy = {"path": script, "where": "platformio"}
+        run = self.answers({})
+        self.assertIsNone(doctor.esptool_version(copy, run))
+        self.plant(package / "esptool/__init__.py", 'import sys\n\n__version__ = "4.11.0"\n')
+        self.assertEqual(doctor.esptool_version(copy, run), "v4.11.0")
+        self.assertEqual(self.ran, [])
+
+    def test_the_report_lists_each_copy_with_its_path_and_version(self):
+        arduino = [self.plant(self.home / f".arduino15/packages/{p}/tools/esptool_py/{v}/{self.EXE}") for p, v in (("esp32", "5.3.1"), ("m5stack", "5.3.0"))]
+        pio = self.plant(self.home / ".platformio/packages/tool-esptoolpy/esptool.py")
+        self.plant(self.home / ".platformio/packages/tool-esptoolpy/esptool/__init__.py", '__version__ = "4.11.0"\n')
+        with mock.patch.object(doctor, "find_esptools", return_value=self.find()), \
+                mock.patch.object(doctor, "run", self.answers(dict(zip(arduino, ("5.3.1", "5.3.0"))))):
+            item = doctor.esptool()
+        self.assertEqual(item, {"found": True, "version": None, "copies": [
+            {"path": arduino[0], "where": "arduino", "package": "esp32", "version": "v5.3.1"},
+            {"path": arduino[1], "where": "arduino", "package": "m5stack", "version": "v5.3.0"},
+            {"path": pio, "where": "platformio", "version": "v4.11.0"}]})
+        report = doctor.tool_line("esptool", item).splitlines()
+        self.assertNotIn("MISSING", report[0])
+        self.assertIn("not on PATH", report[0])
+        self.assertEqual(report[1:3], [f"    v5.3.1 (arduino, esp32 core): {arduino[0]}", f"    v5.3.0 (arduino, m5stack core): {arduino[1]}"])
+        self.assertTrue(report[3].startswith("    v4.11.0 (platformio"), report[3])
+        self.assertIn("pio pkg exec -p tool-esptoolpy -- esptool.py", report[3])
+        self.assertTrue(report[3].endswith(f": {pio}"), report[3])
+
+    def test_the_copy_on_path_gives_the_version(self):
+        active = self.plant(self.home / f".espressif/python_env/idf6.1_py3.11_env/{self.BIN}/{self.EXE}")
+        with mock.patch.object(doctor, "find_esptools", return_value=self.find(which={"esptool": active}.get)), \
+                mock.patch.object(doctor, "run", self.answers({active: "5.3.1"})):
+            item = doctor.esptool()
+        self.assertEqual((item["found"], item["version"]), (True, "v5.3.1"))
+        self.assertEqual(doctor.tool_line("esptool", item).splitlines(), ["  esptool: v5.3.1", f"    v5.3.1 (PATH): {active}"])
+
+    def test_a_copy_with_no_version_is_still_listed(self):
+        item = {"found": True, "version": None, "copies": [{"path": "/a/esptool", "where": "esp-idf", "version": None}]}
+        self.assertEqual(doctor.tool_line("esptool", item).splitlines()[1], "    version not read (esp-idf): /a/esptool")
+
+
 if __name__ == "__main__":
     unittest.main()

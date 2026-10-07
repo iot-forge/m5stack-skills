@@ -18,13 +18,17 @@ On the maintainer's machine (Windows 11, 2026-10-06) there is no esptool on PATH
 
 - Arduino: `%LOCALAPPDATA%/Arduino15/packages/esp32/tools/esptool_py/5.3.1/esptool.exe` and `packages/m5stack/tools/esptool_py/5.3.0/esptool.exe`. The two cores bundle different versions.
 - PlatformIO: `~/.platformio/packages/tool-esptoolpy/`, a Python package, not an executable.
-- ESP-IDF: `C:/Espressif/tools` has no esptool folder; ESP-IDF's esptool lives in its Python environment. Find where before writing the search.
+- ESP-IDF: `C:/Espressif/tools` has no esptool folder; ESP-IDF's esptool lives in its Python environment. Find where before writing the search. Found on 2026-10-06: `C:/Espressif/tools/python/v6.1/venv/Scripts/esptool.exe`, the folder EIM's profile sets `IDF_PYTHON_ENV_PATH` to.
 
 Steps:
 
 1. Settle two things with the maintainer before writing code, and record the answers here:
    - Which copy is the run's `esptool` when several are found and they differ. A board run already asks which Arduino core it flashes with (`tool_versions`' `pick_core`), and the upload uses that core's copy; `esptool chip-id` and `erase-flash` in section 6 are typed by the operator and may use another.
    - What step 1 of "Flash a .bin with esptool" in `skills/flashing-and-debugging/SKILL.md` does with a copy that is found but not on PATH. Today it reads `doctor.py`'s `esptool` line and stops when it says MISSING.
+
+   **Settled on 2026-10-06.** The session proposed both answers and the maintainer accepted them ("take b45 and go"):
+   - *The run's `esptool`*: a copy on PATH wins, because it is the one a typed `esptool` command runs. With none on PATH, it is the copy bundled with the Arduino core the run flashes with (the single installed core, or the one `pick_core` chose), because the upload uses it. With no such copy, it is the version every found copy agrees on. Copies that differ with nothing to choose between them record no `esptool`; `verify.py` never guesses.
+   - *The skill step*: it uses a copy that is found but not on PATH, by the full path `doctor.py` prints, and stops only when `doctor.py` finds no copy anywhere.
 2. Make `doctor.py` look, after PATH, in the toolchain folders, the way `find_decoders` does for addr2line ([B34](B34-doctor-addr2line-toolchain-folders.md)): the same roots (`decoder_dirs`), each copy listed with its path, where it was found and its version, in the text and `--json` output. Write it test-first in `tests/test_doctor.py`, with a stand-in home tree per layout.
 3. Make `verify.py`'s `tool_versions` record the `esptool` version step 1 settled, with tests in `tests/test_verify.py` (`ToolVersions`). The `esptool` value in that file's `MACHINE` is an assumed shape; replace it with what `doctor.py` prints on the maintainer's machine.
 4. Update the skill step and `VERIFICATION.md` section 6 ("Where the versions come from") to match.
@@ -43,7 +47,7 @@ Out of scope: `idf.py`. `doctor.py` finds it only from a shell with the ESP-IDF 
 
 ## Definition of done
 
-- [ ] Step 1's two answers are recorded in this issue
+- [x] Step 1's two answers are recorded in this issue
 - [ ] `doctor.py` lists each bundled esptool with its path and version; a test covers each layout it searches and the not-found case
 - [ ] `verify.py run --board` on a machine with no esptool on PATH records the `esptool` version step 1 settled, with a test
 - [ ] The skill step and `VERIFICATION.md` say what the code does

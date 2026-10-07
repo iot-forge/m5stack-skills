@@ -348,12 +348,25 @@ def tool_output(runner, cmd):
     return out if code == 0 else ""
 
 
+def run_esptool(item, cores):
+    """The version of the run's esptool, from doctor.py's `esptool` ITEM and the run's Arduino CORES; None when
+    nothing settles it. The copy on PATH wins: a typed `esptool` runs it. Without one, it is the copy bundled with
+    the one core the run flashes with, which the upload uses. Without that, it is the version every copy that gave
+    one agrees on. Copies that differ are never guessed between."""
+    number = lambda text: m.group(0) if (m := re.search(r"\d+\.\d+\S*", text or "")) else None
+    copies = [c for c in item.get("copies", []) if number(c.get("version"))]
+    package = next(iter(cores)).split(":")[0] if len(cores) == 1 else None
+    mine = [c for c in copies if c.get("where") == "arduino" and c.get("package") == package]
+    versions = {number(c["version"]) for c in mine or copies}
+    return number(item.get("version")) or (versions.pop() if len(versions) == 1 else None)
+
+
 def tool_versions(runner=sh, pick_core=None):
     """The run's `toolchains`: each tool's version as the tool itself reports it, in TOOLCHAINS order. A tool that is
     missing, or that gave no version, is left out. doctor.py finds the tools and asks most of them; arduino-cli and
     claude are asked here for what doctor.py does not report. `esp32 core` names every installed Arduino core;
     PICK_CORE({core: version}) -> the core a run flashed with, asked only when more than one is installed.
-    The UIFlow2 image is not a tool on the host: run_board asks for it."""
+    `esptool` follows that core (run_esptool). The UIFlow2 image is not a tool on the host: run_board asks for it."""
     try:
         found = json.loads(tool_output(runner, [sys.executable, str(ROOT / "scripts/doctor.py"), "--json"]))["toolchains"]
     except (json.JSONDecodeError, KeyError, TypeError):
@@ -364,6 +377,7 @@ def tool_versions(runner=sh, pick_core=None):
         # the number in the tool's line; ESP-IDF's keeps its `v`, as `idf.py --version` spells it
         if m := re.search(r"v\d+\.\d+\S*" if name == "esp-idf" else r"\d+\.\d+\S*", text):
             seen[name] = m.group(0)
+    cores = {}
     if found.get("arduino-cli", {}).get("found"):
         cores = {c: v for c, v in found["arduino-cli"].get("cores", {}).items() if v}
         if len(cores) > 1 and pick_core:
@@ -375,6 +389,8 @@ def tool_versions(runner=sh, pick_core=None):
             seen["M5Unified"] = next(x["library"]["version"] for x in libs if x["library"]["name"] == "M5Unified")
         except (json.JSONDecodeError, KeyError, TypeError, StopIteration):
             pass
+    if version := run_esptool(found.get("esptool", {}), cores):
+        seen["esptool"] = version
     if m := re.search(r"\d+\.\d+\S*", tool_output(runner, ["claude", "--version"])):
         seen["claude-code"] = m.group(0)
     return {t: seen[t] for t in TOOLCHAINS if t in seen}

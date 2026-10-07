@@ -13,6 +13,7 @@ Exit 0 always: a missing tool is a finding, not an error. `uv` itself cannot be 
 here (this script runs under it); the README lists it as a prerequisite.
 """
 import argparse, json, os, platform, re, shutil, subprocess, sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 TIMEOUT = 20  # seconds; `pio --version` can take ~10 s on its first run while it bootstraps
@@ -97,23 +98,31 @@ def idf_py():
     return {**idf_version(find_idf()), "IDF_PATH": os.environ.get("IDF_PATH")}
 
 
-def decoder_dirs(home, env, system):
-    """(toolchain, folder) for each folder a toolchain keeps its addr2line in; the toolchains leave them off PATH."""
-    # Arduino: arduino-cli's data folder, then the core's toolchain package (the esp32 and m5stack cores each carry one)
+def toolchain_homes(home, env, system):
+    """(arduino, platformio, esp_idf, idf_tools): where each toolchain keeps what it installs. arduino-cli's data
+    folder, PlatformIO's core folder, ESP-IDF's tools home, and the folders ESP-IDF's tools may be in."""
     arduino = Path(env.get("ARDUINO_DIRECTORIES_DATA") or {
         "Windows": Path(env.get("LOCALAPPDATA") or home / "AppData/Local") / "Arduino15",
         "Darwin": home / "Library/Arduino15"}.get(system, home / ".arduino15"))
-    # (esp-x32 for the Xtensa parts, esp-rv32 for the RISC-V ones)
+    pio = Path(env.get("PLATFORMIO_CORE_DIR") or home / ".platformio")
+    # ESP-IDF: install.sh puts the tools in $IDF_TOOLS_PATH/tools (~/.espressif by default); EIM sets IDF_TOOLS_PATH to the tools folder itself
+    set_ = env.get("IDF_TOOLS_PATH")
+    idf = Path(set_) if set_ else home / ".espressif"
+    roots = [idf / "tools", idf] if set_ else [idf / "tools"]
+    if system == "Windows":
+        roots.append(EIM_TOOLS)
+    return arduino, pio, idf, roots
+
+
+def decoder_dirs(home, env, system):
+    """(toolchain, folder) for each folder a toolchain keeps its addr2line in; the toolchains leave them off PATH."""
+    arduino, pio, _, roots = toolchain_homes(home, env, system)
+    # Arduino: the core's toolchain package (the esp32 and m5stack cores each carry one;
+    # esp-x32 for the Xtensa parts, esp-rv32 for the RISC-V ones)
     dirs = [("arduino", d) for tools in ("esp-x32", "esp-rv32") for d in sorted(arduino.glob(f"packages/*/tools/{tools}/*/bin"))]
     # PlatformIO: one package per chip (toolchain-xtensa-esp32, -esp32s3) and one for RISC-V (toolchain-riscv32-esp),
     # with `@<version>` on an extra copy
-    pio = Path(env.get("PLATFORMIO_CORE_DIR") or home / ".platformio")
     dirs += [("platformio", d) for pkg in ("toolchain-xtensa-esp32*", "toolchain-riscv32-esp*") for d in sorted(pio.glob(f"packages/{pkg}/bin"))]
-    # ESP-IDF: install.sh puts the tools in $IDF_TOOLS_PATH/tools (~/.espressif by default); EIM sets IDF_TOOLS_PATH to the tools folder itself
-    set_ = env.get("IDF_TOOLS_PATH")
-    roots = [Path(set_) / "tools", Path(set_)] if set_ else [home / ".espressif/tools"]
-    if system == "Windows":
-        roots.append(EIM_TOOLS)
     return dirs + [("esp-idf", d) for arch in ("xtensa-esp-elf", "riscv32-esp-elf") for root in roots
                    for d in sorted(root.glob(f"{arch}/*/{arch}/bin"))]
 
@@ -151,10 +160,88 @@ def addr2line():
     return {"found": bool(decoders), "version": None, "decoders": decoders}
 
 
+def esptool_files(home, env, system):
+    """(copy, file) for each place a toolchain keeps its esptool; the toolchains leave them off PATH. `copy` is the
+    entry's `where`, and for Arduino the `package` whose core uploads with that copy."""
+    arduino, pio, idf, roots = toolchain_homes(home, env, system)
+    # Arduino: one copy per core package; the esp32 and m5stack cores bundle different versions
+    files = [({"where": "arduino", "package": f.parts[-5]}, f) for f in sorted(arduino.glob(f"packages/*/tools/esptool_py/*/esptool{EXE}"))]
+    # PlatformIO: a Python package with the script on top, and `@<version>` on an extra copy
+    files += [({"where": "platformio"}, f) for f in sorted(pio.glob("packages/tool-esptoolpy*/esptool.py"))]
+    # ESP-IDF: in its Python environment. The active one, then install.sh's (python_env/idf<ver>_py<ver>_env) and
+    # EIM's (tools/python/<ver>/venv). esptool v4 installs as esptool.py
+    active = env.get("IDF_PYTHON_ENV_PATH")
+    envs = ([Path(active)] if active else []) + sorted(idf.glob("python_env/*")) + [d for root in roots for d in sorted(root.glob("python/*/venv"))]
+    return files + [({"where": "esp-idf"}, e / VENV_BIN / n) for e in envs for n in (f"esptool{EXE}", "esptool.py")]
+
+
+def find_esptools(which=shutil.which, home=None, env=None, system=None):
+    """Every esptool found, as {path, where} (and `package` for an Arduino core's): the one on PATH first, then each
+    toolchain's own copy. Each file is listed once, under the first place it was found, and an environment that has
+    both spellings is listed under `esptool`. Never raises: a folder that cannot be read holds nothing."""
+    env, system = os.environ if env is None else env, system or platform.system()
+    found, seen = [], set()
+
+    def add(copy, path):
+        real = os.path.normcase(os.path.realpath(path))
+        if real not in seen:
+            seen.add(real)
+            found.append({"path": str(path), **copy})
+    if p := which("esptool") or which("esptool.py"):
+        add({"where": "PATH"}, p)
+    try:
+        files = esptool_files(home or Path.home(), env, system)
+    except (OSError, RuntimeError):  # RuntimeError: no home folder could be worked out
+        files = []
+    envs = set()  # the environments already listed
+    for copy, f in files:
+        try:
+            if f.parent not in envs and f.is_file():
+                envs.update([f.parent] if copy["where"] == "esp-idf" else [])
+                add(copy, f)
+        except OSError:
+            pass
+    return found
+
+
+def esptool_version(copy, ask=None):
+    """COPY's version as `v<number>`, or None when it gave none. A copy that can start is asked. PlatformIO's is a
+    script that only runs under PlatformIO's Python, so its version is read from the package."""
+    if copy["where"] == "platformio":
+        try:
+            text = (Path(copy["path"]).parent / "esptool/__init__.py").read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            return None
+        m = re.search(r'(?m)^__version__\s*=\s*["\']([^"\']+)', text)
+        return f"v{m.group(1)}" if m else None
+    ok, out = (ask or run)([copy["path"], "version"])
+    m = None if not ok or isinstance(out, NoAnswer) else re.search(r"v?\d+\.\d+(\.\d+)?\S*", out or "")
+    return (m[0] if m[0].startswith("v") else f"v{m[0]}") if m else None
+
+
+def esptool():
+    """`found` when any copy is; `version` is the copy on PATH's, the one a typed `esptool` runs, or None."""
+    copies = find_esptools()
+    with ThreadPoolExecutor(max_workers=8) as pool:  # each copy takes a second or two to answer
+        copies = [{**c, "version": v} for c, v in zip(copies, pool.map(esptool_version, copies))]
+    return {"found": bool(copies), "version": next((c["version"] for c in copies if c["where"] == "PATH"), None), "copies": copies}
+
+
+def esptool_lines(t):
+    """The esptool lines of the text report: the version a typed `esptool` runs, then a line per copy."""
+    notes = {"arduino": "arduino, {package} core", "platformio": "platformio, a script: run it as `pio pkg exec -p tool-esptoolpy -- esptool.py`"}
+    on_path = any(c["where"] == "PATH" for c in t["copies"])
+    head = (t["version"] or "found") if on_path else "not on PATH; run a copy below by its full path"
+    return "\n".join([f"  esptool: {head}"] + [f"    {c['version'] or 'version not read'} ({notes.get(c['where'], c['where']).format(**c)}): {c['path']}"
+                                             for c in t["copies"]])
+
+
 def tool_line(name, t):
-    """One tool's line of the text report; addr2line adds a line per decoder."""
+    """One tool's line of the text report; addr2line adds a line per decoder, and esptool one per copy."""
     if not t["found"]:
         return f"  {name}: MISSING (get it: {GET[name]})"
+    if name == "esptool":
+        return esptool_lines(t)
     if name == "addr2line":
         return "\n".join([f"  {name}:"] + [f"    {d['name']} ({d['where']}): {d['path']}" for d in t["decoders"]])
     extra = ""
@@ -176,10 +263,7 @@ def toolchains():
     ok, out = run(["pio", "--version"])
     found["pio"] = {"found": ok, "version": first_line(out) if ok else None}
     found["idf.py"] = idf_py()
-    ok, out = run(["esptool", "version"])
-    if not ok:
-        ok, out = run(["esptool.py", "version"])
-    found["esptool"] = {"found": ok, "version": (re.search(r"v?\d+\.\d+(\.\d+)?\S*", out or "") or [None])[0] if ok else None}
+    found["esptool"] = esptool()
     ok, out = run(["mpremote", "version"])
     found["mpremote"] = {"found": ok, "version": first_line(out) if ok else None}
     found["addr2line"] = addr2line()

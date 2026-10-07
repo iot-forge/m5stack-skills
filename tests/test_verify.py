@@ -293,11 +293,12 @@ class Offline(unittest.TestCase):
         self.assertEqual(names, mapped)
 
     def test_an_offline_run_records_the_tool_versions(self):  # B43: it builds with both Arduino cores, so it names both
+        # B45: and it names no esptool, because the cores' copies differ and it flashes with neither
         runner = FakeRunner(validate_tests={**GUARDS_OK, **ALL_PLANTED_OK}, tools=MACHINE)
         run = verify.run_offline("test", runner=runner, skip=("build", "trigger"))["run"]
         self.assertEqual(run["toolchains"], {
             "arduino-cli": "1.5.2-rc.1", "esp32 core": "esp32:esp32 3.3.12 and m5stack:esp32 3.3.9", "M5Unified": "0.2.23",
-            "platformio": "6.1.19", "esp-idf": "v6.1", "esptool": "5.3.1", "mpremote": "1.24.1", "claude-code": "2.1.292"})
+            "platformio": "6.1.19", "esp-idf": "v6.1", "mpremote": "1.24.1", "claude-code": "2.1.292"})
 
 
 def stream(*skills, answer="done"):
@@ -497,16 +498,21 @@ class Triggers(unittest.TestCase):
 
 
 # A machine with every tool, in the shape `doctor.py --json` reports it. The arduino-cli, pio, library and claude
-# values are what the tools printed on the maintainer's machine (2026-10-06). doctor.py found no idf.py, esptool or
-# mpremote from that shell, so those three are not captures: the idf.py and esptool values are the shape doctor.py's
-# own regexes give, and the mpremote line is from memory of `mpremote version`
+# values are what the tools printed on the maintainer's machine (2026-10-06), and so is the esptool entry: none on
+# PATH, and a copy in each toolchain's folder (B45; the paths are shortened). doctor.py found no idf.py or mpremote
+# from that shell, so those two are not captures: the idf.py value is the shape doctor.py's own regex gives, and the
+# mpremote line is from memory of `mpremote version`
 MISSING = {"found": False, "version": None}
 MACHINE = {
     "arduino-cli": {"found": True, "version": "arduino-cli  Version: 1.5.2-rc.1 Commit: fef6e48df Date: 2026-07-23T11:13:25Z",
                     "cores": {"esp32:esp32": "3.3.12", "m5stack:esp32": "3.3.9"}},
     "pio": {"found": True, "version": "PlatformIO Core, version 6.1.19"},
     "idf.py": {"found": True, "version": "ESP-IDF v6.1", "note": None, "IDF_PATH": "C:/esp/v6.1/esp-idf"},
-    "esptool": {"found": True, "version": "v5.3.1"},
+    "esptool": {"found": True, "version": None, "copies": [
+        {"path": "Arduino15/packages/esp32/tools/esptool_py/5.3.1/esptool.exe", "where": "arduino", "package": "esp32", "version": "v5.3.1"},
+        {"path": "Arduino15/packages/m5stack/tools/esptool_py/5.3.0/esptool.exe", "where": "arduino", "package": "m5stack", "version": "v5.3.0"},
+        {"path": ".platformio/packages/tool-esptoolpy/esptool.py", "where": "platformio", "version": "v4.11.0"},
+        {"path": "C:/Espressif/tools/python/v6.1/venv/Scripts/esptool.exe", "where": "esp-idf", "version": "v5.3.1"}]},
     "mpremote": {"found": True, "version": "mpremote 1.24.1"},
     "addr2line": {"found": False, "version": None, "decoders": []},
     "libs": {"M5GFX": "0.2.30", "M5Unified": "0.2.23"},
@@ -528,8 +534,42 @@ class ToolVersions(unittest.TestCase):
     def test_esp_idf(self):
         self.assertEqual(self.versions()["esp-idf"], "v6.1")
 
-    def test_esptool(self):
-        self.assertEqual(self.versions()["esptool"], "5.3.1")
+    def esptool(self, copies, version=None, cores=None, **kw):
+        """The run's esptool on a machine with these esptool COPIES and Arduino CORES, and VERSION on PATH."""
+        tools = {**MACHINE, "esptool": {"found": bool(copies or version), "version": version, "copies": copies},
+                 "arduino-cli": {**MACHINE["arduino-cli"], "cores": cores or MACHINE["arduino-cli"]["cores"]}}
+        return self.versions(tools, **kw).get("esptool")
+
+    def test_esptool_is_the_copy_of_the_core_the_run_flashes_with(self):  # B45: the upload uses that copy
+        copies = MACHINE["esptool"]["copies"]
+        self.assertEqual(self.esptool(copies, pick_core=lambda cores: "esp32:esp32"), "5.3.1")
+        self.assertEqual(self.esptool(copies, pick_core=lambda cores: "m5stack:esp32"), "5.3.0")
+        self.assertEqual(self.esptool(copies, cores={"esp32:esp32": None, "m5stack:esp32": "3.3.9"}), "5.3.0")
+
+    def test_esptool_on_path_wins(self):  # it is the one a typed `esptool` command runs
+        self.assertEqual(self.esptool(MACHINE["esptool"]["copies"], "v4.8.1", pick_core=lambda cores: "m5stack:esp32"), "4.8.1")
+        self.assertEqual(self.esptool([], "v4.8.1"), "4.8.1")
+        tools = {**MACHINE, "esptool": {"found": True, "version": "v4.8.1"}}  # a doctor.py from before B45
+        self.assertEqual(self.versions(tools)["esptool"], "4.8.1")
+
+    def test_esptool_copies_that_differ_are_not_guessed_between(self):  # an offline run with both cores picks none
+        self.assertIsNone(self.esptool(MACHINE["esptool"]["copies"]))
+
+    def test_esptool_copies_that_agree_need_no_core(self):
+        agree = [c for c in MACHINE["esptool"]["copies"] if c["version"] == "v5.3.1"]
+        self.assertEqual(self.esptool(agree), "5.3.1")
+        tools = {**MACHINE, "arduino-cli": MISSING, "esptool": {"found": True, "version": None, "copies": agree[1:]}}
+        self.assertEqual(self.versions(tools)["esptool"], "5.3.1")
+
+    def test_a_core_with_no_esptool_copy_falls_back_to_the_copies_that_agree(self):
+        others = [c for c in MACHINE["esptool"]["copies"] if c.get("package") != "m5stack"]
+        self.assertIsNone(self.esptool(others, pick_core=lambda cores: "m5stack:esp32"))
+        self.assertEqual(self.esptool(others[-1:], pick_core=lambda cores: "m5stack:esp32"), "5.3.1")
+
+    def test_an_esptool_copy_that_gave_no_version_is_not_the_runs(self):
+        copies = [{**c, "version": None} if c.get("package") == "esp32" else c for c in MACHINE["esptool"]["copies"]]
+        self.assertIsNone(self.esptool(copies, pick_core=lambda cores: "esp32:esp32"))
+        self.assertIsNone(self.esptool([copies[0]]))
 
     def test_mpremote(self):
         self.assertEqual(self.versions()["mpremote"], "1.24.1")
@@ -559,8 +599,8 @@ class ToolVersions(unittest.TestCase):
         self.assertNotIn("esp-idf", self.versions(tools))
 
     def test_the_tools_keep_the_order_of_the_report(self):
-        self.assertEqual(list(self.versions()), ["arduino-cli", "esp32 core", "M5Unified", "platformio", "esp-idf", "esptool",
-                                                 "mpremote", "claude-code"])
+        self.assertEqual(list(self.versions(pick_core=lambda cores: "esp32:esp32")), [
+            "arduino-cli", "esp32 core", "M5Unified", "platformio", "esp-idf", "esptool", "mpremote", "claude-code"])
 
     def test_doctor_failing_leaves_only_what_the_other_tools_say(self):
         class Broken(FakeRunner):
@@ -640,6 +680,7 @@ class Board(unittest.TestCase):
         asked = [p for p in self.op.prompts if p.startswith("esp32 core")]
         self.assertEqual(asked, ["esp32 core the run flashes with [esp32:esp32/m5stack:esp32]: "] * 3)
         self.assertEqual(obj["run"]["toolchains"]["esp32 core"], "m5stack:esp32 3.3.9")
+        self.assertEqual(obj["run"]["toolchains"]["esptool"], "5.3.0")  # B45: that core's copy, not the esp32 core's 5.3.1
 
     def test_one_installed_core_is_not_asked_about(self):
         one = {**MACHINE, "arduino-cli": {**MACHINE["arduino-cli"], "cores": {"esp32:esp32": None, "m5stack:esp32": "3.3.9"}}}
