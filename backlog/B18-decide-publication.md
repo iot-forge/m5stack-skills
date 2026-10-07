@@ -51,7 +51,7 @@ Build:
 - [x] The README's verification table is regenerated from the latest run
 - [x] `uv run scripts/check.py` exits 0
 - [x] The branch is pushed and its Actions run passes
-- [ ] The install route is tested from GitHub
+- [x] The install route is tested from GitHub
 - [ ] The tag `m5core-skills--v2.0.0` is pushed
 
 ## Stopping rule
@@ -62,8 +62,8 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: the decisions (ADR 0006); the version guard (`python -m unittest tests.test_check`, 23 pass); the manifest, `CHANGELOG.md`, `CONTRIBUTING.md`, `.github/workflows/check.yml`; the README's install route, status line, Alternatives (web search 2026-10-04) and verification table (report 2026-09-29, no board run); `uv run scripts/check.py` exits 0; `claude plugin validate .` passes with one warning (no marketplace description); the branch is pushed (2026-10-06, by the maintainer) and Actions run 37566629570 passes on `3795241`, the gate's first run on Linux
-- **Next**: The maintainer tests the install route in Claude Code: `/plugin marketplace add iot-forge/m5stack-skills#m5core-skills-v2`, then `/plugin install m5core-skills@m5core-skills`; expect version 2.0.0 and seven skills. Then ask the maintainer before the tag: `git tag m5core-skills--v2.0.0 <commit>` on a commit whose Actions run has passed, and `git push origin m5core-skills--v2.0.0`. A push from the agent's session was refused by Claude Code's permission classifier, so the maintainer runs each push
+- **Done**: the decisions (ADR 0006); the version guard (`python -m unittest tests.test_check`, 23 pass); the manifest, `CHANGELOG.md`, `CONTRIBUTING.md`, `.github/workflows/check.yml`; the README's install route, status line, Alternatives (web search 2026-10-04) and verification table (report 2026-09-29, no board run); `uv run scripts/check.py` exits 0; `claude plugin validate .` passes with one warning (no marketplace description); the branch is pushed (2026-10-06, by the maintainer) and Actions run 37566629570 passes on `3795241`, the gate's first run on Linux; the install route works from GitHub (2026-10-06, a new session in another folder: `installed_plugins.json` records version 2.0.0 at `3795241`, and `/plugin` lists 7 skills)
+- **Next**: The maintainer pushes the branch, and its Actions run must pass. Then ask the maintainer before the tag: `git tag m5core-skills--v2.0.0 <commit>` on a commit whose Actions run has passed, and `git push origin m5core-skills--v2.0.0`. A push from the agent's session was refused by Claude Code's permission classifier, so the maintainer runs each push
 - **Files touched**: `scripts/check.py`, `tests/test_check.py`, `.claude-plugin/plugin.json`, `CHANGELOG.md`, `CONTRIBUTING.md`, `README.md`, `.github/workflows/check.yml`, `docs/adr/0001-…`, `docs/adr/0006-…`, this issue, `backlog/README.md`
 - **Last commit**: the one that carries this checkpoint
 - **Open questions**: none. Every commit's author and committer email was rewritten to the maintainer's GitHub noreply address on 2026-10-04, so commit ids recorded before that date no longer resolve. The local branch `backup/pre-email-rewrite` holds the old history: never push it
