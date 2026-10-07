@@ -208,7 +208,11 @@ Before the first step the results file gets:
 - the plugin commit;
 - every toolchain version. `verify.py` reads them from the tools; nobody types one (below).
 
-**Where the versions come from.** `verify.py run`, with `--board` or `--offline`, runs `doctor.py --json` and takes from it the versions of arduino-cli, the installed Arduino cores, PlatformIO, ESP-IDF, esptool and mpremote. It asks `arduino-cli lib list` for M5Unified and `claude --version` for Claude Code. A tool `doctor.py` does not find is left out, so run from a shell where the tools are on `PATH` and the ESP-IDF environment is active. Two entries need the operator:
+**Where the versions come from.** `verify.py run`, with `--board` or `--offline`, runs `doctor.py --json` and takes from it the versions of arduino-cli, the installed Arduino cores, PlatformIO, ESP-IDF, esptool and mpremote. It asks `arduino-cli lib list` for M5Unified and `claude --version` for Claude Code. A tool `doctor.py` does not find is left out, so run from a shell where the tools are on `PATH` and the ESP-IDF environment is active.
+
+`esptool` need not be on `PATH`: `doctor.py` also lists the copy each toolchain bundles (the Arduino cores, PlatformIO, ESP-IDF's Python environment), with its path and version. The run records the copy on `PATH` when there is one, because a typed `esptool` runs it. Otherwise it records the copy bundled with the `esp32 core` the run flashes with, because the upload uses it. Otherwise it records the version every listed copy agrees on. Copies that differ with nothing to choose between them record no `esptool`: an offline run on a machine with both cores is one. With none on `PATH`, type the full path of that core's copy wherever a step says `esptool`.
+
+Two entries need the operator:
 - `esp32 core` names the core and its version, like `esp32:esp32 3.3.12`. With both cores installed, a board run asks which one the run flashes with and offers only the installed ones. An offline run flashes nothing, so it names every installed core.
 - `uiflow2 image`: the image is not a tool on the host, so a board run asks for its version when the revision has the UIFlow2 step, and takes a version or nothing.
 
