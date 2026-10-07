@@ -1,6 +1,6 @@
 # B45 · Make doctor.py find the esptool a toolchain bundles
 
-Status: in-progress
+Status: done
 Blocked by: —
 Gate: none
 
@@ -29,6 +29,11 @@ Steps:
    **Settled on 2026-10-06.** The session proposed both answers and the maintainer accepted them ("take b45 and go"):
    - *The run's `esptool`*: a copy on PATH wins, because it is the one a typed `esptool` command runs. With none on PATH, it is the copy bundled with the Arduino core the run flashes with (the single installed core, or the one `pick_core` chose), because the upload uses it. With no such copy, it is the version every found copy agrees on. Copies that differ with nothing to choose between them record no `esptool`; `verify.py` never guesses.
    - *The skill step*: it uses a copy that is found but not on PATH, by the full path `doctor.py` prints, and stops only when `doctor.py` finds no copy anywhere.
+
+   Added while building, and not asked of the maintainer:
+   - A copy that gave no version is never stood in for by another copy: a copy on PATH, or the flashing core's copy, that did not answer records no `esptool`, and so does any unread copy when the rule falls back to what the copies agree on.
+   - PlatformIO's copy is a script that needs PlatformIO's Python, so `doctor.py` reads its version from the package and prints the command that runs it (`pio pkg exec -p tool-esptoolpy -- esptool.py`).
+   - Step 1 of "Pick and flash the UIFlow2 image" in `skills/uiflow2-micropython/SKILL.md` had the same stop on a missing esptool, so it changed too. The wording both skills need is in `references/download-mode.md` ("esptool spelling"), which kept both bodies under 10 kB.
 2. Make `doctor.py` look, after PATH, in the toolchain folders, the way `find_decoders` does for addr2line ([B34](B34-doctor-addr2line-toolchain-folders.md)): the same roots (`decoder_dirs`), each copy listed with its path, where it was found and its version, in the text and `--json` output. Write it test-first in `tests/test_doctor.py`, with a stand-in home tree per layout.
 3. Make `verify.py`'s `tool_versions` record the `esptool` version step 1 settled, with tests in `tests/test_verify.py` (`ToolVersions`). The `esptool` value in that file's `MACHINE` is an assumed shape; replace it with what `doctor.py` prints on the maintainer's machine.
 4. Update the skill step and `VERIFICATION.md` section 6 ("Where the versions come from") to match.
@@ -48,10 +53,10 @@ Out of scope: `idf.py`. `doctor.py` finds it only from a shell with the ESP-IDF 
 ## Definition of done
 
 - [x] Step 1's two answers are recorded in this issue
-- [ ] `doctor.py` lists each bundled esptool with its path and version; a test covers each layout it searches and the not-found case
-- [ ] `verify.py run --board` on a machine with no esptool on PATH records the `esptool` version step 1 settled, with a test
-- [ ] The skill step and `VERIFICATION.md` say what the code does
-- [ ] `uv run scripts/check.py` exits 0
+- [x] `doctor.py` lists each bundled esptool with its path and version; a test covers each layout it searches and the not-found case
+- [x] `verify.py run --board` on a machine with no esptool on PATH records the `esptool` version step 1 settled, with a test
+- [x] The skill step and `VERIFICATION.md` say what the code does
+- [x] `uv run scripts/check.py` exits 0
 
 If the skill's description does not change, no trigger rows need running.
 
@@ -63,8 +68,4 @@ At about 90% of your context, or before ending for any other reason: overwrite t
 
 <!-- Overwrite, never append. The next session starts from here. -->
 
-- **Done**: nothing yet
-- **Next**: claim the issue
-- **Files touched**: none
-- **Last commit**: none
-- **Open questions**: the two in step 1, for the maintainer
+- **Done**: all

@@ -82,7 +82,7 @@ The hardware unit the release waits for is the maintainer's Tab5, run as `tab5@2
 | [B42 · Support Tab5 and give the maintainer's unit its hardware run](B42-support-tab5.md) | done | — |  |
 | [B43 · Make verify.py read the tool versions itself](B43-verify-reads-tool-versions.md) | done | — |  |
 | [B44 · Apply the maintainer's answers to B42's open questions](B44-apply-b42-answers.md) | done | — |  |
-| [B45 · Make doctor.py find the esptool a toolchain bundles](B45-doctor-bundled-esptool.md) | in-progress | — |  |
+| [B45 · Make doctor.py find the esptool a toolchain bundles](B45-doctor-bundled-esptool.md) | done | — |  |
 
 **First issue: B01.** After it, B03 and B06 can run in parallel.
 
