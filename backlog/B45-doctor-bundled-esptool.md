@@ -1,6 +1,6 @@
 # B45 · Make doctor.py find the esptool a toolchain bundles
 
-Status: open
+Status: in-progress
 Blocked by: —
 Gate: none
 
