@@ -1,6 +1,6 @@
 # B18 · Publish as a branch of the team's repository
 
-Status: open
+Status: in-progress
 Blocked by: the maintainer's go-ahead. Parked on 2026-10-04 until [B42](B42-support-tab5.md) has run on hardware (see the Checkpoint); it ran, and closed on 2026-10-06, and the release bar is met with the three exceptions `VERIFICATION.md` section 3 names
 Gate: none
 
