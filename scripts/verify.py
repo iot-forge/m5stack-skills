@@ -336,7 +336,7 @@ def ask_operator(prompt):
 
 
 TOOLCHAINS = ("arduino-cli", "esp32 core", "M5Unified", "platformio", "esp-idf", "esptool", "mpremote", "uiflow2 image", "claude-code")
-DOCTOR_TOOLS = {"arduino-cli": "arduino-cli", "platformio": "pio", "esp-idf": "idf.py", "esptool": "esptool", "mpremote": "mpremote"}
+DOCTOR_TOOLS = {"arduino-cli": "arduino-cli", "platformio": "pio", "esp-idf": "idf.py", "mpremote": "mpremote"}  # esptool: esptool_of_run
 
 
 def tool_output(runner, cmd):
@@ -348,16 +348,17 @@ def tool_output(runner, cmd):
     return out if code == 0 else ""
 
 
-def run_esptool(item, cores):
+def esptool_of_run(item, cores):
     """The version of the run's esptool, from doctor.py's `esptool` ITEM and the run's Arduino CORES; None when
     nothing settles it. The copy on PATH wins: a typed `esptool` runs it. Without one, it is the copy bundled with
-    the one core the run flashes with, which the upload uses. Without that, it is the version every copy that gave
-    one agrees on. Copies that differ are never guessed between."""
+    the one core the run flashes with, which the upload uses. Without that, it is the version every copy agrees on.
+    Copies that differ are never guessed between, and a copy that gave no version is never stood in for."""
     number = lambda text: m.group(0) if (m := re.search(r"\d+\.\d+\S*", text or "")) else None
-    copies = [c for c in item.get("copies", []) if number(c.get("version"))]
+    copies = item.get("copies", [])
     package = next(iter(cores)).split(":")[0] if len(cores) == 1 else None
-    mine = [c for c in copies if c.get("where") == "arduino" and c.get("package") == package]
-    versions = {number(c["version"]) for c in mine or copies}
+    mine = ([c for c in copies if c.get("where") == "PATH"]
+            or [c for c in copies if c.get("where") == "arduino" and c.get("package") == package])
+    versions = {number(c.get("version")) for c in mine or copies}
     return number(item.get("version")) or (versions.pop() if len(versions) == 1 else None)
 
 
@@ -366,7 +367,7 @@ def tool_versions(runner=sh, pick_core=None):
     missing, or that gave no version, is left out. doctor.py finds the tools and asks most of them; arduino-cli and
     claude are asked here for what doctor.py does not report. `esp32 core` names every installed Arduino core;
     PICK_CORE({core: version}) -> the core a run flashed with, asked only when more than one is installed.
-    `esptool` follows that core (run_esptool). The UIFlow2 image is not a tool on the host: run_board asks for it."""
+    `esptool` follows that core (esptool_of_run). The UIFlow2 image is not a tool on the host: run_board asks for it."""
     try:
         found = json.loads(tool_output(runner, [sys.executable, str(ROOT / "scripts/doctor.py"), "--json"]))["toolchains"]
     except (json.JSONDecodeError, KeyError, TypeError):
@@ -389,7 +390,7 @@ def tool_versions(runner=sh, pick_core=None):
             seen["M5Unified"] = next(x["library"]["version"] for x in libs if x["library"]["name"] == "M5Unified")
         except (json.JSONDecodeError, KeyError, TypeError, StopIteration):
             pass
-    if version := run_esptool(found.get("esptool", {}), cores):
+    if version := esptool_of_run(found.get("esptool", {}), cores):
         seen["esptool"] = version
     if m := re.search(r"\d+\.\d+\S*", tool_output(runner, ["claude", "--version"])):
         seen["claude-code"] = m.group(0)

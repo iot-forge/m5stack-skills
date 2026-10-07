@@ -193,11 +193,12 @@ def find_esptools(which=shutil.which, home=None, env=None, system=None):
         files = esptool_files(home or Path.home(), env, system)
     except (OSError, RuntimeError):  # RuntimeError: no home folder could be worked out
         files = []
-    envs = set()  # the environments already listed
+    listed = set()  # an environment's folder, once its esptool is listed: its esptool.py is the same tool
     for copy, f in files:
         try:
-            if f.parent not in envs and f.is_file():
-                envs.update([f.parent] if copy["where"] == "esp-idf" else [])
+            if f.parent not in listed and f.is_file():
+                if copy["where"] == "esp-idf":
+                    listed.add(f.parent)
                 add(copy, f)
         except OSError:
             pass

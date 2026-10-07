@@ -570,6 +570,14 @@ class ToolVersions(unittest.TestCase):
         copies = [{**c, "version": None} if c.get("package") == "esp32" else c for c in MACHINE["esptool"]["copies"]]
         self.assertIsNone(self.esptool(copies, pick_core=lambda cores: "esp32:esp32"))
         self.assertIsNone(self.esptool([copies[0]]))
+        # nor do the other copies stand in for it, even when they agree
+        agree = [c for c in copies if c["version"] != "v5.3.0" and c["where"] != "platformio"]
+        self.assertIsNone(self.esptool(agree, pick_core=lambda cores: "esp32:esp32"))
+        self.assertIsNone(self.esptool(agree))
+
+    def test_an_esptool_on_path_that_gave_no_version_is_still_the_runs(self):  # no bundled copy stands in for it
+        copies = [{"path": "/usr/bin/esptool", "where": "PATH", "version": None}, *MACHINE["esptool"]["copies"]]
+        self.assertIsNone(self.esptool(copies, pick_core=lambda cores: "esp32:esp32"))
 
     def test_mpremote(self):
         self.assertEqual(self.versions()["mpremote"], "1.24.1")

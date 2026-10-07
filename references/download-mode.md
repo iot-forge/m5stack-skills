@@ -64,7 +64,7 @@ A board whose firmware turns off its USB loses the port again after every reset.
 
 ## esptool spelling
 
-This file follows esptool v5. v5 installs as `esptool` and spells commands, options and reset modes with hyphens (`write-flash`, `default-reset`, `usb-reset`, `watchdog-reset`). v4 installs as `esptool.py` and uses underscores (`write_flash`, `default_reset`). v5 still accepts the old command and option names, with a deprecation warning. Use the spelling that matches the version `doctor.py` prints (standing rule 6). A toolchain's bundled esptool can be a different version from the one on the PATH. If the installed esptool rejects a reset mode, use the manual step instead: the user presses RST.
+This file follows esptool v5. v5 installs as `esptool` and spells commands, options and reset modes with hyphens (`write-flash`, `default-reset`, `usb-reset`, `watchdog-reset`). v4 installs as `esptool.py` and uses underscores (`write_flash`, `default_reset`). v5 still accepts the old command and option names, with a deprecation warning. Use the spelling that matches the version `doctor.py` prints (standing rule 6). `doctor.py` lists the esptool on the PATH and the copy each toolchain bundles, which can be a different version. With none on the PATH, run a listed copy by its full path, or by the command its line gives. If the installed esptool rejects a reset mode, use the manual step instead: the user presses RST.
 
 ## Sources
 
