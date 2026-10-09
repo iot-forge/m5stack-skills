@@ -24,6 +24,9 @@ living list: fix names/groupings as better information turns up.
 | Fire | v2.7 | not started | |
 | M5GO IoT Kit | v2.7 | not started | |
 
+Tooling: `plugins/core/skills/project-bootstrap/` scaffolds a new Core2
+Arduino/PlatformIO project (not a board skill, so it isn't a table row).
+
 ## Stick
 
 | Family | Includes | Status | Skill |
