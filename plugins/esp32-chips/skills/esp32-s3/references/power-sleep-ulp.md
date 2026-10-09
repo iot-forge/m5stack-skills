@@ -27,6 +27,15 @@ data in the `.rtc.data`/`RTC_DATA_ATTR` segment.
   the chip can be a deep-sleep wake source, check which pins are RTC GPIOs
   before wiring a wake button to an arbitrary pin.
 - **GPIO wakeup (general)** — any GPIO, but **light sleep only**.
+  **Trap:** `gpio_wakeup_enable(pin, GPIO_INTR_LOW_LEVEL)` switches that
+  pin's interrupt type to *level* for normal operation too, not just for
+  wake. If the pin is also an ISR source driven by a chip that holds its
+  IRQ line low until a task services it (a keyboard controller, a sensor
+  with a latched INT), the ISR re-fires continuously, the servicing task
+  never runs, and the **interrupt watchdog** resets the chip. Fix: in the
+  ISR call `gpio_intr_disable(pin)` and notify the task; the task clears
+  the device's interrupt and then calls `gpio_intr_enable(pin)`. (Hit in
+  the field on the Cardputer Adv's TCA8418 keyboard IRQ, G11.)
 - **Touchpad** — the capacitive touch peripheral can wake the chip; works
   in both light and deep sleep on the S3.
 - **ULP coprocessor** — the ULP runs its own program while the main cores
@@ -75,6 +84,14 @@ Both ULP variants are documented under "ULP RISC-V Coprocessor
 programming" and (older doc tree) "ULP Coprocessor (FSM-based)" in
 ESP-IDF's system-level API reference — see the link in the main
 `SKILL.md`.
+
+## Automatic light sleep (power management)
+
+`CONFIG_PM_ENABLE=y` + `CONFIG_FREERTOS_USE_TICKLESS_IDLE=y`, then
+`esp_pm_configure()` with `light_sleep_enable = true`, lets the chip
+light-sleep whenever every task is blocked. Before turning it on, check
+every GPIO you've passed to `gpio_wakeup_enable()` for the level-interrupt
+trap above.
 
 ## A note on "why is my code slow to wake / not saving power"
 

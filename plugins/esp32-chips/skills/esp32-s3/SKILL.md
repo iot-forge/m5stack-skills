@@ -142,6 +142,11 @@ skill first. Core2 is classic ESP32, not S3 — see the `esp32` skill.
 - If they're combining WiFi and BLE and seeing flaky behavior (especially
   SoftAP + BLE together), check `references/memory-radio-ai.md`'s
   coexistence section before assuming it's an application bug.
+- **ESP-IDF v6 changes that break older examples:** hardware AES/SHA is
+  reached through the PSA Crypto API only (mbedTLS 4), see
+  `references/peripherals.md`. Write I2C against the `i2c_master` driver,
+  not legacy `driver/i2c.h`. Ask which ESP-IDF version they're on before
+  writing crypto or I2C code.
 - This is chip-level guidance, cross-checked against Espressif's own
   ESP-IDF docs at time of writing — but ESP-IDF version-to-version API
   changes happen. If the user hits a compile error on a specific function

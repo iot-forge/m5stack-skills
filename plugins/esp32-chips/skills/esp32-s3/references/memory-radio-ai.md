@@ -56,6 +56,18 @@ the original ESP32, still used on the S3.
   interrupt) combined with any flash-writing operation happening
   concurrently.
 
+### Task stacks are small — keep big structs off them
+
+An ESP-IDF task stack is whatever you passed to `xTaskCreate` — typically
+2–8 KB — and every local variable lives there. A single ~3 KB message
+struct declared as a local in a UI task was enough to overflow it in a
+field build (Cardputer Adv, Oct 2026). Put large buffers and message
+structs in `static` storage, on the heap, or in a queue item, and turn on
+`CONFIG_FREERTOS_CHECK_STACKOVERFLOW_CANARY` (the default) so an overflow
+panics with the task name instead of corrupting memory.
+`uxTaskGetStackHighWaterMark(NULL)` tells you how close a task runs to
+the limit.
+
 ## WiFi/BLE coexistence
 
 The S3 has **one 2.4GHz radio** shared between WiFi and Bluetooth (there's

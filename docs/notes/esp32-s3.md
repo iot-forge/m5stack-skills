@@ -1,6 +1,6 @@
 # esp32-s3 — build notes
 
-Last verified: 2026-08-17
+Last verified: 2026-10-09 (field-feedback additions; original build 2026-08-17)
 Sources:
 
 - https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/index.html
@@ -24,6 +24,14 @@ Sources:
   which M5Stack boards use ESP32-S3 vs. other chips.
 
 ## Confidence / soft spots
+
+- **2026-10-09 additions from one field build on ESP-IDF v6** (Cardputer
+  Adv): mbedTLS 4 / PSA-only crypto with cached imported keys (in
+  peripherals.md), i2c_master sync mode, the gpio_wakeup_enable
+  level-interrupt trap (power-sleep-ulp.md), and task-stack sizing
+  (memory-radio-ai.md). The PSA-only claim and "legacy I2C on the way out
+  in v6" were not re-checked against the v6 migration guide in this pass.
+  Fetch `docs.espressif.com/.../migration-guides/release-6.x/` next time.
 
 - **PSRAM claim correction**: predictabledesigns.com's comparison claimed
   "S3 lacks PSRAM capability" — this is misleading/wrong at the module

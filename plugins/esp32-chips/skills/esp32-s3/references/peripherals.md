@@ -118,6 +118,34 @@ across versions), so a board can legitimately have more than one SPI bus
 or more than one I2C bus if its schematic calls for it. Don't assume a
 single shared bus without checking that board's pinout reference.
 
+**I2C: use the `i2c_master` driver** (`driver/i2c_master.h`, ESP-IDF
+v5.2+). The legacy `driver/i2c.h` API is deprecated and on the way out in
+ESP-IDF v6 — don't write new code against it, and don't mix the two
+drivers in one firmware. Create the bus with `i2c_new_master_bus()`, add a
+device handle per address with `i2c_master_bus_add_device()`, and keep it
+**synchronous** (`trans_queue_depth = 0`, the default). Async queuing can
+exhaust the driver's transaction pool during a register burst and returns
+`ESP_ERR_INVALID_STATE`.
+
+## Hardware AES/SHA under ESP-IDF v6 (mbedTLS 4 / PSA Crypto)
+
+ESP-IDF v6 moves to **mbedTLS 4**, which leaves only the **PSA Crypto
+API** public. The legacy `mbedtls_aes_*` / `mbedtls_gcm_*` calls that most
+ESP32 examples on the web use are gone. Hardware AES/SHA acceleration is
+still used underneath, but you reach it through PSA:
+
+- `psa_crypto_init()` once at startup.
+- `psa_import_key()` → a `psa_key_id_t`, then `psa_cipher_encrypt()` /
+  `psa_cipher_decrypt()` (or the multi-part `psa_cipher_*_setup/update/
+  finish`), `psa_aead_*` for GCM/CCM, `psa_hash_*` for SHA.
+- **Import a key once and cache the key ID.** Importing per message works
+  but is slow; a field build caches imported keys and reuses them.
+  `psa_destroy_key()` when the key changes.
+
+This comes from one field build on ESP-IDF v6 (Oct 2026). If a user is on
+v5.x, the legacy API still works there. Check the ESP-IDF version before
+choosing which one to write.
+
 ## Security: HMAC and Digital Signature (DS) peripherals
 
 Hardware-accelerated HMAC computation and a Digital Signature peripheral
