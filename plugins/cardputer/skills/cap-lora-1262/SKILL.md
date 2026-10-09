@@ -19,7 +19,7 @@ that adds two independent radios in one accessory:
 Official docs: https://docs.m5stack.com/en/cap/Cap_LoRa-1262
 Product page/SKU: https://docs.m5stack.com/en/products/sku/U214
 
-## Read this first — three things that will kill the cap or your bring-up
+## Read this first — four things that will kill the cap or your bring-up
 
 1. **Never power on without the LoRa antenna installed.** M5Stack's docs
    are explicit: "the device hardware may be permanently damaged." An
@@ -28,11 +28,13 @@ Product page/SKU: https://docs.m5stack.com/en/products/sku/U214
    prerequisite, not an accessory.
 2. **The RF antenna switch is gated by an I/O expander pin, not by the
    SX1262 itself.** SDA/SCL on the cap connector go to a **PI4IOE5V6408**
-   I/O expander whose **P0** must be driven high to enable the RF path.
-   If your first `transmit()`/`receive()` calls do nothing (RadioLib
-   returning no error but no packets on the air / no packets received),
-   you almost certainly never enabled P0. See the "Enabling the RF switch"
-   section below.
+   I/O expander (I2C `0x43`) whose **P0** must be driven high to enable
+   the RF path. If your first `transmit()`/`receive()` calls do nothing
+   (no error, but no packets on the air / no packets received), you
+   almost certainly never enabled P0. The expander's registers are easy to
+   get wrong — **`0x01` is the device-ID/control register, and bit 0 there
+   is a software reset**; the output register is `0x05`. See "Enabling
+   the RF switch" below.
 3. **The LoRa SPI bus is the microSD SPI bus.** On the Cardputer Adv,
    `LoRa_SCK=G40`, `LoRa_MOSI=G14`, `LoRa_MISO=G39` are the *same* pins
    used by the microSD slot (`SD_CLK=G40`, `SD_MOSI=G14`, `SD_MISO=G39`).
@@ -41,6 +43,12 @@ Product page/SKU: https://docs.m5stack.com/en/products/sku/U214
    bus and the LoRa bus as two independent `SPIClass` instances with
    different clock/mode settings. Share one `SPIClass`, or accept that
    accessing SD and LoRa concurrently requires bus mediation.
+4. **A fast reply from the other side arrives before this radio is
+   listening.** After TX the SX1262 drops back to standby and has to
+   restart its TCXO before RX; measured TX→RX turnaround on this cap is
+   ~7–10 ms, while an SF7/500 kHz preamble lasts ~3 ms. A peer that
+   answers immediately is never heard. See "SX1262 without RadioLib, and the TX → RX turnaround" below —
+   this cost a field project an hour of debugging.
 
 ## Compatibility
 
@@ -100,12 +108,16 @@ the pin the GNSS talks on, so it's the S3's RX. Use `UART1` or `UART2` on
 the S3 — the S3 lets you route any UART peripheral to arbitrary GPIOs, so
 call `Serial1.begin(115200, SERIAL_8N1, /*RX=*/15, /*TX=*/13)`.
 
-**I2C bus for the I/O expander (see next section):** SDA/SCL on the cap
-connector share the **Cardputer Adv internal I2C bus (SDA=G8, SCL=G9)** —
-the same bus that already carries the TCA8418 keyboard controller (0x34),
-BMI270 IMU (0x68), and ES8311 audio codec (0x18). One more device on the
-bus is fine; just don't re-init `Wire` after `M5Cardputer.begin()` has
-already claimed it.
+**I2C bus for the I/O expander (see next section) — not settled; probe
+both.** This skill originally said the cap's SDA/SCL land on the
+**Cardputer Adv internal I2C bus (SDA=G8, SCL=G9)**, shared with the
+TCA8418 keyboard (0x34), BMI270 (0x68) and ES8311 (0x18). Meshtastic's
+Cardputer Adv variant (`src/platform/extra_variants/m5stack_cardputer_adv/variant.cpp`,
+community source) instead probes **`Wire1` on SDA=G2, SCL=G1 first**, then
+falls back to `Wire` on G8/G9 — which suggests at least some units answer
+on G2/G1. Which bus your cap answers on is unverified against the
+schematic: probe `0x43` on both, use whichever ACKs, and log it. If it's
+G8/G9, don't re-init `Wire` after `M5Cardputer.begin()` has claimed it.
 
 **Cross-reference with the Cardputer Adv microSD slot:**
 
@@ -122,52 +134,73 @@ concurrent SD I/O and LoRa RX will need queuing.
 
 ## Enabling the RF switch (PI4IOE5V6408 gotcha)
 
-Community-sourced from M5Stack's official docs page: the SDA/SCL on the
-cap goes to a **PI4IOE5V6408** 8-bit I/O expander, and **P0 of that
-expander drives the RF antenna switch. It must be set high before the
-SX1262 can transmit or receive.** M5Stack's own docs state this in one
-sentence and do not publish an I2C address for the expander on this cap
-specifically. The PI4IOE5V6408's default 7-bit address is **0x43** (with
-its `ADDR` strap low) or **0x44** (with `ADDR` high) per the NXP
-datasheet — **which strap M5Stack chose is not documented on the product
-page**. Scan the bus (`Wire.beginTransmission(addr); Wire.endTransmission()`)
-for both if the first choice NAKs.
+The SDA/SCL on the cap go to a **PI4IOE5V6408** 8-bit I/O expander
+(Diodes Inc./Pericom part), and **P0 of that expander enables the RF
+antenna switch. It must be driven high before the SX1262 can transmit or
+receive.** M5Stack's docs state this in one sentence and don't publish the
+I2C address. The address is **`0x43`** (ADDR strap low; `0x44` if strapped
+high) — confirmed by a working field build and by Meshtastic's variant
+code, both of which use `0x43`.
 
-At the register level, the PI4IOE5V6408 needs:
-1. Write `0x03` (I/O direction, 1 = output) to make P0 an output.
-2. Write `0x05` (output high-Z), clear bit 0 so the pin actively drives.
-3. Write `0x01` bit 0 = 1 to drive P0 high.
+**Register map** (PI4IOE5V6408 datasheet; the sequence below is confirmed
+working on hardware):
 
-(Register offsets from the NXP PI4IOE5V6408 datasheet — verify against
-the datasheet before shipping; treat as unverified against M5Stack's
-schematic for this specific cap.)
+| Reg | Name | Notes |
+|---|---|---|
+| `0x01` | Device ID & Control | **bit 0 = software reset.** Never write `0x01` here to "drive P0 high" |
+| `0x03` | I/O direction | 1 = output |
+| `0x05` | Output state | 1 = drive high |
+| `0x07` | Output high-Z | 1 = high-Z (power-on default is all high-Z) |
+| `0x0B` / `0x0D` | Pull enable / pull-up-down select | not needed for P0 |
 
-A minimal Arduino snippet:
+> An earlier version of this skill had the map wrong: it wrote `0x05=0x00`
+> (P0 low, believing `0x05` was high-Z) and then `0x01=0x01` (a software
+> reset). The result is an RF switch that stays off with no error anywhere.
+> If you see that sequence in existing code, it's the bug.
+
+Enable sequence — **direction, then un-high-Z, then drive high**, at
+`0x43`:
+
+1. `0x03 = 0x01` — P0 is an output.
+2. `0x07 = 0x00` — P0 actively drives (not high-Z).
+3. `0x05 = 0x01` — P0 high: RF switch on.
 
 ```cpp
 #include <Wire.h>
-constexpr uint8_t IO_EXP_ADDR = 0x43;   // try 0x44 if 0x43 NAKs
+constexpr uint8_t IO_EXP_ADDR = 0x43;
 
-static bool ioexp_write(uint8_t reg, uint8_t val) {
-  Wire.beginTransmission(IO_EXP_ADDR);
-  Wire.write(reg); Wire.write(val);
-  return Wire.endTransmission() == 0;
+static bool ioexp_write(TwoWire &bus, uint8_t reg, uint8_t val) {
+  bus.beginTransmission(IO_EXP_ADDR);
+  bus.write(reg); bus.write(val);
+  return bus.endTransmission() == 0;
 }
 
+static bool ioexp_present(TwoWire &bus) {
+  bus.beginTransmission(IO_EXP_ADDR);
+  return bus.endTransmission() == 0;
+}
+
+// Call with Wire1 started on SDA=2/SCL=1 and Wire on SDA=8/SCL=9;
+// the bus the cap answers on is not settled (see the I2C note above).
 bool enable_lora_rf_switch() {
-  // Direction: P0 = output (bit0 = 1)
-  if (!ioexp_write(0x03, 0x01)) return false;
-  // Ensure P0 is a hard drive, not high-Z (bit0 = 0 in the HighZ register)
-  if (!ioexp_write(0x05, 0x00)) return false;
-  // Drive P0 high — RF switch on
-  if (!ioexp_write(0x01, 0x01)) return false;
-  return true;
+  TwoWire *bus = ioexp_present(Wire1) ? &Wire1
+               : ioexp_present(Wire)  ? &Wire : nullptr;
+  if (!bus) { Serial.println("PI4IOE5V6408 not found at 0x43"); return false; }
+  Serial.printf("PI4IOE5V6408 found on %s\n", bus == &Wire1 ? "G2/G1" : "G8/G9");
+  return ioexp_write(*bus, 0x03, 0x01)    // P0 output
+      && ioexp_write(*bus, 0x07, 0x00)    // P0 not high-Z
+      && ioexp_write(*bus, 0x05, 0x01);   // P0 high -> RF switch on
 }
 ```
 
-If the scan finds the expander at a different address, or if the register
-map behaves differently, dump all eight registers first (`0x00`–`0x07`)
-and cross-reference the datasheet before continuing.
+ESP-IDF (`i2c_master`) is the same three writes:
+`{0x03,0x01}`, `{0x07,0x00}`, `{0x05,0x01}` via
+`i2c_master_transmit()` to a device handle at `0x43`.
+
+**P0 and DIO2 do different jobs.** P0 powers/enables the RF switch; the
+SX1262's **DIO2** flips it between TX and RX paths. You need both — P0
+once at boot, and DIO2 configured as the RF-switch control (RadioLib:
+`radio.setDio2AsRfSwitch(true)`; raw driver: see below).
 
 ## LoRa: SX1262 with RadioLib
 
@@ -201,11 +234,16 @@ void setup() {
   // region: EU868 -> 868.1, US915 -> 902.3+ (channel plan), AS923 -> 923.2
   // etc. The SX1262 hardware supports 868-923; the *radio regulator* in
   // your country picks the actual channel.
-  int st = radio.begin(915.0);
+  //
+  // tcxoVoltage MUST be 1.8 on this cap: RadioLib's default is 1.6 V.
+  // Args: freq, bw, sf, cr, syncWord, power, preambleLen, tcxoVoltage, useLDO
+  int st = radio.begin(915.0, 125.0, 9, 7, RADIOLIB_SX126X_SYNC_WORD_PRIVATE,
+                       10, 8, 1.8, /*useRegulatorLDO=*/false);  // false = DC-DC
   if (st != RADIOLIB_ERR_NONE) {
     Serial.printf("SX1262 begin failed: %d\n", st);
     while (true) delay(1000);
   }
+  radio.setDio2AsRfSwitch(true);  // DIO2 drives the TX/RX switch; not on by default
 }
 
 void loop() {
@@ -234,6 +272,51 @@ Common bring-up failure modes:
   expander is actually held high — a floating switch can attenuate 20+ dB
   without breaking anything visibly.
 
+For anything past "begin() failed", use the symptom table in "Radio
+bring-up: symptom → cause" below — it applies to RadioLib too.
+
+## SX1262 without RadioLib, and the TX → RX turnaround
+
+Writing your own ESP-IDF driver? **Read `references/sx1262-espidf.md`
+first.** It has the init order with opcodes, the datasheet errata RadioLib
+applies silently, and the turnaround fix. In short:
+
+- SPI on `SPI3_HOST` at 8 MHz (display is on `SPI2_HOST`); hold SD CS
+  (G12) high; wait for BUSY (G6) low before every command.
+- **TCXO on DIO3 at 1.8 V**, 5 ms start-up; **DIO2 as RF-switch control**;
+  **DC-DC** regulator; `Calibrate(0x7F)` after the TCXO is configured.
+- Errata: **15.1 before every TX** (reg `0x0889` bit 2), 15.2 and 15.4 at
+  init.
+- **TX → RX turnaround is ~7–10 ms** (TCXO restart), but an SF7/500 kHz
+  preamble is ~3 ms. A peer that replies immediately is never heard. Make
+  the peer wait (a field build uses 30 ms) or lengthen the preamble.
+
+## Radio bring-up: symptom → cause
+
+| Symptom | Likely cause |
+|---|---|
+| Nothing on the air, nothing received, no errors | RF switch not enabled — PI4IOE5V6408 P0 not high (check the register sequence above), or DIO2 not set as RF-switch control |
+| Only header/CRC errors at 500 kHz | Erratum 15.1 not applied before each TX, **or** the two ends' settings differ (SF, BW, CR, sync word, IQ, preamble, explicit/implicit header) |
+| Hears the peer when it transmits on its own, misses its replies | TX → RX turnaround (see `references/sx1262-espidf.md`) |
+| `GetDeviceErrors` shows `XOSC_START_ERR` | TCXO voltage/timeout wrong — must be DIO3 at 1.8 V (RadioLib: `tcxoVoltage` = 1.8) |
+| `begin()` / first command times out | BUSY wiring (G6) or reset not done; see the RadioLib failure list above |
+
+**How to tell them apart:**
+
+- **RX-only signal-strength test** (the field build's `rxtest` command):
+  put the radio in continuous RX and print `GetRssiInst` (`0x15`) every
+  ~100 ms while the peer transmits. Rising RSSI when the peer keys up
+  means the RF path and switch work — the problem is upstream (settings or
+  timing). Flat RSSI at the noise floor means the switch/antenna/frequency
+  is wrong.
+- **Log RSSI/SNR of corrupted packets too**, not just good ones
+  (`GetPacketStatus`, `0x14`). Strong signal + CRC errors → settings
+  mismatch or erratum 15.1. Weak signal + CRC errors → range/antenna.
+- **Read `GetDeviceErrors` (`0x17`) after init** — see
+  `references/sx1262-espidf.md` for which bits mean what.
+- If none of those show a problem and replies still go missing, it's
+  turnaround.
+
 ## LoRa frequency and regional legality
 
 The SX1262 hardware on this cap operates 868–923 MHz. That does **not**
@@ -241,14 +324,25 @@ mean any frequency in that range is legal to transmit on where you are:
 
 - **EU868** (Europe): 863–870 MHz, duty-cycle limited (typically 1%
   per sub-band). LoRaWAN EU868 channel plan starts 868.1 MHz.
-- **US915** (North America): 902–928 MHz, frequency-hopping required
-  above a certain duty cycle. LoRaWAN US915 uses 902.3 MHz + 0.2 MHz per
-  channel across 64 uplink channels.
+- **US915** (North America): 902–928 MHz under FCC §15.247, which
+  allows either frequency hopping *or* a "digital transmission system"
+  (6 dB bandwidth ≥ 500 kHz, power spectral density ≤ 8 dBm per 3 kHz).
+  LoRaWAN US915 uses 902.3 MHz + 0.2 MHz per channel across 64 uplink
+  channels. A field build on this cap used a **single fixed 500 kHz LoRa
+  channel at 903.0 MHz** (bottom of the band, fully inside it) on the
+  basis that a 500 kHz channel qualifies as DTS and needs no hopping.
+  That's the builder's reading of the rule, not legal advice — check that
+  the measured 6 dB bandwidth and PSD actually meet §15.247 before
+  shipping a product.
 - **AS923** (Asia-Pacific, several sub-plans): 915–928 MHz core,
   center frequency and channel plan differ by country.
 - **CN470** and **KR920** exist but sit **outside** this cap's 868–923
   MHz range — this cap can't legally serve those bands. Use a different
   M5Stack LoRa product for CN470 / KR920.
+
+**The supplied antenna is labelled 868 MHz** (field observation). It
+works at 903 MHz in practice, but expect some mismatch loss in the US
+band; a 915 MHz antenna is the better fit there.
 
 Don't hardcode a frequency in a shipped sketch without knowing which
 region the user is deploying to. If they haven't said, ask.
@@ -316,7 +410,11 @@ constellations to save power.
 | M5Stack SKU | U214 |
 | LoRa chip | Semtech SX1262 |
 | GNSS chip | ATGM336H-6N (Allystar, AT6668 die) |
-| I/O expander | PI4IOE5V6408 (RF switch enable on P0) |
+| I/O expander | PI4IOE5V6408 @ `0x43` (RF switch enable on P0: `0x03=0x01`, `0x07=0x00`, `0x05=0x01`) |
+| SX1262 TCXO | DIO3, 1.8 V, 5 ms start-up |
+| SX1262 RF switch | DIO2 (TX/RX select), gated by expander P0 |
+| SX1262 regulator | DC-DC |
+| TX → RX turnaround | ~7–10 ms measured |
 | LoRa band | 868–923 MHz |
 | LoRa modulations | FSK, GFSK, MSK, GMSK, LoRa, OOK |
 | LoRa max bitrate | 300 kbps |
@@ -341,6 +439,9 @@ constellations to save power.
 - Cap docs: https://docs.m5stack.com/en/cap/Cap_LoRa-1262
 - SKU page: https://docs.m5stack.com/en/products/sku/U214
 - LoRa (SX1262) driver: https://github.com/jgromes/RadioLib
+- Raw ESP-IDF SX1262 driver notes for this cap: `references/sx1262-espidf.md`
+- Meshtastic's Cardputer Adv variant (cap init, TCXO, pins — community
+  source): https://github.com/meshtastic/firmware/tree/master/variants/esp32s3/m5stack_cardputer_adv
 - GNSS parser (M5Stack fork with CASIC support):
   https://github.com/m5stack/TinyGPSPlus
 - Datasheets referenced on the docs page: Semtech SX1262, Allystar

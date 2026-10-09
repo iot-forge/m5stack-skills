@@ -1,6 +1,6 @@
 # cap-lora-1262 — build notes
 
-Last verified: 2026-08-21
+Last verified: 2026-10-09 (field-feedback pass; original build 2026-08-21)
 Sources:
 - Official docs page: https://docs.m5stack.com/en/cap/Cap_LoRa-1262
   (URL confirmed by the user during the build session)
@@ -12,22 +12,53 @@ Sources:
 - Semtech SX1262 datasheet (chip-level behavior, PA drive)
 - Allystar ATGM336H-6N datasheet + CASIC protocol spec (linked from the
   M5Stack docs page)
-- NXP PI4IOE5V6408 datasheet (I/O expander register map — see below)
+- Diodes Inc. (Pericom) PI4IOE5V6408 datasheet (I/O expander register
+  map). Earlier notes said "NXP"; it's a Diodes part.
+- Meshtastic firmware, `src/platform/extra_variants/m5stack_cardputer_adv/variant.cpp`
+  and `variants/esp32s3/m5stack_cardputer_adv/variant.h` (fetched
+  2026-10-09): PI4IOE5V6408 at 0x43, writes 0x03=0x01, 0x07=0x00,
+  0x05=0x01; probes Wire1 (SDA=G2/SCL=G1) before Wire (G8/G9);
+  `SX126X_DIO3_TCXO_VOLTAGE 1.8`, `SX126X_DIO2_AS_RF_SWITCH`.
+- Field report (2026-10-09) from a user's ESP-IDF v6 firmware project on
+  Cardputer Adv + this cap, 16 commits Oct 3–4: register sequence above
+  confirmed on hardware; TCXO 1.8 V; SPI3 at 8 MHz; TX→RX turnaround
+  measured ~7–10 ms; errata 15.1/15.2/15.4 handling; 903.0 MHz single
+  500 kHz channel for US; antenna labelled 868 MHz.
+- SX1262 datasheet §13 (opcodes) and §15 (errata) for the raw-driver
+  reference.
 
 ## Confidence / soft spots
 
-- **PI4IOE5V6408 I2C address** on this cap: the M5Stack docs mention the
-  chip and say "P0 must be set high to enable RF antenna switch" but do
-  not publish the I2C address they've strapped it to. The skill tells the
-  reader to scan for it (0x43 default, 0x44 with ADDR strap high per NXP
-  datasheet). This is the single biggest unverified claim in the skill.
-  If a user reports the address is neither of those, update SKILL.md.
-- **PI4IOE5V6408 register offsets** (0x01 output register, 0x03 direction,
-  0x05 output-high-Z) came from the NXP datasheet, not from a working
-  M5Stack code sample — flagged inline in SKILL.md as "verify against the
-  datasheet before shipping." The correctness of the RF-switch-enable
-  snippet is load-bearing on this, and I did not compile-run it against
-  hardware.
+- **PI4IOE5V6408 register map was WRONG in the original build and is
+  now fixed (2026-10-09).** The original skill said 0x01 = output and
+  0x05 = output-high-Z; the snippet wrote 0x05=0x00 (P0 low) and then
+  0x01=0x01 (a software reset, since 0x01 is Device ID & Control with
+  bit 0 = SW reset). Anyone following it got an RF switch that stayed
+  off. Correct map: 0x03 direction, 0x05 output state, 0x07 output
+  high-Z. The fixed sequence is confirmed by a working field build and
+  matches Meshtastic. Lesson: register maps "from the datasheet" that
+  were never run on hardware need a louder flag than "verify before
+  shipping" — that flag didn't stop the bug from shipping.
+- **PI4IOE5V6408 I2C address**: 0x43 — now confirmed (field build +
+  Meshtastic). Resolved.
+- **Which I2C bus the expander is on** — still open. The original skill
+  said internal G8/G9. Meshtastic probes G2/G1 first, then G8/G9. The
+  field build also probes both and logs "PI4IOE5V6408 found on …", but
+  the user didn't report which bus answered. The skill now says "probe
+  both." Check the cap schematic.
+- **TX→RX turnaround 7–10 ms** is one field measurement on one unit.
+  The SetRxTxFallbackMode(STDBY_XOSC) mitigation in
+  `references/sx1262-espidf.md` is from the datasheet, untested on this cap.
+- **SPI3 @ 8 MHz** is a working field value, not a ceiling.
+- **US §15.247 DTS reading** for a single 500 kHz LoRa channel is the
+  field builder's interpretation, flagged as such in the skill. Not
+  verified against a measured 6 dB bandwidth.
+- **RadioLib defaults**: `SX1262::begin()` defaults `tcxoVoltage` to 1.6 V
+  and does not enable DIO2 RF-switch control; the example now passes 1.8
+  and calls `setDio2AsRfSwitch(true)`. The field report claimed RadioLib
+  "handles these silently". That's true of the errata, not of TCXO/DIO2
+  on this board. Argument order checked against RadioLib's SX1262.h from
+  memory, not re-fetched.
 - **CardputerZero compatibility** is claimed by the official docs page
   (the product description names both Cardputer Adv and CardputerZero)
   but I have not independently verified the CardputerZero's GPIO
@@ -62,10 +93,10 @@ Sources:
 
 ## Open questions
 
-- Confirm the PI4IOE5V6408 I2C address on U214 empirically — the biggest
-  single source of "cap silently doesn't transmit" bugs will be readers
-  who scan the bus, don't find the expander at either default address,
-  and give up.
+- Confirm which I2C bus (G2/G1 vs G8/G9) the expander answers on — ask
+  the field user for their "PI4IOE5V6408 found on …" log line, or read the
+  cap/EXT-header schematic.
+- Measure TX→RX turnaround with SetRxTxFallbackMode(STDBY_XOSC).
 - Find or verify an M5Stack-published example sketch for this cap
   (the docs page links RadioLib and TinyGPSPlus as the recommended
   libraries but does not link a specific `M5Stack/Cap_LoRa-1262` GitHub
@@ -74,7 +105,6 @@ Sources:
 - Build a CardputerZero skill and verify the cap's pin mapping on that
   board — currently only the Cardputer Adv mapping is published on the
   docs page.
-- If a future revision of this skill is triggered because a user hit
-  RF-switch-enable trouble, capture the exact register-write sequence
-  they ended up with and replace the datasheet-derived snippet in
-  SKILL.md with the confirmed one.
+- SKILL.md is ~450 lines even after moving the raw driver into
+  `references/sx1262-espidf.md`. If it grows again, move the GNSS
+  section out too.
