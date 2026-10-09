@@ -87,6 +87,9 @@ see "No native USB" below.
   modules (D0WDR2 die) get 2MB of PSRAM bonded into the module package
   instead. See `references/memory-radio.md` for the module-to-die mapping
   and which GPIOs get consumed by external flash/PSRAM wiring.
+  **SPI/I2S DMA can't read PSRAM on this chip** — frame buffers you
+  draw into or push to an LCD belong in internal DMA-capable RAM (same
+  file, "Frame buffers and DMA").
 - **Wireless**: WiFi 4 (802.11b/g/n, 2.4GHz only, up to 150Mbps PHY,
   +20.5dBm TX on 11b / +18dBm on 11n), **Bluetooth v4.2 dual-mode — BR/EDR
   Classic *and* BLE** (the only chip in this family with Bluetooth Classic

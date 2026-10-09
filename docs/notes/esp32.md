@@ -31,6 +31,11 @@ Sources:
 
 ## Confidence / soft spots
 
+- **"Frame buffers and DMA" (2026-10-09, `references/memory-radio.md`)**:
+  the DMA-can't-read-PSRAM rule is quoted from ESP-IDF's heap-allocation
+  docs (`MALLOC_CAP_DMA` "excludes any external PSRAM"). The fps figures
+  come from one Core2 in one user session and are labelled that way inline.
+
 - Core numbers (CPU/ROM/SRAM/RTC memory, GPIO count, wireless specs, power
   modes, package/temp range) came from Espressif's own datasheet and chip
   revision errata guide — high confidence.

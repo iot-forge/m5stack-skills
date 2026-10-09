@@ -49,6 +49,16 @@ Sources:
 
 ## Confidence / soft spots
 
+- **Display throughput, touch tap-vs-swipe, IMU z-sign (2026-10-09,
+  `references/arduino.md`)**: all measured by a user in one coding
+  session building a dice app on a single pre-v1.3 Core2 (reports
+  MPU6886), M5Unified/M5GFX, WiFi off. Not reproduced independently. The
+  ping-pong skeleton was condensed from that app and not compiled
+  stand-alone. The `lgfx::swap565_t*` cast and the claim that
+  `pushImageDMA` waits for the previous transfer come from knowledge of
+  LovyanGFX internals, not that session. Verify both if the colours come
+  out wrong or tearing shows up.
+
 - **"Core2 (v1.0/v1.1)" row**: sourced from M5Stack's current `core2` docs
   page, which most likely documents whichever non-v1.3 hardware is
   currently sold (probably v1.1, since v1.0 is older/EOL per an Amazon
@@ -268,6 +278,11 @@ Sources:
   a linked section is renamed, moved, or removed.
 
 ## Open questions
+
+- IMU axis directions: +x/+y relative to the screen on any revision, and
+  whether BMI270 boards (v1.3, AWS v1.3) also read z = +1 g screen-up.
+- Whether two 320×120 internal DMA buffers still allocate with WiFi
+  connected, or whether 60-row strips are needed.
 
 - Whether the earliest Core2 For AWS units shipped a pre-V3 `ESP32-D0WDQ6`
   die rather than the `ESP32-D0WDQ6-V3` this skill states family-wide. The

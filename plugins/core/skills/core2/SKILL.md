@@ -228,6 +228,8 @@ top-to-bottom.
 | IMU code reads garbage / zeros / a constant | Wrong driver for this board's actual IMU chip (MPU6886 vs BMI270) | Hardware revisions table above, `references/espidf.md` IMU section |
 | AWS IoT rejects the ATECC608's factory device certificate | Factory cert is in Microchip's compressed format with an invalid date | AWS-line-specific hardware section above, `references/arduino.md` and `references/espidf.md` ATECC608 sections |
 | Analog reads return garbage after `WiFi.begin()` | The pin is on ADC2, which shares hardware with the WiFi radio | `esp32` chip skill's peripherals reference |
+| Animation / UI frame rate stuck at 8–15 fps | Full-screen `M5Canvas` in PSRAM. Classic-ESP32 SPI DMA can't read PSRAM, so the ~33 ms full-frame push runs after drawing instead of during it. Also `drawWideLine` (~25 ms for ~50 lines). Measured on one MPU6886 Core2 | `references/arduino.md` "Display throughput" (two 320×120 internal-RAM buffers + `pushImageDMA` → 29–32 fps; `fillTriangle` line replacement) |
+| Every swipe also fires a tap | Tap handled on `wasPressed()`, before the gesture is known | `references/arduino.md` touch tap-vs-swipe section |
 | Board resets under load with backlight + WiFi + speaker | AXP192 rail brownout on the stock 500mAh battery | `references/arduino.md` common-bring-up-issues section |
 | SK6812 level meter looks inconsistent (one side fills up-down, the other down-up) | The 10-LED "ring" is really two 5-pixel strips daisy-chained; sequential indexing doesn't map to a symmetric bar | `references/pinout.md` AWS-line-only section (chain order) and `references/espidf.md` SK6812 section (per-side LUT + diagnostic-pattern recipe) |
 

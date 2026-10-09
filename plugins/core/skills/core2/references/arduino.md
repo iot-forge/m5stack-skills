@@ -120,6 +120,125 @@ API — don't write MPU6886- or BMI270-specific register code unless you
 specifically need something the high-level API doesn't expose, since that
 code won't be portable across Core2 revisions.
 
+**Axis orientation — partly measured.** With the board lying flat, screen
+facing up, `M5.Imu.getAccel()` returns **z ≈ +1.00 g**. Measured on one
+pre-v1.3 Core2 (MPU6886) only. **Unverified:** the sign on BMI270 boards
+(v1.3 / AWS v1.3), and which way +x and +y point relative to the screen
+on any revision. Tilt the board and log the values before you hard-code
+gesture directions.
+
+## Touch: telling a tap from a swipe (M5Unified)
+
+`wasPressed()` fires the moment a finger lands, before you know whether
+it's a tap or the start of a swipe. If the UI uses swipes at all, decide
+on **release**, otherwise every swipe also fires a tap:
+
+```cpp
+auto t = M5.Touch.getDetail();
+if (t.wasReleased()) {
+  int dx = t.distanceX();          // x - base_x (base = touch-down point)
+  int dy = t.y - t.base_y;
+  const int SWIPE_PX = 40;         // tune for your UI
+  if (abs(dx) < SWIPE_PX && abs(dy) < SWIPE_PX) onTap(t.base_x, t.base_y);
+  else if (abs(dx) >= abs(dy))      onSwipe(dx > 0 ? RIGHT : LEFT);
+  else                              onSwipe(dy > 0 ? DOWN : UP);
+}
+```
+
+Measured working on one pre-v1.3 Core2. The 40 px threshold is an
+example, not a measured value.
+
+## Display throughput (ILI9342C over SPI)
+
+Nothing else here explains why an animated UI runs at 10 fps. Numbers
+below were **measured on one pre-v1.3 Core2 (MPU6886) with M5Unified/M5GFX
+and WiFi off**. They're one board, not a spec, but the shape of the
+problem is the same on every revision.
+
+- **The SPI link is the ceiling.** One full 320×240 16-bit frame is
+  153,600 bytes and takes **~33 ms** to send, so ~30 fps is the maximum
+  however fast the drawing is.
+- **The obvious approach is the slow one.** A full-screen `M5Canvas` (it
+  lands in PSRAM, since 150 KB doesn't fit in internal RAM alongside
+  everything else) gave **8–13 fps**: drawing into PSRAM took 24–45 ms,
+  then the 33 ms push ran *after* it, not alongside. Classic-ESP32 SPI DMA
+  can't read PSRAM, so drawing and sending can't overlap. See the `esp32`
+  chip skill's `references/memory-radio.md`, "Frame buffers and DMA".
+- **The fix: two half-height buffers in internal RAM, ping-ponged.** Draw
+  the top 320×120 half, start its DMA push, draw the bottom half while
+  the top is sending, push it, repeat. Measured **29–32 fps**, i.e. at the
+  link ceiling. Both 320×120 16-bit buffers (75 KB each) fit in internal
+  DMA-capable RAM **with WiFi off**. With WiFi on, check
+  `createSprite()`'s return value: it may fail, and you'd drop to
+  smaller strips (e.g. 4 × 60 rows).
+
+Skeleton (condensed from the measured app; not compiled on its own):
+
+```cpp
+#include <M5Unified.h>
+
+M5Canvas half[2] = { M5Canvas(&M5.Display), M5Canvas(&M5.Display) };
+
+void drawScene(M5Canvas& c, int y0) {
+  // Draw the whole scene in screen coordinates, shifted up by y0.
+  // Anything outside this 120-row strip is clipped by the canvas.
+  c.fillScreen(TFT_BLACK);
+  c.fillCircle(160, 120 - y0, 50, TFT_RED);
+}
+
+void setup() {
+  M5.begin(M5.config());
+  for (auto& c : half) {
+    c.setPsram(false);               // internal, DMA-capable RAM
+    c.setColorDepth(16);
+    if (!c.createSprite(320, 120)) { /* out of internal RAM: use smaller strips */ }
+  }
+  M5.Display.startWrite();           // once; hold the SPI bus for good
+}
+
+void loop() {
+  M5.update();                       // touch/buttons are on I2C, not this bus
+  for (int i = 0; i < 2; ++i) {
+    drawScene(half[i], i * 120);     // overlaps the other half's DMA
+    M5.Display.pushImageDMA(0, i * 120, 320, 120,
+                            (lgfx::swap565_t*)half[i].getBuffer());
+  }
+}
+```
+
+Why it works: `pushImageDMA` waits for the previous transfer before it
+starts the next, so a buffer is never redrawn while it's still being sent.
+Drawing half 1 overlaps half 0's transfer, and the next frame's half 0
+overlaps half 1's. Holding `startWrite()` for the whole run means
+**nothing else can use that SPI bus**. On Core2 the microSD slot shares
+it, so call `M5.Display.endWrite()` before any SD access and
+`startWrite()` again afterwards. The `swap565_t*` cast matches M5Canvas's
+in-memory byte order. Pass a plain `uint16_t*` and the colours come out
+byte-swapped.
+
+Pre-drawn static backgrounds can live in PSRAM. Copy them into the strip
+buffer a strip at a time (`memcpy` of 120 rows), and don't push them
+straight from PSRAM.
+
+### `drawWideLine` is slow
+
+M5GFX's `drawWideLine` (anti-aliased, round-capped) cost **~25 ms per
+frame for ~50 lines** on the same board, close to a full frame budget on
+its own. Drawing each line as a quad from two `fillTriangle` calls brought
+that to near zero. You lose the anti-aliasing and round caps, which
+rarely matter at 2–6 px widths:
+
+```cpp
+void thickLine(M5Canvas& c, float x0, float y0, float x1, float y1,
+               float w, uint16_t col) {
+  float dx = x1 - x0, dy = y1 - y0, len = sqrtf(dx * dx + dy * dy);
+  if (len < 0.001f) return;
+  float nx = -dy / len * w * 0.5f, ny = dx / len * w * 0.5f;
+  c.fillTriangle(x0 + nx, y0 + ny, x1 + nx, y1 + ny, x1 - nx, y1 - ny, col);
+  c.fillTriangle(x0 + nx, y0 + ny, x1 - nx, y1 - ny, x0 - nx, y0 - ny, col);
+}
+```
+
 ## AWS-line-only: RGB LED ring (SK6812, G25, 10 LEDs)
 
 Neither M5Unified nor M5Core2 drives this directly — use a NeoPixel-style
@@ -184,6 +303,12 @@ for the full writeup and working code pattern.
   brownout if the charge state is low.
 - **AWS IoT certificate registration fails**: see the ATECC608 gotcha
   above before assuming it's an AWS-side configuration problem.
+- **Animation stuck at 8–15 fps**: see "Display throughput" above. It's
+  almost always a full-screen PSRAM canvas pushed after drawing, or
+  `drawWideLine`.
+- **Every swipe also triggers a tap**: tap handling is on `wasPressed()`.
+  Move it to `wasReleased()` and check the travel distance (see "Touch:
+  telling a tap from a swipe").
 - **IMU values look wrong after switching boards**: confirm which IMU chip
   the specific unit has (see SKILL.md's hardware-revisions table) — code
   reading raw MPU6886 registers will not produce sane values against a

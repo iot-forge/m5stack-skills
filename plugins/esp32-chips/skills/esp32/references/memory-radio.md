@@ -18,6 +18,41 @@ bare die this skill documents. Flash size varies by module SKU (commonly
 4MB/8MB/16MB) — check the specific board's `references/pinout.md` for what
 its module actually carries; don't assume a size.
 
+## Frame buffers and DMA: keep them out of PSRAM
+
+**On the classic ESP32, peripheral DMA (SPI, I2S) can't read PSRAM.**
+ESP-IDF's heap docs say it directly: `MALLOC_CAP_DMA` is "suitable for use
+with hardware DMA engines (for example SPI and I2S). This capability flag
+excludes any external PSRAM"
+(https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/system/mem_alloc.html,
+"DMA-Capable Memory"). Later chips such as the S3 and P4 have EDMA paths
+to PSRAM, but don't carry that assumption back to this chip.
+
+What this means for displays:
+
+- A frame buffer kept in PSRAM **can't be sent to an SPI LCD in the
+  background**. The transfer can't overlap with drawing the next frame,
+  so draw time and send time add up instead of overlapping.
+- Bulk work on a large PSRAM buffer is slow in its own right. Copying,
+  filling or per-pixel drawing on a ~150 KB frame goes through the cache
+  over the PSRAM SPI link, not internal SRAM.
+- **The rule:** anything you draw into or send over SPI/I2S belongs in
+  **internal DMA-capable RAM** (`heap_caps_malloc(..., MALLOC_CAP_DMA)`,
+  or `setPsram(false)` on an M5GFX/LovyanGFX sprite). If a full frame
+  doesn't fit, split it into strips or ping-pong buffers: draw one while
+  the other is sending. Use PSRAM only for static data, such as pre-drawn
+  backgrounds or sprite sheets, and copy it into the internal strip buffer
+  a strip at a time.
+
+**Board-measured numbers (one board, not a chip spec):** on a pre-v1.3
+M5Stack Core2 (320×240 ILI9342C, WiFi off), a full-screen PSRAM canvas
+gave 8–13 fps. Two 320×120 internal-RAM buffers with `pushImageDMA`
+ping-pong gave 29–32 fps, against an SPI ceiling of ~33 ms per full frame.
+The working skeleton and the figures are in the `core2` skill's
+`references/arduino.md`, "Display throughput". Internal DMA-capable RAM
+is tight: two 75 KB buffers fitted with WiFi off, and the WiFi stack
+takes a large share of it. Always check the allocation result.
+
 ## GPIOs consumed by flash/PSRAM wiring
 
 The dedicated flash SPI bus (SPI0, sometimes labeled SPI within Espressif's
